@@ -30,7 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         abort_unless(auth()->user()->hasModule($module->key), 403);
 
         return view('modules.placeholder', compact('module'));
-    })->whereIn('prefix', ['invoices', 'clusters', 'leads'])->name('modules.placeholder');
+    })->whereIn('prefix', ['clusters', 'leads'])->name('modules.placeholder');
 
     // Teams
     Route::get('teams', [TeamController::class, 'index'])->name('teams.index');

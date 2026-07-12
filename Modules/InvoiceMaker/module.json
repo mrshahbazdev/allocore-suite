@@ -1,0 +1,15 @@
+{
+    "name": "InvoiceMaker",
+    "alias": "invoicemaker",
+    "description": "Team-scoped invoices, estimates, clients, products, expenses, cash book, PDFs, and customer payments.",
+    "keywords": [
+        "invoices",
+        "estimates",
+        "accounting"
+    ],
+    "priority": 0,
+    "providers": [
+        "Modules\\InvoiceMaker\\Providers\\InvoiceMakerServiceProvider"
+    ],
+    "files": []
+}
