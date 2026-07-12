@@ -30,11 +30,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         abort_unless(auth()->user()->hasModule($module->key), 403);
 
         return view('modules.placeholder', compact('module'));
-    })->name('modules.placeholder');
+    })->whereIn('prefix', ['invoices', 'clusters', 'leads'])->name('modules.placeholder');
 
     // Teams
     Route::get('teams', [TeamController::class, 'index'])->name('teams.index');
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
+    Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
 });

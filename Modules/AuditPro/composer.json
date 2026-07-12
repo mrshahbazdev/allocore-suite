@@ -1,0 +1,16 @@
+{
+    "name": "allocore/auditpro",
+    "description": "AuditPro module for Allocore Suite.",
+    "authors": [
+        {
+            "name": "Allocore",
+            "email": "admin@allocore.test"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\AuditPro\\": "app/",
+            "Modules\\AuditPro\\Database\\Seeders\\": "database/seeders/"
+        }
+    }
+}

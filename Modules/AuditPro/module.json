@@ -1,0 +1,11 @@
+{
+    "name": "AuditPro",
+    "alias": "auditpro",
+    "description": "Team-scoped business maturity audits, templates, comparisons, and reports.",
+    "keywords": ["audit", "maturity", "analytics"],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditPro\\Providers\\AuditProServiceProvider"
+    ],
+    "files": []
+}

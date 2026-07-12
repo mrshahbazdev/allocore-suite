@@ -71,13 +71,7 @@ class User extends Authenticatable
             return true;
         }
 
-        foreach ($this->teams as $team) {
-            if ($team->hasModule($moduleKey)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->currentTeam?->hasModule($moduleKey) ?? false;
     }
 
     public function accessibleModules()
