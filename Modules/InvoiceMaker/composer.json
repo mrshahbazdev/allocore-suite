@@ -1,30 +1,16 @@
 {
-    "name": "nwidart/invoicemaker",
-    "description": "",
+    "name": "allocore/invoicemaker",
+    "description": "InvoiceMaker module for Allocore Suite.",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Allocore",
+            "email": "admin@allocore.test"
         }
     ],
-    "extra": {
-        "laravel": {
-            "providers": [],
-            "aliases": {
-
-            }
-        }
-    },
     "autoload": {
         "psr-4": {
             "Modules\\InvoiceMaker\\": "app/",
-            "Modules\\InvoiceMaker\\Database\\Factories\\": "database/factories/",
             "Modules\\InvoiceMaker\\Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Modules\\InvoiceMaker\\Tests\\": "tests/"
         }
     }
 }
