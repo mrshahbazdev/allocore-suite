@@ -38,11 +38,23 @@
                 @csrf
                 <h2 class="font-semibold text-slate-900">{{ __('Create a team') }}</h2>
                 <input type="text" name="name" required placeholder="{{ __('Team name') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                <input type="text" name="industry" placeholder="{{ __('Industry') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                <input type="text" name="size" placeholder="{{ __('Company size, e.g. 10–50') }}" class="w-full rounded-lg border-slate-300 text-sm">
                 @error('name')<p class="text-xs text-rose-600">{{ $message }}</p>@enderror
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Create team') }}</button>
             </form>
 
             @if (auth()->user()->currentTeam && auth()->user()->currentTeam->owner_id === auth()->id())
+                <form method="POST" action="{{ route('teams.update', auth()->user()->currentTeam) }}" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
+                    @csrf
+                    @method('PUT')
+                    <h2 class="font-semibold text-slate-900">{{ __('Team profile') }}</h2>
+                    <input type="text" name="name" required value="{{ auth()->user()->currentTeam->name }}" placeholder="{{ __('Team name') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    <input type="text" name="industry" value="{{ auth()->user()->currentTeam->industry }}" placeholder="{{ __('Industry') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    <input type="text" name="size" value="{{ auth()->user()->currentTeam->size }}" placeholder="{{ __('Company size, e.g. 10–50') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Update profile') }}</button>
+                </form>
+
                 <form method="POST" action="{{ route('teams.members.add', auth()->user()->currentTeam) }}" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
                     @csrf
                     <h2 class="font-semibold text-slate-900">{{ __('Add member to :team', ['team' => auth()->user()->currentTeam->name]) }}</h2>

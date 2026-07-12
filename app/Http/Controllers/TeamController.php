@@ -18,13 +18,32 @@ class TeamController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate(['name' => 'required|string|max:255']);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'industry' => 'nullable|string|max:255',
+            'size' => 'nullable|string|max:100',
+        ]);
 
-        $team = Team::create(['name' => $validated['name'], 'owner_id' => $request->user()->id]);
+        $team = Team::create($validated + ['owner_id' => $request->user()->id]);
         $team->members()->attach($request->user()->id, ['role' => 'owner']);
         $request->user()->update(['current_team_id' => $team->id]);
 
         return back()->with('success', __('Team created.'));
+    }
+
+    public function update(Request $request, Team $team)
+    {
+        abort_unless($team->owner_id === $request->user()->id, 403);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'industry' => 'nullable|string|max:255',
+            'size' => 'nullable|string|max:100',
+        ]);
+
+        $team->update($validated);
+
+        return back()->with('success', __('Team profile updated.'));
     }
 
     public function switch(Request $request, Team $team)
