@@ -1,4 +1,5 @@
 {
     "AuditPro": true,
-    "InvoiceMaker": true
+    "InvoiceMaker": true,
+    "LeadQuality": true
 }

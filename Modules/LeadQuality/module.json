@@ -1,0 +1,15 @@
+{
+    "name": "LeadQuality",
+    "alias": "leadquality",
+    "description": "Team-scoped lead generation, CRM pipeline, sequences, and ICP scoring.",
+    "keywords": [
+        "leads",
+        "crm",
+        "pipeline"
+    ],
+    "priority": 0,
+    "providers": [
+        "Modules\\LeadQuality\\Providers\\LeadQualityServiceProvider"
+    ],
+    "files": []
+}
