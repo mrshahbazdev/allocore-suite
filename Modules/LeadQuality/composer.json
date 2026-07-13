@@ -1,0 +1,29 @@
+{
+    "name": "allocore/leadquality",
+    "description": "LeadQuality module for Allocore Suite.",
+    "authors": [
+        {
+            "name": "Allocore",
+            "email": "admin@allocore.test"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LeadQuality\\": "app/",
+            "Modules\\LeadQuality\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LeadQuality\\Tests\\": "tests/"
+        }
+    }
+}
