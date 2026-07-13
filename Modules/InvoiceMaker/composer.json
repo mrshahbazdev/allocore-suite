@@ -1,0 +1,16 @@
+{
+    "name": "allocore/invoicemaker",
+    "description": "InvoiceMaker module for Allocore Suite.",
+    "authors": [
+        {
+            "name": "Allocore",
+            "email": "admin@allocore.test"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\InvoiceMaker\\": "app/",
+            "Modules\\InvoiceMaker\\Database\\Seeders\\": "database/seeders/"
+        }
+    }
+}
