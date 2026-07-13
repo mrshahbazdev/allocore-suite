@@ -9,6 +9,7 @@ use Modules\FinancialPlatform\Http\Controllers\ImmobilienController;
 use Modules\FinancialPlatform\Http\Controllers\JahresabschlussController;
 use Modules\FinancialPlatform\Http\Controllers\LeadController;
 use Modules\FinancialPlatform\Http\Controllers\PaypalController;
+use Modules\FinancialPlatform\Http\Controllers\RevenueDevelopmentController;
 use Modules\FinancialPlatform\Http\Middleware\EnsureCurrentTeam;
 use Modules\FinancialPlatform\Models\Analysis;
 
@@ -67,4 +68,7 @@ Route::middleware(['auth', 'verified', 'module:financial-platform', EnsureCurren
         Route::get('/paypal/capture', [PaypalController::class, 'capture'])->name('paypal.capture');
         Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
         Route::get('/paypal/{transaction}', [PaypalController::class, 'show'])->name('paypal.show');
+
+        Route::get('/kpis/revenue-development', [RevenueDevelopmentController::class, 'edit'])->name('revenue-development.edit');
+        Route::post('/kpis/revenue-development', [RevenueDevelopmentController::class, 'update'])->name('revenue-development.update');
     });
