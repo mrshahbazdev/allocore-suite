@@ -42,6 +42,9 @@
 
             @if (auth()->user()?->isAdmin())
                 <div class="pt-4 pb-1 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Admin') }}</div>
+                <a href="{{ route('admin.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.index') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Dashboard') }}</a>
+                <a href="{{ route('admin.users.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Users') }}</a>
+                <a href="{{ route('admin.modules.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.modules.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Modules') }}</a>
                 <a href="{{ route('admin.plans.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.plans.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Manage Plans') }}</a>
                 <a href="{{ route('admin.subscriptions.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.subscriptions.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Subscriptions') }}</a>
             @endif
