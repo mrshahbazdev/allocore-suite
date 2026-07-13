@@ -1,0 +1,11 @@
+{
+    "name": "FinancialPlatform",
+    "alias": "financialplatform",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FinancialPlatform\\Providers\\FinancialPlatformServiceProvider"
+    ],
+    "files": []
+}
