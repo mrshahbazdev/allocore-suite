@@ -19,6 +19,7 @@ class DashboardSnapshot
                 'leads' => 0,
                 'revenue' => 0,
                 'maturity' => 0,
+                'revenueDevelopment' => app(RevenueDevelopmentSnapshot::class)->forTeam(null),
                 'recentAnalyses' => collect(),
             ];
         }
@@ -34,6 +35,7 @@ class DashboardSnapshot
                 ->where('status', 'completed')
                 ->sum('amount'),
             'maturity' => (float) round((float) ($analyses->avg('total_score') ?? 0), 1),
+            'revenueDevelopment' => app(RevenueDevelopmentSnapshot::class)->forTeam($team),
             'recentAnalyses' => Analysis::query()
                 ->where('team_id', $team->id)
                 ->with('company')
