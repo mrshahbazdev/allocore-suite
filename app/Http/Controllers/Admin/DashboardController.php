@@ -8,6 +8,8 @@ use App\Models\Plan;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Models\User;
+use Modules\AuditPro\Models\Audit;
+use Modules\FinancialPlatform\Models\Analysis;
 
 class DashboardController extends Controller
 {
@@ -21,11 +23,15 @@ class DashboardController extends Controller
             'plans' => Plan::count(),
             'subscriptions' => ToolSubscription::count(),
             'pending_bank' => ToolSubscription::where('payment_method', 'bank')->where('status', 'pending')->count(),
+            'analyses' => Analysis::withoutGlobalScope('current_team')->count(),
+            'audits' => Audit::withoutGlobalScope('current_team')->count(),
         ];
 
         $recentUsers = User::with('currentTeam')->latest()->limit(8)->get();
         $recentSubscriptions = ToolSubscription::with(['plan', 'billable'])->latest()->limit(8)->get();
+        $recentAnalyses = Analysis::withoutGlobalScope('current_team')->with(['company', 'team'])->latest()->limit(8)->get();
+        $recentAudits = Audit::withoutGlobalScope('current_team')->with(['template', 'team'])->latest()->limit(8)->get();
 
-        return view('admin.index', compact('stats', 'recentUsers', 'recentSubscriptions'));
+        return view('admin.index', compact('stats', 'recentUsers', 'recentSubscriptions', 'recentAnalyses', 'recentAudits'));
     }
 }

@@ -1,8 +1,12 @@
 @extends('layouts.shell')
 
 @section('content')
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900">{{ __('Subscriptions') }}</h1>
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">{{ __('Subscriptions') }}</h1>
+            <p class="text-sm text-slate-500">{{ __('Approve, reject, and cancel subscriptions across the platform.') }}</p>
+        </div>
+        <a href="{{ route('admin.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Back to admin') }}</a>
     </div>
 
     <h2 class="text-lg font-semibold text-slate-800 mb-3">{{ __('Pending bank transfers') }}</h2>
@@ -57,6 +61,7 @@
                 <th class="px-4 py-3">{{ __('Method') }}</th>
                 <th class="px-4 py-3">{{ __('Status') }}</th>
                 <th class="px-4 py-3">{{ __('Valid until') }}</th>
+                <th class="px-4 py-3"></th>
             </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -67,11 +72,21 @@
                     <td class="px-4 py-3 capitalize text-slate-600">{{ $subscription->payment_method }}</td>
                     <td class="px-4 py-3 capitalize text-slate-600">{{ $subscription->status }}</td>
                     <td class="px-4 py-3 text-slate-600">{{ $subscription->ends_at?->format('d.m.Y') ?? '—' }}</td>
+                    <td class="px-4 py-3">
+                        @if (in_array($subscription->status, ['active', 'pending']))
+                            <form method="POST" action="{{ route('admin.subscriptions.cancel', $subscription) }}" onsubmit="return confirm('{{ __('Cancel this subscription?') }}')">
+                                @csrf
+                                <button class="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50">{{ __('Cancel') }}</button>
+                            </form>
+                        @endif
+                    </td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">{{ __('No subscriptions yet.') }}</td></tr>
+                <tr><td colspan="6" class="px-4 py-6 text-center text-slate-400">{{ __('No subscriptions yet.') }}</td></tr>
             @endforelse
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">{{ $recent->links() }}</div>
 @endsection

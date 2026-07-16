@@ -4,12 +4,17 @@
     <div class="mb-6 flex items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-slate-900">{{ __('Users') }}</h1>
-            <p class="text-sm text-slate-500">{{ __('Manage access, roles, and active teams.') }}</p>
+            <p class="text-sm text-slate-500">{{ __('Manage access, roles, and teams across the platform.') }}</p>
         </div>
         <a href="{{ route('admin.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Back to admin') }}</a>
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="mb-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <form method="GET" action="{{ route('admin.users.index') }}" class="flex gap-2 p-4">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search by name or email...') }}" class="flex-1 rounded-lg border-slate-300 text-sm">
+            <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Search') }}</button>
+        </form>
+
         <table class="min-w-full divide-y divide-slate-200 text-sm">
             <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
                 <tr>
@@ -18,6 +23,7 @@
                     <th class="px-4 py-3">{{ __('Roles') }}</th>
                     <th class="px-4 py-3">{{ __('Subscriptions') }}</th>
                     <th class="px-4 py-3">{{ __('Role') }}</th>
+                    <th class="px-4 py-3"></th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -40,10 +46,13 @@
                                 <button class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
                             </form>
                         </td>
+                        <td class="px-4 py-3 text-right">
+                            <a href="{{ route('admin.users.show', $user) }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('View') }}</a>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-6 text-center text-slate-400">{{ __('No users found.') }}</td>
+                        <td colspan="6" class="px-4 py-6 text-center text-slate-400">{{ __('No users found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
