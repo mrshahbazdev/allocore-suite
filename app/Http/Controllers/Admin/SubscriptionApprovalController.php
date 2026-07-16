@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\ToolSubscription;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class SubscriptionApprovalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $pending = ToolSubscription::where('payment_method', 'bank')
             ->where('status', 'pending')
@@ -18,8 +19,8 @@ class SubscriptionApprovalController extends Controller
 
         $recent = ToolSubscription::with(['plan', 'billable'])
             ->latest()
-            ->limit(50)
-            ->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.subscriptions', compact('pending', 'recent'));
     }
@@ -40,5 +41,14 @@ class SubscriptionApprovalController extends Controller
         $subscription->update(['status' => 'rejected']);
 
         return back()->with('success', __('Subscription rejected.'));
+    }
+
+    public function cancel(ToolSubscription $subscription)
+    {
+        abort_unless(in_array($subscription->status, ['active', 'pending']), 422);
+
+        $subscription->update(['status' => 'cancelled', 'ends_at' => now()]);
+
+        return back()->with('success', __('Subscription cancelled.'));
     }
 }

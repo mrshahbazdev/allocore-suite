@@ -1,58 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Allocore Suite
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A multi-module SaaS platform built on Laravel that provides central authentication, team-based access control, per-module billing, and a unified analytics shell.
 
-## About Laravel
+## What is Allocore Suite?
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Allocore Suite is the central hub for the Allocore product family. It lets customers manage teams, choose subscription plans, and access connected tools from one dashboard. Each tool is delivered as a Laravel module and can be gated through plans.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Modules
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Module | Purpose |
+|--------|---------|
+| **AuditPro** | Qualitative business maturity assessments across 5 pillars and 25 criteria. |
+| **FinancialPlatform** | Financial analyses (GmbH, Jahresabschluss, Immobilien) and KPI tracking. |
+| **LeadQuality** | Contact and pipeline management for sales and marketing. |
+| **InvoiceMaker** | Clients, invoices, and payment tracking. |
 
-## Learning Laravel
+## Deep KPIs
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The FinancialPlatform includes a **Deep KPI** dashboard that turns the KPI definitions from the Deep KPI workbook into concrete, measurable metrics:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Umsatzbedarf** — target vs. actual sales, with configurable sources:
+  - InvoiceMaker revenue
+  - Manual input
+  - SeoStory manual revenue fallback
+  - (Extensible for `financial.seostory.de` API integration)
+- **Leadqualität** — impressions, clicks, CTR, average Google position, and page value with current vs. previous month comparison.
+- **Abschlussquote** — conversion rate from leads to new customers, comparing current and previous month using LeadQuality contacts and InvoiceMaker clients.
+- **Vertragstreue Kunden** — average days from invoice date to payment, computed from InvoiceMaker payments.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+KPI thresholds are managed in **Admin → KPI Thresholds** and drive the traffic-light status indicators.
 
-## Agentic Development
+## Admin Panel
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+The advanced admin panel (`/admin`) gives platform administrators full control over the tenant layer:
+
+- **Dashboard** — users, teams, active modules, plans, subscriptions, analyses, and audits.
+- **User Management** — search, view profiles, change roles, delete accounts.
+- **Team Management** — list teams, edit profiles, view members and subscriptions, remove members, delete teams.
+- **Catalog** — manage modules (enable/disable) and plans with pricing, billing scope, and module mapping.
+- **Billing** — approve/reject pending bank transfers and cancel active/pending subscriptions.
+- **Tool Data**
+  - **AuditPro** — view audits and templates across all teams.
+  - **Financial** — view analyses across all teams.
+  - **KPI Thresholds** — edit green/yellow thresholds, weights, and active flags.
+
+Admin access is controlled by the `admin` role managed through Spatie Laravel Permission.
+
+## Installation
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/mrshahbazdev/allocore-suite.git
+cd allocore-suite
+cp .env.example .env
+composer install
+npm install
+npm run build
+php artisan key:generate
+php artisan migrate --seed
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+The seeder creates an admin user. Check `database/seeders/CoreSeeder.php` for the default credentials.
 
-## Contributing
+## Environment
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Key variables you may need to configure:
 
-## Code of Conduct
+- `APP_NAME` — application name shown in the UI.
+- `APP_URL` — public URL of the installation.
+- `DB_*` — database connection.
+- `STRIPE_*` / `PAYPAL_*` — payment gateway credentials for subscriptions.
+- `MODULE_*` API keys for third-party tool integrations.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Testing
 
-## Security Vulnerabilities
+```bash
+composer exec pint -- --test
+php artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Architecture
+
+- Laravel modules live under `Modules/`. Each module has its own `app/`, `database/`, `resources/`, `routes/`, and `tests/` directories.
+- Shared UI uses `resources/views/layouts/shell.blade.php` with a sidebar for tools and admin sections.
+- Admin controllers are under `app/Http/Controllers/Admin` and use `auth` + `admin` middleware.
+- Cross-team admin queries bypass the module-level `BelongsToCurrentTeam` global scope using `withoutGlobalScope('current_team')`.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Open-sourced under the [MIT license](https://opensource.org/licenses/MIT).

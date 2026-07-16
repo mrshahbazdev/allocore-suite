@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditController as AdminAuditController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
+use App\Http\Controllers\Admin\TeamController as AdminTeamController;
+use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
@@ -46,7 +50,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('index');
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('users/{user}', [AdminUserController::class, 'show'])->name('users.show');
     Route::post('users/{user}/role', [AdminUserController::class, 'role'])->name('users.role');
+    Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::get('teams', [AdminTeamController::class, 'index'])->name('teams.index');
+    Route::get('teams/{team}', [AdminTeamController::class, 'show'])->name('teams.show');
+    Route::put('teams/{team}', [AdminTeamController::class, 'update'])->name('teams.update');
+    Route::delete('teams/{team}', [AdminTeamController::class, 'destroy'])->name('teams.destroy');
+    Route::delete('teams/{team}/members/{user}', [AdminTeamController::class, 'removeMember'])->name('teams.members.remove');
     Route::get('modules', [AdminModuleController::class, 'index'])->name('modules.index');
     Route::put('modules/{module}', [AdminModuleController::class, 'update'])->name('modules.update');
     Route::get('plans', [PlanController::class, 'index'])->name('plans.index');
@@ -56,6 +67,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('subscriptions', [SubscriptionApprovalController::class, 'index'])->name('subscriptions.index');
     Route::post('subscriptions/{subscription}/approve', [SubscriptionApprovalController::class, 'approve'])->name('subscriptions.approve');
     Route::post('subscriptions/{subscription}/reject', [SubscriptionApprovalController::class, 'reject'])->name('subscriptions.reject');
+    Route::post('subscriptions/{subscription}/cancel', [SubscriptionApprovalController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::get('audits', [AdminAuditController::class, 'index'])->name('audits.index');
+    Route::get('audits/{audit}', [AdminAuditController::class, 'show'])->name('audits.show');
+    Route::get('financial', [AdminFinancialController::class, 'index'])->name('financial.index');
+    Route::get('thresholds', [AdminThresholdController::class, 'index'])->name('thresholds.index');
+    Route::put('thresholds/{threshold}', [AdminThresholdController::class, 'update'])->name('thresholds.update');
 });
 
 Route::post('logout', function (Request $request) {
