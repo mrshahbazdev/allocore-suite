@@ -10,6 +10,10 @@ use Modules\FinancialPlatform\Models\PaypalTransaction;
 
 class DashboardSnapshot
 {
+    public function __construct(
+        private readonly DeepKpiSnapshot $deepKpiSnapshot,
+    ) {}
+
     public function forTeam(?Team $team): array
     {
         if (! $team) {
@@ -20,6 +24,7 @@ class DashboardSnapshot
                 'revenue' => 0,
                 'maturity' => 0,
                 'revenueDevelopment' => app(RevenueDevelopmentSnapshot::class)->forTeam(null),
+                'deepKpis' => $this->deepKpiSnapshot->forTeam(null),
                 'recentAnalyses' => collect(),
             ];
         }
@@ -36,6 +41,7 @@ class DashboardSnapshot
                 ->sum('amount'),
             'maturity' => (float) round((float) ($analyses->avg('total_score') ?? 0), 1),
             'revenueDevelopment' => app(RevenueDevelopmentSnapshot::class)->forTeam($team),
+            'deepKpis' => $this->deepKpiSnapshot->forTeam($team),
             'recentAnalyses' => Analysis::query()
                 ->where('team_id', $team->id)
                 ->with('company')

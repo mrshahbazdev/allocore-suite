@@ -43,6 +43,7 @@ class RevenueDevelopmentSnapshot
             'availableSources' => [
                 'analysis' => 'Financial analyses',
                 'invoicemaker' => 'InvoiceMaker',
+                'seostory' => 'SeoStory financial analyses',
                 'manual' => 'Manual entry',
             ],
         ];
@@ -60,6 +61,7 @@ class RevenueDevelopmentSnapshot
             'availableSources' => [
                 'analysis' => 'Financial analyses',
                 'invoicemaker' => 'InvoiceMaker',
+                'seostory' => 'SeoStory financial analyses',
                 'manual' => 'Manual entry',
             ],
         ];
@@ -70,6 +72,7 @@ class RevenueDevelopmentSnapshot
         return match ($source) {
             'manual' => (float) ($manualActual ?? 0),
             'analysis' => $this->analysisRevenue($team),
+            'seostory' => $this->seostoryRevenue($team),
             default => $this->invoiceMakerRevenue($team),
         };
     }
@@ -103,10 +106,19 @@ class RevenueDevelopmentSnapshot
             });
     }
 
+    private function seostoryRevenue(Team $team): float
+    {
+        return (float) Setting::query()
+            ->where('team_id', $team->id)
+            ->where('key', 'revenue_development_seostory_revenue')
+            ->value('value');
+    }
+
     private function sourceLabel(string $source): string
     {
         return match ($source) {
             'analysis' => 'Financial analyses',
+            'seostory' => 'SeoStory financial analyses',
             'manual' => 'Manual entry',
             default => 'InvoiceMaker',
         };

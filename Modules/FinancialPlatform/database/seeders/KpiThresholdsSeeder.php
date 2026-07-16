@@ -41,6 +41,12 @@ class KpiThresholdsSeeder extends Seeder
             ['tool' => 'immobilien', 'kpi_code' => 'LTV',          'kpi_name' => 'LTV',                    'unit' => '%', 'green_max' => 60,   'yellow_max' => 80,  'lower_is_better' => true,  'weight' => 10],
             ['tool' => 'immobilien', 'kpi_code' => 'MIET_MULTI',   'kpi_name' => 'Mietmultiplikator',      'unit' => 'x', 'green_max' => 20,   'yellow_max' => 28,  'lower_is_better' => true,  'weight' => 10],
             ['tool' => 'immobilien', 'kpi_code' => 'MIETSTEIGERUNG', 'kpi_name' => 'Mietsteigerungspot.',   'unit' => '%', 'green_min' => 15,   'yellow_min' => 5,   'lower_is_better' => false, 'weight' => 15],
+
+            // ─── Deep KPI (Business Readiness) ──────────────────────────
+            ['tool' => 'deep_kpi', 'kpi_code' => 'UMSATZBEDARF_RATIO', 'kpi_name' => 'Umsatzbedarf (Target / Actual)', 'unit' => 'x', 'green_max' => 1.0,  'yellow_max' => 1.25, 'lower_is_better' => true,  'weight' => null],
+            ['tool' => 'deep_kpi', 'kpi_code' => 'CTR',                'kpi_name' => 'Click-through rate',             'unit' => '%', 'green_min' => 3.0,  'yellow_min' => 1.0,  'lower_is_better' => false, 'weight' => null],
+            ['tool' => 'deep_kpi', 'kpi_code' => 'ABSCHLUSSQUOTE',     'kpi_name' => 'Abschlussquote',                 'unit' => '%', 'green_min' => 20,   'yellow_min' => 10,   'lower_is_better' => false, 'weight' => null],
+            ['tool' => 'deep_kpi', 'kpi_code' => 'VERTRAGSTREUE_TAGE', 'kpi_name' => 'Vertragstreue (payment days)',   'unit' => 'Tage', 'green_max' => 14, 'yellow_max' => 30, 'lower_is_better' => true,  'weight' => null],
         ];
 
         foreach ($thresholds as $t) {
