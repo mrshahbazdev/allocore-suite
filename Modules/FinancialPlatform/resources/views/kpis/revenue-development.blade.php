@@ -50,10 +50,15 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Actual source</label>
                     <select name="actual_source" class="mt-1 w-full rounded-lg border-slate-300">
-                        @foreach (['analysis' => 'Financial analyses', 'invoicemaker' => 'InvoiceMaker', 'manual' => 'Manual entry'] as $value => $label)
+                        @foreach (['analysis' => 'Financial analyses', 'invoicemaker' => 'InvoiceMaker', 'seostory' => 'SeoStory financial analyses', 'manual' => 'Manual entry'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('actual_source', $settings['actual_source'] ?? 'invoicemaker') === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">SeoStory actual revenue</label>
+                    <input type="number" step="0.01" min="0" name="seostory_revenue" value="{{ old('seostory_revenue', $settings['seostory_revenue'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <p class="mt-1 text-xs text-slate-500">Manual fallback until SeoStory API is configured.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Manual actual sales</label>

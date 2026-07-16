@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\FinancialPlatform\Http\Controllers\CompanyController;
 use Modules\FinancialPlatform\Http\Controllers\DashboardController;
+use Modules\FinancialPlatform\Http\Controllers\DeepKpiController;
 use Modules\FinancialPlatform\Http\Controllers\ExcelImportController;
 use Modules\FinancialPlatform\Http\Controllers\GmbhAnalyseController;
 use Modules\FinancialPlatform\Http\Controllers\ImmobilienController;
@@ -71,4 +72,7 @@ Route::middleware(['auth', 'verified', 'module:financial-platform', EnsureCurren
 
         Route::get('/kpis/revenue-development', [RevenueDevelopmentController::class, 'edit'])->name('revenue-development.edit');
         Route::post('/kpis/revenue-development', [RevenueDevelopmentController::class, 'update'])->name('revenue-development.update');
+
+        Route::get('/deep-kpis', [DeepKpiController::class, 'index'])->name('deep-kpis.index');
+        Route::post('/deep-kpis', [DeepKpiController::class, 'update'])->name('deep-kpis.update');
     });
