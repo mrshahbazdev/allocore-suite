@@ -43,6 +43,7 @@
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('admin.users.subscriptions.index', $user) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">{{ __('admin.users.subscriptions') }}</a>
+                                <a href="{{ route('admin.users.impersonate', $user) }}" class="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50">{{ __('admin.users.impersonate') }}</a>
                                 <a href="{{ route('admin.users.edit', $user) }}" class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">{{ __('Edit') }}</a>
                                 @if ($user->id !== auth()->id())
                                     <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('{{ __('admin.users.confirm_delete') }}')">
