@@ -77,9 +77,20 @@
                 <a href="{{ route('admin.roles.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.roles.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Roles') }}</a>
                 <a href="{{ route('admin.support-tickets.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.support-tickets.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Support Tickets') }}</a>
                 <a href="{{ route('admin.integrations.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.integrations.*', 'admin.webhooks.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Integrations') }}</a>
+
+                <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Module Data') }}</div>
+                <a href="{{ route('admin.module-data.index', ['invoice-maker', 'clients']) }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.module-data.index') && request()->route('group') === 'invoice-maker' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('InvoiceMaker') }}</a>
+                <a href="{{ route('admin.module-data.index', ['lead-os', 'contacts']) }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.module-data.index') && request()->route('group') === 'lead-os' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('LeadOS') }}</a>
+                <a href="{{ route('admin.module-data.index', ['financial', 'companies']) }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.module-data.index') && request()->route('group') === 'financial' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Financial') }}</a>
+                <a href="{{ route('admin.module-data.index', ['audit-pro', 'audits']) }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.module-data.index') && request()->route('group') === 'audit-pro' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('AuditPro') }}</a>
                 <a href="{{ route('admin.announcements.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.announcements.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Announcements') }}</a>
                 <a href="{{ route('admin.media.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.media.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Media') }}</a>
+                <a href="{{ route('admin.coupons.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.coupons.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Coupons') }}</a>
+                <a href="{{ route('admin.tax-rates.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.tax-rates.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Tax Rates') }}</a>
+                <a href="{{ route('admin.notification-templates.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.notification-templates.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Notifications') }}</a>
+                <a href="{{ route('admin.queue-monitor.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.queue-monitor.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Queue Monitor') }}</a>
                 <a href="{{ route('admin.backups.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.backups.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Backups') }}</a>
+                <a href="{{ route('admin.maintenance.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.maintenance.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Maintenance') }}</a>
             @endif
         </nav>
     </aside>
@@ -93,6 +104,9 @@
                 @endif
             </div>
             <div class="flex items-center gap-4">
+                @if (session('impersonated_by'))
+                    <a href="{{ route('impersonation.stop') }}" class="rounded-lg bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-200">{{ __('admin.impersonation.stop') }}</a>
+                @endif
                 <span class="text-sm font-medium text-slate-700">{{ auth()->user()?->name }}</span>
                 <a href="{{ route('profile') }}" class="text-sm text-indigo-600 hover:underline">{{ __('Profile') }}</a>
                 <form method="POST" action="{{ route('logout') }}">

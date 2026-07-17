@@ -8,20 +8,27 @@ use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarControll
 use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
 use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
 use App\Http\Controllers\Admin\BackupController as AdminBackupController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
+use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
 use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Admin\MailSettingController;
+use App\Http\Controllers\Admin\MaintenanceController as AdminMaintenanceController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
+use App\Http\Controllers\Admin\ModuleDataController as AdminModuleDataController;
+use App\Http\Controllers\Admin\NotificationTemplateController as AdminNotificationTemplateController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\QueueMonitorController as AdminQueueMonitorController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
+use App\Http\Controllers\Admin\TaxRateController as AdminTaxRateController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -49,6 +56,8 @@ Route::view('/', 'welcome');
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');
+
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     // Billing
@@ -81,6 +90,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
     Route::get('users/create', [AdminUserController::class, 'create'])->name('users.create');
     Route::post('users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::get('users/{user}/impersonate', [AdminImpersonationController::class, 'impersonate'])->name('users.impersonate');
     Route::get('users/{user}', [AdminUserController::class, 'show'])->name('users.show');
     Route::get('users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
     Route::put('users/{user}', [AdminUserController::class, 'update'])->name('users.update');
@@ -132,6 +142,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('audits/questions/{question}', [AdminAuditQuestionController::class, 'update'])->name('audits.questions.update');
     Route::delete('audits/questions/{question}', [AdminAuditQuestionController::class, 'destroy'])->name('audits.questions.destroy');
 
+    Route::get('module-data/{group}/{resource}', [AdminModuleDataController::class, 'index'])->name('module-data.index');
+    Route::get('module-data/{group}/{resource}/{id}', [AdminModuleDataController::class, 'show'])->name('module-data.show');
+    Route::delete('module-data/{group}/{resource}/{id}', [AdminModuleDataController::class, 'destroy'])->name('module-data.destroy');
+
     Route::get('invoices', [AdminInvoiceController::class, 'index'])->name('invoices.index');
     Route::get('invoices/{invoice}', [AdminInvoiceController::class, 'show'])->name('invoices.show');
     Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
@@ -178,6 +192,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('media', [AdminMediaController::class, 'index'])->name('media.index');
     Route::post('media', [AdminMediaController::class, 'store'])->name('media.store');
     Route::delete('media/{media}', [AdminMediaController::class, 'destroy'])->name('media.destroy');
+
+    Route::get('maintenance', [AdminMaintenanceController::class, 'index'])->name('maintenance.index');
+    Route::put('maintenance', [AdminMaintenanceController::class, 'update'])->name('maintenance.update');
+
+    Route::resource('coupons', AdminCouponController::class)->names('coupons');
+    Route::resource('tax-rates', AdminTaxRateController::class)->names('tax-rates');
+    Route::resource('notification-templates', AdminNotificationTemplateController::class)->names('notification-templates');
+    Route::get('queue-monitor', [AdminQueueMonitorController::class, 'index'])->name('queue-monitor.index');
 
     Route::get('backups', [AdminBackupController::class, 'index'])->name('backups.index');
     Route::post('backups', [AdminBackupController::class, 'createSqlDump'])->name('backups.store');
