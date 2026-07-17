@@ -59,6 +59,8 @@
 
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Billing') }}</div>
                 <a href="{{ route('admin.subscriptions.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.subscriptions.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Subscriptions') }}</a>
+                <a href="{{ route('admin.invoices.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.invoices.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Invoices') }}</a>
+                <a href="{{ route('admin.payments.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.payments.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Payments') }}</a>
 
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Tools') }}</div>
                 <a href="{{ route('admin.audits.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.audits.index', 'admin.audits.show') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Audits') }}</a>

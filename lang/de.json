@@ -283,5 +283,16 @@
     "admin.audit_questions.confirm_delete": "Diese Frage löschen?",
     "admin.audit_questions.created": "Frage erstellt.",
     "admin.audit_questions.updated": "Frage aktualisiert.",
-    "admin.audit_questions.deleted": "Frage gelöscht."
+    "admin.audit_questions.deleted": "Frage gelöscht.",
+
+    "admin.invoices.title": "Rechnungen",
+    "admin.invoices.description": "Rechnungen aller Teams anzeigen.",
+    "admin.invoices.search_placeholder": "Rechnung, Kunde oder UUID suchen...",
+    "admin.invoices.all_statuses": "Alle Status",
+    "admin.invoices.empty": "Keine Rechnungen gefunden.",
+
+    "admin.payments.title": "Zahlungen",
+    "admin.payments.description": "Zahlungen aller Teams anzeigen.",
+    "admin.payments.search_placeholder": "Rechnung, Referenz oder Kunde suchen...",
+    "admin.payments.empty": "Keine Zahlungen gefunden."
 }
