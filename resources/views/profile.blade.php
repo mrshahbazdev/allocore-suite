@@ -27,6 +27,10 @@
                                     <p class="mt-1 text-sm text-slate-700">{{ auth()->user()->currentTeam->name }}</p>
                                 </div>
                             @endif
+
+                            <div class="mt-4 w-full border-t border-slate-100 pt-4">
+                                <a href="{{ route('two-factor.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Two-Factor Authentication') }}</a>
+                            </div>
                         </div>
                     </div>
                 </aside>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Forms\LoginForm;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -14,6 +15,18 @@ new #[Layout('layouts.guest')] class extends Component
         $this->validate();
 
         $this->form->authenticate();
+
+        $user = Auth::user();
+
+        if ($user && $user->two_factor_confirmed_at) {
+            $remember = $this->form->remember;
+            Auth::logout();
+            session(['login.2fa_pending' => ['id' => $user->id, 'remember' => $remember]]);
+
+            $this->redirectRoute('two-factor.challenge', navigate: true);
+
+            return;
+        }
 
         Session::regenerate();
 

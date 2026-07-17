@@ -50,6 +50,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Http\Controllers\TwoFactorChallengeController;
+use App\Http\Controllers\TwoFactorController;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,7 +73,15 @@ Route::get('search', GlobalSearchController::class)->name('search');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('help', [HelpController::class, 'index'])->name('help.index');
 
+Route::get('two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.challenge');
+Route::post('two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->name('two-factor.challenge.store');
+
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('two-factor', [TwoFactorController::class, 'index'])->name('two-factor.index');
+    Route::post('two-factor', [TwoFactorController::class, 'store'])->name('two-factor.store');
+    Route::delete('two-factor', [TwoFactorController::class, 'destroy'])->name('two-factor.destroy');
+    Route::post('two-factor/regenerate', [TwoFactorController::class, 'regenerate'])->name('two-factor.regenerate');
+
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');
 
     Route::get('dashboard', DashboardController::class)->name('dashboard');
