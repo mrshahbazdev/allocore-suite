@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Webhook extends Model
 {
@@ -29,5 +30,10 @@ class Webhook extends Model
     public function integration(): BelongsTo
     {
         return $this->belongsTo(Integration::class);
+    }
+
+    public function calls(): HasMany
+    {
+        return $this->hasMany(WebhookCall::class);
     }
 }

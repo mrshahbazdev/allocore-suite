@@ -778,5 +778,15 @@
     "Download CSV": "CSV herunterladen",
     "Start date": "Startdatum",
     "End date": "Enddatum",
-    "Exports": "Exporte"
+    "Exports": "Exporte",
+
+    "Webhook History": "Webhook-Verlauf",
+    "Recent delivery attempts for this webhook.": "Aktuelle Zustellversuche für diesen Webhook.",
+    "Webhook call retried.": "Webhook-Aufruf wiederholt.",
+    "No webhook calls yet.": "Noch keine Webhook-Aufrufe.",
+    "Pending": "Ausstehend",
+    "Failed": "Fehlgeschlagen",
+    "Retry": "Wiederholen",
+    "History": "Verlauf",
+    "Response": "Antwort"
 }
