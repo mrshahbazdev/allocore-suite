@@ -5,7 +5,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>{{ \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')) }}</title>
-        <meta name="description" content="{{ \App\Models\SiteSetting::value('hero_subheading', __('landing.hero.subheading')) }}">
+        <meta name="description" content="{{ \App\Models\SiteSetting::value('hero_subheading', __('landing.meta.description')) }}">
+        <meta name="keywords" content="{{ __('landing.meta.keywords') }}">
+        <meta property="og:title" content="{{ \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')) }}">
+        <meta property="og:description" content="{{ \App\Models\SiteSetting::value('hero_subheading', __('landing.meta.description')) }}">
+
+        @foreach (config('app.available_locales', ['en']) as $locale)
+            <link rel="alternate" hreflang="{{ str_replace('_', '-', $locale) }}" href="{{ url('/') }}?lang={{ $locale }}">
+        @endforeach
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />

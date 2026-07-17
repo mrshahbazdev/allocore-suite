@@ -43,10 +43,18 @@
     "landing.nav.get_started": "Get started",
     "landing.nav.dashboard": "Dashboard",
 
+    "landing.meta.description": "Allocore Suite unites central auth, team management, module gating, billing, and analytics into a single, consistent shell.",
+    "landing.meta.keywords": "SaaS, team management, billing, modules, authentication",
+
     "landing.footer.copyright": "All rights reserved.",
 
     "language.english": "English",
     "language.german": "German",
+    "language.select": "Select language",
+
+    "public.nav.pricing": "Pricing",
+    "public.nav.get_started": "Get started",
+    "public.footer.rights": "All rights reserved.",
 
     "auth.guest.heading": "One workspace for every tool your team uses.",
     "auth.guest.subheading": "Central authentication, team management, billing, and module gating in a single consistent shell.",
@@ -89,5 +97,35 @@
     "auth.confirm_title": "Confirm your password",
     "auth.confirm_subtitle": "Please verify your password before continuing to a secure area.",
     "auth.confirm": "Confirm",
-    "auth.verification_sent": "A new verification link has been sent to the email address you provided during registration."
+    "auth.verification_sent": "A new verification link has been sent to the email address you provided during registration.",
+
+    "cms.pages": "Pages",
+    "cms.new_page": "New page",
+    "cms.edit_page": "Edit page",
+    "cms.all_pages": "All pages",
+    "cms.pages_description": "Create and manage public pages with per-language SEO.",
+    "cms.base_slug": "Base slug",
+    "cms.order": "Order",
+    "cms.published": "Published",
+    "cms.draft": "Draft",
+    "cms.edit": "Edit",
+    "cms.delete": "Delete",
+    "cms.no_pages": "No pages yet.",
+    "cms.save_order": "Save order",
+    "cms.page_created": "Page created.",
+    "cms.page_updated": "Page updated.",
+    "cms.page_deleted": "Page deleted.",
+    "cms.page_order_updated": "Page order updated.",
+    "cms.url_slug": "URL slug",
+    "cms.title": "Title",
+    "cms.meta_title": "Meta title",
+    "cms.meta_description": "Meta description",
+    "cms.meta_keywords": "Meta keywords",
+    "cms.og_title": "Open Graph title",
+    "cms.og_description": "Open Graph description",
+    "cms.og_image": "Open Graph image URL",
+    "cms.body_html": "Body (HTML)",
+    "cms.create_page": "Create page",
+    "cms.update_page": "Update page",
+    "cms.delete_confirm": "Delete this page?"
 }

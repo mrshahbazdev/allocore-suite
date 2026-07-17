@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuditController as AdminAuditController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\TeamController;
 use App\Models\Module;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', ['en', 'de']);
+Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
@@ -79,6 +81,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('thresholds/{threshold}', [AdminThresholdController::class, 'update'])->name('thresholds.update');
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');
+
+    Route::get('pages', [AdminPageController::class, 'index'])->name('pages.index');
+    Route::get('pages/create', [AdminPageController::class, 'create'])->name('pages.create');
+    Route::post('pages', [AdminPageController::class, 'store'])->name('pages.store');
+    Route::get('pages/{page}/edit', [AdminPageController::class, 'edit'])->name('pages.edit');
+    Route::put('pages/{page}', [AdminPageController::class, 'update'])->name('pages.update');
+    Route::delete('pages/{page}', [AdminPageController::class, 'destroy'])->name('pages.destroy');
+    Route::post('pages/reorder', [AdminPageController::class, 'reorder'])->name('pages.reorder');
 });
 
 Route::post('logout', function (Request $request) {
@@ -94,3 +104,5 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+Route::get('pages/{slug}', [PageController::class, 'show'])->name('page.show');

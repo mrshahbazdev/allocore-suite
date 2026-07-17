@@ -43,10 +43,18 @@
     "landing.nav.get_started": "Loslegen",
     "landing.nav.dashboard": "Dashboard",
 
+    "landing.meta.description": "Allocore Suite vereint zentrale Authentifizierung, Team-Management, Modul-Steuerung, Abrechnung und Analysen in einer einheitlichen Umgebung.",
+    "landing.meta.keywords": "SaaS, Team-Management, Abrechnung, Module, Authentifizierung",
+
     "landing.footer.copyright": "Alle Rechte vorbehalten.",
 
     "language.english": "Englisch",
     "language.german": "Deutsch",
+    "language.select": "Sprache auswählen",
+
+    "public.nav.pricing": "Preise",
+    "public.nav.get_started": "Loslegen",
+    "public.footer.rights": "Alle Rechte vorbehalten.",
 
     "auth.guest.heading": "Ein Workspace für jedes Tool, das Ihr Team nutzt.",
     "auth.guest.subheading": "Zentrale Authentifizierung, Team-Management, Abrechnung und Modul-Steuerung in einer einheitlichen Umgebung.",
@@ -89,5 +97,35 @@
     "auth.confirm_title": "Passwort bestätigen",
     "auth.confirm_subtitle": "Bitte bestätigen Sie Ihr Passwort, bevor Sie einen geschützten Bereich betreten.",
     "auth.confirm": "Bestätigen",
-    "auth.verification_sent": "Ein neuer Bestätigungslink wurde an die bei der Registrierung angegebene E-Mail-Adresse gesendet."
+    "auth.verification_sent": "Ein neuer Bestätigungslink wurde an die bei der Registrierung angegebene E-Mail-Adresse gesendet.",
+
+    "cms.pages": "Seiten",
+    "cms.new_page": "Neue Seite",
+    "cms.edit_page": "Seite bearbeiten",
+    "cms.all_pages": "Alle Seiten",
+    "cms.pages_description": "Erstellen und verwalten Sie öffentliche Seiten mit mehrsprachigem SEO.",
+    "cms.base_slug": "Basis-Slug",
+    "cms.order": "Reihenfolge",
+    "cms.published": "Veröffentlicht",
+    "cms.draft": "Entwurf",
+    "cms.edit": "Bearbeiten",
+    "cms.delete": "Löschen",
+    "cms.no_pages": "Noch keine Seiten vorhanden.",
+    "cms.save_order": "Reihenfolge speichern",
+    "cms.page_created": "Seite erstellt.",
+    "cms.page_updated": "Seite aktualisiert.",
+    "cms.page_deleted": "Seite gelöscht.",
+    "cms.page_order_updated": "Reihenfolge aktualisiert.",
+    "cms.url_slug": "URL-Slug",
+    "cms.title": "Titel",
+    "cms.meta_title": "Meta-Titel",
+    "cms.meta_description": "Meta-Beschreibung",
+    "cms.meta_keywords": "Meta-Keywords",
+    "cms.og_title": "Open-Graph-Titel",
+    "cms.og_description": "Open-Graph-Beschreibung",
+    "cms.og_image": "Open-Graph-Bild-URL",
+    "cms.body_html": "Inhalt (HTML)",
+    "cms.create_page": "Seite erstellen",
+    "cms.update_page": "Seite aktualisieren",
+    "cms.delete_confirm": "Diese Seite löschen?"
 }
