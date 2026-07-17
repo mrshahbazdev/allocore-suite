@@ -62,6 +62,45 @@
                     @error('email')<p class="text-xs text-rose-600">{{ $message }}</p>@enderror
                     <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add member') }}</button>
                 </form>
+
+                <form method="POST" action="{{ route('teams.invitations.store', auth()->user()->currentTeam) }}" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
+                    @csrf
+                    <h2 class="font-semibold text-slate-900">{{ __('Invite to :team', ['team' => auth()->user()->currentTeam->name]) }}</h2>
+                    <input type="email" name="email" required placeholder="{{ __('Invitee email') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    <select name="role" class="w-full rounded-lg border-slate-300 text-sm">
+                        <option value="member">{{ __('Member') }}</option>
+                        <option value="admin">{{ __('Admin') }}</option>
+                    </select>
+                    <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Send invitation') }}</button>
+                </form>
+
+                @php($invitations = auth()->user()->currentTeam->invitations()->whereNull('accepted_at')->latest()->get())
+                @if ($invitations->isNotEmpty())
+                    <div class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+                        <h2 class="font-semibold text-slate-900 mb-4">{{ __('Pending invitations') }}</h2>
+                        <ul class="space-y-3">
+                            @foreach ($invitations as $invitation)
+                                <li class="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3">
+                                    <div>
+                                        <div class="font-medium text-slate-900">{{ $invitation->email }}</div>
+                                        <div class="text-xs text-slate-500">{{ __('Expires') }}: {{ $invitation->expires_at->format('d.m.Y') }}</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <form method="POST" action="{{ route('teams.invitations.resend', $invitation) }}">
+                                            @csrf
+                                            <button class="text-sm text-indigo-600 hover:underline">{{ __('Resend') }}</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('teams.invitations.destroy', $invitation) }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="text-sm text-rose-600 hover:underline">{{ __('Cancel') }}</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             @endif
         </div>
     </div>

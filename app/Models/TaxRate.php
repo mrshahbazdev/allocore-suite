@@ -31,4 +31,16 @@ class TaxRate extends Model
             }
         });
     }
+
+    public static function forCountry(?string $country): ?self
+    {
+        if ($country) {
+            $rate = static::where('country', $country)->where('is_active', true)->first();
+            if ($rate) {
+                return $rate;
+            }
+        }
+
+        return static::where('is_default', true)->where('is_active', true)->first();
+    }
 }

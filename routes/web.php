@@ -45,6 +45,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TeamInvitationController;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,7 +95,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
+    Route::post('teams/{team}/invitations', [TeamInvitationController::class, 'store'])->name('teams.invitations.store');
+    Route::post('teams/invitations/{invitation}/resend', [TeamInvitationController::class, 'resend'])->name('teams.invitations.resend');
+    Route::delete('teams/invitations/{invitation}', [TeamInvitationController::class, 'destroy'])->name('teams.invitations.destroy');
 });
+
+Route::get('teams/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('teams.invitations.accept');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('index');

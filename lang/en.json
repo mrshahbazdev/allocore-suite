@@ -599,5 +599,27 @@
     "admin.notifications.confirm_delete": "Delete this notification?",
     "admin.notifications.empty": "No notifications found.",
     "admin.notifications.sent": "Notification sent.",
-    "admin.notifications.deleted": "Notification deleted."
+    "admin.notifications.deleted": "Notification deleted.",
+
+    "team.invite_to": "Invite to :team",
+    "team.invitee_email": "Invitee email",
+    "team.send_invitation": "Send invitation",
+    "team.pending_invitations": "Pending invitations",
+    "team.expires": "Expires",
+    "team.resend": "Resend",
+    "team.cancel_invitation": "Cancel",
+    "team.invitation_subject": "You are invited to join :team",
+    "team.invitation_body": ":name has invited you to join the team.",
+    "team.invitation_expires": "This invitation will expire in 7 days.",
+    "team.invitation_accept": "Accept Invitation",
+    "team.invitation_accepted": "You have joined :team",
+    "team.invitation_sent": "Invitation sent to :email",
+    "team.invitation_resent": "Invitation resent.",
+    "team.invitation_cancelled": "Invitation cancelled.",
+    "team.invitation_expired_or_used": "This invitation has expired or already been used.",
+    "team.invitation_wrong_email": "This invitation was sent to a different email address.",
+
+    "billing.coupon_code": "Coupon code",
+    "billing.coupon_invalid": "The provided coupon is not valid.",
+    "billing.payment_successful": "Payment successful! Your tools are now unlocked."
 }
