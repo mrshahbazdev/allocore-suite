@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\QueueMonitorController as AdminQueueMonitorContro
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SessionManagerController as AdminSessionManagerController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\StatusIncidentController as AdminStatusIncidentController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TaxRateController as AdminTaxRateController;
@@ -49,6 +50,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\StatusPageController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\TwoFactorChallengeController;
@@ -75,6 +77,7 @@ Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('
 Route::get('search', GlobalSearchController::class)->name('search');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('help', [HelpController::class, 'index'])->name('help.index');
+Route::get('status', [StatusPageController::class, 'index'])->name('status.index');
 
 Route::get('two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.challenge');
 Route::post('two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->name('two-factor.challenge.store');
@@ -275,6 +278,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('mail-settings', [MailSettingController::class, 'update'])->name('mail-settings.update');
 
     Route::get('pages', [AdminPageController::class, 'index'])->name('pages.index');
+
+    Route::get('status-incidents', [AdminStatusIncidentController::class, 'index'])->name('status-incidents.index');
+    Route::get('status-incidents/create', [AdminStatusIncidentController::class, 'create'])->name('status-incidents.create');
+    Route::post('status-incidents', [AdminStatusIncidentController::class, 'store'])->name('status-incidents.store');
+    Route::get('status-incidents/{statusIncident}/edit', [AdminStatusIncidentController::class, 'edit'])->name('status-incidents.edit');
+    Route::put('status-incidents/{statusIncident}', [AdminStatusIncidentController::class, 'update'])->name('status-incidents.update');
+    Route::delete('status-incidents/{statusIncident}', [AdminStatusIncidentController::class, 'destroy'])->name('status-incidents.destroy');
+    Route::patch('status-incidents/{statusIncident}/resolve', [AdminStatusIncidentController::class, 'resolve'])->name('status-incidents.resolve');
     Route::get('pages/create', [AdminPageController::class, 'create'])->name('pages.create');
     Route::post('pages', [AdminPageController::class, 'store'])->name('pages.store');
     Route::get('pages/{page}/edit', [AdminPageController::class, 'edit'])->name('pages.edit');

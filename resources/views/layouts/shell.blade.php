@@ -72,6 +72,7 @@
                 <a href="{{ route('admin.pages.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.pages.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Pages') }}</a>
 
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('System') }}</div>
+                <a href="{{ route('admin.status-incidents.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.status-incidents.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Status Incidents') }}</a>
                 <a href="{{ route('admin.analytics.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.analytics.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Analytics') }}</a>
                 <a href="{{ route('admin.activity-logs.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.activity-logs.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Activity Logs') }}</a>
                 <a href="{{ route('admin.roles.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.roles.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Roles') }}</a>
