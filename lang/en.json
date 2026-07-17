@@ -695,5 +695,13 @@
 
     "Help Center": "Help Center",
     "Browse support articles and guides.": "Browse support articles and guides.",
-    "No help articles yet.": "No help articles yet."
+    "No help articles yet.": "No help articles yet.",
+
+    "Schedule send": "Schedule send",
+    "View invoice": "View invoice",
+    "Download PDF": "Download PDF",
+    "Invoice number": "Invoice number",
+    "Amount due": "Amount due",
+    "Due date": "Due date",
+    "If you have any questions, reply to this email.": "If you have any questions, reply to this email."
 }

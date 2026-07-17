@@ -43,6 +43,7 @@
             <label class="block"><span class="text-sm font-medium text-slate-700">{{ __('Notes') }}</span><textarea wire:model="notes" rows="4" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></textarea></label>
             <label class="block"><span class="text-sm font-medium text-slate-700">{{ __('Payment terms') }}</span><textarea wire:model="payment_terms" rows="4" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></textarea></label>
             @unless($isEstimate)
+                <label class="block"><span class="text-sm font-medium text-slate-700">{{ __('Schedule send') }}</span><input wire:model="scheduled_send_at" type="datetime-local" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></label>
                 <label class="flex items-center gap-2 text-sm text-slate-700"><input wire:model.live="is_recurring" type="checkbox" class="rounded border-slate-300 text-indigo-600"> {{ __('Recurring invoice') }}</label>
                 @if($is_recurring)<label class="block"><span class="text-sm font-medium text-slate-700">{{ __('Frequency') }}</span><select wire:model="recurring_frequency" class="mt-1 w-full rounded-lg border-slate-300 text-sm">@foreach(['weekly', 'monthly', 'quarterly', 'yearly'] as $frequency)<option value="{{ $frequency }}">{{ ucfirst($frequency) }}</option>@endforeach</select></label>@endif
             @endunless

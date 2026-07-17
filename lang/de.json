@@ -695,5 +695,13 @@
 
     "Help Center": "Hilfe-Center",
     "Browse support articles and guides.": "Support-Artikel und Anleitungen durchsuchen.",
-    "No help articles yet.": "Noch keine Hilfeartikel."
+    "No help articles yet.": "Noch keine Hilfeartikel.",
+
+    "Schedule send": "Sendezeit planen",
+    "View invoice": "Rechnung ansehen",
+    "Download PDF": "PDF herunterladen",
+    "Invoice number": "Rechnungsnummer",
+    "Amount due": "Fälliger Betrag",
+    "Due date": "Fälligkeitsdatum",
+    "If you have any questions, reply to this email.": "Bei Fragen antworten Sie einfach auf diese E-Mail."
 }
