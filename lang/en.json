@@ -283,5 +283,16 @@
     "admin.audit_questions.confirm_delete": "Delete this question?",
     "admin.audit_questions.created": "Question created.",
     "admin.audit_questions.updated": "Question updated.",
-    "admin.audit_questions.deleted": "Question deleted."
+    "admin.audit_questions.deleted": "Question deleted.",
+
+    "admin.invoices.title": "Invoices",
+    "admin.invoices.description": "View invoices from all teams.",
+    "admin.invoices.search_placeholder": "Search invoice, client, or UUID...",
+    "admin.invoices.all_statuses": "All statuses",
+    "admin.invoices.empty": "No invoices found.",
+
+    "admin.payments.title": "Payments",
+    "admin.payments.description": "View payments from all teams.",
+    "admin.payments.search_placeholder": "Search invoice, reference, or client...",
+    "admin.payments.empty": "No payments found."
 }

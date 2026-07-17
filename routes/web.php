@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionCont
 use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
+use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Admin\MailSettingController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
@@ -120,6 +122,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('audits/questions/{question}/edit', [AdminAuditQuestionController::class, 'edit'])->name('audits.questions.edit');
     Route::put('audits/questions/{question}', [AdminAuditQuestionController::class, 'update'])->name('audits.questions.update');
     Route::delete('audits/questions/{question}', [AdminAuditQuestionController::class, 'destroy'])->name('audits.questions.destroy');
+
+    Route::get('invoices', [AdminInvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoice}', [AdminInvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
+    Route::get('payments/{payment}', [AdminPaymentController::class, 'show'])->name('payments.show');
 
     Route::get('financial', [AdminFinancialController::class, 'index'])->name('financial.index');
     Route::get('thresholds', [AdminThresholdController::class, 'index'])->name('thresholds.index');
