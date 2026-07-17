@@ -41,6 +41,8 @@ class Form extends Component
 
     public string $recurring_frequency = 'monthly';
 
+    public ?string $scheduled_send_at = null;
+
     public array $items = [];
 
     public function mount(InvoiceMakerContext $context, ?Invoice $invoice = null): void
@@ -60,9 +62,11 @@ class Form extends Component
                 'payment_terms',
                 'is_recurring',
                 'recurring_frequency',
+                'scheduled_send_at',
             ]));
             $this->invoice_date = $invoice->invoice_date->toDateString();
             $this->due_date = $invoice->due_date->toDateString();
+            $this->scheduled_send_at = $invoice->scheduled_send_at?->format('Y-m-d\TH:i');
             $this->items = $invoice->items->map->only([
                 'product_id',
                 'description',
@@ -156,6 +160,7 @@ class Form extends Component
             'payment_terms' => ['nullable', 'string'],
             'is_recurring' => ['boolean'],
             'recurring_frequency' => ['required_if:is_recurring,true', 'in:weekly,monthly,quarterly,yearly'],
+            'scheduled_send_at' => ['nullable', 'date'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['nullable', 'integer'],
             'items.*.description' => ['required', 'string'],
@@ -182,6 +187,7 @@ class Form extends Component
                 'type' => $this->type,
                 'amount_due' => max(0, $totals['grand_total'] - (float) ($this->invoice?->amount_paid ?? 0)),
                 'next_run_date' => $data['is_recurring'] ? $data['due_date'] : null,
+                'scheduled_send_at' => $data['scheduled_send_at'] ?? null,
             ];
 
             if ($this->invoice) {

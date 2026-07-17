@@ -106,6 +106,9 @@
     "cms.all_pages": "All pages",
     "cms.pages_description": "Create and manage public pages with per-language SEO.",
     "cms.base_slug": "Base slug",
+    "cms.page_type": "Page type",
+    "cms.type_page": "Page",
+    "cms.type_help": "Help article",
     "cms.order": "Order",
     "cms.published": "Published",
     "cms.draft": "Draft",
@@ -688,5 +691,17 @@
     "kpi_schedules.created": "KPI report schedule created.",
     "kpi_schedules.dispatched": "KPI report dispatched.",
     "kpi_schedules.deleted": "KPI report schedule deleted.",
-    "kpi_schedules.confirm_delete": "Delete this KPI schedule?"
+    "kpi_schedules.confirm_delete": "Delete this KPI schedule?",
+
+    "Help Center": "Help Center",
+    "Browse support articles and guides.": "Browse support articles and guides.",
+    "No help articles yet.": "No help articles yet.",
+
+    "Schedule send": "Schedule send",
+    "View invoice": "View invoice",
+    "Download PDF": "Download PDF",
+    "Invoice number": "Invoice number",
+    "Amount due": "Amount due",
+    "Due date": "Due date",
+    "If you have any questions, reply to this email.": "If you have any questions, reply to this email."
 }

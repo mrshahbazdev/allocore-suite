@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use App\Models\Module;
 use App\Support\DashboardWidgetRegistry;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class DashboardController extends Controller
         $modules = Module::where('is_active', true)->get();
         $accessible = $user->accessibleModules()->pluck('key')->all();
         $widgets = $registry->forUser($user);
+        $announcements = Announcement::active()->latest()->take(3)->get();
 
-        return view('dashboard', compact('modules', 'accessible', 'widgets'));
+        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements'));
     }
 }

@@ -13,6 +13,14 @@
             <input id="slug" name="slug" type="text" value="{{ old('slug', $page?->slug) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
         </div>
 
+        <div>
+            <label for="type" class="block text-sm font-medium text-slate-700">{{ __('cms.page_type') }}</label>
+            <select id="type" name="type" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="page" {{ old('type', $page?->type) === 'page' ? 'selected' : '' }}>{{ __('cms.type_page') }}</option>
+                <option value="help" {{ old('type', $page?->type) === 'help' ? 'selected' : '' }}>{{ __('cms.type_help') }}</option>
+            </select>
+        </div>
+
         <div class="flex items-end gap-4">
             <label class="flex items-center gap-2 text-sm font-medium text-slate-700">
                 <input type="checkbox" name="is_published" value="1" {{ old('is_published', $page?->is_published) ? 'checked' : '' }} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">

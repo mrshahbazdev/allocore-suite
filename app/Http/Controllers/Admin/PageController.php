@@ -27,6 +27,7 @@ class PageController extends Controller
 
         $rules = [
             'slug' => 'required|string|max:255|unique:pages,slug',
+            'type' => 'required|in:page,help',
             'is_published' => 'boolean',
             'sort_order' => 'integer|min:0',
         ];
@@ -50,6 +51,7 @@ class PageController extends Controller
 
         $page = Page::create([
             'slug' => $validated['slug'],
+            'type' => $validated['type'],
             'is_published' => $request->boolean('is_published'),
             'sort_order' => $validated['sort_order'] ?? 0,
         ]);
@@ -77,6 +79,7 @@ class PageController extends Controller
 
         $rules = [
             'slug' => ['required', 'string', 'max:255', Rule::unique('pages', 'slug')->ignore($page->id)],
+            'type' => 'required|in:page,help',
             'is_published' => 'boolean',
             'sort_order' => 'integer|min:0',
         ];
@@ -104,6 +107,7 @@ class PageController extends Controller
 
         $page->update([
             'slug' => $validated['slug'],
+            'type' => $validated['type'],
             'is_published' => $request->boolean('is_published'),
             'sort_order' => $validated['sort_order'] ?? $page->sort_order,
         ]);

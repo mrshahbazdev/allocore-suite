@@ -7,6 +7,8 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\View;
 use Livewire\Livewire;
 use Modules\InvoiceMaker\Console\Commands\ProcessRecurringInvoices;
+use Modules\InvoiceMaker\Console\Commands\SendInvoiceReminders;
+use Modules\InvoiceMaker\Console\Commands\SendScheduledInvoices;
 use Modules\InvoiceMaker\Console\Commands\UpdateOverdueInvoices;
 use Modules\InvoiceMaker\Livewire\Accounting\CashBook;
 use Modules\InvoiceMaker\Livewire\Clients\Form as ClientForm;
@@ -42,6 +44,8 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
      */
     protected array $commands = [
         ProcessRecurringInvoices::class,
+        SendInvoiceReminders::class,
+        SendScheduledInvoices::class,
         UpdateOverdueInvoices::class,
     ];
 
@@ -91,7 +95,9 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
 
     protected function configureSchedules(Schedule $schedule): void
     {
+        $schedule->command('invoicemaker:send-scheduled')->everyMinute();
         $schedule->command('invoicemaker:process-recurring')->dailyAt('00:10');
         $schedule->command('invoicemaker:update-overdue')->dailyAt('00:20');
+        $schedule->command('invoicemaker:send-reminders')->weekly();
     }
 }
