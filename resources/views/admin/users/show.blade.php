@@ -8,8 +8,10 @@
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.users.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Back to users') }}</a>
+            <a href="{{ route('admin.users.edit', $user) }}" class="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Edit') }}</a>
+            <a href="{{ route('admin.users.subscriptions.index', $user) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('admin.users.subscriptions') }}</a>
             @if ($user->id !== auth()->id())
-                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('{{ __('Delete this user?') }}')">
+                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('{{ __('admin.users.confirm_delete') }}')">
                     @csrf
                     @method('DELETE')
                     <button class="rounded-lg border border-rose-300 px-3 py-1.5 text-sm font-semibold text-rose-600 hover:bg-rose-50">{{ __('Delete user') }}</button>
@@ -26,7 +28,7 @@
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Email') }}</dt><dd class="font-medium text-slate-900">{{ $user->email }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Email verified') }}</dt><dd class="font-medium text-slate-900">{{ $user->email_verified_at?->format('d.m.Y H:i') ?? '—' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Current team') }}</dt><dd class="font-medium text-slate-900">{{ $user->currentTeam?->name ?? '—' }}</dd></div>
-                <div class="flex justify-between"><dt class="text-slate-500">{{ __('Roles') }}</dt><dd class="font-medium text-slate-900">{{ $user->getRoleNames()->implode(', ') ?: 'member' }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ __('Roles') }}</dt><dd class="font-medium text-slate-900">{{ $user->getRoleNames()->implode(', ') ?: 'user' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Registered') }}</dt><dd class="font-medium text-slate-900">{{ $user->created_at->format('d.m.Y') }}</dd></div>
             </dl>
         </div>
@@ -49,13 +51,19 @@
         </div>
 
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-900 mb-4">{{ __('Subscriptions') }} ({{ $user->toolSubscriptions->count() }})</h2>
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-slate-900">{{ __('Subscriptions') }} ({{ $user->toolSubscriptions->count() }})</h2>
+                <a href="{{ route('admin.users.subscriptions.index', $user) }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('admin.users.manage_subscriptions') }}</a>
+            </div>
             <div class="space-y-3">
                 @forelse ($user->toolSubscriptions as $subscription)
                     <div class="rounded-lg bg-slate-50 p-3 text-sm">
-                        <div class="font-medium text-slate-900">{{ $subscription->plan?->name ?? '—' }}</div>
+                        <div class="flex items-center justify-between">
+                            <div class="font-medium text-slate-900">{{ $subscription->plan?->name ?? '—' }}</div>
+                            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium {{ $subscription->isActive() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600' }}">{{ $subscription->status }}</span>
+                        </div>
                         <div class="text-slate-600 text-xs">{{ $subscription->plan?->modules->pluck('name')->implode(', ') }}</div>
-                        <div class="text-slate-500 text-xs mt-1">{{ $subscription->status }} · {{ $subscription->ends_at?->format('d.m.Y') ?? '—' }}</div>
+                        <div class="text-slate-500 text-xs mt-1">{{ $subscription->billing_interval }} · {{ $subscription->ends_at?->format('d.m.Y') ?? '—' }}</div>
                     </div>
                 @empty
                     <div class="text-sm text-slate-500">{{ __('No subscriptions.') }}</div>
