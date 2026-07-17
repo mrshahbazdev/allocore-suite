@@ -1,0 +1,93 @@
+{
+    "Allocore Suite": "Allocore Suite",
+
+    "landing.hero.badge": "Modular SaaS workspace",
+    "landing.hero.heading": "One platform for every tool your team subscribes to.",
+    "landing.hero.subheading": "Allocore Suite unites central auth, team management, module gating, billing, and analytics into a single, consistent shell.",
+    "landing.hero.cta_primary": "Start free",
+    "landing.hero.cta_secondary": "Log in",
+    "landing.hero.open_dashboard": "Open dashboard",
+
+    "landing.stats.central_auth": "Central auth",
+    "landing.stats.teams_billing": "Teams + billing",
+    "landing.stats.per_user": "Per user / team",
+    "landing.stats.value_one_login": "One login",
+    "landing.stats.value_shared": "Shared access",
+    "landing.stats.value_module_gated": "Module gated",
+
+    "landing.features.heading": "Built for multi-tool SaaS teams",
+    "landing.features.subheading": "Everything you need to onboard customers, manage access, and ship connected products from one admin panel.",
+    "landing.features.auth.title": "Central auth",
+    "landing.features.auth.desc": "Single sign-on across all modules with role-based access.",
+    "landing.features.teams.title": "Team workspaces",
+    "landing.features.teams.desc": "Create teams, invite members, and switch context instantly.",
+    "landing.features.billing.title": "Billing & plans",
+    "landing.features.billing.desc": "Stripe, PayPal, and bank-transfer subscriptions with plan gating.",
+    "landing.features.analytics.title": "Analytics dashboard",
+    "landing.features.analytics.desc": "Combined insights from every subscribed module in one place.",
+
+    "landing.modules.heading": "Connected modules",
+    "landing.modules.subheading": "Unlock the tools your team needs. Each module shares the same auth, team, and billing layer.",
+    "landing.modules.empty": "New modules are added as your product suite grows.",
+    "landing.modules.ready": "Ready",
+
+    "landing.cta.heading": "Start using Allocore Suite today",
+    "landing.cta.subheading": "Create an account, invite your team, and subscribe to the modules that power your business.",
+    "landing.cta.primary": "Create free account",
+    "landing.cta.secondary": "View pricing",
+
+    "landing.nav.features": "Features",
+    "landing.nav.modules": "Modules",
+    "landing.nav.pricing": "Pricing",
+    "landing.nav.login": "Log in",
+    "landing.nav.get_started": "Get started",
+    "landing.nav.dashboard": "Dashboard",
+
+    "landing.footer.copyright": "All rights reserved.",
+
+    "language.english": "English",
+    "language.german": "German",
+
+    "auth.guest.heading": "One workspace for every tool your team uses.",
+    "auth.guest.subheading": "Central authentication, team management, billing, and module gating in a single consistent shell.",
+    "auth.guest.feature_auth": "Secure central auth",
+    "auth.guest.feature_teams": "Teams & shared access",
+    "auth.guest.feature_billing": "Flexible billing",
+
+    "auth.welcome_back": "Welcome back",
+    "auth.login_subtitle": "Sign in to access your dashboard, modules, and admin tools.",
+    "auth.email": "Email address",
+    "auth.password": "Password",
+    "auth.remember_me": "Remember me",
+    "auth.forgot_password": "Forgot password?",
+    "auth.log_in": "Log in",
+    "auth.no_account": "Don't have an account?",
+    "auth.create_account": "Create one",
+    "auth.create_account_title": "Create your account",
+    "auth.register_subtitle": "Set up your workspace and start with the modules you subscribe to.",
+    "auth.full_name": "Full name",
+    "auth.confirm_password": "Confirm password",
+    "auth.already_registered": "Already registered?",
+    "auth.register": "Create account",
+
+    "auth.reset_title": "Reset your password",
+    "auth.reset_subtitle": "We’ll send a secure link to your email so you can choose a new password.",
+    "auth.send_reset_link": "Send reset link",
+    "auth.back_to_login": "Back to log in",
+
+    "auth.set_new_password_title": "Set a new password",
+    "auth.set_new_password_subtitle": "Choose a strong password to secure your account.",
+    "auth.new_password": "New password",
+    "auth.confirm_new_password": "Confirm new password",
+    "auth.reset_password": "Reset password",
+
+    "auth.verify_title": "Verify your email",
+    "auth.verify_subtitle": "We sent a verification link to your email. Click it to finish setting up your account.",
+    "auth.resend_verification": "Resend verification email",
+    "auth.log_out": "Log out",
+
+    "auth.confirm_title": "Confirm your password",
+    "auth.confirm_subtitle": "Please verify your password before continuing to a secure area.",
+    "auth.confirm": "Confirm",
+    "auth.verification_sent": "A new verification link has been sent to the email address you provided during registration."
+}

@@ -59,36 +59,36 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div>
     <div class="mb-8 text-center lg:text-left">
-        <h1 class="text-2xl font-bold text-slate-900">Set a new password</h1>
-        <p class="mt-2 text-sm text-slate-500">Choose a strong password to secure your account.</p>
+        <h1 class="text-2xl font-bold text-slate-900">{{ __('auth.set_new_password_title') }}</h1>
+        <p class="mt-2 text-sm text-slate-500">{{ __('auth.set_new_password_subtitle') }}</p>
     </div>
 
-    <x-auth-session-status class="mb-6 rounded-xl border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" :status="session('status')" />
+    <x-auth-session-status class="mb-6 rounded-lg border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" :status="session('status')" />
 
     <form wire:submit="resetPassword" class="space-y-5">
         <div>
-            <x-input-label for="email" :value="__('Email address')" class="text-sm font-medium text-slate-700" />
-            <x-text-input wire:model="email" id="email" class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 shadow-sm" type="email" name="email" required autofocus autocomplete="username" placeholder="you@company.com" />
+            <x-input-label for="email" :value="__('auth.email')" class="text-sm font-medium text-slate-700" />
+            <x-text-input wire:model="email" id="email" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 shadow-sm" type="email" name="email" required autofocus autocomplete="username" placeholder="you@company.com" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="password" :value="__('New password')" class="text-sm font-medium text-slate-700" />
-            <x-text-input wire:model="password" id="password" class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 shadow-sm" type="password" name="password" required autocomplete="new-password" placeholder="Create a strong password" />
+            <x-input-label for="password" :value="__('auth.new_password')" class="text-sm font-medium text-slate-700" />
+            <x-text-input wire:model="password" id="password" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 shadow-sm" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="password_confirmation" :value="__('Confirm new password')" class="text-sm font-medium text-slate-700" />
-            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 shadow-sm"
+            <x-input-label for="password_confirmation" :value="__('auth.confirm_new_password')" class="text-sm font-medium text-slate-700" />
+            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 shadow-sm"
                             type="password"
-                            name="password_confirmation" required autocomplete="new-password" placeholder="Repeat your new password" />
+                            name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="pt-2">
-            <x-primary-button class="w-full justify-center rounded-xl bg-indigo-600 px-4 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-indigo-500 focus:ring-indigo-500">
-                {{ __('Reset password') }}
+            <x-primary-button class="w-full justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold normal-case tracking-normal text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500">
+                {{ __('auth.reset_password') }}
             </x-primary-button>
         </div>
     </form>

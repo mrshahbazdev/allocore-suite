@@ -5,12 +5,14 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\TeamController;
 use App\Models\Module;
 use Illuminate\Http\Request;
@@ -18,6 +20,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
+
+Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', ['en', 'de']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
@@ -73,6 +77,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('financial', [AdminFinancialController::class, 'index'])->name('financial.index');
     Route::get('thresholds', [AdminThresholdController::class, 'index'])->name('thresholds.index');
     Route::put('thresholds/{threshold}', [AdminThresholdController::class, 'update'])->name('thresholds.update');
+    Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');
 });
 
 Route::post('logout', function (Request $request) {

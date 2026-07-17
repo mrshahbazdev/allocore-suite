@@ -1,0 +1,93 @@
+{
+    "Allocore Suite": "Allocore Suite",
+
+    "landing.hero.badge": "Modulare SaaS-Plattform",
+    "landing.hero.heading": "Eine Plattform für jedes Tool, das Ihr Team abonniert.",
+    "landing.hero.subheading": "Allocore Suite vereint zentrale Authentifizierung, Team-Management, Modul-Steuerung, Abrechnung und Analysen in einer einheitlichen Umgebung.",
+    "landing.hero.cta_primary": "Kostenlos starten",
+    "landing.hero.cta_secondary": "Anmelden",
+    "landing.hero.open_dashboard": "Dashboard öffnen",
+
+    "landing.stats.central_auth": "Zentrale Authentifizierung",
+    "landing.stats.teams_billing": "Teams + Abrechnung",
+    "landing.stats.per_user": "Pro Nutzer / Team",
+    "landing.stats.value_one_login": "Ein Login",
+    "landing.stats.value_shared": "Geteilter Zugriff",
+    "landing.stats.value_module_gated": "Modul-gesteuert",
+
+    "landing.features.heading": "Für SaaS-Teams mit mehreren Tools",
+    "landing.features.subheading": "Alles, was Sie brauchen, um Kunden zu onboarden, Zugriffe zu verwalten und vernetzte Produkte aus einem Admin-Panel herauszuschiffen.",
+    "landing.features.auth.title": "Zentrale Authentifizierung",
+    "landing.features.auth.desc": "Single Sign-on für alle Module mit rollenbasierter Zugriffssteuerung.",
+    "landing.features.teams.title": "Team-Workspaces",
+    "landing.features.teams.desc": "Erstellen Sie Teams, laden Sie Mitglieder ein und wechseln Sie direkt den Kontext.",
+    "landing.features.billing.title": "Abrechnung & Pläne",
+    "landing.features.billing.desc": "Stripe-, PayPal- und Überweisungsabonnements mit Plan-Steuerung.",
+    "landing.features.analytics.title": "Analytics-Dashboard",
+    "landing.features.analytics.desc": "Kombinierte Einblicke aus jedem abonnierten Modul an einem Ort.",
+
+    "landing.modules.heading": "Verbundene Module",
+    "landing.modules.subheading": "Schalten Sie die Tools frei, die Ihr Team braucht. Jedes Modul nutzt dieselbe Authentifizierung, Teams- und Abrechnungsebene.",
+    "landing.modules.empty": "Neue Module werden hinzugefügt, sobald Ihr Produktportfolio wächst.",
+    "landing.modules.ready": "Bereit",
+
+    "landing.cta.heading": "Starten Sie heute mit Allocore Suite",
+    "landing.cta.subheading": "Erstellen Sie ein Konto, laden Sie Ihr Team ein und abonnieren Sie die Module, die Ihr Geschäft voranbringen.",
+    "landing.cta.primary": "Kostenloses Konto erstellen",
+    "landing.cta.secondary": "Preise anzeigen",
+
+    "landing.nav.features": "Funktionen",
+    "landing.nav.modules": "Module",
+    "landing.nav.pricing": "Preise",
+    "landing.nav.login": "Anmelden",
+    "landing.nav.get_started": "Loslegen",
+    "landing.nav.dashboard": "Dashboard",
+
+    "landing.footer.copyright": "Alle Rechte vorbehalten.",
+
+    "language.english": "Englisch",
+    "language.german": "Deutsch",
+
+    "auth.guest.heading": "Ein Workspace für jedes Tool, das Ihr Team nutzt.",
+    "auth.guest.subheading": "Zentrale Authentifizierung, Team-Management, Abrechnung und Modul-Steuerung in einer einheitlichen Umgebung.",
+    "auth.guest.feature_auth": "Sichere zentrale Authentifizierung",
+    "auth.guest.feature_teams": "Teams & geteilter Zugriff",
+    "auth.guest.feature_billing": "Flexible Abrechnung",
+
+    "auth.welcome_back": "Willkommen zurück",
+    "auth.login_subtitle": "Melden Sie sich an, um Ihr Dashboard, Module und Admin-Tools zu erreichen.",
+    "auth.email": "E-Mail-Adresse",
+    "auth.password": "Passwort",
+    "auth.remember_me": "Angemeldet bleiben",
+    "auth.forgot_password": "Passwort vergessen?",
+    "auth.log_in": "Anmelden",
+    "auth.no_account": "Noch kein Konto?",
+    "auth.create_account": "Erstellen Sie eines",
+    "auth.create_account_title": "Konto erstellen",
+    "auth.register_subtitle": "Richten Sie Ihren Workspace ein und starten Sie mit den Modulen, die Sie abonnieren.",
+    "auth.full_name": "Vollständiger Name",
+    "auth.confirm_password": "Passwort bestätigen",
+    "auth.already_registered": "Bereits registriert?",
+    "auth.register": "Konto erstellen",
+
+    "auth.reset_title": "Passwort zurücksetzen",
+    "auth.reset_subtitle": "Wir senden Ihnen einen sicheren Link, damit Sie ein neues Passwort wählen können.",
+    "auth.send_reset_link": "Link senden",
+    "auth.back_to_login": "Zurück zur Anmeldung",
+
+    "auth.set_new_password_title": "Neues Passwort festlegen",
+    "auth.set_new_password_subtitle": "Wählen Sie ein starkes Passwort, um Ihr Konto zu schützen.",
+    "auth.new_password": "Neues Passwort",
+    "auth.confirm_new_password": "Neues Passwort bestätigen",
+    "auth.reset_password": "Passwort zurücksetzen",
+
+    "auth.verify_title": "E-Mail bestätigen",
+    "auth.verify_subtitle": "Wir haben Ihnen einen Bestätigungslink gesendet. Klicken Sie ihn an, um die Einrichtung abzuschließen.",
+    "auth.resend_verification": "Bestätigungs-E-Mail erneut senden",
+    "auth.log_out": "Abmelden",
+
+    "auth.confirm_title": "Passwort bestätigen",
+    "auth.confirm_subtitle": "Bitte bestätigen Sie Ihr Passwort, bevor Sie einen geschützten Bereich betreten.",
+    "auth.confirm": "Bestätigen",
+    "auth.verification_sent": "Ein neuer Bestätigungslink wurde an die bei der Registrierung angegebene E-Mail-Adresse gesendet."
+}
