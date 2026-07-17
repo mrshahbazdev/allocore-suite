@@ -438,8 +438,10 @@
     "admin.backups.create_sql_dump": "SQL-Dump erstellen",
     "admin.backups.confirm_delete": "Dieses Backup löschen?",
     "admin.backups.empty": "Noch keine Backups.",
-    "admin.backups.created": "Backup erstellt.",
+    "admin.backups.created": "Backup auf :disk erstellt.",
     "admin.backups.deleted": "Backup gelöscht.",
+    "admin.backups.disk_local": "Lokal",
+    "admin.backups.disk_s3": "S3 / Cloud",
 
     "admin.module_data.title": "Moduldaten",
     "admin.module_data.description": "Globale schreibgeschützte Übersicht aller Modul-Datensätze über Teams hinweg.",

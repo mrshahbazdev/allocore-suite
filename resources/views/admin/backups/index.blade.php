@@ -27,8 +27,12 @@
         </a>
     </div>
 
-    <form method="POST" action="{{ route('admin.backups.store') }}" class="mb-6">
+    <form method="POST" action="{{ route('admin.backups.store') }}" class="mb-6 flex items-center gap-3">
         @csrf
+        <select name="disk" class="rounded-lg border-slate-300 text-sm">
+            <option value="local">{{ __('admin.backups.disk_local') }}</option>
+            <option value="s3">{{ __('admin.backups.disk_s3') }}</option>
+        </select>
         <button class="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('admin.backups.create_sql_dump') }}</button>
     </form>
 
@@ -38,6 +42,7 @@
                 <tr>
                     <th class="px-4 py-3">{{ __('Name') }}</th>
                     <th class="px-4 py-3">{{ __('Type') }}</th>
+                    <th class="px-4 py-3">{{ __('Disk') }}</th>
                     <th class="px-4 py-3">{{ __('Size') }}</th>
                     <th class="px-4 py-3">{{ __('Completed') }}</th>
                     <th class="px-4 py-3"></th>
@@ -48,6 +53,7 @@
                     <tr>
                         <td class="px-4 py-3 font-medium text-slate-900">{{ $backup->name }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $backup->type }}</td>
+                        <td class="px-4 py-3 text-slate-600 uppercase">{{ $backup->disk ?? 'local' }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ number_format($backup->size / 1024, 1) }} KB</td>
                         <td class="px-4 py-3 text-slate-600">{{ $backup->completed_at?->format('d.m.Y H:i') ?? '—' }}</td>
                         <td class="px-4 py-3 text-right">
@@ -62,7 +68,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">{{ __('admin.backups.empty') }}</td></tr>
+                    <tr><td colspan="6" class="px-4 py-6 text-center text-slate-400">{{ __('admin.backups.empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

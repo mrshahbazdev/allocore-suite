@@ -102,10 +102,20 @@ class BackupController extends Controller
         return $response;
     }
 
-    public function createSqlDump()
+    public function createSqlDump(Request $request)
     {
+        $disk = $request->input('disk', 'local');
+        if (! in_array($disk, ['local', 's3'], true)) {
+            $disk = 'local';
+        }
+
         $fileName = 'backup_'.now()->format('Ymd_His').'.sql';
         $path = 'backups/'.$fileName;
+        $tempPath = storage_path('app/private/'.$path);
+
+        if (! is_dir(dirname($tempPath))) {
+            mkdir(dirname($tempPath), 0755, true);
+        }
 
         $command = sprintf(
             'mysqldump --host=%s --port=%s --user=%s --password=%s %s > %s 2>/dev/null || sqlite3 %s .dump > %s',
@@ -114,31 +124,40 @@ class BackupController extends Controller
             escapeshellarg(config('database.connections.mysql.username', 'root')),
             escapeshellarg(config('database.connections.mysql.password', '')),
             escapeshellarg(config('database.connections.mysql.database', '')),
-            escapeshellarg(Storage::disk('local')->path($path)),
+            escapeshellarg($tempPath),
             escapeshellarg(config('database.connections.sqlite.database')),
-            escapeshellarg(Storage::disk('local')->path($path))
+            escapeshellarg($tempPath)
         );
 
         exec($command);
 
-        $size = Storage::disk('local')->exists($path) ? Storage::disk('local')->size($path) : 0;
+        $contents = file_get_contents($tempPath);
+        $size = $contents === false ? 0 : strlen($contents);
+
+        Storage::disk($disk)->put($path, $contents);
+
+        if (file_exists($tempPath)) {
+            unlink($tempPath);
+        }
 
         $backup = Backup::create([
             'name' => $fileName,
             'path' => $path,
+            'disk' => $disk,
             'type' => 'database',
             'size' => $size,
             'completed_at' => now(),
         ]);
 
-        return redirect()->route('admin.backups.index')->with('success', __('admin.backups.created'));
+        return redirect()->route('admin.backups.index')->with('success', __('admin.backups.created', ['disk' => $disk]));
     }
 
     public function download(Backup $backup)
     {
-        abort_unless(Storage::disk('local')->exists($backup->path), 404);
+        $disk = $backup->disk ?? 'local';
+        abort_unless(Storage::disk($disk)->exists($backup->path), 404);
 
-        return Storage::disk('local')->download($backup->path, $backup->name);
+        return Storage::disk($disk)->download($backup->path, $backup->name);
     }
 
     public function destroy(Backup $backup)

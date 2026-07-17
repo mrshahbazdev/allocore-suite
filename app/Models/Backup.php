@@ -10,6 +10,7 @@ class Backup extends Model
     protected $fillable = [
         'name',
         'path',
+        'disk',
         'type',
         'size',
         'completed_at',
@@ -25,8 +26,9 @@ class Backup extends Model
 
     public function deleteFile(): void
     {
-        if (Storage::disk('local')->exists($this->path)) {
-            Storage::disk('local')->delete($this->path);
+        $disk = $this->disk ?? 'local';
+        if (Storage::disk($disk)->exists($this->path)) {
+            Storage::disk($disk)->delete($this->path);
         }
     }
 }
