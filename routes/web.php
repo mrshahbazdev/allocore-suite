@@ -3,17 +3,20 @@
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Admin\ApiTokenController as AdminApiTokenController;
 use App\Http\Controllers\Admin\AuditController as AdminAuditController;
 use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarController;
 use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
 use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
 use App\Http\Controllers\Admin\BackupController as AdminBackupController;
+use App\Http\Controllers\Admin\BulkUserController as AdminBulkUserController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
 use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
+use App\Http\Controllers\Admin\LogViewerController as AdminLogViewerController;
 use App\Http\Controllers\Admin\MailSettingController;
 use App\Http\Controllers\Admin\MaintenanceController as AdminMaintenanceController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
@@ -25,6 +28,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\QueueMonitorController as AdminQueueMonitorController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
+use App\Http\Controllers\Admin\SessionManagerController as AdminSessionManagerController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
@@ -96,6 +100,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('users/{user}', [AdminUserController::class, 'update'])->name('users.update');
     Route::post('users/{user}/role', [AdminUserController::class, 'role'])->name('users.role');
     Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::patch('users/bulk', [AdminBulkUserController::class, 'update'])->name('users.bulk');
 
     Route::get('users/{user}/subscriptions', [AdminUserSubscriptionController::class, 'index'])->name('users.subscriptions.index');
     Route::post('users/{user}/subscriptions', [AdminUserSubscriptionController::class, 'store'])->name('users.subscriptions.store');
@@ -196,10 +201,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('maintenance', [AdminMaintenanceController::class, 'index'])->name('maintenance.index');
     Route::put('maintenance', [AdminMaintenanceController::class, 'update'])->name('maintenance.update');
 
+    Route::resource('api-tokens', AdminApiTokenController::class)->names('api-tokens')->only(['index', 'create', 'store', 'destroy']);
     Route::resource('coupons', AdminCouponController::class)->names('coupons');
     Route::resource('tax-rates', AdminTaxRateController::class)->names('tax-rates');
     Route::resource('notification-templates', AdminNotificationTemplateController::class)->names('notification-templates');
     Route::get('queue-monitor', [AdminQueueMonitorController::class, 'index'])->name('queue-monitor.index');
+
+    Route::get('log-viewer', [AdminLogViewerController::class, 'index'])->name('log-viewer.index');
+    Route::get('session-manager', [AdminSessionManagerController::class, 'index'])->name('session-manager.index');
+    Route::delete('session-manager/{id}', [AdminSessionManagerController::class, 'destroy'])->name('session-manager.destroy');
 
     Route::get('backups', [AdminBackupController::class, 'index'])->name('backups.index');
     Route::post('backups', [AdminBackupController::class, 'createSqlDump'])->name('backups.store');

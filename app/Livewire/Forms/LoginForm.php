@@ -38,6 +38,14 @@ class LoginForm extends Form
             ]);
         }
 
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'form.email' => trans('auth.inactive'),
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
