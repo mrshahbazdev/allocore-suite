@@ -621,5 +621,11 @@
 
     "billing.coupon_code": "Gutscheincode",
     "billing.coupon_invalid": "Der eingegebene Gutschein ist nicht gültig.",
-    "billing.payment_successful": "Zahlung erfolgreich! Deine Tools sind jetzt freigeschaltet."
+    "billing.payment_successful": "Zahlung erfolgreich! Deine Tools sind jetzt freigeschaltet.",
+
+    "search.title": "Suche",
+    "search.description": "Durchsuche Seiten und deine Arbeitsbereichsdaten.",
+    "search.placeholder": "Suchen...",
+    "search.no_results": "Keine Ergebnisse für",
+    "search.results": "Ergebnisse"
 }

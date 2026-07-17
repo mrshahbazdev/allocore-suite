@@ -621,5 +621,11 @@
 
     "billing.coupon_code": "Coupon code",
     "billing.coupon_invalid": "The provided coupon is not valid.",
-    "billing.payment_successful": "Payment successful! Your tools are now unlocked."
+    "billing.payment_successful": "Payment successful! Your tools are now unlocked.",
+
+    "search.title": "Search",
+    "search.description": "Search across pages and your workspace data.",
+    "search.placeholder": "Search...",
+    "search.no_results": "No results for",
+    "search.results": "results"
 }
