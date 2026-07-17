@@ -106,6 +106,9 @@
     "cms.all_pages": "Alle Seiten",
     "cms.pages_description": "Erstellen und verwalten Sie öffentliche Seiten mit mehrsprachigem SEO.",
     "cms.base_slug": "Basis-Slug",
+    "cms.page_type": "Seitentyp",
+    "cms.type_page": "Seite",
+    "cms.type_help": "Hilfeartikel",
     "cms.order": "Reihenfolge",
     "cms.published": "Veröffentlicht",
     "cms.draft": "Entwurf",
@@ -669,5 +672,9 @@
     "clusterforge.keyword_error": "Gib mindestens zwei Keywords ein.",
     "clusterforge.generated": "Keyword-Cluster generiert.",
     "clusterforge.deleted": "Cluster gelöscht.",
-    "clusterforge.delete_confirm": "Dieses Projekt löschen?"
+    "clusterforge.delete_confirm": "Dieses Projekt löschen?",
+
+    "Help Center": "Hilfe-Center",
+    "Browse support articles and guides.": "Support-Artikel und Anleitungen durchsuchen.",
+    "No help articles yet.": "Noch keine Hilfeartikel."
 }

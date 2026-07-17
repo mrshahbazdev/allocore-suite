@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Page extends Model
 {
-    protected $fillable = ['slug', 'is_published', 'sort_order'];
+    protected $fillable = ['slug', 'type', 'is_published', 'sort_order'];
+
+    protected $attributes = [
+        'type' => 'page',
+    ];
 
     protected $casts = [
         'is_published' => 'boolean',
@@ -34,6 +38,11 @@ class Page extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function scopeOfType(Builder $query, string $type): Builder
+    {
+        return $query->where('type', $type);
     }
 
     public static function findBySlug(string $slug, ?string $locale = null): ?self

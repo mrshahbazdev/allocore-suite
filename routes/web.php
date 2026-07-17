@@ -43,6 +43,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GlobalSearchController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
@@ -68,6 +69,7 @@ Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('
 
 Route::get('search', GlobalSearchController::class)->name('search');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('help', [HelpController::class, 'index'])->name('help.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');

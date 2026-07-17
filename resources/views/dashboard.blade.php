@@ -1,6 +1,17 @@
 @extends('layouts.shell')
 
 @section('content')
+    @if ($announcements->isNotEmpty())
+        <div class="mb-6 space-y-3">
+            @foreach ($announcements as $announcement)
+                <div class="rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-indigo-900">
+                    <h2 class="font-semibold">{{ $announcement->title }}</h2>
+                    <p class="mt-1 text-sm text-indigo-800">{{ $announcement->body }}</p>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-slate-900">{{ __('Overview') }}</h1>
         <p class="text-sm text-slate-500">{{ __('Analytics across all your subscribed tools.') }}</p>
