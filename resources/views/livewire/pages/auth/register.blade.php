@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Services\WebhookDispatcher;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +32,13 @@ new #[Layout('layouts.guest')] class extends Component
         $validated['password'] = Hash::make($validated['password']);
 
         event(new Registered($user = User::create($validated)));
+
+        WebhookDispatcher::dispatch('user.registered', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'created_at' => $user->created_at->toIso8601String(),
+        ]);
 
         Auth::login($user);
 

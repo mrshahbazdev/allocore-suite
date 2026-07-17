@@ -8,6 +8,7 @@ use App\Models\TaxRate;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Services\PayPalService;
+use App\Services\WebhookDispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -244,5 +245,15 @@ class BillingController extends Controller
         if ($subscription->coupon) {
             $subscription->coupon->recordUse();
         }
+
+        WebhookDispatcher::dispatch('subscription.activated', [
+            'subscription_id' => $subscription->id,
+            'billable_type' => $subscription->billable_type,
+            'billable_id' => $subscription->billable_id,
+            'plan_id' => $subscription->plan_id,
+            'total' => $subscription->total,
+            'currency' => $subscription->plan->currency,
+            'activated_at' => now()->toIso8601String(),
+        ]);
     }
 }
