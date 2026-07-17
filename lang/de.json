@@ -744,5 +744,13 @@
     "Date": "Datum",
     "Event": "Ereignis",
     "Description": "Beschreibung",
-    "No activity recorded yet.": "Noch keine Aktivität aufgezeichnet."
+    "No activity recorded yet.": "Noch keine Aktivität aufgezeichnet.",
+
+    "Data Exports": "Datenexporte",
+    "Download platform data as CSV with optional date filters.": "Laden Sie Plattformdaten als CSV mit optionalen Datumsfiltern herunter.",
+    "Export type": "Exporttyp",
+    "Download CSV": "CSV herunterladen",
+    "Start date": "Startdatum",
+    "End date": "Enddatum",
+    "Exports": "Exporte"
 }

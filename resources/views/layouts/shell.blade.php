@@ -94,6 +94,7 @@
                 <a href="{{ route('admin.log-viewer.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.log-viewer.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Logs') }}</a>
                 <a href="{{ route('admin.session-manager.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.session-manager.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Sessions') }}</a>
                 <a href="{{ route('admin.backups.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.backups.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Backups') }}</a>
+                <a href="{{ route('admin.exports.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.exports.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Exports') }}</a>
                 <a href="{{ route('admin.maintenance.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.maintenance.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Maintenance') }}</a>
             @endif
         </nav>

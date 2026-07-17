@@ -744,5 +744,13 @@
     "Date": "Date",
     "Event": "Event",
     "Description": "Description",
-    "No activity recorded yet.": "No activity recorded yet."
+    "No activity recorded yet.": "No activity recorded yet.",
+
+    "Data Exports": "Data Exports",
+    "Download platform data as CSV with optional date filters.": "Download platform data as CSV with optional date filters.",
+    "Export type": "Export type",
+    "Download CSV": "Download CSV",
+    "Start date": "Start date",
+    "End date": "End date",
+    "Exports": "Exports"
 }
