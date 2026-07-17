@@ -154,5 +154,24 @@
     "profile.delete.modal.description": "Sobald Ihr Konto gelöscht ist, werden alle Ressourcen und Daten dauerhaft gelöscht. Bitte geben Sie Ihr Passwort ein, um das dauerhafte Löschen zu bestätigen.",
     "profile.delete.password": "Passwort",
     "profile.delete.cancel": "Abbrechen",
-    "profile.delete.confirm": "Konto löschen"
+    "profile.delete.confirm": "Konto löschen",
+
+    "profile.mail.title": "E-Mail-Einstellungen",
+    "profile.mail.description": "Überschreiben Sie den Standard-Mailserver für E-Mails, die in Ihrem Namen gesendet werden. Leer lassen, um den Admin-Standard zu verwenden.",
+    "profile.mail.using_default": "Sie verwenden derzeit den standardmäßigen Admin-Mailserver.",
+
+    "mail.admin_title": "E-Mail-Einstellungen",
+    "mail.admin_description": "Konfigurieren Sie den Standard-SMTP-Server für alle Auth- und Modul-E-Mails, sofern ein Benutzer ihn nicht überschreibt.",
+    "mail.driver": "Treiber",
+    "mail.host": "Host",
+    "mail.port": "Port",
+    "mail.encryption": "Verschlüsselung",
+    "mail.encryption_none": "Keine",
+    "mail.username": "Benutzername",
+    "mail.password": "Passwort",
+    "mail.password_unchanged": "Leer lassen, um das aktuelle Passwort beizubehalten",
+    "mail.from_address": "Absenderadresse",
+    "mail.from_name": "Absendername",
+    "mail.save": "E-Mail-Einstellungen speichern",
+    "mail.admin_updated": "E-Mail-Einstellungen aktualisiert."
 }

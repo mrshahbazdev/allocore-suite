@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\Transport\DynamicSmtpTransport;
+
 return [
 
     /*
@@ -14,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'dynamic'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,6 +38,10 @@ return [
     */
 
     'mailers' => [
+
+        'dynamic' => [
+            'transport' => DynamicSmtpTransport::class,
+        ],
 
         'smtp' => [
             'transport' => 'smtp',

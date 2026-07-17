@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Mail\Transport\DynamicSmtpTransport;
 use App\Support\DashboardWidgetRegistry;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        app('mail.manager')->extend(DynamicSmtpTransport::class, fn () => new DynamicSmtpTransport);
     }
 }

@@ -154,5 +154,24 @@
     "profile.delete.modal.description": "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.",
     "profile.delete.password": "Password",
     "profile.delete.cancel": "Cancel",
-    "profile.delete.confirm": "Delete Account"
+    "profile.delete.confirm": "Delete Account",
+
+    "profile.mail.title": "Mail Settings",
+    "profile.mail.description": "Override the default mail server for emails sent on your behalf. Leave blank to use the admin default.",
+    "profile.mail.using_default": "You are currently using the admin default mail server.",
+
+    "mail.admin_title": "Mail Settings",
+    "mail.admin_description": "Configure the default SMTP server used for all auth and module emails unless a user overrides it.",
+    "mail.driver": "Driver",
+    "mail.host": "Host",
+    "mail.port": "Port",
+    "mail.encryption": "Encryption",
+    "mail.encryption_none": "None",
+    "mail.username": "Username",
+    "mail.password": "Password",
+    "mail.password_unchanged": "Leave blank to keep the current password",
+    "mail.from_address": "From Address",
+    "mail.from_name": "From Name",
+    "mail.save": "Save Mail Settings",
+    "mail.admin_updated": "Mail settings updated."
 }

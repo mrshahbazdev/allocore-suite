@@ -40,6 +40,10 @@
                         <livewire:profile.update-password-form />
                     </div>
 
+                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <livewire:profile.update-mail-settings-form />
+                    </div>
+
                     <div class="overflow-hidden rounded-2xl border border-rose-100 bg-rose-50/30 p-6 shadow-sm">
                         <livewire:profile.delete-user-form />
                     </div>
