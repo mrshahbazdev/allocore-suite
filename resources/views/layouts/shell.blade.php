@@ -61,7 +61,8 @@
                 <a href="{{ route('admin.subscriptions.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.subscriptions.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Subscriptions') }}</a>
 
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Tools') }}</div>
-                <a href="{{ route('admin.audits.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.audits.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('AuditPro') }}</a>
+                <a href="{{ route('admin.audits.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.audits.index', 'admin.audits.show') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Audits') }}</a>
+                <a href="{{ route('admin.audits.templates.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.audits.templates.*', 'admin.audits.pillars.*', 'admin.audits.questions.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Audit Templates') }}</a>
                 <a href="{{ route('admin.financial.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.financial.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Financial') }}</a>
                 <a href="{{ route('admin.thresholds.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.thresholds.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('KPI Thresholds') }}</a>
                 <a href="{{ route('admin.settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Site Settings') }}</a>

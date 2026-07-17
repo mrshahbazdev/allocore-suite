@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AuditController as AdminAuditController;
+use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarController;
+use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
+use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\MailSettingController;
@@ -22,6 +25,13 @@ use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Modules\AuditPro\Models\AuditPillar;
+use Modules\AuditPro\Models\AuditQuestion;
+use Modules\AuditPro\Models\AuditTemplate;
+
+Route::bind('template', fn ($value) => AuditTemplate::withoutGlobalScope('current_team')->findOrFail($value));
+Route::bind('pillar', fn ($value) => AuditPillar::withoutGlobalScope('current_team')->findOrFail($value));
+Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('current_team')->findOrFail($value));
 
 Route::view('/', 'welcome');
 
@@ -90,6 +100,27 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('subscriptions/{subscription}/cancel', [SubscriptionApprovalController::class, 'cancel'])->name('subscriptions.cancel');
     Route::get('audits', [AdminAuditController::class, 'index'])->name('audits.index');
     Route::get('audits/{audit}', [AdminAuditController::class, 'show'])->name('audits.show');
+
+    Route::get('audits/templates', [AdminAuditTemplateController::class, 'index'])->name('audits.templates.index');
+    Route::get('audits/templates/create', [AdminAuditTemplateController::class, 'create'])->name('audits.templates.create');
+    Route::post('audits/templates', [AdminAuditTemplateController::class, 'store'])->name('audits.templates.store');
+    Route::get('audits/templates/{template}', [AdminAuditTemplateController::class, 'show'])->name('audits.templates.show');
+    Route::get('audits/templates/{template}/edit', [AdminAuditTemplateController::class, 'edit'])->name('audits.templates.edit');
+    Route::put('audits/templates/{template}', [AdminAuditTemplateController::class, 'update'])->name('audits.templates.update');
+    Route::delete('audits/templates/{template}', [AdminAuditTemplateController::class, 'destroy'])->name('audits.templates.destroy');
+
+    Route::get('audits/pillars/create', [AdminAuditPillarController::class, 'create'])->name('audits.pillars.create');
+    Route::post('audits/pillars', [AdminAuditPillarController::class, 'store'])->name('audits.pillars.store');
+    Route::get('audits/pillars/{pillar}/edit', [AdminAuditPillarController::class, 'edit'])->name('audits.pillars.edit');
+    Route::put('audits/pillars/{pillar}', [AdminAuditPillarController::class, 'update'])->name('audits.pillars.update');
+    Route::delete('audits/pillars/{pillar}', [AdminAuditPillarController::class, 'destroy'])->name('audits.pillars.destroy');
+
+    Route::get('audits/questions/create', [AdminAuditQuestionController::class, 'create'])->name('audits.questions.create');
+    Route::post('audits/questions', [AdminAuditQuestionController::class, 'store'])->name('audits.questions.store');
+    Route::get('audits/questions/{question}/edit', [AdminAuditQuestionController::class, 'edit'])->name('audits.questions.edit');
+    Route::put('audits/questions/{question}', [AdminAuditQuestionController::class, 'update'])->name('audits.questions.update');
+    Route::delete('audits/questions/{question}', [AdminAuditQuestionController::class, 'destroy'])->name('audits.questions.destroy');
+
     Route::get('financial', [AdminFinancialController::class, 'index'])->name('financial.index');
     Route::get('thresholds', [AdminThresholdController::class, 'index'])->name('thresholds.index');
     Route::put('thresholds/{threshold}', [AdminThresholdController::class, 'update'])->name('thresholds.update');
