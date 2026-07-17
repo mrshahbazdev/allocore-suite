@@ -7,6 +7,10 @@
             <p class="text-sm text-slate-500">{{ __('Manage leads and track qualification signals.') }}</p>
         </div>
         <div class="flex gap-3">
+            <form method="POST" action="{{ route('leadquality.contacts.analyze-all') }}">
+                @csrf
+                <button class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700">{{ __('Analyze all') }}</button>
+            </form>
             <a href="{{ route('leadquality.contacts.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">{{ __('New contact') }}</a>
             <a href="{{ route('leadquality.contacts.create') }}#import" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Import CSV') }}</a>
         </div>

@@ -1,0 +1,11 @@
+{
+    "name": "ClusterForge",
+    "alias": "clusterforge",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ClusterForge\\Providers\\ClusterForgeServiceProvider"
+    ],
+    "files": []
+}

@@ -23,6 +23,7 @@ Route::prefix('app/leads')
 
         Route::resource('contacts', ContactController::class);
         Route::post('contacts/import', [ContactController::class, 'import'])->name('contacts.import');
+        Route::post('contacts/analyze-all', [ContactController::class, 'analyzeAll'])->name('contacts.analyze-all');
         Route::post('contacts/{contact}/activities', [ActivityController::class, 'store'])->name('contacts.activities.store');
         Route::post('contacts/{contact}/analyze', [ContactController::class, 'analyzeAi'])->name('contacts.analyze');
 

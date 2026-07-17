@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/clusterforge",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ClusterForge\\": "app/",
+            "Modules\\ClusterForge\\Database\\Factories\\": "database/factories/",
+            "Modules\\ClusterForge\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\ClusterForge\\Tests\\": "tests/"
+        }
+    }
+}
