@@ -70,6 +70,16 @@
                 <a href="{{ route('admin.settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Site Settings') }}</a>
                 <a href="{{ route('admin.mail-settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.mail-settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Mail Settings') }}</a>
                 <a href="{{ route('admin.pages.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.pages.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Pages') }}</a>
+
+                <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('System') }}</div>
+                <a href="{{ route('admin.analytics.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.analytics.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Analytics') }}</a>
+                <a href="{{ route('admin.activity-logs.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.activity-logs.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Activity Logs') }}</a>
+                <a href="{{ route('admin.roles.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.roles.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Roles') }}</a>
+                <a href="{{ route('admin.support-tickets.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.support-tickets.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Support Tickets') }}</a>
+                <a href="{{ route('admin.integrations.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.integrations.*', 'admin.webhooks.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Integrations') }}</a>
+                <a href="{{ route('admin.announcements.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.announcements.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Announcements') }}</a>
+                <a href="{{ route('admin.media.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.media.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Media') }}</a>
+                <a href="{{ route('admin.backups.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.backups.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Backups') }}</a>
             @endif
         </nav>
     </aside>
