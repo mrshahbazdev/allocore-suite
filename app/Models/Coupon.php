@@ -41,4 +41,18 @@ class Coupon extends Model
 
         return true;
     }
+
+    public function applyDiscount(float $subtotal): float
+    {
+        if ($this->type === 'percent') {
+            return round($subtotal * ($this->value / 100), 2);
+        }
+
+        return min($this->value, $subtotal);
+    }
+
+    public function recordUse(): void
+    {
+        $this->increment('used_count');
+    }
 }

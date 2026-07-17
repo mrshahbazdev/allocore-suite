@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Coupon;
 use App\Models\Plan;
+use App\Models\TaxRate;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Services\PayPalService;
@@ -41,6 +43,7 @@ class BillingController extends Controller
             'interval' => 'required|in:monthly,yearly',
             'payment_method' => 'required|in:stripe,paypal,bank',
             'billable' => 'required|in:user,team',
+            'coupon_code' => 'nullable|string|max:50',
         ]);
 
         $user = Auth::user();
@@ -50,23 +53,62 @@ class BillingController extends Controller
             return back()->with('error', __('You must create or select a team first.'));
         }
 
+        $pricing = $this->calculatePricing($plan, $validated['interval'], $validated['coupon_code'] ?? null, $billable);
+
+        if ($pricing['coupon'] && ! $pricing['coupon']->isValid()) {
+            return back()->with('error', __('The provided coupon is not valid.'));
+        }
+
         $subscription = ToolSubscription::create([
             'billable_type' => $billable->getMorphClass(),
             'billable_id' => $billable->getKey(),
             'plan_id' => $plan->id,
+            'coupon_id' => $pricing['coupon']?->id,
+            'tax_rate_id' => $pricing['taxRate']?->id,
             'payment_method' => $validated['payment_method'],
             'billing_interval' => $validated['interval'],
+            'subtotal' => $pricing['subtotal'],
+            'discount_amount' => $pricing['discountAmount'],
+            'tax_amount' => $pricing['taxAmount'],
+            'total' => $pricing['total'],
             'status' => 'pending',
         ]);
 
         return match ($validated['payment_method']) {
-            'stripe' => $this->stripeCheckout($subscription, $plan),
-            'paypal' => $this->paypalCheckout($subscription, $plan),
+            'stripe' => $this->stripeCheckout($subscription, $plan, $pricing),
+            'paypal' => $this->paypalCheckout($subscription, $plan, $pricing),
             'bank' => redirect()->route('billing.bank', $subscription),
         };
     }
 
-    protected function stripeCheckout(ToolSubscription $subscription, Plan $plan)
+    protected function calculatePricing(Plan $plan, string $interval, ?string $couponCode, $billable): array
+    {
+        $subtotal = (float) $plan->priceFor($interval);
+        $coupon = null;
+        $discountAmount = 0;
+
+        if ($couponCode) {
+            $coupon = Coupon::where('code', $couponCode)->first();
+            if ($coupon && $coupon->isValid()) {
+                $discountAmount = $coupon->applyDiscount($subtotal);
+            }
+        }
+
+        $country = $billable instanceof Team ? $billable->country : null;
+        $taxRate = TaxRate::forCountry($country);
+        $taxAmount = round(($subtotal - $discountAmount) * (($taxRate?->rate ?? 0) / 100), 2);
+
+        return [
+            'subtotal' => $subtotal,
+            'coupon' => $coupon,
+            'discountAmount' => $discountAmount,
+            'taxRate' => $taxRate,
+            'taxAmount' => $taxAmount,
+            'total' => round($subtotal - $discountAmount + $taxAmount, 2),
+        ];
+    }
+
+    protected function stripeCheckout(ToolSubscription $subscription, Plan $plan, array $pricing)
     {
         $session = Cashier::stripe()->checkout->sessions->create([
             'mode' => 'payment',
@@ -74,7 +116,7 @@ class BillingController extends Controller
             'line_items' => [[
                 'price_data' => [
                     'currency' => strtolower($plan->currency),
-                    'unit_amount' => (int) round($plan->priceFor($subscription->billing_interval) * 100),
+                    'unit_amount' => (int) round($pricing['total'] * 100),
                     'product_data' => ['name' => $plan->name.' ('.$subscription->billing_interval.')'],
                 ],
                 'quantity' => 1,
@@ -89,27 +131,7 @@ class BillingController extends Controller
         return redirect()->away($session->url);
     }
 
-    public function stripeSuccess(Request $request, ToolSubscription $subscription)
-    {
-        $this->authorizeSubscription($subscription);
-
-        $sessionId = $request->query('session_id');
-        if (! $sessionId || $sessionId !== $subscription->gateway_reference) {
-            return redirect()->route('billing.subscriptions')->with('error', __('Invalid payment session.'));
-        }
-
-        $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
-
-        if ($session->payment_status === 'paid' && $subscription->status === 'pending') {
-            $subscription->activate();
-
-            return redirect()->route('dashboard')->with('success', __('Payment successful! Your tools are now unlocked.'));
-        }
-
-        return redirect()->route('billing.subscriptions')->with('error', __('Payment was not completed.'));
-    }
-
-    protected function paypalCheckout(ToolSubscription $subscription, Plan $plan)
+    protected function paypalCheckout(ToolSubscription $subscription, Plan $plan, array $pricing)
     {
         $paypal = app(PayPalService::class);
 
@@ -123,7 +145,8 @@ class BillingController extends Controller
             $plan,
             $subscription->billing_interval,
             route('billing.paypal.success', $subscription),
-            route('billing.plans')
+            route('billing.plans'),
+            $pricing['total']
         );
 
         if (! $order) {
@@ -137,6 +160,26 @@ class BillingController extends Controller
         return redirect()->away($order['approve_url']);
     }
 
+    public function stripeSuccess(Request $request, ToolSubscription $subscription)
+    {
+        $this->authorizeSubscription($subscription);
+
+        $sessionId = $request->query('session_id');
+        if (! $sessionId || $sessionId !== $subscription->gateway_reference) {
+            return redirect()->route('billing.subscriptions')->with('error', __('Invalid payment session.'));
+        }
+
+        $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
+
+        if ($session->payment_status === 'paid' && $subscription->status === 'pending') {
+            $this->activateSubscription($subscription);
+
+            return redirect()->route('dashboard')->with('success', __('Payment successful! Your tools are now unlocked.'));
+        }
+
+        return redirect()->route('billing.subscriptions')->with('error', __('Payment was not completed.'));
+    }
+
     public function paypalSuccess(Request $request, ToolSubscription $subscription)
     {
         $this->authorizeSubscription($subscription);
@@ -147,7 +190,7 @@ class BillingController extends Controller
         }
 
         if ($subscription->status === 'pending' && app(PayPalService::class)->captureOrder($orderId)) {
-            $subscription->activate();
+            $this->activateSubscription($subscription);
 
             return redirect()->route('dashboard')->with('success', __('Payment successful! Your tools are now unlocked.'));
         }
@@ -192,5 +235,14 @@ class BillingController extends Controller
                 && $user->teams()->where('teams.id', $subscription->billable_id)->exists());
 
         abort_unless($allowed, 403);
+    }
+
+    protected function activateSubscription(ToolSubscription $subscription): void
+    {
+        $subscription->activate();
+
+        if ($subscription->coupon) {
+            $subscription->coupon->recordUse();
+        }
     }
 }

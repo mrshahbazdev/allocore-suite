@@ -599,5 +599,27 @@
     "admin.notifications.confirm_delete": "Diese Benachrichtigung löschen?",
     "admin.notifications.empty": "Keine Benachrichtigungen gefunden.",
     "admin.notifications.sent": "Benachrichtigung gesendet.",
-    "admin.notifications.deleted": "Benachrichtigung gelöscht."
+    "admin.notifications.deleted": "Benachrichtigung gelöscht.",
+
+    "team.invite_to": "Zu :team einladen",
+    "team.invitee_email": "E-Mail des eingeladenen Benutzers",
+    "team.send_invitation": "Einladung senden",
+    "team.pending_invitations": "Ausstehende Einladungen",
+    "team.expires": "Läuft ab",
+    "team.resend": "Erneut senden",
+    "team.cancel_invitation": "Abbrechen",
+    "team.invitation_subject": "Du bist eingeladen, :team beizutreten",
+    "team.invitation_body": ":name hat dich eingeladen, dem Team beizutreten.",
+    "team.invitation_expires": "Diese Einladung läuft in 7 Tagen ab.",
+    "team.invitation_accept": "Einladung annehmen",
+    "team.invitation_accepted": "Du bist :team beigetreten",
+    "team.invitation_sent": "Einladung an :email gesendet",
+    "team.invitation_resent": "Einladung erneut gesendet.",
+    "team.invitation_cancelled": "Einladung storniert.",
+    "team.invitation_expired_or_used": "Diese Einladung ist abgelaufen oder bereits verwendet.",
+    "team.invitation_wrong_email": "Diese Einladung wurde an eine andere E-Mail-Adresse gesendet.",
+
+    "billing.coupon_code": "Gutscheincode",
+    "billing.coupon_invalid": "Der eingegebene Gutschein ist nicht gültig.",
+    "billing.payment_successful": "Zahlung erfolgreich! Deine Tools sind jetzt freigeschaltet."
 }

@@ -15,6 +15,11 @@ new #[Layout('layouts.guest')] class extends Component
     public string $password = '';
     public string $password_confirmation = '';
 
+    public function mount(): void
+    {
+        $this->email = session('invitation_email', '');
+    }
+
     public function register(): void
     {
         $validated = $this->validate([
@@ -28,6 +33,15 @@ new #[Layout('layouts.guest')] class extends Component
         event(new Registered($user = User::create($validated)));
 
         Auth::login($user);
+
+        if ($token = session('invitation_token')) {
+            $invitation = \App\Models\TeamInvitation::where('token', $token)->whereNull('accepted_at')->first();
+            if ($invitation && $invitation->email === $user->email) {
+                $invitation->accept($user);
+                $user->update(['current_team_id' => $invitation->team_id]);
+            }
+            session()->forget(['invitation_token', 'invitation_email']);
+        }
 
         $this->redirect(route('dashboard', absolute: false), navigate: true);
     }

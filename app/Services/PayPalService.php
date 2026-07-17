@@ -34,7 +34,7 @@ class PayPalService
     /**
      * Create a PayPal order for a plan purchase. Returns [orderId, approveUrl] or null.
      */
-    public function createOrder(Plan $plan, string $interval, string $returnUrl, string $cancelUrl): ?array
+    public function createOrder(Plan $plan, string $interval, string $returnUrl, string $cancelUrl, ?float $amount = null): ?array
     {
         $token = $this->accessToken();
         if (! $token) {
@@ -48,7 +48,7 @@ class PayPalService
                 'purchase_units' => [[
                     'amount' => [
                         'currency_code' => strtoupper($plan->currency),
-                        'value' => number_format((float) $plan->priceFor($interval), 2, '.', ''),
+                        'value' => number_format($amount ?? (float) $plan->priceFor($interval), 2, '.', ''),
                     ],
                     'description' => $plan->name.' ('.$interval.')',
                 ]],
