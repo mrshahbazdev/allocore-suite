@@ -31,6 +31,14 @@
                             <div class="mt-4 w-full border-t border-slate-100 pt-4">
                                 <a href="{{ route('two-factor.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Two-Factor Authentication') }}</a>
                             </div>
+
+                            <div class="mt-2 w-full pt-2">
+                                <a href="{{ route('profile.api-tokens.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('API Tokens') }}</a>
+                            </div>
+
+                            <div class="mt-2 w-full pt-2">
+                                <a href="{{ route('profile.activity') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Account Activity') }}</a>
+                            </div>
                         </div>
                     </div>
                 </aside>

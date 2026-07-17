@@ -726,5 +726,23 @@
     "Authentication code": "Authentication code",
     "Recovery code": "Recovery code",
     "Verify": "Verify",
-    "or": "or"
+    "or": "or",
+
+    "API Tokens": "API Tokens",
+    "Create and manage personal access tokens for API access.": "Create and manage personal access tokens for API access.",
+    "Token name": "Token name",
+    "Create token": "Create token",
+    "Abilities": "Abilities",
+    "Leave empty for full access, or enter comma-separated abilities.": "Leave empty for full access, or enter comma-separated abilities.",
+    "Copy this token now. It will not be shown again.": "Copy this token now. It will not be shown again.",
+    "Delete this token?": "Delete this token?",
+    "No API tokens yet.": "No API tokens yet.",
+    "API token created.": "API token created.",
+    "API token deleted.": "API token deleted.",
+    "Account Activity": "Account Activity",
+    "Recent actions performed on your account.": "Recent actions performed on your account.",
+    "Date": "Date",
+    "Event": "Event",
+    "Description": "Description",
+    "No activity recorded yet.": "No activity recorded yet."
 }
