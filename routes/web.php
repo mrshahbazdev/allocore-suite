@@ -52,6 +52,8 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\TwoFactorChallengeController;
 use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\UserActivityController;
+use App\Http\Controllers\UserApiTokenController;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,6 +83,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('two-factor', [TwoFactorController::class, 'store'])->name('two-factor.store');
     Route::delete('two-factor', [TwoFactorController::class, 'destroy'])->name('two-factor.destroy');
     Route::post('two-factor/regenerate', [TwoFactorController::class, 'regenerate'])->name('two-factor.regenerate');
+
+    Route::get('profile/activity', [UserActivityController::class, 'index'])->name('profile.activity');
+    Route::get('profile/api-tokens', [UserApiTokenController::class, 'index'])->name('profile.api-tokens.index');
+    Route::post('profile/api-tokens', [UserApiTokenController::class, 'store'])->name('profile.api-tokens.store');
+    Route::delete('profile/api-tokens/{token}', [UserApiTokenController::class, 'destroy'])->name('profile.api-tokens.destroy');
 
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');
 

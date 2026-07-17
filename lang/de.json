@@ -726,5 +726,23 @@
     "Authentication code": "Authentifizierungscode",
     "Recovery code": "Wiederherstellungscode",
     "Verify": "Überprüfen",
-    "or": "oder"
+    "or": "oder",
+
+    "API Tokens": "API-Token",
+    "Create and manage personal access tokens for API access.": "Erstellen und verwalten Sie persönliche Zugriffstoken für den API-Zugriff.",
+    "Token name": "Token-Name",
+    "Create token": "Token erstellen",
+    "Abilities": "Berechtigungen",
+    "Leave empty for full access, or enter comma-separated abilities.": "Leer lassen für vollen Zugriff oder kommagetrennte Berechtigungen eingeben.",
+    "Copy this token now. It will not be shown again.": "Kopieren Sie diesen Token jetzt. Er wird nicht erneut angezeigt.",
+    "Delete this token?": "Diesen Token löschen?",
+    "No API tokens yet.": "Noch keine API-Token.",
+    "API token created.": "API-Token erstellt.",
+    "API token deleted.": "API-Token gelöscht.",
+    "Account Activity": "Kontoaktivität",
+    "Recent actions performed on your account.": "Kürzlich ausgeführte Aktionen auf Ihrem Konto.",
+    "Date": "Datum",
+    "Event": "Ereignis",
+    "Description": "Beschreibung",
+    "No activity recorded yet.": "Noch keine Aktivität aufgezeichnet."
 }
