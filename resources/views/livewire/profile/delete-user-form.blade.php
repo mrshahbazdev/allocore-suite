@@ -8,9 +8,6 @@ new class extends Component
 {
     public string $password = '';
 
-    /**
-     * Delete the currently authenticated user.
-     */
     public function deleteUser(Logout $logout): void
     {
         $this->validate([
@@ -25,54 +22,54 @@ new class extends Component
 
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
+        <h2 class="text-lg font-semibold text-rose-900">{{ __('profile.delete.title') }}</h2>
+        <p class="mt-1 text-sm text-slate-600">{{ __('profile.delete.description') }}</p>
     </header>
 
-    <x-danger-button
+    <button
+        type="button"
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+        class="rounded-lg bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+    >
+        {{ __('profile.delete.button') }}
+    </button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable>
         <form wire:submit="deleteUser" class="p-6">
-
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
+            <h2 class="text-lg font-semibold text-slate-900">
+                {{ __('profile.delete.modal.title') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+            <p class="mt-2 text-sm text-slate-600">
+                {{ __('profile.delete.modal.description') }}
             </p>
 
             <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
+                <label for="delete_user_password" class="sr-only block text-sm font-medium text-slate-700">{{ __('profile.delete.password') }}</label>
 
-                <x-text-input
+                <input
                     wire:model="password"
-                    id="password"
+                    id="delete_user_password"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
+                    class="block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-rose-500 focus:ring-rose-500"
+                    placeholder="{{ __('profile.delete.password') }}"
+                >
 
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                @error('password')
+                    <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" x-on:click="$dispatch('close')" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    {{ __('profile.delete.cancel') }}
+                </button>
 
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
+                <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">
+                    {{ __('profile.delete.confirm') }}
+                </button>
             </div>
         </form>
     </x-modal>
