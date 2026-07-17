@@ -1,23 +1,32 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
+use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\AuditController as AdminAuditController;
 use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarController;
 use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
 use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
+use App\Http\Controllers\Admin\BackupController as AdminBackupController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
+use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Admin\MailSettingController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
+use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
+use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
@@ -127,6 +136,57 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('invoices/{invoice}', [AdminInvoiceController::class, 'show'])->name('invoices.show');
     Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
     Route::get('payments/{payment}', [AdminPaymentController::class, 'show'])->name('payments.show');
+
+    Route::get('activity-logs', [AdminActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('activity-logs/{activityLog}', [AdminActivityLogController::class, 'show'])->name('activity-logs.show');
+
+    Route::get('roles', [AdminRoleController::class, 'index'])->name('roles.index');
+    Route::get('roles/create', [AdminRoleController::class, 'create'])->name('roles.create');
+    Route::post('roles', [AdminRoleController::class, 'store'])->name('roles.store');
+    Route::get('roles/{role}/edit', [AdminRoleController::class, 'edit'])->name('roles.edit');
+    Route::put('roles/{role}', [AdminRoleController::class, 'update'])->name('roles.update');
+    Route::delete('roles/{role}', [AdminRoleController::class, 'destroy'])->name('roles.destroy');
+
+    Route::get('support-tickets', [AdminSupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('support-tickets/{supportTicket}', [AdminSupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::put('support-tickets/{supportTicket}', [AdminSupportTicketController::class, 'update'])->name('support-tickets.update');
+    Route::post('support-tickets/{supportTicket}/messages', [AdminSupportTicketController::class, 'storeMessage'])->name('support-tickets.messages.store');
+    Route::delete('support-tickets/{supportTicket}', [AdminSupportTicketController::class, 'destroy'])->name('support-tickets.destroy');
+
+    Route::get('analytics', [AdminAnalyticsController::class, 'index'])->name('analytics.index');
+
+    Route::get('integrations', [AdminIntegrationController::class, 'index'])->name('integrations.index');
+    Route::get('integrations/create', [AdminIntegrationController::class, 'create'])->name('integrations.create');
+    Route::post('integrations', [AdminIntegrationController::class, 'store'])->name('integrations.store');
+    Route::get('integrations/{integration}/edit', [AdminIntegrationController::class, 'edit'])->name('integrations.edit');
+    Route::put('integrations/{integration}', [AdminIntegrationController::class, 'update'])->name('integrations.update');
+    Route::delete('integrations/{integration}', [AdminIntegrationController::class, 'destroy'])->name('integrations.destroy');
+
+    Route::get('webhooks/create', [AdminWebhookController::class, 'create'])->name('webhooks.create');
+    Route::post('webhooks', [AdminWebhookController::class, 'store'])->name('webhooks.store');
+    Route::get('webhooks/{webhook}/edit', [AdminWebhookController::class, 'edit'])->name('webhooks.edit');
+    Route::put('webhooks/{webhook}', [AdminWebhookController::class, 'update'])->name('webhooks.update');
+    Route::delete('webhooks/{webhook}', [AdminWebhookController::class, 'destroy'])->name('webhooks.destroy');
+
+    Route::get('announcements', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('announcements/create', [AdminAnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('announcements', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
+    Route::get('announcements/{announcement}/edit', [AdminAnnouncementController::class, 'edit'])->name('announcements.edit');
+    Route::put('announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
+    Route::delete('announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+    Route::get('media', [AdminMediaController::class, 'index'])->name('media.index');
+    Route::post('media', [AdminMediaController::class, 'store'])->name('media.store');
+    Route::delete('media/{media}', [AdminMediaController::class, 'destroy'])->name('media.destroy');
+
+    Route::get('backups', [AdminBackupController::class, 'index'])->name('backups.index');
+    Route::post('backups', [AdminBackupController::class, 'createSqlDump'])->name('backups.store');
+    Route::get('backups/export/users', [AdminBackupController::class, 'exportUsers'])->name('backups.export.users');
+    Route::get('backups/export/teams', [AdminBackupController::class, 'exportTeams'])->name('backups.export.teams');
+    Route::get('backups/export/invoices', [AdminBackupController::class, 'exportInvoices'])->name('backups.export.invoices');
+    Route::get('backups/export/payments', [AdminBackupController::class, 'exportPayments'])->name('backups.export.payments');
+    Route::get('backups/{backup}/download', [AdminBackupController::class, 'download'])->name('backups.download');
+    Route::delete('backups/{backup}', [AdminBackupController::class, 'destroy'])->name('backups.destroy');
 
     Route::get('financial', [AdminFinancialController::class, 'index'])->name('financial.index');
     Route::get('thresholds', [AdminThresholdController::class, 'index'])->name('thresholds.index');
