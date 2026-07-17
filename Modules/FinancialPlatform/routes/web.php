@@ -8,6 +8,7 @@ use Modules\FinancialPlatform\Http\Controllers\ExcelImportController;
 use Modules\FinancialPlatform\Http\Controllers\GmbhAnalyseController;
 use Modules\FinancialPlatform\Http\Controllers\ImmobilienController;
 use Modules\FinancialPlatform\Http\Controllers\JahresabschlussController;
+use Modules\FinancialPlatform\Http\Controllers\KpiScheduleController;
 use Modules\FinancialPlatform\Http\Controllers\LeadController;
 use Modules\FinancialPlatform\Http\Controllers\PaypalController;
 use Modules\FinancialPlatform\Http\Controllers\RevenueDevelopmentController;
@@ -75,4 +76,9 @@ Route::middleware(['auth', 'verified', 'module:financial-platform', EnsureCurren
 
         Route::get('/deep-kpis', [DeepKpiController::class, 'index'])->name('deep-kpis.index');
         Route::post('/deep-kpis', [DeepKpiController::class, 'update'])->name('deep-kpis.update');
+
+        Route::get('/kpi-schedules', [KpiScheduleController::class, 'index'])->name('kpi-schedules.index');
+        Route::post('/kpi-schedules', [KpiScheduleController::class, 'store'])->name('kpi-schedules.store');
+        Route::post('/kpi-schedules/{schedule}/run', [KpiScheduleController::class, 'runNow'])->name('kpi-schedules.run');
+        Route::delete('/kpi-schedules/{schedule}', [KpiScheduleController::class, 'destroy'])->name('kpi-schedules.destroy');
     });
