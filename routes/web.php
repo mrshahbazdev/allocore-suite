@@ -42,9 +42,11 @@ use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Models\Module;
@@ -63,6 +65,9 @@ Route::view('/', 'welcome');
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
+
+Route::get('search', GlobalSearchController::class)->name('search');
+Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');
