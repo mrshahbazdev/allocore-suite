@@ -84,7 +84,33 @@ return [
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
-    'available_locales' => ['en', 'de'],
+    'available_locales' => [
+        'en', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'pl', 'ru', 'zh',
+        'ja', 'ko', 'ar', 'hi', 'tr', 'sv', 'da', 'fi', 'no', 'cs',
+    ],
+
+    'locale_names' => [
+        'en' => 'English',
+        'de' => 'Deutsch',
+        'fr' => 'Français',
+        'es' => 'Español',
+        'it' => 'Italiano',
+        'pt' => 'Português',
+        'nl' => 'Nederlands',
+        'pl' => 'Polski',
+        'ru' => 'Русский',
+        'zh' => 'Chinese',
+        'ja' => 'Japanese',
+        'ko' => '한국어',
+        'ar' => 'العربية',
+        'hi' => 'हिन्दी',
+        'tr' => 'Türkçe',
+        'sv' => 'Svenska',
+        'da' => 'Dansk',
+        'fi' => 'Suomi',
+        'no' => 'Norsk',
+        'cs' => 'Čeština',
+    ],
 
     /*
     |--------------------------------------------------------------------------
