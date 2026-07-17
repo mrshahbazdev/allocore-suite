@@ -11,12 +11,14 @@ new class extends Component
     public string $name = '';
     public string $email = '';
     public string $locale = '';
+    public string $theme = '';
 
     public function mount(): void
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
         $this->locale = Auth::user()->locale ?? config('app.locale');
+        $this->theme = Auth::user()->theme ?? 'light';
     }
 
     public function updateProfileInformation(): void
@@ -27,6 +29,7 @@ new class extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'locale' => ['required', 'string', Rule::in(config('app.available_locales', ['en']))],
+            'theme' => ['required', 'string', 'in:light,dark'],
         ]);
 
         $user->fill($validated);
@@ -97,23 +100,6 @@ new class extends Component
                 <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
             @enderror
 
-        <div>
-            <label for="locale" class="block text-sm font-medium text-slate-700">{{ __('Language') }}</label>
-            <select
-                wire:model="locale"
-                id="locale"
-                name="locale"
-                class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            >
-                @foreach (config('app.available_locales', ['en']) as $locale)
-                    <option value="{{ $locale }}">{{ strtoupper($locale) }}</option>
-                @endforeach
-            </select>
-            @error('locale')
-                <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
-            @enderror
-        </div>
-
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
                 <div>
                     <p class="mt-3 text-sm text-slate-600">
@@ -131,6 +117,39 @@ new class extends Component
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <label for="locale" class="block text-sm font-medium text-slate-700">{{ __('Language') }}</label>
+            <select
+                wire:model="locale"
+                id="locale"
+                name="locale"
+                class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+                @foreach (config('app.available_locales', ['en']) as $locale)
+                    <option value="{{ $locale }}">{{ strtoupper($locale) }}</option>
+                @endforeach
+            </select>
+            @error('locale')
+                <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label for="theme" class="block text-sm font-medium text-slate-700">{{ __('Theme') }}</label>
+            <select
+                wire:model="theme"
+                id="theme"
+                name="theme"
+                class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+                <option value="light">{{ __('Light') }}</option>
+                <option value="dark">{{ __('Dark') }}</option>
+            </select>
+            @error('theme')
+                <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="flex items-center gap-4">

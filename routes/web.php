@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\LanguageController;
@@ -63,6 +64,7 @@ Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('curren
 Route::view('/', 'welcome');
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
+Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
 
 Route::get('search', GlobalSearchController::class)->name('search');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
