@@ -2,5 +2,6 @@
     "AuditPro": true,
     "InvoiceMaker": true,
     "LeadQuality": true,
-    "FinancialPlatform": true
+    "FinancialPlatform": true,
+    "ClusterForge": true
 }

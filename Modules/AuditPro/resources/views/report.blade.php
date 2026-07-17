@@ -40,7 +40,10 @@
 <body>
     <div class="toolbar">
         <span>{{ __('AuditPro report preview') }}</span>
-        <button onclick="window.print()">{{ __('Print or save as PDF') }}</button>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('audit.report.download', $audit) }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Download PDF') }}</a>
+            <button onclick="window.print()">{{ __('Print or save as PDF') }}</button>
+        </div>
     </div>
 
     <article class="page">

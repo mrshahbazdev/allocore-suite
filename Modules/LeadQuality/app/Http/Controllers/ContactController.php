@@ -5,6 +5,7 @@ namespace Modules\LeadQuality\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Modules\LeadQuality\Jobs\AnalyzeContactsJob;
 use Modules\LeadQuality\Models\Contact;
 use Modules\LeadQuality\Models\OutreachTemplate;
 use Modules\LeadQuality\Models\Sequence;
@@ -155,5 +156,13 @@ class ContactController
         return redirect()->route('leadquality.contacts.show', $contact)
             ->with('success', __('AI Analysis complete!'))
             ->with('ai_insights', $analysis['insights']);
+    }
+
+    public function analyzeAll(): RedirectResponse
+    {
+        $teamId = auth()->user()->current_team_id;
+        AnalyzeContactsJob::dispatch($teamId);
+
+        return redirect()->route('leadquality.contacts.index')->with('success', __('AI analysis started for all contacts.'));
     }
 }

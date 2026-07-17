@@ -10,6 +10,7 @@ use Illuminate\View\View;
 use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditResult;
 use Modules\AuditPro\Models\AuditTemplate;
+use Modules\AuditPro\Services\AuditPdfService;
 use Modules\AuditPro\Services\DefaultTemplateProvisioner;
 use Modules\AuditPro\Support\Maturity;
 
@@ -83,6 +84,13 @@ class AuditController extends Controller
         $overallMaturity = Maturity::label($overallScore);
 
         return view('auditpro::report', compact('audit', 'overallScore', 'overallMaturity'));
+    }
+
+    public function downloadReport(Audit $audit, AuditPdfService $pdfService)
+    {
+        abort_unless($audit->status === 'completed', 404);
+
+        return $pdfService->download($audit);
     }
 
     public function destroy(Request $request, Audit $audit): RedirectResponse

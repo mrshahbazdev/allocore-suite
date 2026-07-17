@@ -646,5 +646,26 @@
     "dashboard.widget.view_audits": "View audits",
     "dashboard.widget.invoices_link": "Invoices",
     "dashboard.widget.contacts_link": "Contacts",
-    "dashboard.widget.companies_link": "Companies"
+    "dashboard.widget.companies_link": "Companies",
+
+    "Download PDF": "Download PDF",
+    "AI analysis started for all contacts.": "AI analysis started for all contacts.",
+    "Analyze all": "Analyze all",
+    "AI Analysis complete!": "AI Analysis complete!",
+
+    "clusterforge.name": "ClusterForge",
+    "clusterforge.description": "Turn a keyword list into topical clusters.",
+    "clusterforge.project_name": "Project name",
+    "clusterforge.keywords": "Keywords",
+    "clusterforge.keywords_placeholder": "One keyword per line, or comma separated",
+    "clusterforge.make_public": "Make public via shareable link",
+    "clusterforge.generate": "Generate clusters",
+    "clusterforge.recent_projects": "Recent projects",
+    "clusterforge.keywords_count": "keywords",
+    "clusterforge.clusters_count": "clusters",
+    "clusterforge.back": "Back",
+    "clusterforge.keyword_error": "Enter at least two keywords.",
+    "clusterforge.generated": "Keyword clusters generated.",
+    "clusterforge.deleted": "Cluster deleted.",
+    "clusterforge.delete_confirm": "Delete this project?"
 }
