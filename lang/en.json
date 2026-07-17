@@ -669,5 +669,24 @@
     "clusterforge.keyword_error": "Enter at least two keywords.",
     "clusterforge.generated": "Keyword clusters generated.",
     "clusterforge.deleted": "Cluster deleted.",
-    "clusterforge.delete_confirm": "Delete this project?"
+    "clusterforge.delete_confirm": "Delete this project?",
+
+    "kpi_schedules.title": "KPI Report Schedules",
+    "kpi_schedules.description": "Receive automated email reports with your latest KPIs.",
+    "kpi_schedules.frequency": "Frequency",
+    "kpi_schedules.daily": "Daily",
+    "kpi_schedules.weekly": "Weekly",
+    "kpi_schedules.monthly": "Monthly",
+    "kpi_schedules.recipients": "Recipients",
+    "kpi_schedules.recipients_placeholder": "finance@example.com, ceo@example.com",
+    "kpi_schedules.recipients_help": "Comma-separated email addresses.",
+    "kpi_schedules.create": "Create schedule",
+    "kpi_schedules.next_run": "Next run",
+    "kpi_schedules.last_run": "Last run",
+    "kpi_schedules.run_now": "Run now",
+    "kpi_schedules.empty": "No KPI schedules yet.",
+    "kpi_schedules.created": "KPI report schedule created.",
+    "kpi_schedules.dispatched": "KPI report dispatched.",
+    "kpi_schedules.deleted": "KPI report schedule deleted.",
+    "kpi_schedules.confirm_delete": "Delete this KPI schedule?"
 }

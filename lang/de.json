@@ -669,5 +669,24 @@
     "clusterforge.keyword_error": "Gib mindestens zwei Keywords ein.",
     "clusterforge.generated": "Keyword-Cluster generiert.",
     "clusterforge.deleted": "Cluster gelöscht.",
-    "clusterforge.delete_confirm": "Dieses Projekt löschen?"
+    "clusterforge.delete_confirm": "Dieses Projekt löschen?",
+
+    "kpi_schedules.title": "KPI-Bericht Zeitpläne",
+    "kpi_schedules.description": "Erhalte automatisierte E-Mail-Berichte mit deinen neuesten KPIs.",
+    "kpi_schedules.frequency": "Häufigkeit",
+    "kpi_schedules.daily": "Täglich",
+    "kpi_schedules.weekly": "Wöchentlich",
+    "kpi_schedules.monthly": "Monatlich",
+    "kpi_schedules.recipients": "Empfänger",
+    "kpi_schedules.recipients_placeholder": "finanzen@beispiel.de, ceo@beispiel.de",
+    "kpi_schedules.recipients_help": "Durch Komma getrennte E-Mail-Adressen.",
+    "kpi_schedules.create": "Zeitplan erstellen",
+    "kpi_schedules.next_run": "Nächster Lauf",
+    "kpi_schedules.last_run": "Letzter Lauf",
+    "kpi_schedules.run_now": "Jetzt ausführen",
+    "kpi_schedules.empty": "Noch keine KPI-Zeitpläne.",
+    "kpi_schedules.created": "KPI-Bericht Zeitplan erstellt.",
+    "kpi_schedules.dispatched": "KPI-Bericht versendet.",
+    "kpi_schedules.deleted": "KPI-Bericht Zeitplan gelöscht.",
+    "kpi_schedules.confirm_delete": "Diesen KPI-Zeitplan löschen?"
 }
