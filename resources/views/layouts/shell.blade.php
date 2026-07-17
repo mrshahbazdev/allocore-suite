@@ -65,6 +65,7 @@
                 <a href="{{ route('admin.financial.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.financial.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Financial') }}</a>
                 <a href="{{ route('admin.thresholds.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.thresholds.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('KPI Thresholds') }}</a>
                 <a href="{{ route('admin.settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Site Settings') }}</a>
+                <a href="{{ route('admin.mail-settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.mail-settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Mail Settings') }}</a>
                 <a href="{{ route('admin.pages.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.pages.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Pages') }}</a>
             @endif
         </nav>
