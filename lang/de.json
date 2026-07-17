@@ -770,5 +770,13 @@
     "investigating": "Untersuchung läuft",
     "identified": "Identifiziert",
     "monitoring": "Überwachung",
-    "resolved": "Gelöst"
+    "resolved": "Gelöst",
+
+    "Data Exports": "Datenexporte",
+    "Download platform data as CSV with optional date filters.": "Laden Sie Plattformdaten als CSV mit optionalen Datumsfiltern herunter.",
+    "Export type": "Exporttyp",
+    "Download CSV": "CSV herunterladen",
+    "Start date": "Startdatum",
+    "End date": "Enddatum",
+    "Exports": "Exporte"
 }

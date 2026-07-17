@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\BackupController as AdminBackupController;
 use App\Http\Controllers\Admin\BulkUserController as AdminBulkUserController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
 use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
@@ -291,6 +292,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('pages/{page}', [AdminPageController::class, 'update'])->name('pages.update');
     Route::delete('pages/{page}', [AdminPageController::class, 'destroy'])->name('pages.destroy');
     Route::post('pages/reorder', [AdminPageController::class, 'reorder'])->name('pages.reorder');
+
+    Route::get('exports', [ExportController::class, 'index'])->name('exports.index');
+    Route::get('exports/download', [ExportController::class, 'export'])->name('exports.download');
 });
 
 Route::post('logout', function (Request $request) {
