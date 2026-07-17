@@ -31,23 +31,23 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div>
     <div class="mb-8 text-center lg:text-left">
-        <h1 class="text-2xl font-bold text-slate-900">Verify your email</h1>
-        <p class="mt-2 text-sm text-slate-500">We sent a verification link to your email. Click it to finish setting up your account.</p>
+        <h1 class="text-2xl font-bold text-slate-900">{{ __('auth.verify_title') }}</h1>
+        <p class="mt-2 text-sm text-slate-500">{{ __('auth.verify_subtitle') }}</p>
     </div>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+        <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+            {{ __('auth.verification_sent') }}
         </div>
     @endif
 
     <div class="space-y-4">
-        <x-primary-button wire:click="sendVerification" class="w-full justify-center rounded-xl bg-indigo-600 px-4 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-indigo-500 focus:ring-indigo-500">
-            {{ __('Resend verification email') }}
+        <x-primary-button wire:click="sendVerification" class="w-full justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold normal-case tracking-normal text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500">
+            {{ __('auth.resend_verification') }}
         </x-primary-button>
 
-        <button wire:click="logout" type="button" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
-            {{ __('Log out') }}
+        <button wire:click="logout" type="button" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
+            {{ __('auth.log_out') }}
         </button>
     </div>
 </div>
