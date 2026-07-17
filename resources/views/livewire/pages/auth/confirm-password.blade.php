@@ -9,9 +9,6 @@ new #[Layout('layouts.guest')] class extends Component
 {
     public string $password = '';
 
-    /**
-     * Confirm the current user's password.
-     */
     public function confirmPassword(): void
     {
         $this->validate([
@@ -34,32 +31,23 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <div class="mb-6">
+    <div class="mb-8 text-center lg:text-left">
         <h1 class="text-2xl font-bold text-slate-900">Confirm your password</h1>
-        <p class="mt-2 text-sm text-slate-500">Verify your password before continuing.</p>
+        <p class="mt-2 text-sm text-slate-500">Please verify your password before continuing to a secure area.</p>
     </div>
 
-    <div class="mb-4 text-sm text-slate-500">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
-
-    <form wire:submit="confirmPassword" class="space-y-4">
-        <!-- Password -->
+    <form wire:submit="confirmPassword" class="space-y-5">
         <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input wire:model="password"
-                          id="password"
-                          class="mt-1 block w-full rounded-xl border-slate-300"
-                          type="password"
-                          name="password"
-                          required autocomplete="current-password" />
-
+            <x-input-label for="password" :value="__('Password')" class="text-sm font-medium text-slate-700" />
+            <x-text-input wire:model="password" id="password" class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 shadow-sm"
+                            type="password"
+                            name="password"
+                            required autocomplete="current-password" placeholder="Enter your password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div class="flex justify-end pt-2">
-            <x-primary-button class="rounded-xl px-5 py-3">
+            <x-primary-button class="w-full justify-center rounded-xl bg-indigo-600 px-6 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-indigo-500 focus:ring-indigo-500 sm:w-auto">
                 {{ __('Confirm') }}
             </x-primary-button>
         </div>

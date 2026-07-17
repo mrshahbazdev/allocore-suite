@@ -13,46 +13,57 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="h-full font-sans text-slate-100 antialiased">
-        <div class="min-h-full bg-[radial-gradient(circle_at_top,_rgba(79,70,229,0.22),_transparent_42%),linear-gradient(180deg,_#020617_0%,_#111827_100%)]">
-            <div class="mx-auto grid min-h-screen w-full max-w-7xl items-center gap-10 px-6 py-10 lg:grid-cols-[1fr_420px] lg:px-8">
-                <div class="hidden lg:block">
-                    <div class="max-w-xl">
-                        <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-sm text-slate-200">
-                            <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                            Allocore Suite
-                        </div>
-                        <h1 class="mt-6 text-5xl font-black tracking-tight text-white">
-                            Clean authentication for a modular SaaS workspace.
-                        </h1>
-                        <p class="mt-6 text-lg leading-8 text-slate-300">
-                            Sign in to reach your subscribed tools, team dashboards, and admin controls in a single consistent shell.
-                        </p>
-                        <div class="mt-8 grid gap-4 sm:grid-cols-3">
-                            @foreach ([
-                                'Central auth',
-                                'Teams + billing',
-                                'Role-based admin',
-                            ] as $item)
-                                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                    <div class="text-sm font-medium text-white">{{ $item }}</div>
+        <div class="relative isolate min-h-screen overflow-hidden bg-slate-950">
+            {{-- Background --}}
+            <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(ellipse_at_top,_rgba(99,102,241,0.25),_transparent_55%)]"></div>
+            <div class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(rgba(148,163,184,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.04)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+
+            <div class="mx-auto grid min-h-screen w-full max-w-7xl items-center gap-0 px-6 py-10 lg:grid-cols-[1.05fr_480px] lg:px-8 lg:py-0">
+                {{-- Left: branding --}}
+                <div class="hidden flex-col justify-center lg:flex lg:pr-16">
+                    <a href="/" class="mb-8 inline-flex items-center gap-3">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500 text-xl font-black text-white shadow-lg shadow-indigo-500/30">A</div>
+                        <span class="text-2xl font-bold text-white">Allocore Suite</span>
+                    </a>
+                    <h1 class="max-w-xl text-5xl font-extrabold leading-tight tracking-tight text-white">
+                        One workspace for every tool your team uses.
+                    </h1>
+                    <p class="mt-6 max-w-lg text-lg leading-8 text-slate-300">
+                        Central authentication, team management, billing, and module gating in a single consistent shell.
+                    </p>
+
+                    <div class="mt-10 grid max-w-md gap-4">
+                        @foreach ([
+                            ['icon' => 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.637-2.911M15 19.128V13.5a2.25 2.25 0 00-2.25-2.25h-1.5A2.25 2.25 0 009 13.5v3.75m-3-1.837a6.375 6.375 0 0111.637-2.911c1.249 1.037 2.058 2.451 2.305 3.97', 'title' => 'Secure central auth'],
+                            ['icon' => 'M18 18.72v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48c0-.66.34-1.26.88-1.61l.28-.17a.75.75 0 00.25-1.03l-.11-.18a3.75 3.75 0 00-6.5 0l-.11.18a.75.75 0 00.25 1.03l.28.17c.54.35.88.95.88 1.61v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48a2.25 2.25 0 00-3-2.12 2.25 2.25 0 00-1.5 2.12v.48a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75v-.48a6.75 6.75 0 0111.25-5.07 6.75 6.75 0 019.75 5.07zM12 12a3 3 0 100-6 3 3 0 000 6z', 'title' => 'Teams & shared access'],
+                            ['icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z', 'title' => 'Flexible billing'],
+                        ] as $item)
+                            <div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
                                 </div>
-                            @endforeach
-                        </div>
+                                <div class="text-base font-semibold text-white">{{ $item['title'] }}</div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-white/10 bg-white px-6 py-8 text-slate-900 shadow-2xl shadow-slate-950/30 sm:px-8">
-                    <div class="mb-6 flex items-center gap-3">
-                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500 text-lg font-black text-white">A</div>
-                        <div>
-                            <div class="text-sm font-semibold text-slate-900">Allocore Suite</div>
-                            <div class="text-xs text-slate-500">Sign in to continue</div>
-                        </div>
+                {{-- Right: auth card --}}
+                <div class="relative w-full">
+                    <div class="lg:hidden mb-8 text-center">
+                        <a href="/" class="inline-flex items-center gap-3">
+                            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500 text-lg font-black text-white shadow-lg shadow-indigo-500/30">A</div>
+                            <span class="text-xl font-bold text-white">Allocore Suite</span>
+                        </a>
                     </div>
 
-                    {{ $slot }}
+                    <div class="rounded-3xl border border-slate-200/10 bg-white px-6 py-8 text-slate-900 shadow-2xl shadow-slate-950/30 sm:px-10">
+                        {{ $slot }}
+                    </div>
                 </div>
             </div>
         </div>
+
+        @livewireScripts
     </body>
 </html>
