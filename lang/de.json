@@ -106,6 +106,9 @@
     "cms.all_pages": "Alle Seiten",
     "cms.pages_description": "Erstellen und verwalten Sie öffentliche Seiten mit mehrsprachigem SEO.",
     "cms.base_slug": "Basis-Slug",
+    "cms.page_type": "Seitentyp",
+    "cms.type_page": "Seite",
+    "cms.type_help": "Hilfeartikel",
     "cms.order": "Reihenfolge",
     "cms.published": "Veröffentlicht",
     "cms.draft": "Entwurf",
@@ -688,5 +691,9 @@
     "kpi_schedules.created": "KPI-Bericht Zeitplan erstellt.",
     "kpi_schedules.dispatched": "KPI-Bericht versendet.",
     "kpi_schedules.deleted": "KPI-Bericht Zeitplan gelöscht.",
-    "kpi_schedules.confirm_delete": "Diesen KPI-Zeitplan löschen?"
+    "kpi_schedules.confirm_delete": "Diesen KPI-Zeitplan löschen?",
+
+    "Help Center": "Hilfe-Center",
+    "Browse support articles and guides.": "Support-Artikel und Anleitungen durchsuchen.",
+    "No help articles yet.": "Noch keine Hilfeartikel."
 }
