@@ -438,8 +438,10 @@
     "admin.backups.create_sql_dump": "Create SQL dump",
     "admin.backups.confirm_delete": "Delete this backup?",
     "admin.backups.empty": "No backups yet.",
-    "admin.backups.created": "Backup created.",
+    "admin.backups.created": "Backup created on :disk.",
     "admin.backups.deleted": "Backup deleted.",
+    "admin.backups.disk_local": "Local",
+    "admin.backups.disk_s3": "S3 / Cloud",
 
     "admin.module_data.title": "Module Data",
     "admin.module_data.description": "Global read-only view of module records across all teams.",
