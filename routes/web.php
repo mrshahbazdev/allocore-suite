@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SubscriptionApprovalController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
@@ -57,9 +58,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('index');
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('users/create', [AdminUserController::class, 'create'])->name('users.create');
+    Route::post('users', [AdminUserController::class, 'store'])->name('users.store');
     Route::get('users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+    Route::get('users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+    Route::put('users/{user}', [AdminUserController::class, 'update'])->name('users.update');
     Route::post('users/{user}/role', [AdminUserController::class, 'role'])->name('users.role');
     Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('users/{user}/subscriptions', [AdminUserSubscriptionController::class, 'index'])->name('users.subscriptions.index');
+    Route::post('users/{user}/subscriptions', [AdminUserSubscriptionController::class, 'store'])->name('users.subscriptions.store');
+    Route::put('users/{user}/subscriptions/{subscription}', [AdminUserSubscriptionController::class, 'update'])->name('users.subscriptions.update');
+    Route::post('users/{user}/subscriptions/{subscription}/approve', [AdminUserSubscriptionController::class, 'approve'])->name('users.subscriptions.approve');
+    Route::post('users/{user}/subscriptions/{subscription}/cancel', [AdminUserSubscriptionController::class, 'cancel'])->name('users.subscriptions.cancel');
+    Route::delete('users/{user}/subscriptions/{subscription}', [AdminUserSubscriptionController::class, 'destroy'])->name('users.subscriptions.destroy');
+
     Route::get('teams', [AdminTeamController::class, 'index'])->name('teams.index');
     Route::get('teams/{team}', [AdminTeamController::class, 'show'])->name('teams.show');
     Route::put('teams/{team}', [AdminTeamController::class, 'update'])->name('teams.update');
