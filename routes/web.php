@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NotificationController;
@@ -61,6 +62,7 @@ Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('curren
 Route::view('/', 'welcome');
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
+Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');

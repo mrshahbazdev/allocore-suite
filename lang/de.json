@@ -621,5 +621,30 @@
 
     "billing.coupon_code": "Gutscheincode",
     "billing.coupon_invalid": "Der eingegebene Gutschein ist nicht gültig.",
-    "billing.payment_successful": "Zahlung erfolgreich! Deine Tools sind jetzt freigeschaltet."
+    "billing.payment_successful": "Zahlung erfolgreich! Deine Tools sind jetzt freigeschaltet.",
+
+    "search.title": "Suche",
+    "search.description": "Durchsuche Seiten und deine Arbeitsbereichsdaten.",
+    "search.placeholder": "Suchen...",
+    "search.no_results": "Keine Ergebnisse für",
+    "search.results": "Ergebnisse",
+
+    "Theme": "Design",
+    "Light": "Hell",
+    "Dark": "Dunkel",
+
+    "cookie.message": "Wir verwenden Cookies, um Ihr Erlebnis zu verbessern. Sie können alle oder nur notwendige Cookies akzeptieren.",
+    "cookie.necessary_only": "Nur notwendige",
+    "cookie.accept_all": "Alle akzeptieren",
+
+    "dashboard.widget.invoices": "Rechnungen",
+    "dashboard.widget.collected": "eingenommen",
+    "dashboard.widget.contacts": "Kontakte",
+    "dashboard.widget.companies": "Unternehmen",
+    "dashboard.widget.leads": "Leads",
+    "dashboard.widget.audits": "Audits in deinem Arbeitsbereich",
+    "dashboard.widget.view_audits": "Audits anzeigen",
+    "dashboard.widget.invoices_link": "Rechnungen",
+    "dashboard.widget.contacts_link": "Kontakte",
+    "dashboard.widget.companies_link": "Unternehmen"
 }

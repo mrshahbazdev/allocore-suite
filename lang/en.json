@@ -621,5 +621,30 @@
 
     "billing.coupon_code": "Coupon code",
     "billing.coupon_invalid": "The provided coupon is not valid.",
-    "billing.payment_successful": "Payment successful! Your tools are now unlocked."
+    "billing.payment_successful": "Payment successful! Your tools are now unlocked.",
+
+    "search.title": "Search",
+    "search.description": "Search across pages and your workspace data.",
+    "search.placeholder": "Search...",
+    "search.no_results": "No results for",
+    "search.results": "results",
+
+    "Theme": "Theme",
+    "Light": "Light",
+    "Dark": "Dark",
+
+    "cookie.message": "We use cookies to improve your experience. You can accept all or only necessary cookies.",
+    "cookie.necessary_only": "Necessary only",
+    "cookie.accept_all": "Accept all",
+
+    "dashboard.widget.invoices": "invoices",
+    "dashboard.widget.collected": "collected",
+    "dashboard.widget.contacts": "contacts",
+    "dashboard.widget.companies": "companies",
+    "dashboard.widget.leads": "leads",
+    "dashboard.widget.audits": "audits in your workspace",
+    "dashboard.widget.view_audits": "View audits",
+    "dashboard.widget.invoices_link": "Invoices",
+    "dashboard.widget.contacts_link": "Contacts",
+    "dashboard.widget.companies_link": "Companies"
 }
