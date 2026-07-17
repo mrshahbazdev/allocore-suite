@@ -17,6 +17,11 @@ class SetLocale
 
             if (in_array($locale, $locales, true)) {
                 session(['locale' => $locale]);
+
+                if ($request->user()) {
+                    $request->user()->update(['locale' => $locale]);
+                }
+
                 app()->setLocale($locale);
             }
         } elseif (session()->has('locale')) {
@@ -25,6 +30,8 @@ class SetLocale
             if (in_array($locale, $locales, true)) {
                 app()->setLocale($locale);
             }
+        } elseif ($request->user()?->locale && in_array($request->user()->locale, $locales, true)) {
+            app()->setLocale($request->user()->locale);
         }
 
         return $next($request);

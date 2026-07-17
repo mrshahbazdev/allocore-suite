@@ -42,6 +42,8 @@ class UserController extends Controller
             'role' => 'required|in:admin,user',
             'current_team_id' => 'nullable|exists:teams,id',
             'email_verified' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'locale' => 'nullable|string|in:en,de',
         ]);
 
         $verified = $validated['email_verified'] ?? false;
@@ -81,6 +83,8 @@ class UserController extends Controller
             'role' => 'required|in:admin,user',
             'current_team_id' => 'nullable|exists:teams,id',
             'email_verified' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'locale' => 'nullable|string|in:en,de',
         ]);
 
         $verified = $validated['email_verified'] ?? false;

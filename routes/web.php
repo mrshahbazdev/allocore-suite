@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
+use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\ApiTokenController as AdminApiTokenController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\TeamController;
 use App\Models\Module;
@@ -63,6 +65,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');
 
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    // Notifications
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::patch('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
     // Billing
     Route::get('billing/plans', [BillingController::class, 'plans'])->name('billing.plans');
@@ -206,6 +213,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('tax-rates', AdminTaxRateController::class)->names('tax-rates');
     Route::resource('notification-templates', AdminNotificationTemplateController::class)->names('notification-templates');
     Route::get('queue-monitor', [AdminQueueMonitorController::class, 'index'])->name('queue-monitor.index');
+
+    Route::get('notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/create', [AdminNotificationController::class, 'create'])->name('notifications.create');
+    Route::post('notifications', [AdminNotificationController::class, 'store'])->name('notifications.store');
+    Route::delete('notifications/{notification}', [AdminNotificationController::class, 'destroy'])->name('notifications.destroy');
 
     Route::get('log-viewer', [AdminLogViewerController::class, 'index'])->name('log-viewer.index');
     Route::get('session-manager', [AdminSessionManagerController::class, 'index'])->name('session-manager.index');

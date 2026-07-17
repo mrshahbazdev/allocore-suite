@@ -10,11 +10,13 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public string $locale = '';
 
     public function mount(): void
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->locale = Auth::user()->locale ?? config('app.locale');
     }
 
     public function updateProfileInformation(): void
@@ -24,9 +26,12 @@ new class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'locale' => ['required', 'string', Rule::in(config('app.available_locales', ['en']))],
         ]);
 
         $user->fill($validated);
+        session(['locale' => $validated['locale']]);
+        app()->setLocale($validated['locale']);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -91,6 +96,23 @@ new class extends Component
             @error('email')
                 <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
             @enderror
+
+        <div>
+            <label for="locale" class="block text-sm font-medium text-slate-700">{{ __('Language') }}</label>
+            <select
+                wire:model="locale"
+                id="locale"
+                name="locale"
+                class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+                @foreach (config('app.available_locales', ['en']) as $locale)
+                    <option value="{{ $locale }}">{{ strtoupper($locale) }}</option>
+                @endforeach
+            </select>
+            @error('locale')
+                <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+            @enderror
+        </div>
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
                 <div>

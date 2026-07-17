@@ -87,9 +87,10 @@
                 <a href="{{ route('admin.media.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.media.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Media') }}</a>
                 <a href="{{ route('admin.coupons.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.coupons.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Coupons') }}</a>
                 <a href="{{ route('admin.tax-rates.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.tax-rates.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Tax Rates') }}</a>
-                <a href="{{ route('admin.notification-templates.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.notification-templates.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Notifications') }}</a>
+                <a href="{{ route('admin.notification-templates.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.notification-templates.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('admin.notification_templates.title') }}</a>
                 <a href="{{ route('admin.queue-monitor.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.queue-monitor.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Queue Monitor') }}</a>
                 <a href="{{ route('admin.api-tokens.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.api-tokens.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('API Tokens') }}</a>
+                <a href="{{ route('admin.notifications.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.notifications.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Notifications') }}</a>
                 <a href="{{ route('admin.log-viewer.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.log-viewer.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Logs') }}</a>
                 <a href="{{ route('admin.session-manager.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.session-manager.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Sessions') }}</a>
                 <a href="{{ route('admin.backups.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.backups.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Backups') }}</a>
@@ -110,6 +111,15 @@
                 @if (session('impersonated_by'))
                     <a href="{{ route('impersonation.stop') }}" class="rounded-lg bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-200">{{ __('admin.impersonation.stop') }}</a>
                 @endif
+                @auth
+                    <a href="{{ route('notifications.index') }}" class="relative text-slate-500 hover:text-slate-700">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.454 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                        @php($unreadCount = auth()->user()->unreadNotifications()->count())
+                        @if ($unreadCount > 0)
+                            <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                        @endif
+                    </a>
+                @endauth
                 <span class="text-sm font-medium text-slate-700">{{ auth()->user()?->name }}</span>
                 <a href="{{ route('profile') }}" class="text-sm text-indigo-600 hover:underline">{{ __('Profile') }}</a>
                 <form method="POST" action="{{ route('logout') }}">
