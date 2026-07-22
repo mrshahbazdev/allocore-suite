@@ -1,0 +1,11 @@
+{
+    "name": "BunnyBand",
+    "alias": "bunnyband",
+    "description": "Reward-based micro-task platform with tasks, referrals, levels, wallet, deposits and withdrawals.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\BunnyBand\\Providers\\BunnyBandServiceProvider"
+    ],
+    "files": []
+}

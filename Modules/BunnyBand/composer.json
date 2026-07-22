@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/bunnyband",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\BunnyBand\\": "app/",
+            "Modules\\BunnyBand\\Database\\Factories\\": "database/factories/",
+            "Modules\\BunnyBand\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\BunnyBand\\Tests\\": "tests/"
+        }
+    }
+}
