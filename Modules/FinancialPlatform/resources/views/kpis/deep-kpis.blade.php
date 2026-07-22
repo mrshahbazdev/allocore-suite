@@ -114,11 +114,23 @@ $settings = $settings ?? [];
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach (['profit' => 'Profit', 'order' => 'Order', 'influence' => 'Influence', 'legacy' => 'Legacy'] as $phase => $label)
+                @foreach (['profit' => __('Profit'), 'order' => __('Order'), 'influence' => __('Influence'), 'legacy' => __('Legacy')] as $phase => $label)
                     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <h3 class="font-semibold text-slate-900">{{ $label }}</h3>
-                        <p class="mt-2 text-sm text-slate-500">{{ $deepKpis[$phase]['note'] ?? 'Concrete KPIs are not defined for this pillar yet.' }}</p>
-                        <a href="{{ url('app/audit') }}" class="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:underline">Open AuditPro</a>
+                        @if (isset($deepKpis[$phase]['maturity']))
+                            <div class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($deepKpis[$phase]['maturity']['score'], 1) }}<span class="text-sm font-normal text-slate-500">/5</span></div>
+                            <div class="text-xs text-slate-500">{{ $deepKpis[$phase]['maturity']['label'] }} — {{ $deepKpis[$phase]['maturity']['pillar'] }}</div>
+                        @else
+                            <p class="mt-2 text-sm text-slate-500">{{ __('No AuditPro maturity data yet.') }}</p>
+                        @endif
+                        <dl class="mt-3 space-y-1 text-xs text-slate-600">
+                            @foreach ($deepKpis[$phase] as $key => $value)
+                                @if (! in_array($key, ['maturity'], true) && is_numeric($value))
+                                    <div class="flex justify-between"><span>{{ __(ucfirst(str_replace('_', ' ', $key))) }}</span><span>{{ number_format($value, 2) }}{{ str_ends_with($key, '_rate') || $key === 'margin_percent' || $key === 'debt_ratio' ? '%' : '' }}</span></div>
+                                @endif
+                            @endforeach
+                        </dl>
+                        <a href="{{ url('app/audit') }}" class="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:underline">{{ __('Open AuditPro') }}</a>
                     </div>
                 @endforeach
             </div>
@@ -127,8 +139,33 @@ $settings = $settings ?? [];
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">Configure Deep KPIs</h2>
 
+            <form method="POST" action="{{ route('financialplatform.deep-kpis.sync') }}" class="mb-4">
+                @csrf
+                <button class="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">{{ __('Sync metrics from APIs') }}</button>
+            </form>
+
             <form method="POST" action="{{ route('financialplatform.deep-kpis.update') }}" class="mt-4 space-y-4">
                 @csrf
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">SeoStory base URL</label>
+                    <input type="url" name="seostory_base_url" value="{{ old('seostory_base_url', $settings['seostory_base_url'] ?? 'https://financial.seostory.de') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">SeoStory API token</label>
+                    <input type="text" name="seostory_api_token" value="{{ old('seostory_api_token', $settings['seostory_api_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Google Search Console access token</label>
+                    <input type="text" name="gsc_access_token" value="{{ old('gsc_access_token', $settings['gsc_access_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Google Search Console site URL</label>
+                    <input type="url" name="gsc_site_url" value="{{ old('gsc_site_url', $settings['gsc_site_url'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Target sales</label>

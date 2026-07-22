@@ -108,6 +108,18 @@ class RevenueDevelopmentSnapshot
 
     private function seostoryRevenue(Team $team): float
     {
+        $api = app(SeoStoryApiClient::class);
+        $fetched = $api->revenue(now()->year, now()->month);
+
+        if ($fetched !== null) {
+            Setting::updateOrCreate(
+                ['team_id' => $team->id, 'key' => 'revenue_development_seostory_revenue'],
+                ['value' => (string) $fetched, 'type' => 'string']
+            );
+
+            return $fetched;
+        }
+
         return (float) Setting::query()
             ->where('team_id', $team->id)
             ->where('key', 'revenue_development_seostory_revenue')

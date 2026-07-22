@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\FinancialPlatform\Http\Controllers\BankTransactionController;
+use Modules\FinancialPlatform\Http\Controllers\BudgetController;
 use Modules\FinancialPlatform\Http\Controllers\CompanyController;
 use Modules\FinancialPlatform\Http\Controllers\DashboardController;
 use Modules\FinancialPlatform\Http\Controllers\DeepKpiController;
 use Modules\FinancialPlatform\Http\Controllers\ExcelImportController;
+use Modules\FinancialPlatform\Http\Controllers\ExchangeRateController;
 use Modules\FinancialPlatform\Http\Controllers\GmbhAnalyseController;
 use Modules\FinancialPlatform\Http\Controllers\ImmobilienController;
 use Modules\FinancialPlatform\Http\Controllers\JahresabschlussController;
@@ -76,9 +79,22 @@ Route::middleware(['auth', 'verified', 'module:financial-platform', EnsureCurren
 
         Route::get('/deep-kpis', [DeepKpiController::class, 'index'])->name('deep-kpis.index');
         Route::post('/deep-kpis', [DeepKpiController::class, 'update'])->name('deep-kpis.update');
+        Route::post('/deep-kpis/sync', [DeepKpiController::class, 'sync'])->name('deep-kpis.sync');
 
         Route::get('/kpi-schedules', [KpiScheduleController::class, 'index'])->name('kpi-schedules.index');
         Route::post('/kpi-schedules', [KpiScheduleController::class, 'store'])->name('kpi-schedules.store');
         Route::post('/kpi-schedules/{schedule}/run', [KpiScheduleController::class, 'runNow'])->name('kpi-schedules.run');
         Route::delete('/kpi-schedules/{schedule}', [KpiScheduleController::class, 'destroy'])->name('kpi-schedules.destroy');
+
+        Route::get('/bank-transactions', [BankTransactionController::class, 'index'])->name('bank-transactions.index');
+        Route::post('/bank-transactions/import', [BankTransactionController::class, 'import'])->name('bank-transactions.import');
+        Route::delete('/bank-transactions/{bankTransaction}', [BankTransactionController::class, 'destroy'])->name('bank-transactions.destroy');
+
+        Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
+        Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+        Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+
+        Route::get('/exchange-rates', [ExchangeRateController::class, 'index'])->name('exchange-rates.index');
+        Route::post('/exchange-rates', [ExchangeRateController::class, 'store'])->name('exchange-rates.store');
+        Route::delete('/exchange-rates/{exchangeRate}', [ExchangeRateController::class, 'destroy'])->name('exchange-rates.destroy');
     });
