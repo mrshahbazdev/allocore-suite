@@ -1,0 +1,11 @@
+{
+    "name": "PlanHive",
+    "alias": "planhive",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PlanHive\\Providers\\PlanHiveServiceProvider"
+    ],
+    "files": []
+}

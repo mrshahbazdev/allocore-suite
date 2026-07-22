@@ -4,5 +4,6 @@
     "LeadQuality": true,
     "FinancialPlatform": true,
     "ClusterForge": true,
-    "TimeButler": true
+    "TimeButler": true,
+    "PlanHive": true
 }
