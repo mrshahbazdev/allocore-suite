@@ -1,0 +1,11 @@
+{
+    "name": "FocusMatrix",
+    "alias": "focus-matrix",
+    "description": "Bilingual productivity OS for managers using the Only-You-Principle.",
+    "keywords": ["focus", "productivity", "delegation", "only-you"],
+    "priority": 0,
+    "providers": [
+        "Modules\\FocusMatrix\\Providers\\FocusMatrixServiceProvider"
+    ],
+    "files": []
+}
