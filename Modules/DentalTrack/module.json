@@ -1,0 +1,11 @@
+{
+    "name": "DentalTrack",
+    "alias": "dental-track",
+    "description": "QR-based production tracking system for dental laboratories.",
+    "keywords": ["dental", "qr", "tracking", "production"],
+    "priority": 0,
+    "providers": [
+        "Modules\\DentalTrack\\Providers\\DentalTrackServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,10 @@
+{
+    "name": "modules/dental-track",
+    "description": "DentalTrack module for Allocore Suite",
+    "type": "laravel-module",
+    "autoload": {
+        "psr-4": {
+            "Modules\\DentalTrack\\": "app/"
+        }
+    }
+}
