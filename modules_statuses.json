@@ -9,5 +9,6 @@
     "KpiTool": true,
     "LoopEngine": true,
     "SmartKpi": true,
-    "CashCore": true
+    "CashCore": true,
+    "BunnyBand": true
 }
