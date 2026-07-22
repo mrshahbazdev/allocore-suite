@@ -5,15 +5,16 @@ namespace Modules\LeadQuality\Console\Commands;
 use Illuminate\Console\Command;
 use Modules\LeadQuality\Models\Contact;
 use Modules\LeadQuality\Models\SequenceStep;
+use Modules\LeadQuality\Services\LeadEmailService;
 use Modules\LeadQuality\Services\TemplateService;
 
 class ProcessDripCampaigns extends Command
 {
     protected $signature = 'leadquality:process-drip-campaigns';
 
-    protected $description = 'Process due sequence steps and log outreach activity';
+    protected $description = 'Process due sequence steps and send outreach emails';
 
-    public function handle(TemplateService $templateService): int
+    public function handle(TemplateService $templateService, LeadEmailService $emailService): int
     {
         $contacts = Contact::query()
             ->whereHas('sequences', function ($query): void {
@@ -45,15 +46,28 @@ class ProcessDripCampaigns extends Command
                 }
 
                 $mergedBody = $templateService->merge($currentStep->body, $contact);
+                $mergedSubject = $templateService->merge($currentStep->subject, $contact);
+
+                $result = $emailService->send($contact, $mergedSubject, $mergedBody, $sequence->user);
+
+                $notes = "Drip Campaign: {$sequence->name} (Step {$currentStep->order})\n\nSubject: {$mergedSubject}\n\n{$mergedBody}";
 
                 $contact->activities()->create([
                     'user_id' => $sequence->team->owner_id ?? null,
                     'team_id' => $sequence->team_id,
                     'type' => 'outreach',
-                    'status' => 'completed',
+                    'status' => $result['success'] ? 'completed' : 'failed',
                     'scheduled_at' => now(),
-                    'notes' => "Drip Campaign: {$sequence->name} (Step {$currentStep->order})\n\nSubject: {$currentStep->subject}\n\n{$mergedBody}",
+                    'notes' => $notes."\n\nResult: ".($result['success'] ? 'Sent' : 'Failed - '.$result['message']),
                 ]);
+
+                if (! $result['success']) {
+                    $contact->sequences()->updateExistingPivot($sequence->id, [
+                        'status' => 'failed',
+                    ]);
+
+                    continue;
+                }
 
                 $count++;
 

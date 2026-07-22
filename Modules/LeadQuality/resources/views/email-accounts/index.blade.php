@@ -14,11 +14,17 @@
                                 <div class="font-medium text-slate-900">{{ $account->email_address }}</div>
                                 <div class="text-sm text-slate-500">{{ $account->provider }}</div>
                             </div>
-                            <form method="POST" action="{{ route('leadquality.email-accounts.destroy', $account) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button class="text-sm text-rose-600">{{ __('Delete') }}</button>
-                            </form>
+                            <div class="flex items-center gap-3">
+                                <form method="POST" action="{{ route('leadquality.email-accounts.test', $account) }}">
+                                    @csrf
+                                    <button class="text-sm text-indigo-600">{{ __('Test') }}</button>
+                                </form>
+                                <form method="POST" action="{{ route('leadquality.email-accounts.destroy', $account) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-sm text-rose-600">{{ __('Delete') }}</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 @endforeach
