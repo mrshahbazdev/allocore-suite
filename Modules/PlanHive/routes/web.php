@@ -25,15 +25,29 @@ Route::middleware(['auth', 'verified', 'module:plan-hive', EnsureCurrentTeam::cl
         Route::post('/projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.members.add');
         Route::delete('/projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.members.remove');
 
-        Route::resource('projects.tasks', TaskController::class)->shallow();
-        Route::resource('projects.goals', GoalController::class)->shallow();
+        Route::resource('projects.tasks', TaskController::class)->shallow()->names([
+            'index' => 'tasks.index', 'create' => 'tasks.create', 'store' => 'tasks.store',
+        ]);
+        Route::resource('projects.goals', GoalController::class)->shallow()->names([
+            'index' => 'goals.index', 'create' => 'goals.create', 'store' => 'goals.store',
+        ]);
         Route::get('/calendar', [CalendarEventController::class, 'index'])->name('calendar.index');
-        Route::resource('projects.calendar-events', CalendarEventController::class)->shallow();
-        Route::resource('projects.contacts', ContactController::class)->shallow();
-        Route::resource('projects.notes', NoteController::class)->shallow();
-        Route::resource('projects.documents', DocumentController::class)->shallow();
+        Route::resource('projects.calendar-events', CalendarEventController::class)->shallow()->names([
+            'index' => 'calendar-events.index', 'create' => 'calendar-events.create', 'store' => 'calendar-events.store',
+        ]);
+        Route::resource('projects.contacts', ContactController::class)->shallow()->names([
+            'index' => 'contacts.index', 'create' => 'contacts.create', 'store' => 'contacts.store',
+        ]);
+        Route::resource('projects.notes', NoteController::class)->shallow()->names([
+            'index' => 'notes.index', 'create' => 'notes.create', 'store' => 'notes.store',
+        ]);
+        Route::resource('projects.documents', DocumentController::class)->shallow()->names([
+            'index' => 'documents.index', 'create' => 'documents.create', 'store' => 'documents.store',
+        ]);
+        Route::resource('projects.reminders', ReminderController::class)->shallow()->names([
+            'index' => 'reminders.index', 'create' => 'reminders.create', 'store' => 'reminders.store',
+        ]);
         Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
-        Route::resource('projects.reminders', ReminderController::class)->shallow();
         Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.index');
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

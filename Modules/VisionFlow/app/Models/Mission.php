@@ -1,4 +1,3 @@
-
 <?php
 
 namespace Modules\VisionFlow\Models;
@@ -8,11 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\VisionFlow\Models\Concerns\BelongsToCurrentTeam;
 
 class Mission extends Model
 {
-    use BelongsToCurrentTeam;
     use HasFactory;
 
     protected $table = 'visionflow_missions';

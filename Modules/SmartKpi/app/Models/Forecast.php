@@ -8,6 +8,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class Forecast extends Model
 {
+    protected $table = 'smartkpi_forecasts';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

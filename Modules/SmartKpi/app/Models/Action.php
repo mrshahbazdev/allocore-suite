@@ -9,6 +9,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class Action extends Model
 {
+    protected $table = 'smartkpi_actions';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

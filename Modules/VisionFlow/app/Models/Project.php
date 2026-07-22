@@ -1,4 +1,3 @@
-
 <?php
 
 namespace Modules\VisionFlow\Models;
@@ -6,11 +5,9 @@ namespace Modules\VisionFlow\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\VisionFlow\Models\Concerns\BelongsToCurrentTeam;
 
 class Project extends Model
 {
-    use BelongsToCurrentTeam;
     use HasFactory;
 
     protected $table = 'visionflow_projects';

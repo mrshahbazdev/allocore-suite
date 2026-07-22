@@ -19,7 +19,7 @@ Route::middleware(['auth', 'verified', 'module:vision-flow', EnsureCurrentTeam::
         Route::get('/', DashboardController::class)->name('dashboard');
         Route::resource('organizations', OrganizationController::class);
 
-        Route::prefix('organizations/{organization}')->group(function (): void {
+        Route::prefix('organizations/{organization}')->name('organizations.')->group(function (): void {
             Route::resource('values', ValueController::class)->except(['show']);
             Route::post('values/{value}/approve', [ValueController::class, 'approve'])->name('values.approve');
             Route::post('values/{value}/archive', [ValueController::class, 'archive'])->name('values.archive');

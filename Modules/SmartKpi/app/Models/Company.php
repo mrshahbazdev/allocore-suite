@@ -13,6 +13,8 @@ class Company extends Model
 {
     use BelongsToCurrentTeam;
 
+    protected $table = 'smartkpi_companies';
+
     protected $fillable = [
         'team_id', 'user_id', 'name', 'description', 'industry', 'size', 'timezone', 'logo', 'is_active',
     ];
