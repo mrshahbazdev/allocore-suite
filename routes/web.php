@@ -41,12 +41,15 @@ use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SitemapController;
@@ -58,9 +61,6 @@ use App\Http\Controllers\TwoFactorChallengeController;
 use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\UserActivityController;
 use App\Http\Controllers\UserApiTokenController;
-use App\Models\Module;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('stop-impersonating', [AdminImpersonationController::class, 'stop'])->name('impersonation.stop');
 
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('dashboard/export/pdf', [DashboardExportController::class, 'pdf'])->name('dashboard.export.pdf');
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -115,12 +116,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('analyze', ToolAnalyzerController::class)->name('tool-analyzer.index');
 
     // Module placeholders — replaced by real module routes as each module is ported
-    Route::get('app/{prefix}', function (string $prefix) {
-        $module = Module::where('route_prefix', $prefix)->firstOrFail();
-        abort_unless(auth()->user()->hasModule($module->key), 403);
-
-        return view('modules.placeholder', compact('module'));
-    })->whereIn('prefix', ['leads'])->name('modules.placeholder');
+    Route::get('app/{prefix}', ModuleFallbackController::class)
+        ->whereIn('prefix', ['leads'])
+        ->name('modules.placeholder');
 
     // Teams
     Route::get('teams', [TeamController::class, 'index'])->name('teams.index');
@@ -302,13 +300,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('exports/download', [ExportController::class, 'export'])->name('exports.download');
 });
 
-Route::post('logout', function (Request $request) {
-    Auth::guard('web')->logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect('/');
-})->middleware('auth')->name('logout');
+Route::post('logout', LogoutController::class)
+    ->middleware('auth')
+    ->name('logout');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

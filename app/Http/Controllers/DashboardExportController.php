@@ -6,24 +6,21 @@ use App\Models\ActivityLog;
 use App\Models\Announcement;
 use App\Models\Module;
 use App\Models\ToolSubscription;
-use App\Support\DashboardWidgetRegistry;
-use App\Support\ModuleStats;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
-class DashboardController extends Controller
+class DashboardExportController extends Controller
 {
-    public function __invoke(Request $request, DashboardWidgetRegistry $registry)
+    public function pdf(Request $request)
     {
         $user = $request->user();
         $modules = Module::where('is_active', true)->get();
         $accessible = $user->accessibleModules()->pluck('key')->all();
-        $widgets = $registry->forUser($user);
-        $announcements = Announcement::active()->latest()->take(3)->get();
-
         $activeModules = $modules->filter(fn ($m) => in_array($m->key, $accessible))->values();
         $lockedModules = $modules->filter(fn ($m) => ! in_array($m->key, $accessible))->values();
+        $announcements = Announcement::active()->latest()->take(3)->get();
 
         $subscription = ToolSubscription::with('plan')
             ->where('billable_type', get_class($user))
@@ -43,12 +40,11 @@ class DashboardController extends Controller
             'active_modules' => $activeModules->count(),
             'locked_modules' => $lockedModules->count(),
             'total_modules' => $modules->count(),
-            'recent_activities' => $activityLogs->count(),
             'workspace_members' => DB::table('team_user')->where('team_id', $user->current_team_id)->count(),
         ];
 
-        $moduleStats = app(ModuleStats::class)->forUser($user);
+        $pdf = Pdf::loadView('exports.dashboard', compact('user', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'announcements'));
 
-        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats'));
+        return $pdf->download('dashboard-'.now()->format('Y-m-d').'.pdf');
     }
 }
