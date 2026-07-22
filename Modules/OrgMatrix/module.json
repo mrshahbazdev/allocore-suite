@@ -1,0 +1,11 @@
+{
+    "name": "OrgMatrix",
+    "alias": "org-matrix",
+    "description": "Organizational intelligence platform for visualizing roles, people and succession plans.",
+    "keywords": ["org", "chart", "roles", "people", "succession"],
+    "priority": 0,
+    "providers": [
+        "Modules\\OrgMatrix\\Providers\\OrgMatrixServiceProvider"
+    ],
+    "files": []
+}
