@@ -5,7 +5,9 @@ namespace Modules\LeadQuality\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Modules\LeadQuality\Models\Contact;
 use Modules\LeadQuality\Models\EmailAccount;
+use Modules\LeadQuality\Services\LeadEmailService;
 
 class EmailAccountController
 {
@@ -52,5 +54,18 @@ class EmailAccountController
         $emailAccount->delete();
 
         return redirect()->back()->with('success', __('Email account removed.'));
+    }
+
+    public function test(EmailAccount $emailAccount, LeadEmailService $emailService): RedirectResponse
+    {
+        $contact = new Contact([
+            'email' => auth()->user()->email,
+            'name' => auth()->user()->name,
+            'team_id' => $emailAccount->team_id,
+        ]);
+
+        $result = $emailService->send($contact, __('Test email from LeadOS'), __('This is a test email. Your SMTP settings are working.'), $emailAccount->user);
+
+        return redirect()->back()->with($result['success'] ? 'success' : 'error', $result['success'] ? __('Test email sent.') : $result['message']);
     }
 }

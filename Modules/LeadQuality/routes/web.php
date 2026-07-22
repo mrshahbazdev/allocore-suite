@@ -39,6 +39,7 @@ Route::prefix('app/leads')
 
         Route::get('email-accounts', [EmailAccountController::class, 'index'])->name('email-accounts.index');
         Route::post('email-accounts', [EmailAccountController::class, 'store'])->name('email-accounts.store');
+        Route::post('email-accounts/{emailAccount}/test', [EmailAccountController::class, 'test'])->name('email-accounts.test');
         Route::delete('email-accounts/{emailAccount}', [EmailAccountController::class, 'destroy'])->name('email-accounts.destroy');
 
         Route::resource('sequences', SequenceController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
