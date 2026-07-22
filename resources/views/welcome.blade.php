@@ -22,6 +22,12 @@
     <body class="h-full font-sans text-slate-600 antialiased">
         @php($modules = \App\Models\Module::where('is_active', true)->get())
         @php($siteName = \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')))
+        @php($landingStats = [
+            'modules' => \App\Models\Module::where('is_active', true)->count(),
+            'teams' => \App\Models\Team::count(),
+            'users' => \App\Models\User::count(),
+            'subscriptions' => \App\Models\ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(),
+        ])
 
         <div class="flex min-h-full flex-col bg-slate-50">
             {{-- Header --}}
@@ -158,8 +164,33 @@
                     </div>
                 </section>
 
+                {{-- How it works --}}
+                <section id="how-it-works" class="bg-white py-24">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div class="mx-auto max-w-2xl text-center">
+                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.how.heading') }}</h2>
+                            <p class="mt-4 text-lg text-slate-600">{{ __('landing.how.subheading') }}</p>
+                        </div>
+                        <div class="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-3">
+                            @foreach ([
+                                'step1' => 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
+                                'step2' => 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z',
+                                'step3' => 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z',
+                            ] as $key => $icon)
+                                <div class="relative rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
+                                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/></svg>
+                                    </div>
+                                    <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ __('landing.how.'.$key.'.title') }}</h3>
+                                    <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ __('landing.how.'.$key.'.desc') }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+
                 {{-- Modules --}}
-                <section id="modules" class="bg-white py-24">
+                <section id="modules" class="bg-slate-50 py-24">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
                         <div class="mx-auto max-w-2xl text-center">
                             <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.modules.heading') }}</h2>
@@ -238,6 +269,36 @@
                                 @endforelse
                             </div>
                         @endauth
+                    </div>
+                </section>
+
+                {{-- Stats --}}
+                <section class="bg-slate-900 py-16">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-center">
+                            @foreach ([
+                                ['label' => __('landing.stats.modules'), 'value' => $landingStats['modules']],
+                                ['label' => __('landing.stats.teams'), 'value' => $landingStats['teams']],
+                                ['label' => __('landing.stats.users'), 'value' => $landingStats['users']],
+                                ['label' => __('landing.stats.subscriptions'), 'value' => $landingStats['subscriptions']],
+                            ] as $stat)
+                                <div>
+                                    <p class="text-4xl font-extrabold text-white">{{ $stat['value'] }}</p>
+                                    <p class="mt-2 text-sm font-medium text-slate-400">{{ $stat['label'] }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Testimonial --}}
+                <section class="bg-white py-24">
+                    <div class="mx-auto max-w-4xl px-6 lg:px-8 text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.testimonials.heading') }}</h2>
+                        <blockquote class="mt-10 text-xl font-medium leading-8 text-slate-700">
+                            “{{ __('landing.testimonials.quote') }}”
+                        </blockquote>
+                        <p class="mt-4 text-sm font-semibold text-slate-900">— {{ __('landing.testimonials.author') }}</p>
                     </div>
                 </section>
 

@@ -48,7 +48,6 @@ Route::middleware(['auth', 'verified', 'module:plan-hive', EnsureCurrentTeam::cl
             'index' => 'reminders.index', 'create' => 'reminders.create', 'store' => 'reminders.store',
         ]);
         Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
-        Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.index');
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });
