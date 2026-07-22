@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\WebhookDispatcher;
+use App\Services\WorkflowEngine;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -63,6 +64,8 @@ class ActivityLog extends Model
         }
 
         $log->save();
+
+        WorkflowEngine::evaluate($log);
 
         WebhookDispatcher::dispatch('activity.created', [
             'log_name' => $log->log_name,
