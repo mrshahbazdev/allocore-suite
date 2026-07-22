@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendWebhookCallJob;
 use App\Models\Integration;
 use App\Models\Webhook;
+use App\Models\WebhookCall;
 use Illuminate\Http\Request;
 
 class WebhookController extends Controller
@@ -71,5 +73,26 @@ class WebhookController extends Controller
         $webhook->delete();
 
         return redirect()->route('admin.integrations.edit', $integrationId)->with('success', __('admin.webhooks.deleted'));
+    }
+
+    public function history(Webhook $webhook)
+    {
+        $calls = $webhook->calls()->latest()->paginate(20);
+
+        return view('admin.webhooks.history', compact('webhook', 'calls'));
+    }
+
+    public function retry(WebhookCall $webhookCall)
+    {
+        $webhookCall->update([
+            'failed_at' => null,
+            'failure_message' => null,
+            'response_status' => null,
+            'response_body' => null,
+        ]);
+
+        SendWebhookCallJob::dispatch($webhookCall);
+
+        return redirect()->route('admin.webhooks.history', $webhookCall->webhook_id)->with('success', __('Webhook call retried.'));
     }
 }

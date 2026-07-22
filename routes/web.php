@@ -229,6 +229,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('webhooks/{webhook}/edit', [AdminWebhookController::class, 'edit'])->name('webhooks.edit');
     Route::put('webhooks/{webhook}', [AdminWebhookController::class, 'update'])->name('webhooks.update');
     Route::delete('webhooks/{webhook}', [AdminWebhookController::class, 'destroy'])->name('webhooks.destroy');
+    Route::get('webhooks/{webhook}/history', [AdminWebhookController::class, 'history'])->name('webhooks.history');
+    Route::post('webhook-calls/{webhookCall}/retry', [AdminWebhookController::class, 'retry'])->name('webhook-calls.retry');
 
     Route::get('announcements', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
     Route::get('announcements/create', [AdminAnnouncementController::class, 'create'])->name('announcements.create');
