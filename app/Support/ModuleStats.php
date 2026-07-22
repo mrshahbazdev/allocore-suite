@@ -79,6 +79,16 @@ class ModuleStats
         ];
     }
 
+    public function modelFor(string $key): ?string
+    {
+        return $this->resourceMap[$key]['model'] ?? null;
+    }
+
+    public function labelFor(string $key): ?string
+    {
+        return $this->resourceMap[$key]['label'] ?? null;
+    }
+
     protected function countForModel(string $modelClass, ?int $teamId): ?int
     {
         if (! class_exists($modelClass)) {
