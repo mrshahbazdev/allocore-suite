@@ -25,7 +25,7 @@
                 <tbody class="divide-y divide-slate-100">
                     @foreach ($items as $item)
                         <tr class="hover:bg-slate-50">
-                            <td class="px-4 py-3">{{ $item->title }}</td><td class="px-4 py-3">{{ $value.title }}</td><td class="px-4 py-3">{{ $mission.title }}</td><td class="px-4 py-3">{{ $user.name }}</td>
+                            <td class="px-4 py-3">{{ $item->title }}</td><td class="px-4 py-3">{{ $item->value->title ?? '-' }}</td><td class="px-4 py-3">{{ $item->mission->title ?? '-' }}</td><td class="px-4 py-3">{{ $item->user->name ?? '-' }}</td>
                             <td class="px-4 py-3 flex gap-3">
                                 
                                 <a href="{{ route('visionflow.organizations.decision-logs.edit', [$organization, $item]) }}" class="text-indigo-600 hover:underline">{{ __('Edit') }}</a>

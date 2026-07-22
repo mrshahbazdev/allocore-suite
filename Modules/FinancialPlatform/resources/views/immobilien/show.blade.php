@@ -157,7 +157,7 @@
 @endif
 </div>
 
-@include('partials.kpi-glossary')
+@include('financialplatform::partials.kpi-glossary')
 
 <div style="text-align:right; margin-top:12px;">
     <form method="POST" action="{{ route('immobilien.destroy', $analysis) }}" onsubmit="return confirm('Löschen?')">

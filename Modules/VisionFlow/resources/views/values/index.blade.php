@@ -27,7 +27,7 @@
                         <tr class="hover:bg-slate-50">
                             <td class="px-4 py-3">{{ $item->title }}</td><td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-1 text-xs font-medium bg-slate-100 text-slate-700">{{ $item->status }}</span></td><td class="px-4 py-3">{{ $item->sort_order }}</td>
                             <td class="px-4 py-3 flex gap-3">
-                                <form method="POST" action="{{ route('visionflow.organizations.values.approve.', [$organization, $item]) }}" class="inline">@csrf<button class="text-emerald-600 hover:underline">{{ __("Approve") }}</button></form><form method="POST" action="{{ route('visionflow.organizations.values.archive.', [$organization, $item]) }}" class="inline">@csrf<button class="text-emerald-600 hover:underline">{{ __("Archive") }}</button></form>
+                                <form method="POST" action="{{ route('visionflow.organizations.values.approve', [$organization, $item]) }}" class="inline">@csrf<button class="text-emerald-600 hover:underline">{{ __("Approve") }}</button></form><form method="POST" action="{{ route('visionflow.organizations.values.archive', [$organization, $item]) }}" class="inline">@csrf<button class="text-emerald-600 hover:underline">{{ __("Archive") }}</button></form>
                                 <a href="{{ route('visionflow.organizations.values.edit', [$organization, $item]) }}" class="text-indigo-600 hover:underline">{{ __('Edit') }}</a>
                                 <form method="POST" action="{{ route('visionflow.organizations.values.destroy', [$organization, $item]) }}" onsubmit="return confirm('{{ __('Delete?') }}')" class="inline">
                                     @csrf @method('DELETE')

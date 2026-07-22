@@ -55,7 +55,7 @@ class ReminderController extends Controller
 
         $project->reminders()->create($validated + ['team_id' => $project->team_id, 'user_id' => auth()->id()]);
 
-        return redirect()->route('planhive.reminders.index')->with('success', __('Reminder created.'));
+        return redirect()->route('planhive.reminders.index', $project)->with('success', __('Reminder created.'));
     }
 
     public function edit(Reminder $reminder): View
@@ -74,13 +74,13 @@ class ReminderController extends Controller
         $validated['is_done'] = $request->boolean('is_done');
         $reminder->update($validated);
 
-        return redirect()->route('planhive.reminders.index')->with('success', __('Reminder updated.'));
+        return redirect()->route('planhive.reminders.index', $reminder->project)->with('success', __('Reminder updated.'));
     }
 
     public function destroy(Reminder $reminder): RedirectResponse
     {
         $reminder->delete();
 
-        return redirect()->route('planhive.reminders.index')->with('success', __('Reminder deleted.'));
+        return redirect()->route('planhive.reminders.index', $reminder->project)->with('success', __('Reminder deleted.'));
     }
 }

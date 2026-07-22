@@ -220,7 +220,7 @@ new ApexCharts(document.querySelector("#kpiChart"), {
 @endpush
 @endif
 
-@include('partials.kpi-glossary')
+@include('financialplatform::partials.kpi-glossary')
 
 {{-- Delete form --}}
 <div style="text-align:right; margin-top:8px;">

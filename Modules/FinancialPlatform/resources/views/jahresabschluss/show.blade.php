@@ -109,6 +109,6 @@
 @endforeach
 </div>
 
-@include('partials.kpi-glossary')
+@include('financialplatform::partials.kpi-glossary')
 
 @endsection
