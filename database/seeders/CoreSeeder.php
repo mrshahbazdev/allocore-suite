@@ -24,6 +24,7 @@ class CoreSeeder extends Seeder
             ['key' => 'time-butler', 'name' => 'TimeButler', 'description' => 'Employee vacation, absence & time tracking with team calendar.', 'icon' => 'clock', 'route_prefix' => 'timebutler'],
             ['key' => 'plan-hive', 'name' => 'PlanHive', 'description' => 'Multi-tenant project management with tasks, goals, calendar, contacts & documents.', 'icon' => 'folder', 'route_prefix' => 'planhive'],
             ['key' => 'kpi-tool', 'name' => 'KpiTool', 'description' => 'Bilingual KPI catalog, monthly spreadsheet, targets, charts & CSV export.', 'icon' => 'chart-bar', 'route_prefix' => 'kpitool'],
+            ['key' => 'smart-kpi', 'name' => 'SmartKpi', 'description' => 'Hierarchical multi-tenant KPI management with companies, departments, problems, actions, forecasts and goals.', 'icon' => 'presentation-chart-line', 'route_prefix' => 'smartkpi'],
         ];
 
         foreach ($modules as $module) {
@@ -39,6 +40,7 @@ class CoreSeeder extends Seeder
             ['name' => 'TimeButler Solo', 'slug' => 'time-butler-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['time-butler']],
             ['name' => 'PlanHive Solo', 'slug' => 'plan-hive-solo', 'price_monthly' => 12.99, 'price_yearly' => 129, 'modules' => ['plan-hive']],
             ['name' => 'KpiTool Solo', 'slug' => 'kpi-tool-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['kpi-tool']],
+            ['name' => 'SmartKpi Solo', 'slug' => 'smart-kpi-solo', 'price_monthly' => 19.99, 'price_yearly' => 199, 'modules' => ['smart-kpi']],
         ];
 
         foreach ($plans as $data) {
