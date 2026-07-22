@@ -6,5 +6,6 @@
     "ClusterForge": true,
     "TimeButler": true,
     "PlanHive": true,
-    "KpiTool": true
+    "KpiTool": true,
+    "LoopEngine": true
 }
