@@ -1,0 +1,10 @@
+{
+    "name": "modules/nur-du",
+    "description": "Nur-Du module for Allocore Suite",
+    "type": "laravel-module",
+    "autoload": {
+        "psr-4": {
+            "Modules\\NurDu\\": "app/"
+        }
+    }
+}
