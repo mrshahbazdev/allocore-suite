@@ -11,6 +11,20 @@ $settings = $settings ?? [];
 @section('content')
     <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div class="space-y-6">
+            @if (! empty($missingModules))
+                @php($moduleModels = \App\Models\Module::whereIn('key', $missingModules)->get())
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+                    <h2 class="text-lg font-semibold text-amber-900">{{ __('Unlock the full analysis') }}</h2>
+                    <p class="mt-2 text-sm text-amber-800">{{ __('Deep KPIs work best with invoice, lead and audit data. Subscribe to the missing tools below.') }}</p>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        @foreach ($missingModules as $key)
+                            @php($mod = $moduleModels->firstWhere('key', $key))
+                            <a href="{{ route('billing.plans', ['module' => $key]) }}" class="rounded-lg bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-200">{{ $mod?->name ?? $key }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between gap-4">
                     <div>

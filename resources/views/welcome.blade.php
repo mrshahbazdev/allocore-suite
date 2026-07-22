@@ -102,6 +102,7 @@
                             <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                                 @auth
                                     <a href="{{ route('dashboard') }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ __('landing.hero.open_dashboard') }}</a>
+                                    <a href="{{ route('tool-analyzer.index') }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ __('Analyze my tools') }}</a>
                                 @else
                                     @php($primary = \App\Models\SiteSetting::value('hero_cta_primary_link', route('register')))
                                     @php($secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link', route('login')))
@@ -165,27 +166,78 @@
                             <p class="mt-4 text-lg text-slate-600">{{ __('landing.modules.subheading') }}</p>
                         </div>
 
-                        <div class="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            @forelse ($modules as $module)
-                                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
-                                    <div class="flex items-start justify-between gap-4">
-                                        <div>
-                                            <h3 class="text-lg font-semibold text-slate-900">{{ $module->name }}</h3>
-                                            <p class="mt-2 text-sm text-slate-600">{{ $module->description }}</p>
+                        @auth
+                            @php($accessible = auth()->user()->accessibleModules()->pluck('key')->all())
+                            @php($activeModules = $modules->filter(fn ($m) => in_array($m->key, $accessible))->values())
+                            @php($lockedModules = $modules->filter(fn ($m) => ! in_array($m->key, $accessible))->values())
+
+                            @if ($activeModules->isNotEmpty())
+                                <div class="mx-auto mt-10 max-w-2xl text-left">
+                                    <h3 class="text-lg font-semibold text-slate-900">{{ __('Your tools') }}</h3>
+                                </div>
+                                <div class="mx-auto mt-4 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    @foreach ($activeModules as $module)
+                                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
+                                            <div class="flex items-start justify-between gap-4">
+                                                <div>
+                                                    <h3 class="text-lg font-semibold text-slate-900">{{ $module->name }}</h3>
+                                                    <p class="mt-2 text-sm text-slate-600">{{ $module->description }}</p>
+                                                </div>
+                                                <span class="inline-flex shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">{{ __('Active') }}</span>
+                                            </div>
+                                            <a href="{{ url('app/'.$module->route_prefix) }}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                                                {{ __('Open') }}
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                            </a>
                                         </div>
-                                        <span class="inline-flex shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">{{ __('landing.modules.ready') }}</span>
-                                    </div>
-                                    <div class="mt-6 flex items-center gap-2 text-sm font-medium text-indigo-600">
-                                        <span>{{ $module->route_prefix }}</span>
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @empty
-                                <div class="col-span-full rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-500">
-                                    {{ __('landing.modules.empty') }}
+                            @endif
+
+                            @if ($lockedModules->isNotEmpty())
+                                <div class="mx-auto mt-10 max-w-2xl text-left">
+                                    <h3 class="text-lg font-semibold text-slate-900">{{ __('Available add-ons') }}</h3>
                                 </div>
-                            @endforelse
-                        </div>
+                                <div class="mx-auto mt-4 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    @foreach ($lockedModules as $module)
+                                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
+                                            <div class="flex items-start justify-between gap-4">
+                                                <div>
+                                                    <h3 class="text-lg font-semibold text-slate-900">{{ $module->name }}</h3>
+                                                    <p class="mt-2 text-sm text-slate-600">{{ $module->description }}</p>
+                                                </div>
+                                                <span class="inline-flex shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{{ __('Locked') }}</span>
+                                            </div>
+                                            <a href="{{ route('billing.plans', ['module' => $module->key]) }}" class="mt-6 inline-flex items-center gap-2 rounded-lg border border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50">
+                                                {{ __('Subscribe') }}
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @else
+                            <div class="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                @forelse ($modules as $module)
+                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
+                                        <div class="flex items-start justify-between gap-4">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-slate-900">{{ $module->name }}</h3>
+                                                <p class="mt-2 text-sm text-slate-600">{{ $module->description }}</p>
+                                            </div>
+                                            <span class="inline-flex shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">{{ __('landing.modules.ready') }}</span>
+                                        </div>
+                                        <a href="{{ route('billing.plans', ['module' => $module->key]) }}" class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-indigo-600">
+                                            {{ __('Explore') }}
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                        </a>
+                                    </div>
+                                @empty
+                                    <div class="col-span-full rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-500">
+                                        {{ __('landing.modules.empty') }}
+                                    </div>
+                                @endforelse
+                            </div>
+                        @endauth
                     </div>
                 </section>
 

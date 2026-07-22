@@ -3,6 +3,7 @@
 namespace Modules\FinancialPlatform\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Services\ModuleGate;
 use Illuminate\Http\Request;
 use Modules\FinancialPlatform\Models\Setting;
 use Modules\FinancialPlatform\Services\DeepKpiSnapshot;
@@ -10,11 +11,14 @@ use Modules\FinancialPlatform\Services\SeoMetricSyncService;
 
 class DeepKpiController extends Controller
 {
-    public function index(DeepKpiSnapshot $snapshot)
+    public function index(DeepKpiSnapshot $snapshot, ModuleGate $gate)
     {
+        $user = auth()->user();
+
         return view('financialplatform::kpis.deep-kpis', [
-            'deepKpis' => $snapshot->forTeam(auth()->user()?->currentTeam),
+            'deepKpis' => $snapshot->forTeam($user?->currentTeam),
             'settings' => $this->settings(),
+            'missingModules' => $gate->missingFor($user, $gate->requiredForAnalysis('deep-kpis')),
         ]);
     }
 

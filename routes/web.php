@@ -53,6 +53,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Http\Controllers\ToolAnalyzerController;
 use App\Http\Controllers\TwoFactorChallengeController;
 use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\UserActivityController;
@@ -110,6 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('billing/paypal/success/{subscription}', [BillingController::class, 'paypalSuccess'])->name('billing.paypal.success');
     Route::get('billing/bank/{subscription}', [BillingController::class, 'bank'])->name('billing.bank');
     Route::post('billing/bank/{subscription}', [BillingController::class, 'bankSubmit'])->name('billing.bank.submit');
+
+    Route::get('analyze', ToolAnalyzerController::class)->name('tool-analyzer.index');
 
     // Module placeholders — replaced by real module routes as each module is ported
     Route::get('app/{prefix}', function (string $prefix) {
