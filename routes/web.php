@@ -41,6 +41,7 @@ use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
+use App\Http\Controllers\AlertController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\CookieConsentController;
@@ -52,10 +53,12 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\ToolAnalyzerController;
 use App\Http\Controllers\ToolsController;
 use App\Http\Controllers\TwoFactorChallengeController;
@@ -102,6 +105,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/export/pdf', [DashboardExportController::class, 'pdf'])->name('dashboard.export.pdf');
     Route::get('tools', ToolsController::class)->name('tools.index');
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
+    Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
+    Route::get('search', SearchController::class)->name('search.index');
+
+    Route::get('alerts', [AlertController::class, 'index'])->name('alerts.index');
+    Route::get('alerts/create', [AlertController::class, 'create'])->name('alerts.create');
+    Route::post('alerts', [AlertController::class, 'store'])->name('alerts.store');
+    Route::get('alerts/{alert}/edit', [AlertController::class, 'edit'])->name('alerts.edit');
+    Route::patch('alerts/{alert}', [AlertController::class, 'update'])->name('alerts.update');
+    Route::delete('alerts/{alert}', [AlertController::class, 'destroy'])->name('alerts.destroy');
+    Route::post('alerts/{alert}/test', [AlertController::class, 'test'])->name('alerts.test');
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
