@@ -19,6 +19,10 @@ class Company extends Model
         'team_id', 'user_id', 'name', 'description', 'industry', 'size', 'timezone', 'logo', 'is_active',
     ];
 
+    protected $attributes = [
+        'is_active' => true,
+    ];
+
     protected $casts = [
         'is_active' => 'boolean',
     ];
