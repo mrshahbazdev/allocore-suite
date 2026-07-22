@@ -8,5 +8,6 @@
     "PlanHive": true,
     "KpiTool": true,
     "LoopEngine": true,
-    "SmartKpi": true
+    "SmartKpi": true,
+    "CashCore": true
 }

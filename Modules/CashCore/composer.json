@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/cashcore",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CashCore\\": "app/",
+            "Modules\\CashCore\\Database\\Factories\\": "database/factories/",
+            "Modules\\CashCore\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\CashCore\\Tests\\": "tests/"
+        }
+    }
+}
