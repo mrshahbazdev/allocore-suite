@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/timebutler",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TimeButler\\": "app/",
+            "Modules\\TimeButler\\Database\\Factories\\": "database/factories/",
+            "Modules\\TimeButler\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\TimeButler\\Tests\\": "tests/"
+        }
+    }
+}

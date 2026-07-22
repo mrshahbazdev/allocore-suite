@@ -1,0 +1,11 @@
+{
+    "name": "TimeButler",
+    "alias": "timebutler",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\TimeButler\\Providers\\TimeButlerServiceProvider"
+    ],
+    "files": []
+}
