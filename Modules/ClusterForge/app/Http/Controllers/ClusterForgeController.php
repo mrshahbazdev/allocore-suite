@@ -61,6 +61,7 @@ class ClusterForgeController extends Controller
             'description' => $validated['description'] ?? null,
             'tags' => $tags,
             'keywords' => $keywords,
+            'clusters' => [],
             'algorithm' => $validated['algorithm'],
             'status' => 'processing',
             'is_public' => $validated['is_public'] ?? false,

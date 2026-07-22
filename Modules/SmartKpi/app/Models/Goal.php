@@ -8,6 +8,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class Goal extends Model
 {
+    protected $table = 'smartkpi_goals';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

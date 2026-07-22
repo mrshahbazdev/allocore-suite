@@ -8,6 +8,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class AlertRule extends Model
 {
+    protected $table = 'smartkpi_alert_rules';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

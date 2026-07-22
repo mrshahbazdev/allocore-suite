@@ -9,6 +9,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class Department extends Model
 {
+    protected $table = 'smartkpi_departments';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

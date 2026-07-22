@@ -10,6 +10,8 @@ class CashCategory extends Model
 {
     use BelongsToCurrentTeam;
 
+    protected $table = 'cashcore_categories';
+
     protected $fillable = [
         'team_id', 'user_id', 'name', 'type', 'icon', 'color', 'is_default',
     ];

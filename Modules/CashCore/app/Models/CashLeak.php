@@ -8,6 +8,8 @@ use Modules\CashCore\Models\Concerns\BelongsToCurrentTeam;
 
 class CashLeak extends Model
 {
+    protected $table = 'cashcore_leaks';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

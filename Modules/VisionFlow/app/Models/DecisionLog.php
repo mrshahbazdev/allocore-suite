@@ -1,4 +1,3 @@
-
 <?php
 
 namespace Modules\VisionFlow\Models;
@@ -7,11 +6,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\VisionFlow\Models\Concerns\BelongsToCurrentTeam;
 
 class DecisionLog extends Model
 {
-    use BelongsToCurrentTeam;
     use HasFactory;
 
     protected $table = 'visionflow_decision_logs';

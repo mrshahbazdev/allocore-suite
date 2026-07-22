@@ -47,7 +47,7 @@ class DecisionLogController extends Controller
             'supporting_value_id' => ['nullable', 'exists:visionflow_values,id'],
             'supporting_mission_id' => ['nullable', 'exists:visionflow_missions,id'],
         ]);
-        $item = DecisionLog::create(array_merge($validated, ['organization_id' => $organization->id]));
+        $item = DecisionLog::create(array_merge($validated, ['organization_id' => $organization->id, 'user_id' => auth()->id()]));
 
         ActivityLog::log('created', 'DecisionLog created', $item, $request->user(), ['team_id' => $organization->team_id]);
 

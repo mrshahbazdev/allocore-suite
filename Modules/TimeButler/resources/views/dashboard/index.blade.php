@@ -21,7 +21,7 @@
             </a>
             <a href="{{ route('timebutler.time-tracking.index') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
                 <div class="text-sm font-medium text-slate-500">{{ __('Time tracking') }}</div>
-                <div class="mt-2 text-lg font-semibold text-indigo-600">{{ openEntry ? __('Clocked in') : __('Clock in/out') }}</div>
+                <div class="mt-2 text-lg font-semibold text-indigo-600">{{ $openTimeEntry ? __('Clocked in') : __('Clock in/out') }}</div>
             </a>
             <a href="{{ route('timebutler.reports.absences') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
                 <div class="text-sm font-medium text-slate-500">{{ __('Reports') }}</div>

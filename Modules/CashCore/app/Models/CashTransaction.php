@@ -10,6 +10,8 @@ use Modules\CashCore\Models\Concerns\BelongsToCurrentTeam;
 
 class CashTransaction extends Model
 {
+    protected $table = 'cashcore_transactions';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

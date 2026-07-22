@@ -10,6 +10,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class Problem extends Model
 {
+    protected $table = 'smartkpi_problems';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

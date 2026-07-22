@@ -12,6 +12,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class KpiDefinition extends Model
 {
+    protected $table = 'smartkpi_kpi_definitions';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [

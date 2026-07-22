@@ -8,6 +8,8 @@ use Modules\SmartKpi\Models\Concerns\BelongsToCurrentTeam;
 
 class KpiRelationship extends Model
 {
+    protected $table = 'smartkpi_kpi_relationships';
+
     use BelongsToCurrentTeam;
 
     protected $fillable = [
