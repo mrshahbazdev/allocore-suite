@@ -1,0 +1,11 @@
+{
+    "name": "SmartKpi",
+    "alias": "smartkpi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SmartKpi\\Providers\\SmartKpiServiceProvider"
+    ],
+    "files": []
+}

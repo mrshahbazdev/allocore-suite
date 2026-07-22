@@ -7,5 +7,6 @@
     "TimeButler": true,
     "PlanHive": true,
     "KpiTool": true,
-    "LoopEngine": true
+    "LoopEngine": true,
+    "SmartKpi": true
 }
