@@ -44,6 +44,11 @@
                 </a>
             @endforeach
 
+            <div class="pt-4 pb-1 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Insights') }}</div>
+            <a href="{{ route('timeline.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('timeline.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Activity Timeline') }}</a>
+            <a href="{{ route('search.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('search.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Search') }}</a>
+            <a href="{{ route('alerts.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('alerts.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Alerts') }}</a>
+
             <div class="pt-4 pb-1 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Account') }}</div>
             <a href="{{ route('billing.plans') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('billing.plans') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Plans & Pricing') }}</a>
             <a href="{{ route('billing.subscriptions') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('billing.subscriptions') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('My Subscriptions') }}</a>
