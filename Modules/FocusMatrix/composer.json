@@ -1,0 +1,10 @@
+{
+    "name": "modules/focus-matrix",
+    "description": "FocusMatrix module for Allocore Suite",
+    "type": "laravel-module",
+    "autoload": {
+        "psr-4": {
+            "Modules\\FocusMatrix\\": "app/"
+        }
+    }
+}
