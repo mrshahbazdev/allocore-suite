@@ -1,0 +1,10 @@
+{
+    "name": "modules/org-matrix",
+    "description": "OrgMatrix module for Allocore Suite",
+    "type": "laravel-module",
+    "autoload": {
+        "psr-4": {
+            "Modules\\OrgMatrix\\": "app/"
+        }
+    }
+}
