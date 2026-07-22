@@ -14,5 +14,6 @@
     "DentalTrack": true,
     "FocusMatrix": true,
     "OrgMatrix": true,
-    "VisionFlow": true
+    "VisionFlow": true,
+    "NurDu": true
 }

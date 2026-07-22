@@ -32,6 +32,7 @@ class CoreSeeder extends Seeder
             ['key' => 'focus-matrix', 'name' => 'FocusMatrix', 'description' => 'Bilingual productivity OS for managers using the Only-You-Principle: triage, delegate, drop, self-check and team analytics.', 'icon' => 'target-arrow', 'route_prefix' => 'focusmatrix'],
             ['key' => 'org-matrix', 'name' => 'OrgMatrix', 'description' => 'Organizational intelligence platform: visualize org structures, roles, people, assignments and plan succession.', 'icon' => 'user-group', 'route_prefix' => 'orgmatrix'],
             ['key' => 'vision-flow', 'name' => 'VisionFlow', 'description' => 'Values-to-mission operating system: co-create values, principles, strategic goals, vision and missions.', 'icon' => 'rocket-launch', 'route_prefix' => 'visionflow'],
+            ['key' => 'nur-du', 'name' => 'Nur-Du', 'description' => 'Vision alignment tool: vision statement, guiding principles, quarterly priorities, decisions and vision checks.', 'icon' => 'star', 'route_prefix' => 'nurdu'],
         ];
 
         foreach ($modules as $module) {
@@ -43,7 +44,7 @@ class CoreSeeder extends Seeder
             ['name' => 'AuditPro Solo', 'slug' => 'audit-solo', 'price_monthly' => 19.99, 'price_yearly' => 199, 'modules' => ['audit']],
             ['name' => 'ClusterForge Solo', 'slug' => 'keyword-cluster-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['keyword-cluster']],
             ['name' => 'LeadOS Solo', 'slug' => 'lead-quality-solo', 'price_monthly' => 24.99, 'price_yearly' => 249, 'modules' => ['lead-quality']],
-            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'bunny-band', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow']],
+            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'bunny-band', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du']],
             ['name' => 'TimeButler Solo', 'slug' => 'time-butler-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['time-butler']],
             ['name' => 'PlanHive Solo', 'slug' => 'plan-hive-solo', 'price_monthly' => 12.99, 'price_yearly' => 129, 'modules' => ['plan-hive']],
             ['name' => 'KpiTool Solo', 'slug' => 'kpi-tool-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['kpi-tool']],
@@ -55,6 +56,7 @@ class CoreSeeder extends Seeder
             ['name' => 'FocusMatrix Solo', 'slug' => 'focus-matrix-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['focus-matrix']],
             ['name' => 'OrgMatrix Solo', 'slug' => 'org-matrix-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['org-matrix']],
             ['name' => 'VisionFlow Solo', 'slug' => 'vision-flow-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['vision-flow']],
+            ['name' => 'Nur-Du Solo', 'slug' => 'nur-du-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['nur-du']],
         ];
 
         foreach ($plans as $data) {

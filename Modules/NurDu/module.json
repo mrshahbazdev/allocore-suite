@@ -1,0 +1,11 @@
+{
+    "name": "NurDu",
+    "alias": "nur-du",
+    "description": "Vision alignment tool: vision, guiding principles, quarterly priorities, decisions and vision checks.",
+    "keywords": ["vision", "alignment", "quarterly", "decisions"],
+    "priority": 0,
+    "providers": [
+        "Modules\\NurDu\\Providers\\NurDuServiceProvider"
+    ],
+    "files": []
+}
