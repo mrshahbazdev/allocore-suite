@@ -23,6 +23,7 @@ class CoreSeeder extends Seeder
             ['key' => 'lead-quality', 'name' => 'LeadOS', 'description' => 'B2B lead generation, AI scoring & CRM pipeline.', 'icon' => 'users', 'route_prefix' => 'leads'],
             ['key' => 'time-butler', 'name' => 'TimeButler', 'description' => 'Employee vacation, absence & time tracking with team calendar.', 'icon' => 'clock', 'route_prefix' => 'timebutler'],
             ['key' => 'plan-hive', 'name' => 'PlanHive', 'description' => 'Multi-tenant project management with tasks, goals, calendar, contacts & documents.', 'icon' => 'folder', 'route_prefix' => 'planhive'],
+            ['key' => 'kpi-tool', 'name' => 'KpiTool', 'description' => 'Bilingual KPI catalog, monthly spreadsheet, targets, charts & CSV export.', 'icon' => 'chart-bar', 'route_prefix' => 'kpitool'],
         ];
 
         foreach ($modules as $module) {
@@ -34,9 +35,10 @@ class CoreSeeder extends Seeder
             ['name' => 'AuditPro Solo', 'slug' => 'audit-solo', 'price_monthly' => 19.99, 'price_yearly' => 199, 'modules' => ['audit']],
             ['name' => 'ClusterForge Solo', 'slug' => 'keyword-cluster-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['keyword-cluster']],
             ['name' => 'LeadOS Solo', 'slug' => 'lead-quality-solo', 'price_monthly' => 24.99, 'price_yearly' => 249, 'modules' => ['lead-quality']],
-            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 69.99, 'price_yearly' => 699, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive']],
+            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 79.99, 'price_yearly' => 799, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool']],
             ['name' => 'TimeButler Solo', 'slug' => 'time-butler-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['time-butler']],
             ['name' => 'PlanHive Solo', 'slug' => 'plan-hive-solo', 'price_monthly' => 12.99, 'price_yearly' => 129, 'modules' => ['plan-hive']],
+            ['name' => 'KpiTool Solo', 'slug' => 'kpi-tool-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['kpi-tool']],
         ];
 
         foreach ($plans as $data) {

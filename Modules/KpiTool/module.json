@@ -1,0 +1,11 @@
+{
+    "name": "KpiTool",
+    "alias": "kpitool",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KpiTool\\Providers\\KpiToolServiceProvider"
+    ],
+    "files": []
+}
