@@ -1,0 +1,11 @@
+{
+    "name": "VisionFlow",
+    "alias": "vision-flow",
+    "description": "Values-to-mission operating system for organizational alignment.",
+    "keywords": ["vision", "mission", "values", "strategy"],
+    "priority": 0,
+    "providers": [
+        "Modules\\VisionFlow\\Providers\\VisionFlowServiceProvider"
+    ],
+    "files": []
+}

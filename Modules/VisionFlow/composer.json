@@ -1,0 +1,10 @@
+{
+    "name": "modules/vision-flow",
+    "description": "VisionFlow module for Allocore Suite",
+    "type": "laravel-module",
+    "autoload": {
+        "psr-4": {
+            "Modules\\VisionFlow\\": "app/"
+        }
+    }
+}
