@@ -1,0 +1,11 @@
+{
+    "name": "CashCore",
+    "alias": "cashcore",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CashCore\\Providers\\CashCoreServiceProvider"
+    ],
+    "files": []
+}
