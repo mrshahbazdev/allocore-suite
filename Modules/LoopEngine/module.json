@@ -1,0 +1,11 @@
+{
+    "name": "LoopEngine",
+    "alias": "loopengine",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LoopEngine\\Providers\\LoopEngineServiceProvider"
+    ],
+    "files": []
+}
