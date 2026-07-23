@@ -66,6 +66,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Http\Controllers\TeamMemberPermissionController;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\ToolAnalyzerController;
 use App\Http\Controllers\ToolsController;
@@ -164,6 +165,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
+    Route::get('teams/{team}/members/{member}/permissions', [TeamMemberPermissionController::class, 'edit'])->name('teams.members.permissions.edit');
+    Route::patch('teams/{team}/members/{member}/permissions', [TeamMemberPermissionController::class, 'update'])->name('teams.members.permissions.update');
     Route::post('teams/{team}/invitations', [TeamInvitationController::class, 'store'])->name('teams.invitations.store');
     Route::post('teams/invitations/{invitation}/resend', [TeamInvitationController::class, 'resend'])->name('teams.invitations.resend');
     Route::delete('teams/invitations/{invitation}', [TeamInvitationController::class, 'destroy'])->name('teams.invitations.destroy');

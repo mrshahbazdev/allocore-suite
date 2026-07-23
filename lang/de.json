@@ -1105,5 +1105,12 @@
     "recommendations.combo_kpi_finance": "Steige von KPI-Tracking zu umsatzorientierter Finanzanalyse auf.",
     "recommendations.combo_audit_finance": "Prüfe Finanzkontrollen und Cashflow gemeinsam.",
     "recommendations.combo_referral_score": "Belohne Top-Empfehler und bewerte Kundenprofitabilität.",
-    "recommendations.combo_culture_structure": "Richte Kultur, Vision und Organisationsstruktur aufeinander aus."
+    "recommendations.combo_culture_structure": "Richte Kultur, Vision und Organisationsstruktur aufeinander aus.",
+
+    "Module permissions": "Modulberechtigungen",
+    "Choose which tools :name can access in :team.": "Wähle, auf welche Tools :name in :team zugreifen darf.",
+    "Team members": "Teammitglieder",
+    "Save permissions": "Berechtigungen speichern",
+    "Member permissions updated.": "Mitgliederberechtigungen aktualisiert.",
+    "Permissions": "Berechtigungen"
 }
