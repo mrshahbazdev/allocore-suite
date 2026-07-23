@@ -4,6 +4,7 @@ use App\Http\Middleware\ApiTokenMiddleware;
 use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CookieConsentMiddleware;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureInstalled;
 use App\Http\Middleware\EnsureModuleAccess;
 use App\Http\Middleware\ResolveTeamBranding;
 use App\Http\Middleware\SetLocale;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            EnsureInstalled::class,
             ResolveTeamBranding::class,
             SetLocale::class,
             CheckMaintenanceMode::class,

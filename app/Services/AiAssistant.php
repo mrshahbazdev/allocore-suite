@@ -6,6 +6,7 @@ use App\Models\AiChatMessage;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -42,7 +43,7 @@ class AiAssistant
 
     protected function buildMessages(User $user, string $message, ?string $moduleKey, ?string $pageUrl): array
     {
-        $moduleNames = $user->subscribedModules()->pluck('name')->implode(', ');
+        $moduleNames = $this->userModules($user)->pluck('name')->implode(', ');
         $allModules = Module::where('is_active', true)->pluck('name', 'key')->map(
             fn ($name, $key) => "$key: $name"
         )->implode("\n");
@@ -79,7 +80,7 @@ PROMPT;
 
     protected function localReply(User $user, string $message, ?string $moduleKey): string
     {
-        $modules = $user->subscribedModules();
+        $modules = $this->userModules($user);
         $lower = strtolower($message);
 
         if (Str::contains($lower, ['hello', 'hi', 'hey'])) {
@@ -140,5 +141,13 @@ PROMPT;
         }
 
         return __('I can help you navigate your tools. Try asking about invoices, leads, projects, KPIs, or any module you want to use.');
+    }
+
+    protected function userModules(User $user): Collection
+    {
+        return Module::where('is_active', true)
+            ->get()
+            ->filter(fn (Module $module) => $user->hasModule($module->key))
+            ->values();
     }
 }

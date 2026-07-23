@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Allocore Suite'),
 
+    'installed' => env('APP_INSTALLED', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

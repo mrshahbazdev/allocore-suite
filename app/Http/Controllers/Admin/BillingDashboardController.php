@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ToolSubscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\InvoiceMaker\Models\Invoice;
 use Modules\InvoiceMaker\Models\Payment;
 
@@ -34,9 +35,13 @@ class BillingDashboardController extends Controller
         $end = now()->endOfMonth();
         $months = collect(range(0, 11))->map(fn ($i) => $start->copy()->addMonths($i)->format('Y-m'));
 
+        $dateFormat = DB::getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', date)"
+            : "DATE_FORMAT(date, '%Y-%m')";
+
         $monthlyRevenue = $paymentQuery->clone()
             ->whereBetween('date', [$start, $end])
-            ->selectRaw("DATE_FORMAT(date, '%Y-%m') as month, SUM(amount) as total")
+            ->selectRaw("{$dateFormat} as month, SUM(amount) as total")
             ->groupBy('month')
             ->pluck('total', 'month')
             ->toArray();

@@ -58,6 +58,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ModuleFallbackController;
@@ -91,6 +92,12 @@ use Modules\AuditPro\Models\AuditTemplate;
 Route::bind('template', fn ($value) => AuditTemplate::withoutGlobalScope('current_team')->findOrFail($value));
 Route::bind('pillar', fn ($value) => AuditPillar::withoutGlobalScope('current_team')->findOrFail($value));
 Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('current_team')->findOrFail($value));
+
+Route::get('install', [InstallController::class, 'index'])->name('install.index');
+Route::get('install/database', [InstallController::class, 'database'])->name('install.database');
+Route::post('install/database', [InstallController::class, 'storeDatabase'])->name('install.database.store');
+Route::get('install/admin', [InstallController::class, 'admin'])->name('install.admin');
+Route::post('install/run', [InstallController::class, 'run'])->name('install.run');
 
 Route::view('/', 'welcome');
 Route::view('/offline', 'offline')->name('offline');
