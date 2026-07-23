@@ -10,6 +10,10 @@ use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarControll
 use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
 use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
 use App\Http\Controllers\Admin\BackupController as AdminBackupController;
+use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
+use App\Http\Controllers\Admin\BlogCommentController as AdminBlogCommentController;
+use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
+use App\Http\Controllers\Admin\BlogTagController as AdminBlogTagController;
 use App\Http\Controllers\Admin\BulkUserController as AdminBulkUserController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -44,6 +48,7 @@ use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
@@ -299,6 +304,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('pages', [AdminPageController::class, 'index'])->name('pages.index');
 
+    Route::resource('blog/posts', AdminBlogPostController::class)->names('blog.posts');
+    Route::resource('blog/categories', AdminBlogCategoryController::class)->names('blog.categories');
+    Route::resource('blog/tags', AdminBlogTagController::class)->names('blog.tags');
+    Route::get('blog/comments', [AdminBlogCommentController::class, 'index'])->name('blog.comments.index');
+    Route::patch('blog/comments/{comment}/approve', [AdminBlogCommentController::class, 'approve'])->name('blog.comments.approve');
+    Route::delete('blog/comments/{comment}', [AdminBlogCommentController::class, 'destroy'])->name('blog.comments.destroy');
+
     Route::get('status-incidents', [AdminStatusIncidentController::class, 'index'])->name('status-incidents.index');
     Route::get('status-incidents/create', [AdminStatusIncidentController::class, 'create'])->name('status-incidents.create');
     Route::post('status-incidents', [AdminStatusIncidentController::class, 'store'])->name('status-incidents.store');
@@ -328,3 +340,10 @@ Route::view('profile', 'profile')
 require __DIR__.'/auth.php';
 
 Route::get('pages/{slug}', [PageController::class, 'show'])->name('page.show');
+
+Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('blog/feed', [BlogController::class, 'feed'])->name('blog.feed');
+Route::get('blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
+Route::get('blog/tag/{tag}', [BlogController::class, 'tag'])->name('blog.tag');
+Route::get('blog/{post}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('blog/{post}/comments', [BlogController::class, 'storeComment'])->name('blog.comments.store');

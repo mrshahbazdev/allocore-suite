@@ -82,6 +82,7 @@
                 <a href="{{ route('admin.settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Site Settings') }}</a>
                 <a href="{{ route('admin.mail-settings.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.mail-settings.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Mail Settings') }}</a>
                 <a href="{{ route('admin.pages.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.pages.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Pages') }}</a>
+                <a href="{{ route('admin.blog.posts.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.blog.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Blog') }}</a>
 
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('System') }}</div>
                 <a href="{{ route('admin.status-incidents.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.status-incidents.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Status Incidents') }}</a>
