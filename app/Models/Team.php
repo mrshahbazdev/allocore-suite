@@ -19,7 +19,7 @@ class Team extends Model
 
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot(['role', 'allowed_modules'])->withTimestamps();
     }
 
     public function invitations(): HasMany
@@ -41,8 +41,14 @@ class Team extends Model
 
     public function hasModule(string $moduleKey): bool
     {
-        return $this->activeSubscriptions()
+        $teamSubscription = $this->activeSubscriptions()
             ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
             ->exists();
+
+        $ownerSubscription = $this->owner?->activeSubscriptions()
+            ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
+            ->exists() ?? false;
+
+        return $teamSubscription || $ownerSubscription;
     }
 }

@@ -1127,5 +1127,12 @@
     "Slack webhook URL": "Slack Webhook-URL",
     "Save preferences": "Einstellungen speichern",
     "Notification preferences saved.": "Benachrichtigungseinstellungen gespeichert.",
-    "Preferences": "Einstellungen"
+    "Preferences": "Einstellungen",
+
+    "Module permissions": "Modulberechtigungen",
+    "Choose which tools :name can access in :team.": "Wähle aus, auf welche Tools :name in :team zugreifen darf.",
+    "Team members": "Teammitglieder",
+    "Save permissions": "Berechtigungen speichern",
+    "Member permissions updated.": "Mitgliedberechtigungen aktualisiert.",
+    "Permissions": "Berechtigungen"
 }

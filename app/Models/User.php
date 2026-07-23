@@ -41,7 +41,7 @@ class User extends Authenticatable
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(Team::class)->withPivot(['role', 'allowed_modules'])->withTimestamps();
     }
 
     public function ownedTeams()
@@ -101,11 +101,36 @@ class User extends Authenticatable
             ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
             ->exists();
 
-        if ($ownAccess) {
+        if ($ownAccess && ! $this->currentTeam) {
             return true;
         }
 
-        return $this->currentTeam?->hasModule($moduleKey) ?? false;
+        if ($this->currentTeam?->hasModule($moduleKey) && $this->isAllowedModule($moduleKey)) {
+            return true;
+        }
+
+        return $ownAccess && $this->isAllowedModule($moduleKey);
+    }
+
+    protected function isAllowedModule(string $moduleKey): bool
+    {
+        if (! $this->current_team_id) {
+            return true;
+        }
+
+        $membership = $this->teams()->where('teams.id', $this->current_team_id)->first();
+
+        if (! $membership || $membership->pivot->role === 'owner') {
+            return true;
+        }
+
+        $allowed = $membership->pivot->allowed_modules;
+
+        if ($allowed === null) {
+            return true;
+        }
+
+        return in_array($moduleKey, json_decode($allowed, true) ?: [], true);
     }
 
     public function accessibleModules()
