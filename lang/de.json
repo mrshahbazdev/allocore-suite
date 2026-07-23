@@ -1105,5 +1105,15 @@
     "recommendations.combo_kpi_finance": "Steige von KPI-Tracking zu umsatzorientierter Finanzanalyse auf.",
     "recommendations.combo_audit_finance": "Prüfe Finanzkontrollen und Cashflow gemeinsam.",
     "recommendations.combo_referral_score": "Belohne Top-Empfehler und bewerte Kundenprofitabilität.",
-    "recommendations.combo_culture_structure": "Richte Kultur, Vision und Organisationsstruktur aufeinander aus."
+    "recommendations.combo_culture_structure": "Richte Kultur, Vision und Organisationsstruktur aufeinander aus.",
+
+    "Notification preferences": "Benachrichtigungseinstellungen",
+    "Choose how and where you want to be notified.": "Wähle, wie und wo du benachrichtigt werden möchtest.",
+    "In-app": "In-App",
+    "Email": "E-Mail",
+    "Slack": "Slack",
+    "Slack webhook URL": "Slack Webhook-URL",
+    "Save preferences": "Einstellungen speichern",
+    "Notification preferences saved.": "Benachrichtigungseinstellungen gespeichert.",
+    "Preferences": "Einstellungen"
 }

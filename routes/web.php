@@ -59,6 +59,7 @@ use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SearchController;
@@ -139,6 +140,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/preferences', [NotificationPreferenceController::class, 'index'])->name('notifications.preferences');
+    Route::patch('notifications/preferences', [NotificationPreferenceController::class, 'update'])->name('notifications.preferences.update');
     Route::patch('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::patch('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 

@@ -6,11 +6,14 @@
             <h1 class="text-2xl font-bold text-slate-900">{{ __('Notifications') }}</h1>
             <p class="text-sm text-slate-500">{{ __('Your recent notifications') }}</p>
         </div>
-        <form method="POST" action="{{ route('notifications.mark-all-read') }}">
-            @csrf
-            @method('PATCH')
-            <button class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Mark all as read') }}</button>
-        </form>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('notifications.preferences') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Preferences') }}</a>
+            <form method="POST" action="{{ route('notifications.mark-all-read') }}">
+                @csrf
+                @method('PATCH')
+                <button class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Mark all as read') }}</button>
+            </form>
+        </div>
     </div>
 
     <div class="space-y-3">
