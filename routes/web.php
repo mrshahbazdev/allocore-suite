@@ -71,6 +71,7 @@ use App\Http\Controllers\ToolAnalyzerController;
 use App\Http\Controllers\ToolsController;
 use App\Http\Controllers\TwoFactorChallengeController;
 use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\UsageAnalyticsController;
 use App\Http\Controllers\UserActivityController;
 use App\Http\Controllers\UserApiTokenController;
 use App\Http\Controllers\WorkflowController;
@@ -118,6 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
     Route::get('search', SearchController::class)->name('search.index');
     Route::get('advisor', AdvisorController::class)->name('advisor.index');
+    Route::get('usage', UsageAnalyticsController::class)->name('usage.index');
 
     Route::get('workflows', [WorkflowController::class, 'index'])->name('workflows.index');
     Route::get('workflows/create', [WorkflowController::class, 'create'])->name('workflows.create');

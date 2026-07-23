@@ -1082,6 +1082,18 @@
     "New customer": "Neuer Kunde",
     "Edit customer": "Kunde bearbeiten",
 
+    "Usage Analytics": "Nutzungsanalyse",
+    "Track how your tools are used over the last 30 days.": "Verfolge die Nutzung deiner Tools der letzten 30 Tage.",
+    "Records created (30d)": "Erstellte Datensätze (30 Tage)",
+    "Activities logged": "Aktivitäten",
+    "Subscriptions events": "Abonnement-Ereignisse",
+    "Module activity over time": "Modul-Aktivität im Zeitverlauf",
+    "Daily activity": "Tägliche Aktivität",
+    "Subscription events": "Abonnement-Ereignisse",
+    "Records by module": "Datensätze nach Modul",
+    "Records (30d)": "Datensätze (30 Tage)",
+    "Back to dashboard": "Zurück zum Dashboard",
+
     "Recommended for you": "Empfohlen für dich",
     "Recommended Tools": "Empfohlene Tools",
     "Based on the tools you already use, here are the best next tools to subscribe to.": "Basierend auf deinen aktiven Tools sind das die besten nächsten Abonnements.",
