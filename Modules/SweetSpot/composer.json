@@ -1,0 +1,10 @@
+{
+    "name": "mrshahbazdev/sweet-spot",
+    "description": "Sweet Spot customer scoring module for Allocore Suite.",
+    "type": "laravel-module",
+    "autoload": {
+        "psr-4": {
+            "Modules\\SweetSpot\\": "app/"
+        }
+    }
+}

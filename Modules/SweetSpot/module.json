@@ -1,0 +1,11 @@
+{
+    "name": "SweetSpot",
+    "alias": "sweet-spot",
+    "description": "Customer sweet-spot scoring: identify the most profitable, low-effort and high-growth customers.",
+    "keywords": ["customers", "scoring", "profitability", "ranking"],
+    "priority": 0,
+    "providers": [
+        "Modules\\SweetSpot\\Providers\\SweetSpotServiceProvider"
+    ],
+    "files": []
+}

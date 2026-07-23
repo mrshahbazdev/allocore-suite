@@ -20,6 +20,7 @@ use Modules\NurDu\Models\Vision;
 use Modules\OrgMatrix\Models\Organization;
 use Modules\PlanHive\Models\Project;
 use Modules\SmartKpi\Models\Company;
+use Modules\SweetSpot\Models\Customer;
 use Modules\TimeButler\Models\AbsenceRequest;
 
 class ModuleStats
@@ -45,6 +46,7 @@ class ModuleStats
         'vision-flow' => ['model' => \Modules\VisionFlow\Models\Organization::class, 'label' => 'Organizations'],
         'nur-du' => ['model' => Vision::class, 'label' => 'Vision statements'],
         'financial-platform' => ['model' => \Modules\FinancialPlatform\Models\Company::class, 'label' => 'Companies'],
+        'sweet-spot' => ['model' => Customer::class, 'label' => 'Customers'],
     ];
 
     public function forUser(User $user): array
