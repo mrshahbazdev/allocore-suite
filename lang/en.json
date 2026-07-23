@@ -1085,6 +1085,18 @@
     "Edit customer": "Edit customer",
 
     "Recommended for you": "Recommended for you",
+    "Usage Analytics": "Usage Analytics",
+    "Track how your tools are used over the last 30 days.": "Track how your tools are used over the last 30 days.",
+    "Records created (30d)": "Records created (30d)",
+    "Activities logged": "Activities logged",
+    "Subscriptions events": "Subscriptions events",
+    "Module activity over time": "Module activity over time",
+    "Daily activity": "Daily activity",
+    "Subscription events": "Subscription events",
+    "Records by module": "Records by module",
+    "Records (30d)": "Records (30d)",
+    "Back to dashboard": "Back to dashboard",
+
     "Recommended Tools": "Recommended Tools",
     "Based on the tools you already use, here are the best next tools to subscribe to.": "Based on the tools you already use, here are the best next tools to subscribe to.",
     "Recommended combinations": "Recommended combinations",
