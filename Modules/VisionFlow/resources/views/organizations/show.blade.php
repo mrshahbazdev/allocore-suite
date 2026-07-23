@@ -29,5 +29,7 @@
         <a href="{{ route('visionflow.organizations.projects.index', $organization) }}" class="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Projects') }}</a>
         <a href="{{ route('visionflow.organizations.decision-logs.index', $organization) }}" class="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Decision Log') }}</a>
     </div>
+
+    @include('comments._list', ['commentable' => $organization])
 </div>
 @endsection
