@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="{{ $brand['primary_color'] ?? '#4f46e5' }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
     @if ($brand['favicon'])
         <link rel="icon" href="{{ $brand['favicon'] }}">
     @endif
@@ -16,11 +19,14 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet"/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <style>[x-cloak] { display: none !important; }</style>
 </head>
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false }">
 <div class="min-h-full flex">
     {{-- Sidebar --}}
-    <aside class="hidden lg:flex lg:flex-col w-64 shrink-0 bg-slate-900 text-slate-200">
+    <aside class="fixed inset-y-0 left-0 z-40 w-64 transform bg-slate-900 text-slate-200 transition-transform duration-200 lg:static lg:translate-x-0"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+           x-cloak>
         <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
             @if ($brand['logo'])
                 <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
@@ -62,6 +68,7 @@
 
             <div class="pt-4 pb-1 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Insights') }}</div>
             <a href="{{ route('advisor.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('advisor.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('AI Advisor') }}</a>
+            <a href="{{ route('assistant.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('assistant.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('AI Assistant') }}</a>
             <a href="{{ route('usage.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('usage.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Usage Analytics') }}</a>
             <a href="{{ route('timeline.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('timeline.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Activity Timeline') }}</a>
             <a href="{{ route('search.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('search.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Search') }}</a>
@@ -90,6 +97,7 @@
                 <a href="{{ route('admin.plans.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.plans.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Plans') }}</a>
 
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Billing') }}</div>
+                <a href="{{ route('admin.billing.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.billing.index') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Billing Dashboard') }}</a>
                 <a href="{{ route('admin.subscriptions.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.subscriptions.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Subscriptions') }}</a>
                 <a href="{{ route('admin.invoices.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.invoices.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Invoices') }}</a>
                 <a href="{{ route('admin.payments.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.payments.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Payments') }}</a>
@@ -134,13 +142,20 @@
         </nav>
     </aside>
 
-    <div class="flex-1 flex flex-col min-w-0">
+    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 lg:ml-0">
         {{-- Topbar --}}
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
-            <div class="text-sm text-slate-500">
-                @if (auth()->user()?->currentTeam)
-                    {{ __('Team') }}: <span class="font-medium text-slate-800">{{ auth()->user()->currentTeam->name }}</span>
-                @endif
+            <div class="flex items-center gap-3">
+                <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                </button>
+                <div class="text-sm text-slate-500">
+                    @if (auth()->user()?->currentTeam)
+                        {{ __('Team') }}: <span class="font-medium text-slate-800">{{ auth()->user()->currentTeam->name }}</span>
+                    @endif
+                </div>
             </div>
             <div class="flex items-center gap-4">
                 @if (session('impersonated_by'))
@@ -181,6 +196,7 @@
     </div>
 </div>
 @include('partials.cookie-consent')
+@include('ai-assistant.floating')
 @livewireScripts
 @stack('scripts')
 <script>
@@ -189,6 +205,19 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         });
     }
+
+    // Wrap tables that are not already inside a scroll container so they are mobile-friendly
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('main table').forEach((table) => {
+            if (table.parentElement && table.parentElement.classList.contains('overflow-x-auto')) {
+                return;
+            }
+            const wrapper = document.createElement('div');
+            wrapper.className = 'overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0';
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        });
+    });
 </script>
 </body>
 </html>
