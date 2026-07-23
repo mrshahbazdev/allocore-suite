@@ -1134,5 +1134,9 @@
     "Team members": "Teammitglieder",
     "Save permissions": "Berechtigungen speichern",
     "Member permissions updated.": "Mitgliedberechtigungen aktualisiert.",
-    "Permissions": "Berechtigungen"
+    "Permissions": "Berechtigungen",
+
+    "You are offline": "Du bist offline",
+    "Please check your connection and try again.": "Bitte überprüfe deine Verbindung und versuche es erneut.",
+    "Retry": "Erneut versuchen"
 }

@@ -88,6 +88,7 @@ Route::bind('pillar', fn ($value) => AuditPillar::withoutGlobalScope('current_te
 Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('current_team')->findOrFail($value));
 
 Route::view('/', 'welcome');
+Route::view('/offline', 'offline')->name('offline');
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
