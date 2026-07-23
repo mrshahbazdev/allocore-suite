@@ -138,6 +138,7 @@
                 <a href="{{ route('admin.backups.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.backups.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Backups') }}</a>
                 <a href="{{ route('admin.exports.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.exports.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Exports') }}</a>
                 <a href="{{ route('admin.maintenance.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.maintenance.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Maintenance') }}</a>
+                <a href="{{ route('admin.env.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.env.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Environment') }}</a>
             @endif
         </nav>
     </aside>
