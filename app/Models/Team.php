@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Team extends Model
 {
-    protected $fillable = ['name', 'owner_id', 'industry', 'size'];
+    protected $fillable = [
+        'name', 'owner_id', 'industry', 'size',
+        'subdomain', 'custom_domain', 'logo', 'favicon',
+        'primary_color', 'accent_color',
+    ];
 
     public function owner(): BelongsTo
     {
@@ -50,5 +54,16 @@ class Team extends Model
             ->exists() ?? false;
 
         return $teamSubscription || $ownerSubscription;
+    }
+
+    public function branding(): array
+    {
+        return [
+            'name' => $this->name,
+            'logo' => $this->logo,
+            'favicon' => $this->favicon,
+            'primary_color' => $this->primary_color,
+            'accent_color' => $this->accent_color,
+        ];
     }
 }

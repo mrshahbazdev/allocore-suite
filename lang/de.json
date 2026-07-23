@@ -1138,5 +1138,17 @@
 
     "You are offline": "Du bist offline",
     "Please check your connection and try again.": "Bitte überprüfe deine Verbindung und versuche es erneut.",
-    "Retry": "Erneut versuchen"
+    "Retry": "Erneut versuchen",
+
+    "Team branding": "Team-Branding",
+    "Customize logo, colors, and custom domain.": "Passe Logo, Farben und eigene Domain an.",
+    "Customize the logo, colors and domain for :team.": "Passe Logo, Farben und Domain für :team an.",
+    "Subdomain": "Subdomain",
+    "Custom domain": "Eigene Domain",
+    "Logo URL": "Logo-URL",
+    "Favicon URL": "Favicon-URL",
+    "Primary color": "Primärfarbe",
+    "Accent color": "Akzentfarbe",
+    "Save branding": "Branding speichern",
+    "Team branding updated.": "Team-Branding aktualisiert."
 }
