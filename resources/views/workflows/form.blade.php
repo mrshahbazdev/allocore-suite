@@ -27,6 +27,8 @@
                 <label class="block text-sm font-medium text-slate-700">{{ __('Action') }}</label>
                 <select name="action" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="send_notification" {{ old('action', $workflow->action) === 'send_notification' ? 'selected' : '' }}>{{ __('Send notification') }}</option>
+                    <option value="send_webhook" {{ old('action', $workflow->action) === 'send_webhook' ? 'selected' : '' }}>{{ __('Send webhook') }}</option>
+                    <option value="create_record" {{ old('action', $workflow->action) === 'create_record' ? 'selected' : '' }}>{{ __('Create record in another module') }}</option>
                 </select>
             </div>
         </div>
@@ -39,7 +41,23 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-slate-700">{{ __('Message') }}</label>
-            <textarea name="action_payload[message]" rows="3" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" required>{{ old('action_payload.message', $workflow->action_payload['message'] ?? '') }}</textarea>
+            <textarea name="action_payload[message]" rows="3" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('action_payload.message', $workflow->action_payload['message'] ?? '') }}</textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-700">{{ __('Webhook URL') }}</label>
+            <input type="url" name="action_payload[url]" value="{{ old('action_payload.url', $workflow->action_payload['url'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <div class="mb-4 grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700">{{ __('Target module key') }}</label>
+                <input type="text" name="action_payload[module]" value="{{ old('action_payload.module', $workflow->action_payload['module'] ?? '') }}" placeholder="e.g. plan-hive" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">{{ __('Record name') }}</label>
+                <input type="text" name="action_payload[name]" value="{{ old('action_payload.name', $workflow->action_payload['name'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
         </div>
 
         <div class="mb-6 flex items-center gap-2">

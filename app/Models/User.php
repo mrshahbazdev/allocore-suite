@@ -16,7 +16,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'current_team_id', 'is_active', 'locale', 'theme', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at'])]
+#[Fillable(['name', 'email', 'password', 'current_team_id', 'is_active', 'locale', 'theme', 'onboarding_step', 'onboarding_completed_at', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable
 {
@@ -35,6 +35,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'theme' => 'string',
+            'onboarding_completed_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
         ];
     }

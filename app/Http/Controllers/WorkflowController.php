@@ -64,8 +64,11 @@ class WorkflowController extends Controller
             'name' => 'required|string|max:255',
             'trigger_event' => ['required', Rule::in(['created', 'updated', 'deleted'])],
             'subject_type' => 'nullable|string|max:255',
-            'action' => ['required', Rule::in(['send_notification'])],
-            'action_payload.message' => 'required|string|max:500',
+            'action' => ['required', Rule::in(['send_notification', 'send_webhook', 'create_record'])],
+            'action_payload.message' => 'nullable|string|max:500',
+            'action_payload.url' => 'nullable|url|max:1000',
+            'action_payload.module' => 'nullable|string|max:100',
+            'action_payload.name' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
     }
