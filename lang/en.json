@@ -1129,5 +1129,21 @@
     "Slack webhook URL": "Slack webhook URL",
     "Save preferences": "Save preferences",
     "Notification preferences saved.": "Notification preferences saved.",
-    "Preferences": "Preferences"
+    "Preferences": "Preferences",
+
+    "You are offline": "You are offline",
+    "Please check your connection and try again.": "Please check your connection and try again.",
+    "Retry": "Retry",
+
+    "Team branding": "Team branding",
+    "Customize logo, colors, and custom domain.": "Customize logo, colors, and custom domain.",
+    "Customize the logo, colors and domain for :team.": "Customize the logo, colors and domain for :team.",
+    "Subdomain": "Subdomain",
+    "Custom domain": "Custom domain",
+    "Logo URL": "Logo URL",
+    "Favicon URL": "Favicon URL",
+    "Primary color": "Primary color",
+    "Accent color": "Accent color",
+    "Save branding": "Save branding",
+    "Team branding updated.": "Team branding updated."
 }

@@ -65,6 +65,7 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
+use App\Http\Controllers\TeamBrandingController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\TimelineController;
@@ -87,6 +88,7 @@ Route::bind('pillar', fn ($value) => AuditPillar::withoutGlobalScope('current_te
 Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('current_team')->findOrFail($value));
 
 Route::view('/', 'welcome');
+Route::view('/offline', 'offline')->name('offline');
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
@@ -168,6 +170,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
     Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
+    Route::get('teams/{team}/branding', [TeamBrandingController::class, 'edit'])->name('teams.branding.edit');
+    Route::patch('teams/{team}/branding', [TeamBrandingController::class, 'update'])->name('teams.branding.update');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
     Route::post('teams/{team}/invitations', [TeamInvitationController::class, 'store'])->name('teams.invitations.store');
     Route::post('teams/invitations/{invitation}/resend', [TeamInvitationController::class, 'resend'])->name('teams.invitations.resend');

@@ -45,6 +45,11 @@
             </form>
 
             @if (auth()->user()->currentTeam && auth()->user()->currentTeam->owner_id === auth()->id())
+                <a href="{{ route('teams.branding.edit', auth()->user()->currentTeam) }}" class="block rounded-xl bg-white border border-slate-200 p-6 shadow-sm hover:border-indigo-300">
+                    <h2 class="font-semibold text-slate-900">{{ __('Team branding') }}</h2>
+                    <p class="mt-1 text-sm text-slate-500">{{ __('Customize logo, colors, and custom domain.') }}</p>
+                </a>
+
                 <form method="POST" action="{{ route('teams.update', auth()->user()->currentTeam) }}" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
                     @csrf
                     @method('PUT')

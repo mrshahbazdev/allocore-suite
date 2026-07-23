@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-100 {{ $theme === 'dark' ? 'dark' : '' }}">
+@php($brand = config('app.team_branding') ?? ['name' => config('app.name'), 'logo' => null, 'favicon' => null, 'primary_color' => null, 'accent_color' => null, 'id' => null])
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? config('app.name', 'Allocore Suite') }}</title>
+    <meta name="theme-color" content="{{ $brand['primary_color'] ?? '#4f46e5' }}">
+    @if ($brand['favicon'])
+        <link rel="icon" href="{{ $brand['favicon'] }}">
+    @endif
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>{{ $title ?? $brand['name'] }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet"/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -15,8 +22,12 @@
     {{-- Sidebar --}}
     <aside class="hidden lg:flex lg:flex-col w-64 shrink-0 bg-slate-900 text-slate-200">
         <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
-            <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
-            <span class="text-lg font-semibold text-white">Allocore Suite</span>
+            @if ($brand['logo'])
+                <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
+            @else
+                <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
+            @endif
+            <span class="text-lg font-semibold text-white">{{ $brand['name'] ?? 'Allocore Suite' }}</span>
         </div>
         <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             <a href="{{ route('dashboard') }}"
@@ -167,5 +178,12 @@
 @include('partials.cookie-consent')
 @livewireScripts
 @stack('scripts')
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+    }
+</script>
 </body>
 </html>

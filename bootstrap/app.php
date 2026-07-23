@@ -5,6 +5,7 @@ use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CookieConsentMiddleware;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureModuleAccess;
+use App\Http\Middleware\ResolveTeamBranding;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ThemeMiddleware;
 use Illuminate\Foundation\Application;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            ResolveTeamBranding::class,
             SetLocale::class,
             CheckMaintenanceMode::class,
             CookieConsentMiddleware::class,
