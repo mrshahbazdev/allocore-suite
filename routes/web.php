@@ -45,10 +45,12 @@ use App\Http\Controllers\Admin\ThresholdController as AdminThresholdController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
+use App\Http\Controllers\AdvisorController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
@@ -70,6 +72,7 @@ use App\Http\Controllers\TwoFactorChallengeController;
 use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\UserActivityController;
 use App\Http\Controllers\UserApiTokenController;
+use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Models\AuditPillar;
@@ -112,6 +115,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
     Route::get('search', SearchController::class)->name('search.index');
+    Route::get('advisor', AdvisorController::class)->name('advisor.index');
+
+    Route::get('workflows', [WorkflowController::class, 'index'])->name('workflows.index');
+    Route::get('workflows/create', [WorkflowController::class, 'create'])->name('workflows.create');
+    Route::post('workflows', [WorkflowController::class, 'store'])->name('workflows.store');
+    Route::get('workflows/{workflow}/edit', [WorkflowController::class, 'edit'])->name('workflows.edit');
+    Route::patch('workflows/{workflow}', [WorkflowController::class, 'update'])->name('workflows.update');
+    Route::delete('workflows/{workflow}', [WorkflowController::class, 'destroy'])->name('workflows.destroy');
+
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     Route::get('alerts', [AlertController::class, 'index'])->name('alerts.index');
     Route::get('alerts/create', [AlertController::class, 'create'])->name('alerts.create');
