@@ -1129,5 +1129,12 @@
     "Slack webhook URL": "Slack webhook URL",
     "Save preferences": "Save preferences",
     "Notification preferences saved.": "Notification preferences saved.",
-    "Preferences": "Preferences"
+    "Preferences": "Preferences",
+
+    "Module permissions": "Module permissions",
+    "Choose which tools :name can access in :team.": "Choose which tools :name can access in :team.",
+    "Team members": "Team members",
+    "Save permissions": "Save permissions",
+    "Member permissions updated.": "Member permissions updated.",
+    "Permissions": "Permissions"
 }
