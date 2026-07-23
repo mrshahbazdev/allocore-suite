@@ -57,9 +57,11 @@ use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationPreferenceController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SearchController;
@@ -90,6 +92,16 @@ Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('curren
 
 Route::view('/', 'welcome');
 Route::view('/offline', 'offline')->name('offline');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/onboarding', OnboardingController::class)->name('onboarding.index');
+    Route::post('/onboarding/team', [OnboardingController::class, 'storeTeam'])->name('onboarding.team');
+    Route::post('/onboarding/plan', [OnboardingController::class, 'storePlan'])->name('onboarding.plan');
+    Route::post('/onboarding/complete', [OnboardingController::class, 'complete'])->name('onboarding.complete');
+
+    Route::get('marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('marketplace/{module}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+});
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
