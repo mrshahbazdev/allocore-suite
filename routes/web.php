@@ -60,6 +60,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
@@ -112,6 +113,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('dashboard/export/pdf', [DashboardExportController::class, 'pdf'])->name('dashboard.export.pdf');
     Route::get('tools', ToolsController::class)->name('tools.index');
+    Route::get('recommendations', RecommendationController::class)->name('recommendations.index');
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
     Route::get('search', SearchController::class)->name('search.index');
