@@ -1119,5 +1119,15 @@
     "recommendations.combo_kpi_finance": "Move from KPI tracking to revenue-aware financial analytics.",
     "recommendations.combo_audit_finance": "Audit financial controls and cashflow together.",
     "recommendations.combo_referral_score": "Reward top referrers and score customer profitability.",
-    "recommendations.combo_culture_structure": "Align culture, vision and org structure."
+    "recommendations.combo_culture_structure": "Align culture, vision and org structure.",
+
+    "Notification preferences": "Notification preferences",
+    "Choose how and where you want to be notified.": "Choose how and where you want to be notified.",
+    "In-app": "In-app",
+    "Email": "Email",
+    "Slack": "Slack",
+    "Slack webhook URL": "Slack webhook URL",
+    "Save preferences": "Save preferences",
+    "Notification preferences saved.": "Notification preferences saved.",
+    "Preferences": "Preferences"
 }

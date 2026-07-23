@@ -74,6 +74,20 @@ class User extends Authenticatable
         return $this->morphMany(ActivityLog::class, 'causer');
     }
 
+    public function notificationPreferences(): HasMany
+    {
+        return $this->hasMany(NotificationPreference::class);
+    }
+
+    public function notificationPreference(string $type = 'general'): NotificationPreference
+    {
+        return $this->notificationPreferences()->firstOrCreate(['type' => $type], [
+            'email' => true,
+            'in_app' => true,
+            'slack' => false,
+        ]);
+    }
+
     public function activeSubscriptions()
     {
         return $this->toolSubscriptions()
