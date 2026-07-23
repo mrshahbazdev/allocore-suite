@@ -45,6 +45,25 @@
             </form>
 
             @if (auth()->user()->currentTeam && auth()->user()->currentTeam->owner_id === auth()->id())
+                <div class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-semibold text-slate-900 mb-4">{{ __('Team members') }}</h2>
+                    <ul class="space-y-3">
+                        @foreach (auth()->user()->currentTeam->members()->where('users.id', '!=', auth()->id())->get() as $member)
+                            <li class="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3">
+                                <div>
+                                    <div class="font-medium text-slate-900">{{ $member->name }}</div>
+                                    <div class="text-xs text-slate-500">{{ $member->email }}</div>
+                                </div>
+                                <a href="{{ route('teams.members.permissions.edit', [auth()->user()->currentTeam, $member]) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Permissions') }}</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <a href="{{ route('teams.branding.edit', auth()->user()->currentTeam) }}" class="block rounded-xl bg-white border border-slate-200 p-6 shadow-sm hover:border-indigo-300">
+                    <h2 class="font-semibold text-slate-900">{{ __('Team branding') }}</h2>
+                    <p class="mt-1 text-sm text-slate-500">{{ __('Customize logo, colors, and custom domain.') }}</p>
+                </a>
                 <form method="POST" action="{{ route('teams.update', auth()->user()->currentTeam) }}" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
                     @csrf
                     @method('PUT')

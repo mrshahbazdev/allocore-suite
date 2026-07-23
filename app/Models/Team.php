@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Team extends Model
 {
-    protected $fillable = ['name', 'owner_id', 'industry', 'size'];
+    protected $fillable = [
+        'name', 'owner_id', 'industry', 'size',
+        'subdomain', 'custom_domain', 'logo', 'favicon',
+        'primary_color', 'accent_color',
+    ];
 
     public function owner(): BelongsTo
     {
@@ -19,7 +23,7 @@ class Team extends Model
 
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot(['role', 'allowed_modules'])->withTimestamps();
     }
 
     public function invitations(): HasMany
@@ -41,8 +45,25 @@ class Team extends Model
 
     public function hasModule(string $moduleKey): bool
     {
-        return $this->activeSubscriptions()
+        $teamSubscription = $this->activeSubscriptions()
             ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
             ->exists();
+
+        $ownerSubscription = $this->owner?->activeSubscriptions()
+            ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
+            ->exists() ?? false;
+
+        return $teamSubscription || $ownerSubscription;
+    }
+
+    public function branding(): array
+    {
+        return [
+            'name' => $this->name,
+            'logo' => $this->logo,
+            'favicon' => $this->favicon,
+            'primary_color' => $this->primary_color,
+            'accent_color' => $this->accent_color,
+        ];
     }
 }

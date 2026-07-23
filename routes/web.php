@@ -57,16 +57,20 @@ use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationPreferenceController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
+use App\Http\Controllers\TeamBrandingController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Http\Controllers\TeamMemberPermissionController;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\ToolAnalyzerController;
 use App\Http\Controllers\ToolsController;
@@ -87,6 +91,17 @@ Route::bind('pillar', fn ($value) => AuditPillar::withoutGlobalScope('current_te
 Route::bind('question', fn ($value) => AuditQuestion::withoutGlobalScope('current_team')->findOrFail($value));
 
 Route::view('/', 'welcome');
+Route::view('/offline', 'offline')->name('offline');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/onboarding', OnboardingController::class)->name('onboarding.index');
+    Route::post('/onboarding/team', [OnboardingController::class, 'storeTeam'])->name('onboarding.team');
+    Route::post('/onboarding/plan', [OnboardingController::class, 'storePlan'])->name('onboarding.plan');
+    Route::post('/onboarding/complete', [OnboardingController::class, 'complete'])->name('onboarding.complete');
+
+    Route::get('marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('marketplace/{module}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+});
 
 Route::get('language/{locale}', LanguageController::class)->name('language')->whereIn('locale', config('app.available_locales', ['en']));
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
@@ -168,7 +183,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
     Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
+    Route::get('teams/{team}/branding', [TeamBrandingController::class, 'edit'])->name('teams.branding.edit');
+    Route::patch('teams/{team}/branding', [TeamBrandingController::class, 'update'])->name('teams.branding.update');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
+    Route::get('teams/{team}/members/{member}/permissions', [TeamMemberPermissionController::class, 'edit'])->name('teams.members.permissions.edit');
+    Route::patch('teams/{team}/members/{member}/permissions', [TeamMemberPermissionController::class, 'update'])->name('teams.members.permissions.update');
     Route::post('teams/{team}/invitations', [TeamInvitationController::class, 'store'])->name('teams.invitations.store');
     Route::post('teams/invitations/{invitation}/resend', [TeamInvitationController::class, 'resend'])->name('teams.invitations.resend');
     Route::delete('teams/invitations/{invitation}', [TeamInvitationController::class, 'destroy'])->name('teams.invitations.destroy');
