@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarControll
 use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
 use App\Http\Controllers\Admin\AuditTemplateController as AdminAuditTemplateController;
 use App\Http\Controllers\Admin\BackupController as AdminBackupController;
+use App\Http\Controllers\Admin\BillingDashboardController as AdminBillingDashboardController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
 use App\Http\Controllers\Admin\BlogCommentController as AdminBlogCommentController;
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
@@ -46,6 +47,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscriptionController;
 use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\AdvisorController;
+use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
@@ -136,6 +138,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('search', SearchController::class)->name('search.index');
     Route::get('advisor', AdvisorController::class)->name('advisor.index');
     Route::get('usage', UsageAnalyticsController::class)->name('usage.index');
+    Route::get('assistant', [AiAssistantController::class, 'index'])->name('assistant.index');
+    Route::post('assistant', [AiAssistantController::class, 'store'])->name('assistant.store');
+    Route::delete('assistant', [AiAssistantController::class, 'destroy'])->name('assistant.destroy');
 
     Route::get('workflows', [WorkflowController::class, 'index'])->name('workflows.index');
     Route::get('workflows/create', [WorkflowController::class, 'create'])->name('workflows.create');
@@ -261,6 +266,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('invoices/{invoice}', [AdminInvoiceController::class, 'show'])->name('invoices.show');
     Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
     Route::get('payments/{payment}', [AdminPaymentController::class, 'show'])->name('payments.show');
+    Route::get('billing', AdminBillingDashboardController::class)->name('billing.index');
 
     Route::get('activity-logs', [AdminActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::get('activity-logs/{activityLog}', [AdminActivityLogController::class, 'show'])->name('activity-logs.show');
