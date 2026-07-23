@@ -1129,5 +1129,9 @@
     "Slack webhook URL": "Slack webhook URL",
     "Save preferences": "Save preferences",
     "Notification preferences saved.": "Notification preferences saved.",
-    "Preferences": "Preferences"
+    "Preferences": "Preferences",
+
+    "You are offline": "You are offline",
+    "Please check your connection and try again.": "Please check your connection and try again.",
+    "Retry": "Retry"
 }

@@ -1127,5 +1127,9 @@
     "Slack webhook URL": "Slack Webhook-URL",
     "Save preferences": "Einstellungen speichern",
     "Notification preferences saved.": "Benachrichtigungseinstellungen gespeichert.",
-    "Preferences": "Einstellungen"
+    "Preferences": "Einstellungen",
+
+    "You are offline": "Du bist offline",
+    "Please check your connection and try again.": "Bitte überprüfe deine Verbindung und versuche es erneut.",
+    "Retry": "Erneut versuchen"
 }
