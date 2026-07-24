@@ -6,6 +6,7 @@ use App\Http\Middleware\CookieConsentMiddleware;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureInstalled;
 use App\Http\Middleware\EnsureModuleAccess;
+use App\Http\Middleware\EnsureTwoFactor;
 use App\Http\Middleware\ResolveTeamBranding;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ThemeMiddleware;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module' => EnsureModuleAccess::class,
             'admin' => EnsureAdmin::class,
             'api-token' => ApiTokenMiddleware::class,
+            '2fa' => EnsureTwoFactor::class,
         ]);
 
         $middleware->web(append: [
@@ -35,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             CheckMaintenanceMode::class,
             CookieConsentMiddleware::class,
             ThemeMiddleware::class,
+            EnsureTwoFactor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

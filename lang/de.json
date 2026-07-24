@@ -1187,6 +1187,13 @@
     "Retry": "Erneut versuchen",
 
     "Team branding": "Team-Branding",
+    "Team security": "Team-Sicherheit",
+    "Require two-factor authentication for all members of :team.": "Zwei-Faktor-Authentifizierung für alle Mitglieder von :team erforderlich.",
+    "Require two-factor authentication": "Zwei-Faktor-Authentifizierung erforderlich",
+    "Members without 2FA enabled will be redirected to the 2FA setup page until they enable it.": "Mitglieder ohne aktiviertes 2FA werden zur 2FA-Einrichtung weitergeleitet, bis sie es aktivieren.",
+    "Save security settings": "Sicherheitseinstellungen speichern",
+    "Team security settings updated.": "Team-Sicherheitseinstellungen aktualisiert.",
+    "Two-factor authentication is required for this team.": "Für dieses Team ist eine Zwei-Faktor-Authentifizierung erforderlich.",
     "Customize logo, colors, and custom domain.": "Passe Logo, Farben und eigene Domain an.",
     "Customize the logo, colors and domain for :team.": "Passe Logo, Farben und Domain für :team an.",
     "Subdomain": "Subdomain",
