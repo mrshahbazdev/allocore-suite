@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('app:check-alerts')->everyFiveMinutes();
 Schedule::command('blog:publish-scheduled')->everyMinute();
+Schedule::command('app:run-scheduled-reports')->hourly();
