@@ -8,6 +8,7 @@
         <div class="hidden items-center gap-8 lg:flex">
             <a href="{{ route('blog.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Blog') }}</a>
             <a href="{{ route('billing.plans') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('public.nav.pricing') }}</a>
+            <a href="{{ route('api-docs.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('API Docs') }}</a>
         </div>
 
         <div class="hidden items-center gap-4 lg:flex">
