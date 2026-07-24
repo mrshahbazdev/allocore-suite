@@ -48,11 +48,14 @@ class AiAssistant
             fn ($name, $key) => "$key: $name"
         )->implode("\n");
 
+        $context = app(AiAssistantContext::class)->forModule($user, $moduleKey);
+
         $system = <<<PROMPT
 You are a helpful assistant inside Allocore Suite, a multi-tenant SaaS platform.
 The user currently has access to these modules: {$moduleNames}.
 All available modules:
 {$allModules}
+{$context}
 Current page module key: {$moduleKey}.
 Current page URL: {$pageUrl}.
 Answer concisely. If the user asks about a module they do not subscribe to, suggest they visit the Tools page to subscribe.

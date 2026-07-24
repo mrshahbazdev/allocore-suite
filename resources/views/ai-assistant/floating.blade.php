@@ -35,7 +35,8 @@
                 }).catch(() => loading = false);
             ">
                 @csrf
-                <input type="hidden" name="module_key" value="{{ Route::currentRouteName() ? explode('.', Route::currentRouteName())[0] : null }}">
+                @php($aiModuleKey = \App\Services\AiAssistantContext::currentModuleKey())
+                <input type="hidden" name="module_key" value="{{ $aiModuleKey }}">
                 <input type="hidden" name="page_url" value="{{ request()->url() }}">
                 <div class="flex gap-2">
                     <input type="text" name="message" placeholder="{{ __('Ask something...') }}" required class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
