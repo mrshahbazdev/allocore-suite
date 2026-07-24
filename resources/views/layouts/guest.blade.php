@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50 {{ ($theme ?? 'light') === 'dark' ? 'dark' : '' }}">
+    @php($brand = config('app.team_branding') ?? ['name' => \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')), 'logo' => null, 'favicon' => null, 'primary_color' => null, 'accent_color' => null])
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')) }}</title>
+        @if ($brand['favicon'])
+            <link rel="icon" href="{{ $brand['favicon'] }}">
+        @endif
+
+        <title>{{ $brand['name'] }}</title>
         <meta name="description" content="{{ __('landing.meta.description') }}">
         <meta name="keywords" content="{{ __('landing.meta.keywords') }}">
 
@@ -20,8 +25,12 @@
                 {{-- Left: branding --}}
                 <div class="hidden flex-col justify-center lg:flex lg:pr-16">
                     <a href="/" class="mb-8 inline-flex items-center gap-3">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-xl font-black text-white">A</div>
-                        <span class="text-2xl font-bold text-slate-900">{{ \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')) }}</span>
+                        @if ($brand['logo'])
+                            <img src="{{ $brand['logo'] }}" alt="" class="h-12 w-12 object-contain rounded-2xl">
+                        @else
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-black text-white" style="background-color: {{ $brand['primary_color'] ?? '#4f46e5' }}">A</div>
+                        @endif
+                        <span class="text-2xl font-bold text-slate-900">{{ $brand['name'] }}</span>
                     </a>
                     <h1 class="max-w-xl text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl">
                         {{ __('auth.guest.heading') }}
@@ -37,7 +46,7 @@
                             ['icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z', 'title' => __('auth.guest.feature_billing')],
                         ] as $item)
                             <div class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: {{ $brand['primary_color'] ? $brand['primary_color'].'20' : '#e0e7ff' }}; color: {{ $brand['primary_color'] ?? '#4f46e5' }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
                                 </div>
                                 <div class="text-base font-semibold text-slate-900">{{ $item['title'] }}</div>
@@ -50,8 +59,12 @@
                 <div class="relative w-full">
                     <div class="mb-6 flex items-center justify-between lg:hidden">
                         <a href="/" class="inline-flex items-center gap-3">
-                            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-lg font-black text-white">A</div>
-                            <span class="text-xl font-bold text-slate-900">{{ \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')) }}</span>
+                            @if ($brand['logo'])
+                                <img src="{{ $brand['logo'] }}" alt="" class="h-11 w-11 object-contain rounded-2xl">
+                            @else
+                                <div class="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-black text-white" style="background-color: {{ $brand['primary_color'] ?? '#4f46e5' }}">A</div>
+                            @endif
+                            <span class="text-xl font-bold text-slate-900">{{ $brand['name'] }}</span>
                         </a>
                         @include('partials.locale-switcher')
                     </div>
