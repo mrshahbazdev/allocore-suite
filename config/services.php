@@ -59,4 +59,9 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
     ],
 
+    'ssl' => [
+        'command' => env('SERVICES_SSL_COMMAND', ''),
+        'renewal_days' => env('SERVICES_SSL_RENEWAL_DAYS', 14),
+    ],
+
 ];

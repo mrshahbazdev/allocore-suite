@@ -211,6 +211,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
     Route::get('teams/{team}/branding', [TeamBrandingController::class, 'edit'])->name('teams.branding.edit');
     Route::patch('teams/{team}/branding', [TeamBrandingController::class, 'update'])->name('teams.branding.update');
+    Route::post('teams/{team}/branding/verify-domain', [TeamBrandingController::class, 'verifyDomain'])->name('teams.branding.verify-domain');
+    Route::post('teams/{team}/branding/request-ssl', [TeamBrandingController::class, 'requestSsl'])->name('teams.branding.request-ssl');
     Route::get('teams/{team}/security', [TeamSecurityController::class, 'edit'])->name('teams.security.edit');
     Route::patch('teams/{team}/security', [TeamSecurityController::class, 'update'])->name('teams.security.update');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');

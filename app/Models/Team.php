@@ -12,7 +12,9 @@ class Team extends Model
 {
     protected $fillable = [
         'name', 'owner_id', 'industry', 'size',
-        'subdomain', 'custom_domain', 'logo', 'favicon',
+        'subdomain', 'custom_domain', 'custom_domain_verified_at',
+        'ssl_status', 'ssl_issued_at', 'ssl_expires_at', 'ssl_last_error',
+        'logo', 'favicon',
         'primary_color', 'accent_color', 'requires_two_factor',
     ];
 
@@ -20,6 +22,9 @@ class Team extends Model
     {
         return [
             'requires_two_factor' => 'boolean',
+            'custom_domain_verified_at' => 'datetime',
+            'ssl_issued_at' => 'datetime',
+            'ssl_expires_at' => 'datetime',
         ];
     }
 
@@ -66,11 +71,16 @@ class Team extends Model
     public function branding(): array
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'logo' => $this->logo,
             'favicon' => $this->favicon,
             'primary_color' => $this->primary_color,
             'accent_color' => $this->accent_color,
+            'custom_domain' => $this->custom_domain,
+            'custom_domain_verified_at' => $this->custom_domain_verified_at,
+            'ssl_status' => $this->ssl_status,
+            'ssl_expires_at' => $this->ssl_expires_at,
         ];
     }
 }
