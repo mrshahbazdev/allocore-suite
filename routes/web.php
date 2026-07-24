@@ -50,6 +50,7 @@ use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\AdvisorController;
 use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BlogController;
@@ -121,6 +122,7 @@ Route::get('search', GlobalSearchController::class)->name('search');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('help', [HelpController::class, 'index'])->name('help.index');
 Route::get('status', [StatusPageController::class, 'index'])->name('status.index');
+Route::get('api-docs', ApiDocsController::class)->name('api-docs.index');
 
 Route::get('two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.challenge');
 Route::post('two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->name('two-factor.challenge.store');
