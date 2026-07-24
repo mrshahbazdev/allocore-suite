@@ -83,6 +83,7 @@ use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\UsageAnalyticsController;
 use App\Http\Controllers\UserActivityController;
 use App\Http\Controllers\UserApiTokenController;
+use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
@@ -146,6 +147,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('search', SearchController::class)->name('search.index');
     Route::get('advisor', AdvisorController::class)->name('advisor.index');
     Route::get('usage', UsageAnalyticsController::class)->name('usage.index');
+    Route::resource('dashboards', UserDashboardController::class)->names('dashboards');
+    Route::post('dashboards/reorder', [UserDashboardController::class, 'reorder'])->name('dashboards.reorder');
     Route::get('assistant', [AiAssistantController::class, 'index'])->name('assistant.index');
     Route::post('assistant', [AiAssistantController::class, 'store'])->name('assistant.store');
     Route::delete('assistant', [AiAssistantController::class, 'destroy'])->name('assistant.destroy');
