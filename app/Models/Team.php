@@ -13,8 +13,15 @@ class Team extends Model
     protected $fillable = [
         'name', 'owner_id', 'industry', 'size',
         'subdomain', 'custom_domain', 'logo', 'favicon',
-        'primary_color', 'accent_color',
+        'primary_color', 'accent_color', 'requires_two_factor',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'requires_two_factor' => 'boolean',
+        ];
+    }
 
     public function owner(): BelongsTo
     {

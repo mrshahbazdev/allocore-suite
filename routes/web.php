@@ -77,6 +77,7 @@ use App\Http\Controllers\TeamBrandingController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\TeamMemberPermissionController;
+use App\Http\Controllers\TeamSecurityController;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\ToolAnalyzerController;
 use App\Http\Controllers\ToolsController;
@@ -206,6 +207,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('teams.switch');
     Route::get('teams/{team}/branding', [TeamBrandingController::class, 'edit'])->name('teams.branding.edit');
     Route::patch('teams/{team}/branding', [TeamBrandingController::class, 'update'])->name('teams.branding.update');
+    Route::get('teams/{team}/security', [TeamSecurityController::class, 'edit'])->name('teams.security.edit');
+    Route::patch('teams/{team}/security', [TeamSecurityController::class, 'update'])->name('teams.security.update');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
     Route::get('teams/{team}/members/{member}/permissions', [TeamMemberPermissionController::class, 'edit'])->name('teams.members.permissions.edit');
     Route::patch('teams/{team}/members/{member}/permissions', [TeamMemberPermissionController::class, 'update'])->name('teams.members.permissions.update');
