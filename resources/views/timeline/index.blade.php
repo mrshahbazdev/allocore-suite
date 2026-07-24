@@ -6,6 +6,45 @@
         <p class="text-sm text-slate-500">{{ __('A unified timeline of actions across your workspace.') }}</p>
     </div>
 
+    <form method="GET" action="{{ route('timeline.index') }}" class="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div>
+                <label class="block text-xs font-medium text-slate-500">{{ __('Search') }}</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search description...') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500">{{ __('Log name') }}</label>
+                <select name="log_name" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+                    <option value="">{{ __('All') }}</option>
+                    @foreach ($logNames as $name)
+                        <option value="{{ $name }}" {{ request('log_name') === $name ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500">{{ __('Team member') }}</label>
+                <select name="causer_id" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+                    <option value="">{{ __('All members') }}</option>
+                    @foreach ($members as $member)
+                        <option value="{{ $member->id }}" {{ request('causer_id') == $member->id ? 'selected' : '' }}>{{ $member->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500">{{ __('From') }}</label>
+                <input type="date" name="date_from" value="{{ request('date_from') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500">{{ __('To') }}</label>
+                <input type="date" name="date_to" value="{{ request('date_to') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+        </div>
+        <div class="mt-4 flex items-center justify-end gap-2">
+            <a href="{{ route('timeline.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('Reset') }}</a>
+            <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">{{ __('Filter') }}</button>
+        </div>
+    </form>
+
     <div class="space-y-6">
         @forelse ($logs->groupBy(fn ($log) => $log->created_at->format('Y-m-d')) as $date => $dayLogs)
             <div>
