@@ -69,6 +69,7 @@ use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\ScheduledReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
@@ -151,6 +152,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('usage', UsageAnalyticsController::class)->name('usage.index');
     Route::resource('dashboards', UserDashboardController::class)->names('dashboards');
     Route::post('dashboards/reorder', [UserDashboardController::class, 'reorder'])->name('dashboards.reorder');
+
+    Route::resource('scheduled-reports', ScheduledReportController::class)->names('scheduled-reports');
     Route::get('assistant', [AiAssistantController::class, 'index'])->name('assistant.index');
     Route::post('assistant', [AiAssistantController::class, 'store'])->name('assistant.store');
     Route::delete('assistant', [AiAssistantController::class, 'destroy'])->name('assistant.destroy');
