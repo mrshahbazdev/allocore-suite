@@ -23,6 +23,7 @@ class NotificationPreferenceController extends Controller
             'preferences' => 'required|array',
             'preferences.*.email' => 'boolean',
             'preferences.*.in_app' => 'boolean',
+            'preferences.*.push' => 'boolean',
             'preferences.*.slack' => 'boolean',
             'preferences.*.slack_webhook' => 'nullable|url|max:1000',
         ]);
@@ -32,6 +33,7 @@ class NotificationPreferenceController extends Controller
             $preference->update([
                 'email' => $data['email'] ?? false,
                 'in_app' => $data['in_app'] ?? false,
+                'push' => $data['push'] ?? false,
                 'slack' => $data['slack'] ?? false,
                 'slack_webhook' => $data['slack_webhook'] ?? null,
             ]);

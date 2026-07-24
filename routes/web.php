@@ -66,6 +66,7 @@ use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ModuleFallbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationPreferenceController;
+use App\Http\Controllers\NotificationStreamController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
@@ -179,6 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/stream', NotificationStreamController::class)->name('notifications.stream');
     Route::get('notifications/preferences', [NotificationPreferenceController::class, 'index'])->name('notifications.preferences');
     Route::patch('notifications/preferences', [NotificationPreferenceController::class, 'update'])->name('notifications.preferences.update');
     Route::patch('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');

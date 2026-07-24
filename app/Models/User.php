@@ -85,6 +85,7 @@ class User extends Authenticatable
         return $this->notificationPreferences()->firstOrCreate(['type' => $type], [
             'email' => true,
             'in_app' => true,
+            'push' => true,
             'slack' => false,
         ]);
     }

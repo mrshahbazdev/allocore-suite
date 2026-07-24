@@ -15,6 +15,7 @@ class NotificationPreference extends Model
         'type',
         'email',
         'in_app',
+        'push',
         'slack',
         'slack_webhook',
     ];
@@ -24,6 +25,7 @@ class NotificationPreference extends Model
         return [
             'email' => 'boolean',
             'in_app' => 'boolean',
+            'push' => 'boolean',
             'slack' => 'boolean',
         ];
     }
