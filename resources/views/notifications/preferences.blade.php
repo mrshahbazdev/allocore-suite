@@ -29,6 +29,12 @@
                     </label>
 
                     <label class="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:bg-slate-50">
+                        <input type="hidden" name="preferences[{{ $type }}][push]" value="0">
+                        <input type="checkbox" name="preferences[{{ $type }}][push]" value="1" {{ $preference->push ? 'checked' : '' }} class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600">
+                        <span class="text-sm font-medium text-slate-700">{{ __('Push') }}</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:bg-slate-50">
                         <input type="hidden" name="preferences[{{ $type }}][slack]" value="0">
                         <input type="checkbox" name="preferences[{{ $type }}][slack]" value="1" {{ $preference->slack ? 'checked' : '' }} class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600">
                         <span class="text-sm font-medium text-slate-700">{{ __('Slack') }}</span>

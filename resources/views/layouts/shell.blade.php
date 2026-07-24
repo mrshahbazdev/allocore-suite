@@ -208,6 +208,59 @@
 @livewireScripts
 @stack('scripts')
 <script>
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+
+    (function () {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.setAttribute('style', 'position:fixed;top:1rem;right:1rem;z-index:50;display:flex;flex-direction:column;gap:0.5rem;');
+        document.body.appendChild(container);
+
+        const showToast = (title, body, url) => {
+            const toast = document.createElement('div');
+            toast.className = 'max-w-xs rounded-lg border border-slate-200 bg-white p-4 shadow-lg';
+            toast.innerHTML = '<div class="font-semibold text-slate-900">' + title + '</div>' +
+                '<div class="mt-1 text-sm text-slate-600">' + body + '</div>';
+            if (url) {
+                toast.classList.add('cursor-pointer');
+                toast.addEventListener('click', () => window.location.href = url);
+            }
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 6000);
+        };
+
+        if (typeof EventSource !== 'undefined') {
+            const source = new EventSource('{{ route('notifications.stream') }}');
+
+            source.addEventListener('notification', (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    showToast(data.title, data.body, data.url);
+
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        const notification = new Notification(data.title, {
+                            body: data.body,
+                            icon: '/icon-192.png',
+                        });
+                        if (data.url) {
+                            notification.onclick = () => window.location.href = data.url;
+                        }
+                    }
+                } catch (e) {}
+            });
+
+            source.addEventListener('error', () => {
+                setTimeout(() => {
+                    if (source.readyState === EventSource.CLOSED) {
+                        source.close();
+                    }
+                }, 5000);
+            });
+        }
+    })();
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js').catch(() => {});
