@@ -60,6 +60,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MarketplaceController;
@@ -148,6 +149,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
     Route::get('search', SearchController::class)->name('search.index');
+    Route::get('imports', [ImportController::class, 'index'])->name('imports.index');
+    Route::post('imports/upload', [ImportController::class, 'upload'])->name('imports.upload');
+    Route::post('imports', [ImportController::class, 'store'])->name('imports.store');
     Route::get('advisor', AdvisorController::class)->name('advisor.index');
     Route::get('usage', UsageAnalyticsController::class)->name('usage.index');
     Route::resource('dashboards', UserDashboardController::class)->names('dashboards');

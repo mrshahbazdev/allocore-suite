@@ -81,6 +81,7 @@
             <a href="{{ route('workflows.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('workflows.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Workflows') }}</a>
             <a href="{{ route('recommendations.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('recommendations.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Recommendations') }}</a>
             <a href="{{ route('scheduled-reports.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('scheduled-reports.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Scheduled Reports') }}</a>
+            <a href="{{ route('imports.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('imports.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Bulk Import') }}</a>
 
             <div class="pt-4 pb-1 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Account') }}</div>
             <a href="{{ route('billing.plans') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('billing.plans') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Plans & Pricing') }}</a>
