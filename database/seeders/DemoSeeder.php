@@ -57,7 +57,7 @@ class DemoSeeder extends Seeder
                 'billable_id' => $team->id,
                 'plan_id' => $bundle->id,
                 'status' => 'active',
-                'payment_method' => 'bank_transfer',
+                'payment_method' => 'bank',
                 'billing_interval' => 'yearly',
                 'starts_at' => now(),
                 'ends_at' => now()->addYear(),
