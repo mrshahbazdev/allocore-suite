@@ -303,7 +303,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('subscriptions/{subscription}/reject', [SubscriptionApprovalController::class, 'reject'])->name('subscriptions.reject');
     Route::post('subscriptions/{subscription}/cancel', [SubscriptionApprovalController::class, 'cancel'])->name('subscriptions.cancel');
     Route::get('audits', [AdminAuditController::class, 'index'])->name('audits.index');
-    Route::get('audits/{audit}', [AdminAuditController::class, 'show'])->name('audits.show');
+    Route::get('audits/{audit}', [AdminAuditController::class, 'show'])->name('audits.show')->whereNumber('audit');
 
     Route::get('audits/templates', [AdminAuditTemplateController::class, 'index'])->name('audits.templates.index');
     Route::get('audits/templates/create', [AdminAuditTemplateController::class, 'create'])->name('audits.templates.create');
