@@ -1331,5 +1331,22 @@
     "recommendations.headline_strong": "Strong position. Address the remaining gaps to reach excellence.",
     "recommendations.headline_solid": "Good foundation. Focus on the lowest scoring pillar next.",
     "recommendations.headline_weak": "Critical gaps detected. Prioritize the lowest scoring pillars.",
-    "recommendations.headline_critical": "Urgent action required. Start with the weakest pillar."
+    "recommendations.headline_critical": "Urgent action required. Start with the weakest pillar.",
+
+    "Address first": "Address first",
+    "Start free small audit": "Start free small audit",
+    "Free small audit": "Free small audit",
+    "Major audit": "Major audit",
+    "Small audit": "Small audit",
+    "Challenge": "Challenge",
+    "KPI check": "KPI check",
+    "every 6 months": "every 6 months",
+    "every 3 months": "every 3 months",
+    "every 4 weeks": "every 4 weeks",
+    "every week": "every week",
+    "Company age": "Company age",
+    "years": "years",
+    "Industry benchmark": "Industry benchmark",
+    "Embed widget": "Embed widget",
+    "Allocore Score certificate": "Allocore Score certificate"
 }

@@ -15,6 +15,7 @@ Route::prefix('app/audit')
     ->group(function () {
         Route::get('/', [AuditController::class, 'index'])->name('index');
         Route::post('/audits', [AuditController::class, 'start'])->name('start');
+        Route::post('/audits/small', [AuditController::class, 'startSmall'])->name('startSmall');
         Route::get('/audits', AuditList::class)->name('audits');
         Route::get('/audits/{audit}/assessment', Assessment::class)->name('assessment');
         Route::get('/audits/{audit}/results', [AuditController::class, 'results'])->name('results');

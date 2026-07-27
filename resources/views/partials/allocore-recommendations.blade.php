@@ -4,11 +4,15 @@
         <p class="mt-1 text-sm text-slate-500">{{ $recommendations['headline'] ?? '' }}</p>
         <ul class="mt-4 space-y-4">
             @foreach ($recommendations['items'] as $item)
-                <li class="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                <li class="rounded-lg border {{ $item['is_first'] ? 'border-indigo-300 bg-indigo-50' : 'border-slate-100 bg-slate-50' }} p-4">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div class="flex-1">
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $item['is_first'] ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700' }} text-xs font-bold">{{ $item['priority'] }}</span>
                                 <p class="font-semibold text-slate-900">{{ $item['pillar'] }}</p>
+                                @if ($item['is_first'])
+                                    <span class="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700">{{ __('Address first') }}</span>
+                                @endif
                                 <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold text-indigo-700">{{ $item['score'] }}</span>
                             </div>
                             <p class="mt-1 text-sm text-slate-600">{{ __($item['action']) }}</p>
@@ -16,13 +20,20 @@
                                 <p class="mt-1 text-sm text-slate-500">{{ __('Recommended tool:') }} <span class="font-medium text-slate-900">{{ $item['module_name'] }}</span></p>
                             @endif
                         </div>
-                        @if ($item['module_name'])
-                            @if ($item['subscribed'])
-                                <a href="{{ $item['module_route'] }}" class="shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Open') }}</a>
-                            @else
-                                <a href="{{ route('billing.plans', ['module' => $item['module_key']]) }}" class="shrink-0 rounded-lg border border-indigo-600 px-3 py-1.5 text-sm font-semibold text-indigo-600 hover:bg-indigo-50">{{ __('Add') }}</a>
+                        <div class="flex flex-col gap-2 sm:items-end">
+                            @if ($item['module_name'])
+                                @if ($item['subscribed'])
+                                    <a href="{{ $item['module_route'] }}" class="shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Open') }}</a>
+                                @else
+                                    <a href="{{ route('billing.plans', ['module' => $item['module_key']]) }}" class="shrink-0 rounded-lg border border-indigo-600 px-3 py-1.5 text-sm font-semibold text-indigo-600 hover:bg-indigo-50">{{ __('Add') }}</a>
+                                @endif
                             @endif
-                        @endif
+                            <form method="POST" action="{{ route('audit.startSmall') }}" class="inline">
+                                @csrf
+                                <input type="hidden" name="focus_pillar" value="{{ $item['pillar'] }}">
+                                <button type="submit" class="shrink-0 rounded-lg border border-emerald-600 px-3 py-1.5 text-sm font-semibold text-emerald-600 hover:bg-emerald-50">{{ __('Start free small audit') }}</button>
+                            </form>
+                        </div>
                     </div>
 
                     @if (! empty($item['kpis']))

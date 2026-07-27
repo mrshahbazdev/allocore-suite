@@ -22,6 +22,21 @@ class Assessment extends Component
 
     public array $answers = [];
 
+    public function pillars()
+    {
+        if (! $this->audit->template) {
+            return collect();
+        }
+
+        $pillars = $this->audit->template->pillars;
+
+        if ($this->audit->focus_pillar) {
+            $pillars = $pillars->where('name', $this->audit->focus_pillar);
+        }
+
+        return $pillars->values();
+    }
+
     public function mount(Audit $audit): void
     {
         abort_if($audit->status === 'completed', 404);
@@ -29,7 +44,7 @@ class Assessment extends Component
         $this->audit = $audit->load('template.pillars.questions');
         abort_unless($this->audit->template, 404);
 
-        foreach ($this->audit->template->pillars as $pillar) {
+        foreach ($this->pillars() as $pillar) {
             foreach ($pillar->questions as $question) {
                 $this->answers[$question->id] = ['value' => null, 'comment' => ''];
             }
@@ -65,7 +80,7 @@ class Assessment extends Component
 
         $this->saveCurrentStep();
 
-        if ($this->currentStep < $this->audit->template->pillars->count()) {
+        if ($this->currentStep < $this->pillars()->count()) {
             $this->currentStep++;
 
             return null;
@@ -110,7 +125,7 @@ class Assessment extends Component
 
     private function currentPillar()
     {
-        return $this->audit->template->pillars->get($this->currentStep - 1);
+        return $this->pillars()->get($this->currentStep - 1);
     }
 
     private function saveCurrentStep(): void
@@ -147,7 +162,7 @@ class Assessment extends Component
         $this->audit->load('template.pillars.questions', 'answers');
         $answers = $this->audit->answers->keyBy('question_id');
 
-        foreach ($this->audit->template->pillars as $pillar) {
+        foreach ($this->pillars() as $pillar) {
             $achieved = 0;
             $possible = 0;
 
@@ -187,7 +202,9 @@ class Assessment extends Component
             'company_age' => $this->audit->company_age ?? $this->audit->team->company_age,
         ]);
 
-        AllocoreScoreService::fromAudit($this->audit);
+        if ($this->audit->audit_type === 'major') {
+            AllocoreScoreService::fromAudit($this->audit);
+        }
 
         return redirect()->route('audit.results', $this->audit);
     }
@@ -207,7 +224,7 @@ class Assessment extends Component
 
     private function firstIncompleteStep(): int
     {
-        foreach ($this->audit->template->pillars as $index => $pillar) {
+        foreach ($this->pillars() as $index => $pillar) {
             foreach ($pillar->questions as $question) {
                 if ($question->is_required && $this->isEmpty($this->answers[$question->id]['value'] ?? null)) {
                     return $index + 1;
@@ -215,7 +232,7 @@ class Assessment extends Component
             }
         }
 
-        return max(1, $this->audit->template->pillars->count());
+        return max(1, $this->pillars()->count());
     }
 
     private function isEmpty(mixed $value): bool
@@ -228,7 +245,7 @@ class Assessment extends Component
         return view('auditpro::livewire.assessment', [
             'pillar' => $this->currentPillar(),
             'questions' => $this->currentQuestions(),
-            'stepCount' => $this->audit->template->pillars->count(),
+            'stepCount' => $this->pillars()->count(),
         ]);
     }
 }
