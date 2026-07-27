@@ -19,11 +19,11 @@ class MaintenanceController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'maintenance_mode' => 'boolean',
+            'maintenance_mode' => 'nullable|boolean',
             'maintenance_message' => 'nullable|string|max:1000',
         ]);
 
-        SiteSetting::set('maintenance_mode', $validated['maintenance_mode'] ? '1' : '');
+        SiteSetting::set('maintenance_mode', ($validated['maintenance_mode'] ?? false) ? '1' : '');
         SiteSetting::set('maintenance_message', $validated['maintenance_message'] ?? '');
 
         return back()->with('success', __('admin.maintenance.updated'));
