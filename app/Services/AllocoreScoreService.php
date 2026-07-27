@@ -31,6 +31,7 @@ class AllocoreScoreService
             'audit_id' => $audit->id,
             'company_name' => $audit->company_name ?: ($audit->team->company_name ?: $audit->team->name),
             'industry' => $audit->industry ?: $audit->team->industry,
+            'industry_sub' => $audit->industry_sub ?: $audit->team->industry_sub,
             'size' => $audit->size ?: $audit->team->size,
             'company_age' => $audit->company_age ?? $audit->team->company_age,
             'score' => $score100,

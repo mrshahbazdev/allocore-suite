@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Industry;
 use App\Models\Module;
 use App\Models\Plan;
 use App\Models\Team;
@@ -22,8 +23,9 @@ class OnboardingController extends Controller
         $step = $this->currentStep($user);
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $plans = Plan::where('is_active', true)->whereHas('modules')->with('modules')->get();
+        $industryClusters = Industry::clusters()->with('children')->get();
 
-        return view('onboarding.index', compact('user', 'step', 'modules', 'plans'));
+        return view('onboarding.index', compact('user', 'step', 'modules', 'plans', 'industryClusters'));
     }
 
     public function storeTeam(Request $request)
@@ -31,6 +33,7 @@ class OnboardingController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'industry' => 'nullable|string|max:255',
+            'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
         ]);
 

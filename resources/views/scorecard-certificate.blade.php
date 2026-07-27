@@ -20,7 +20,7 @@
 
                 @if ($score->industry)
                     <div class="mt-8 text-slate-700">
-                        <p class="text-lg">{{ __('Industry') }}: <span class="font-semibold">{{ $score->industry }}</span></p>
+                        <p class="text-lg">{{ __('Industry') }}: <span class="font-semibold">@include('partials.industry-display', ['industry' => $score->industry, 'industrySub' => $score->industry_sub])</span></p>
                         @if ($score->size)
                             <p class="text-lg">{{ __('Company size') }}: <span class="font-semibold">{{ $score->size }}</span></p>
                         @endif

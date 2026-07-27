@@ -39,7 +39,7 @@
                 <h2 class="font-semibold text-slate-900">{{ __('Create a team') }}</h2>
                 <input type="text" name="name" required placeholder="{{ __('Team name') }}" class="w-full rounded-lg border-slate-300 text-sm">
                 <input type="text" name="company_name" placeholder="{{ __('Company name') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                <input type="text" name="industry" placeholder="{{ __('Industry') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                @include('partials.industry-select', ['clusters' => $industryClusters])
                 <select name="size" class="w-full rounded-lg border-slate-300 text-sm">
                     <option value="">{{ __('Company size') }}</option>
                     <option value="1-10">1–10</option>
@@ -83,7 +83,7 @@
                     <h2 class="font-semibold text-slate-900">{{ __('Team profile') }}</h2>
                     <input type="text" name="name" required value="{{ auth()->user()->currentTeam->name }}" placeholder="{{ __('Team name') }}" class="w-full rounded-lg border-slate-300 text-sm">
                     <input type="text" name="company_name" value="{{ auth()->user()->currentTeam->company_name }}" placeholder="{{ __('Company name') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                    <input type="text" name="industry" value="{{ auth()->user()->currentTeam->industry }}" placeholder="{{ __('Industry') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    @include('partials.industry-select', ['clusters' => $industryClusters, 'value' => auth()->user()->currentTeam])
                     <select name="size" class="w-full rounded-lg border-slate-300 text-sm">
                         <option value="">{{ __('Company size') }}</option>
                         <option value="1-10" {{ auth()->user()->currentTeam->size === '1-10' ? 'selected' : '' }}>1–10</option>

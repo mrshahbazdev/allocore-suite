@@ -31,7 +31,7 @@
                 @if ($benchmark !== null)
                     <div class="mt-6 rounded-lg bg-slate-50 p-4">
                         <p class="text-sm text-slate-600">{{ __('Industry benchmark') }}</p>
-                        <p class="mt-1 text-lg font-semibold text-slate-900">{{ __('Better than :percent% in :industry', ['percent' => $benchmark, 'industry' => $score->industry]) }}</p>
+                        <p class="mt-1 text-lg font-semibold text-slate-900">{{ __('Better than :percent% in :industry', ['percent' => $benchmark, 'industry' => $score->industry_sub ?: $score->industry]) }}</p>
                     </div>
                 @endif
 

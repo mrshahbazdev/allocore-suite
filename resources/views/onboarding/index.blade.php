@@ -28,10 +28,7 @@
                     <label class="block text-sm font-medium text-slate-700">{{ __('Team name') }}</label>
                     <input type="text" name="name" required class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700">{{ __('Industry') }}</label>
-                    <input type="text" name="industry" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                </div>
+                @include('partials.industry-select', ['clusters' => $industryClusters])
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Company size') }}</label>
                     <input type="text" name="size" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
