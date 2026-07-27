@@ -15,6 +15,18 @@
             </form>
         </div>
 
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('cashcore.transactions.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Transactions') }}</a>
+            <a href="{{ route('cashcore.transactions.import') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Import CSV') }}</a>
+            <a href="{{ route('cashcore.categories.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Categories') }}</a>
+            <a href="{{ route('cashcore.leaks.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Cash Leaks') }}</a>
+            <a href="{{ route('cashcore.unlocker.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Cash Unlocker') }}</a>
+            <a href="{{ route('cashcore.scoring.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Expense Scoring') }}</a>
+            <a href="{{ route('cashcore.scenarios.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Scenarios') }}</a>
+            <a href="{{ route('cashcore.allocation.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Profit Allocation') }}</a>
+            <a href="{{ route('cashcore.behavior.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Behavior') }}</a>
+        </div>
+
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Income') }}</div><div class="text-2xl font-bold">{{ number_format($income, 2) }}</div></div>
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Expenses') }}</div><div class="text-2xl font-bold">{{ number_format($expenses, 2) }}</div></div>
@@ -25,7 +37,10 @@
         <div class="grid gap-4 sm:grid-cols-3">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Cost Ratio') }}</div><div class="text-xl font-bold">{{ $costRatio }}%</div></div>
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Overhead Ratio') }}</div><div class="text-xl font-bold">{{ $overheadRatio }}%</div></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Active Leaks') }}</div><div class="text-xl font-bold {{ $activeLeaks > 0 ? 'text-rose-600' : '' }}">{{ $activeLeaks }}</div></div>
+            <a href="{{ route('cashcore.leaks.index') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
+                <div class="text-xs uppercase text-slate-500">{{ __('Active Leaks') }}</div>
+                <div class="text-xl font-bold {{ $activeLeaks > 0 ? 'text-rose-600' : '' }}">{{ $activeLeaks }}</div>
+            </a>
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
