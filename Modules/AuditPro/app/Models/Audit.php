@@ -15,7 +15,19 @@ class Audit extends Model
 
     protected $table = 'auditpro_audits';
 
-    protected $fillable = ['team_id', 'template_id', 'created_by', 'status'];
+    protected $fillable = [
+        'team_id', 'template_id', 'created_by', 'status',
+        'company_name', 'industry', 'size', 'company_age',
+        'audit_type', 'completed_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'company_age' => 'integer',
+            'completed_at' => 'datetime',
+        ];
+    }
 
     public function template(): BelongsTo
     {

@@ -10,6 +10,10 @@ class AllocoreScore extends Model
     protected $fillable = [
         'team_id',
         'audit_id',
+        'company_name',
+        'industry',
+        'size',
+        'company_age',
         'score',
         'maturity_level',
         'pillars',

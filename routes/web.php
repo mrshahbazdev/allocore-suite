@@ -127,6 +127,8 @@ Route::get('glossary/{glossary}', [GlossaryController::class, 'show'])->name('gl
 Route::get('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.index');
 Route::post('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.calculate');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
+Route::get('scorecard/{slug}/embed', [AllocoreScoreController::class, 'embed'])->name('scorecard.embed');
+Route::get('scorecard/{slug}/certificate', [AllocoreScoreController::class, 'certificate'])->name('scorecard.certificate');
 Route::view('/offline', 'offline')->name('offline');
 
 Route::middleware(['auth', 'verified'])->group(function () {

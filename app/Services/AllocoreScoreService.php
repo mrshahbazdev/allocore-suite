@@ -29,6 +29,10 @@ class AllocoreScoreService
         return AllocoreScore::create([
             'team_id' => $audit->team_id,
             'audit_id' => $audit->id,
+            'company_name' => $audit->company_name ?: ($audit->team->company_name ?: $audit->team->name),
+            'industry' => $audit->industry ?: $audit->team->industry,
+            'size' => $audit->size ?: $audit->team->size,
+            'company_age' => $audit->company_age ?? $audit->team->company_age,
             'score' => $score100,
             'maturity_level' => Maturity::label($averageRaw),
             'pillars' => $pillars,

@@ -178,7 +178,14 @@ class Assessment extends Component
             );
         }
 
-        $this->audit->update(['status' => 'completed']);
+        $this->audit->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+            'company_name' => $this->audit->company_name ?: ($this->audit->team->company_name ?: $this->audit->team->name),
+            'industry' => $this->audit->industry ?: $this->audit->team->industry,
+            'size' => $this->audit->size ?: $this->audit->team->size,
+            'company_age' => $this->audit->company_age ?? $this->audit->team->company_age,
+        ]);
 
         AllocoreScoreService::fromAudit($this->audit);
 

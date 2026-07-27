@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SiteSetting;
 use App\Models\Team;
+use App\Services\AllocoreBenchmarkService;
 use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
 use Illuminate\Http\Request;
@@ -19,8 +20,13 @@ class AllocoreScoreController extends Controller
         $history = AllocoreScoreService::historyForTeam($user?->current_team_id, 24);
         $recommendations = app(AllocoreRecommendationService::class)->forScore($score, $user);
         $team = $user?->currentTeam;
+        $benchmark = $score ? AllocoreBenchmarkService::percentile($score) : null;
+        $industryStats = $score && $score->industry ? AllocoreBenchmarkService::industryStats($score->industry) : null;
+        $embedCode = $team && $team->public_score_enabled && $team->public_score_slug
+            ? '<iframe src="'.route('scorecard.embed', $team->public_score_slug).'" width="280" height="160" frameborder="0"></iframe>'
+            : null;
 
-        return view('allocore-score', compact('score', 'history', 'recommendations', 'team'));
+        return view('allocore-score', compact('score', 'history', 'recommendations', 'team', 'benchmark', 'industryStats', 'embedCode'));
     }
 
     public function public(string $slug)
@@ -37,7 +43,45 @@ class AllocoreScoreController extends Controller
 
         $this->setPublicBranding($team);
 
-        return view('scorecard', compact('team', 'score'));
+        $benchmark = AllocoreBenchmarkService::percentile($score);
+        $industryStats = $score->industry ? AllocoreBenchmarkService::industryStats($score->industry) : null;
+
+        return view('scorecard', compact('team', 'score', 'benchmark', 'industryStats'));
+    }
+
+    public function embed(string $slug)
+    {
+        $team = Team::where('public_score_enabled', true)
+            ->where('public_score_slug', $slug)
+            ->firstOrFail();
+
+        $score = AllocoreScoreService::latestForTeam($team->id);
+
+        abort_if(! $score, 404);
+
+        $this->setPublicBranding($team);
+
+        return response()
+            ->view('scorecard-embed', compact('team', 'score'), 200)
+            ->header('X-Frame-Options', 'ALLOWALL')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    public function certificate(string $slug)
+    {
+        $team = Team::where('public_score_enabled', true)
+            ->where('public_score_slug', $slug)
+            ->firstOrFail();
+
+        $score = AllocoreScoreService::latestForTeam($team->id);
+
+        abort_if(! $score, 404);
+
+        $this->setPublicBranding($team);
+
+        $benchmark = AllocoreBenchmarkService::percentile($score);
+
+        return view('scorecard-certificate', compact('team', 'score', 'benchmark'));
     }
 
     public function updatePublic(Request $request)
@@ -48,7 +92,7 @@ class AllocoreScoreController extends Controller
         abort_if(! $team || $team->owner_id !== $user->id, 403);
 
         $validated = $request->validate([
-            'public_score_enabled' => 'boolean',
+            'public_score_enabled' => 'nullable|boolean',
             'public_score_slug' => [
                 'nullable',
                 'string',
@@ -57,6 +101,7 @@ class AllocoreScoreController extends Controller
             ],
         ]);
 
+        $validated['public_score_enabled'] = (bool) ($validated['public_score_enabled'] ?? false);
         $validated['public_score_slug'] = $validated['public_score_slug'] ?: null;
 
         $team->update($validated);

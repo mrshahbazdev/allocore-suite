@@ -20,8 +20,10 @@ class TeamController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
+            'company_age' => 'nullable|integer|min:0|max:250',
         ]);
 
         $team = Team::create($validated + ['owner_id' => $request->user()->id]);
@@ -37,8 +39,10 @@ class TeamController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
+            'company_age' => 'nullable|integer|min:0|max:250',
         ]);
 
         $team->update($validated);
