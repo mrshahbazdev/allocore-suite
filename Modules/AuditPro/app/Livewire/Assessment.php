@@ -2,6 +2,7 @@
 
 namespace Modules\AuditPro\Livewire;
 
+use App\Services\AllocoreScoreService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -178,6 +179,8 @@ class Assessment extends Component
         }
 
         $this->audit->update(['status' => 'completed']);
+
+        AllocoreScoreService::fromAudit($this->audit);
 
         return redirect()->route('audit.results', $this->audit);
     }

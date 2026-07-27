@@ -53,6 +53,7 @@ use App\Http\Controllers\Admin\WebhookController as AdminWebhookController;
 use App\Http\Controllers\AdvisorController;
 use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\AllocoreScoreController;
 use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
@@ -150,6 +151,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('dashboard/export/pdf', [DashboardExportController::class, 'pdf'])->name('dashboard.export.pdf');
+    Route::get('allocore-score', AllocoreScoreController::class)->name('allocore-score.index');
     Route::get('tools', ToolsController::class)->name('tools.index');
     Route::get('recommendations', RecommendationController::class)->name('recommendations.index');
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
