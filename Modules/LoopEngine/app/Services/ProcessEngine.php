@@ -15,7 +15,7 @@ class ProcessEngine
 {
     public function __construct(protected WebhookService $webhookService) {}
 
-    public function startRun(Process $process, User $user): ProcessRun
+    public function startRun(Process $process, User $user, ?int $assignedTo = null): ProcessRun
     {
         $firstStep = $process->firstStep();
 
@@ -23,6 +23,7 @@ class ProcessEngine
             'team_id' => $user->current_team_id,
             'process_id' => $process->id,
             'started_by' => $user->id,
+            'assigned_to' => $assignedTo,
             'status' => 'in_progress',
             'current_step_id' => $firstStep?->id,
             'loop_count' => 0,

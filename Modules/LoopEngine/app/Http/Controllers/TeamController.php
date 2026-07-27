@@ -71,4 +71,45 @@ class TeamController extends Controller
 
         return view('loopengine::team.assignments', compact('assignments'));
     }
+
+    public function editAssignment(TeamAssignment $assignment): View
+    {
+        $this->authorizeAssignment($assignment);
+
+        $processes = Process::where('status', 'active')->latest()->get();
+        $users = auth()->user()->currentTeam->users ?? collect();
+
+        return view('loopengine::team.assignments-edit', compact('assignment', 'processes', 'users'));
+    }
+
+    public function updateAssignment(Request $request, TeamAssignment $assignment): RedirectResponse
+    {
+        $this->authorizeAssignment($assignment);
+
+        $validated = $request->validate([
+            'process_id' => 'required|exists:loopengine_processes,id',
+            'user_id' => 'required|exists:users,id',
+            'status' => 'required|string|in:pending,in_progress,completed',
+            'notes' => 'nullable|string',
+        ]);
+
+        $validated['completed_at'] = $validated['status'] === 'completed' ? now() : null;
+
+        $assignment->update($validated);
+
+        return redirect()->route('loopengine.team.assignments')->with('success', __('Assignment updated.'));
+    }
+
+    public function destroyAssignment(TeamAssignment $assignment): RedirectResponse
+    {
+        $this->authorizeAssignment($assignment);
+        $assignment->delete();
+
+        return redirect()->route('loopengine.team.assignments')->with('success', __('Assignment deleted.'));
+    }
+
+    protected function authorizeAssignment(TeamAssignment $assignment): void
+    {
+        abort_if($assignment->team_id !== auth()->user()->current_team_id, 403);
+    }
 }

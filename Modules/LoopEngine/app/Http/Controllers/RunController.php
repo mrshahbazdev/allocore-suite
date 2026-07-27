@@ -25,9 +25,13 @@ class RunController extends Controller
         return view('loopengine::runs.index', compact('runs'));
     }
 
-    public function start(Process $process): RedirectResponse
+    public function start(Request $request, Process $process): RedirectResponse
     {
-        $run = $this->engine->startRun($process, auth()->user());
+        $validated = $request->validate([
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+
+        $run = $this->engine->startRun($process, auth()->user(), $validated['assigned_to'] ?? null);
 
         return redirect()->route('loopengine.runs.show', $run);
     }

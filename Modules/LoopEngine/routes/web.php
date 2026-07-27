@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified', 'module:loop-engine', EnsureCurrentTeam::
         Route::post('/processes/{process}/version', [ProcessController::class, 'newVersion'])->name('processes.version');
         Route::post('/processes/{process}/activate', [ProcessController::class, 'activate'])->name('processes.activate');
         Route::post('/processes/{process}/archive', [ProcessController::class, 'archive'])->name('processes.archive');
+        Route::get('/processes/{process}/share', [ProcessController::class, 'share'])->name('processes.share');
         Route::post('/processes/{process}/steps/reorder', [ProcessController::class, 'reorderSteps'])->name('processes.steps.reorder');
 
         Route::post('/processes/{process}/steps', [ProcessController::class, 'storeStep'])->name('steps.store');
@@ -57,6 +58,9 @@ Route::middleware(['auth', 'verified', 'module:loop-engine', EnsureCurrentTeam::
         Route::get('/team/assign', [TeamController::class, 'createAssignment'])->name('team.assign.create');
         Route::post('/team/assign', [TeamController::class, 'storeAssignment'])->name('team.assign.store');
         Route::get('/team/assignments', [TeamController::class, 'assignments'])->name('team.assignments');
+        Route::get('/team/assignments/{assignment}/edit', [TeamController::class, 'editAssignment'])->name('team.assignments.edit');
+        Route::put('/team/assignments/{assignment}', [TeamController::class, 'updateAssignment'])->name('team.assignments.update');
+        Route::delete('/team/assignments/{assignment}', [TeamController::class, 'destroyAssignment'])->name('team.assignments.destroy');
 
         Route::get('/export/runs/csv', [ExportController::class, 'runsCsv'])->name('export.runs.csv');
         Route::get('/export/logs/csv', [ExportController::class, 'logsCsv'])->name('export.logs.csv');

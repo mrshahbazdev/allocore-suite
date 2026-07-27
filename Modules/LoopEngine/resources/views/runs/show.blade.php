@@ -9,11 +9,19 @@
             <div>
                 <h1 class="text-2xl font-bold text-slate-900">{{ $run->process->localizedName() }}</h1>
                 <p class="text-sm text-slate-500">{{ __('Step') }} {{ $run->currentStep?->order }} / {{ $run->process->steps->count() }}</p>
+                @if ($run->assignee)
+                    <p class="text-xs text-slate-500">{{ __('Assigned to') }}: {{ $run->assignee->name }}</p>
+                @endif
             </div>
-            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $run->status === 'in_progress' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700' }}">{{ __($run->status) }}</span>
+            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $run->status === 'in_progress' ? 'bg-indigo-100 text-indigo-700' : ($run->status === 'paused' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700') }}">{{ __($run->status) }}</span>
         </div>
 
-        @if ($run->currentStep)
+        @if ($run->status === 'paused')
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p class="text-slate-600">{{ __('This run is paused.') }}</p>
+                <form method="POST" action="{{ route('loopengine.runs.resume', $run) }}" class="mt-4">@csrf<button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Resume') }}</button></form>
+            </div>
+        @elseif ($run->currentStep)
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 class="text-xl font-semibold text-slate-900">{{ $run->currentStep->localizedQuestion() }}</h2>
                 @if ($run->currentStep->localizedHelpText())
@@ -35,11 +43,7 @@
                         <textarea name="response_text" rows="4" class="w-full rounded-lg border-slate-300" placeholder="{{ __('Your response...') }}"></textarea>
                     @endif
 
-                    <div class="flex gap-2">
-                        <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Continue') }}</button>
-                        <form method="POST" action="{{ route('loopengine.runs.pause', $run) }}" class="inline">@csrf<button class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Pause') }}</button></form>
-                        <form method="POST" action="{{ route('loopengine.runs.cancel', $run) }}" class="inline">@csrf<button class="rounded-lg bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-200">{{ __('Cancel') }}</button></form>
-                    </div>
+                    <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Continue') }}</button>
                 </form>
             </div>
         @else
@@ -48,5 +52,17 @@
                 <a href="{{ route('loopengine.runs.summary', $run) }}" class="mt-4 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('View Summary') }}</a>
             </div>
         @endif
+
+        <div class="flex flex-wrap gap-2">
+            @if ($run->status === 'in_progress')
+                <form method="POST" action="{{ route('loopengine.runs.pause', $run) }}" class="inline">@csrf<button class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Pause') }}</button></form>
+            @elseif ($run->status === 'paused')
+                <form method="POST" action="{{ route('loopengine.runs.resume', $run) }}" class="inline">@csrf<button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Resume') }}</button></form>
+            @endif
+            @if (in_array($run->status, ['in_progress', 'paused']))
+                <form method="POST" action="{{ route('loopengine.runs.cancel', $run) }}" class="inline" onsubmit="return confirm('{{ __('Cancel this run?') }}')">@csrf<button class="rounded-lg bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-200">{{ __('Cancel') }}</button></form>
+            @endif
+            <a href="{{ route('loopengine.runs.summary', $run) }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Summary') }}</a>
+        </div>
     </div>
 @endsection

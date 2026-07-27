@@ -9,11 +9,32 @@
             <div>
                 <h1 class="text-2xl font-bold text-slate-900">{{ $process->localizedName() }}</h1>
                 <p class="text-sm text-slate-500">{{ $process->localizedDescription() }}</p>
-                <div class="mt-2 text-xs text-slate-500">{{ $process->category }} — {{ __($process->status) }}</div>
+                <div class="mt-2 text-xs text-slate-500">{{ $process->category ?? __('No category') }} — {{ __($process->status) }}</div>
             </div>
-            <div class="flex gap-2">
-                <form method="POST" action="{{ route('loopengine.runs.start', $process) }}" class="inline">@csrf<button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Start Run') }}</button></form>
+            <div class="flex flex-wrap gap-2">
+                <form method="POST" action="{{ route('loopengine.runs.start', $process) }}" class="inline flex flex-wrap items-center gap-2">
+                    @csrf
+                    @if ($users->isNotEmpty())
+                        <select name="assigned_to" class="rounded-lg border-slate-300 text-sm">
+                            <option value="">{{ __('Assign to me') }}</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    @endif
+                    <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Start Run') }}</button>
+                </form>
                 <a href="{{ route('loopengine.processes.edit', $process) }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Edit') }}</a>
+                <a href="{{ route('loopengine.processes.share', $process) }}" class="rounded-lg bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-200">{{ __('Share') }}</a>
+                @if ($process->status !== 'active')
+                    <form method="POST" action="{{ route('loopengine.processes.activate', $process) }}" class="inline">@csrf<button class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">{{ __('Activate') }}</button></form>
+                @endif
+                @if ($process->status !== 'archived')
+                    <form method="POST" action="{{ route('loopengine.processes.archive', $process) }}" class="inline">@csrf<button class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500">{{ __('Archive') }}</button></form>
+                @endif
+                <form method="POST" action="{{ route('loopengine.processes.version', $process) }}" class="inline">@csrf<button class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('New Version') }}</button></form>
+                <form method="POST" action="{{ route('loopengine.processes.duplicate', $process) }}" class="inline">@csrf<button class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Copy') }}</button></form>
+                <form method="POST" action="{{ route('loopengine.processes.destroy', $process) }}" class="inline" onsubmit="return confirm('{{ __('Delete this process?') }}')">@csrf @method('DELETE')<button class="rounded-lg bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-200">{{ __('Delete') }}</button></form>
             </div>
         </div>
 
