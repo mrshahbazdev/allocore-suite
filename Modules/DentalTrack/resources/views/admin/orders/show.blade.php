@@ -4,12 +4,33 @@
 
 @section('content')
     <div class="max-w-4xl mx-auto space-y-6">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-slate-900">{{ __('Order #') }}{{ $order->id }}</h1>
-            <div class="flex gap-2">
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">{{ __('Order #') }}{{ $order->id }}</h1>
+                <p class="text-sm text-slate-500">{{ $order->tracking_code }}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
                 <a href="{{ route('dentaltrack.admin.orders.sticker', $order) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Print Sticker') }}</a>
                 <a href="{{ route('dentaltrack.admin.orders.edit', $order) }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Edit') }}</a>
+                <form method="POST" action="{{ route('dentaltrack.admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('{{ __('Delete?') }}')">@csrf @method('DELETE')<button class="rounded-lg bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-200">{{ __('Delete') }}</button></form>
             </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">{{ __('Status') }}</h2>
+            <form method="POST" action="{{ route('dentaltrack.admin.orders.update', $order) }}" class="mt-3 flex flex-wrap items-end gap-3">
+                @csrf @method('PUT')
+                <input type="hidden" name="dentaltrack_company_id" value="{{ $order->dentaltrack_company_id }}">
+                <input type="hidden" name="dentaltrack_lab_id" value="{{ $order->dentaltrack_lab_id }}">
+                <input type="hidden" name="dentaltrack_product_type_id" value="{{ $order->dentaltrack_product_type_id }}">
+                <input type="hidden" name="priority" value="{{ $order->priority->value }}">
+                <select name="status" class="rounded-lg border-slate-300 text-sm">
+                    @foreach (['pending','in_progress','completed','cancelled','on_hold'] as $s)
+                        <option value="{{ $s }}" {{ $order->status->value === $s ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
+                    @endforeach
+                </select>
+                <button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">{{ __('Update Status') }}</button>
+            </form>
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm grid gap-6 sm:grid-cols-2">
