@@ -1314,5 +1314,17 @@
     "No scheduled reports yet.": "No scheduled reports yet.",
     "Paused": "Paused",
     "Module not accessible.": "Module not accessible.",
-    "Module has no API resource.": "Module has no API resource."
+    "Module has no API resource.": "Module has no API resource.",
+
+    "recommendations.revenue_action": "Improve revenue visibility, invoicing and cash-in.",
+    "recommendations.profit_action": "Strengthen profitability analysis and cashflow control.",
+    "recommendations.order_action": "Streamline projects, time tracking and standard operating procedures.",
+    "recommendations.influence_action": "Grow SEO, leads and referral reach.",
+    "recommendations.legacy_action": "Align vision, culture and long-term strategy.",
+    "recommendations.start_audit": "Run an AuditPro assessment to unlock personalized recommendations.",
+    "recommendations.headline_excellent": "Your company is maturing well. Maintain and optimize.",
+    "recommendations.headline_strong": "Strong position. Address the remaining gaps to reach excellence.",
+    "recommendations.headline_solid": "Good foundation. Focus on the lowest scoring pillar next.",
+    "recommendations.headline_weak": "Critical gaps detected. Prioritize the lowest scoring pillars.",
+    "recommendations.headline_critical": "Urgent action required. Start with the weakest pillar."
 }

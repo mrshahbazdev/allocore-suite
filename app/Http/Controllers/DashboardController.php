@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Announcement;
 use App\Models\Module;
 use App\Models\ToolSubscription;
+use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
 use App\Support\DashboardWidgetRegistry;
 use App\Support\ModuleStats;
@@ -52,7 +53,8 @@ class DashboardController extends Controller
 
         $allocoreScore = AllocoreScoreService::latestForTeam($user->current_team_id);
         $allocoreHistory = AllocoreScoreService::historyForTeam($user->current_team_id, 12);
+        $allocoreRecommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, $user);
 
-        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory'));
+        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory', 'allocoreRecommendations'));
     }
 }

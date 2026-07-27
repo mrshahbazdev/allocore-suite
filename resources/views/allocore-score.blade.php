@@ -89,4 +89,6 @@
             <p class="mt-4 text-sm text-slate-500">{{ __('Complete more audits to see your score history.') }}</p>
         @endif
     @endif
+
+    @include('partials.allocore-recommendations', ['recommendations' => $recommendations])
 @endsection
