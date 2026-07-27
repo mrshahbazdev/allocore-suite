@@ -16,12 +16,14 @@ class Team extends Model
         'ssl_status', 'ssl_issued_at', 'ssl_expires_at', 'ssl_last_error',
         'logo', 'favicon',
         'primary_color', 'accent_color', 'requires_two_factor',
+        'public_score_enabled', 'public_score_slug',
     ];
 
     protected function casts(): array
     {
         return [
             'requires_two_factor' => 'boolean',
+            'public_score_enabled' => 'boolean',
             'custom_domain_verified_at' => 'datetime',
             'ssl_issued_at' => 'datetime',
             'ssl_expires_at' => 'datetime',

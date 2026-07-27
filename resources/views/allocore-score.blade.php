@@ -91,4 +91,40 @@
     @endif
 
     @include('partials.allocore-recommendations', ['recommendations' => $recommendations])
+
+    @if ($team && Auth::id() === $team->owner_id)
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="text-base font-semibold text-slate-900">{{ __('Public scorecard') }}</h3>
+            <p class="mt-1 text-sm text-slate-500">{{ __('Share a read-only version of your Allocore Score.') }}</p>
+
+            <form method="POST" action="{{ route('allocore-score.public.update') }}" class="mt-4 space-y-4">
+                @csrf
+                @method('PUT')
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" name="public_score_enabled" id="public_score_enabled" value="1" @checked($team->public_score_enabled) class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    <label for="public_score_enabled" class="text-sm font-medium text-slate-700">{{ __('Enable public scorecard') }}</label>
+                </div>
+
+                <div>
+                    <label for="public_score_slug" class="block text-sm font-medium text-slate-700">{{ __('Public slug') }}</label>
+                    <div class="mt-1 flex rounded-md shadow-sm">
+                        <span class="inline-flex items-center rounded-l-md border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">{{ url('scorecard/') }}/</span>
+                        <input type="text" name="public_score_slug" id="public_score_slug" value="{{ old('public_score_slug', $team->public_score_slug) }}" class="block w-full rounded-none rounded-r-md border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="my-company">
+                    </div>
+                    @error('public_score_slug')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+
+                @if ($team->public_score_enabled && $team->public_score_slug)
+                    <p class="text-sm text-slate-600">
+                        {{ __('Public URL:') }} <a href="{{ route('scorecard.public', $team->public_score_slug) }}" target="_blank" class="font-medium text-indigo-600 hover:underline">{{ route('scorecard.public', $team->public_score_slug) }}</a>
+                    </p>
+                @endif
+
+                <div class="flex items-center justify-end">
+                    <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
+                </div>
+            </form>
+        </div>
+    @endif
 @endsection
