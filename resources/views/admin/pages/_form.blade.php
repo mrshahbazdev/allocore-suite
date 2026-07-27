@@ -78,7 +78,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">{{ __('cms.body_html') }}</label>
-                            <x-rich-editor name="translations[{{ $locale }}][body]" :value="old('translations.'.$locale.'.body', $translation?->body)" />
+                            <x-tinymce-editor name="translations[{{ $locale }}][body]" :value="old('translations.'.$locale.'.body', $translation?->body)" />
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">{{ __('Page blocks') }}</label>
