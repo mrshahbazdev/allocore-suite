@@ -113,9 +113,9 @@ class AuditController extends Controller
             'status' => 'in_progress',
             'audit_type' => $auditType,
             'focus_pillar' => $focusPillar,
-            'company_name' => $validated['company_name'] ?: ($team->company_name ?: $team->name),
-            'industry' => $validated['industry'] ?: $team->industry,
-            'size' => $validated['size'] ?: $team->size,
+            'company_name' => ($validated['company_name'] ?? null) ?: ($team->company_name ?: $team->name),
+            'industry' => ($validated['industry'] ?? null) ?: $team->industry,
+            'size' => ($validated['size'] ?? null) ?: $team->size,
             'company_age' => $validated['company_age'] ?? $team->company_age,
         ]);
 
