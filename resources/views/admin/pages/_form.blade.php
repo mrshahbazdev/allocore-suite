@@ -78,7 +78,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">{{ __('cms.body_html') }}</label>
-                            <textarea name="translations[{{ $locale }}][body]" rows="6" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 font-mono text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('translations.'.$locale.'.body', $translation?->body) }}</textarea>
+                            <x-rich-editor name="translations[{{ $locale }}][body]" :value="old('translations.'.$locale.'.body', $translation?->body)" />
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">{{ __('Page blocks') }}</label>

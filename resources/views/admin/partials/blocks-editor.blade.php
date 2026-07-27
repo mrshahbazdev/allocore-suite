@@ -1,12 +1,34 @@
 @php($name = $name ?? 'blocks')
 @php($items = $blocks ?? [])
 
-<div x-data="{ blocks: {{ json_encode($items ?: []) }}, defaults(type) { const d = {type: type}; if (['features','faq'].includes(type)) d.items = []; return d; }, add(type) { this.blocks.push(this.defaults(type)); }, move(index, dir) { const target = index + dir; if (target >= 0 && target < this.blocks.length) { const tmp = this.blocks[index]; this.blocks[index] = this.blocks[target]; this.blocks[target] = tmp; } }, remove(index) { this.blocks.splice(index, 1); } }">
+<div x-data="{
+    blocks: @js($items ?: []),
+    dragFrom: null,
+    dragOver: null,
+    defaults(type) { const d = {type: type}; if (['features','faq'].includes(type)) d.items = []; return d; },
+    add(type) { this.blocks.push(this.defaults(type)); },
+    move(index, dir) { const target = index + dir; if (target >= 0 && target < this.blocks.length) { const tmp = this.blocks[index]; this.blocks[index] = this.blocks[target]; this.blocks[target] = tmp; } },
+    remove(index) { this.blocks.splice(index, 1); },
+    dragStart(index) { this.dragFrom = index; },
+    dragEnter(index) { this.dragOver = index; },
+    drop(targetIndex) { if (this.dragFrom === null || this.dragFrom === targetIndex) { this.dragFrom = null; this.dragOver = null; return; } const item = this.blocks[this.dragFrom]; const reordered = this.blocks.filter((_, i) => i !== this.dragFrom); reordered.splice(targetIndex, 0, item); this.blocks = reordered; this.dragFrom = null; this.dragOver = null; }
+}">
     <div class="space-y-4">
         <template x-for="(block, index) in blocks" :key="index">
-            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div
+                class="rounded-xl border bg-white p-4 shadow-sm transition"
+                :class="{ 'border-indigo-400 ring-1 ring-indigo-400': dragOver === index, 'border-slate-200': dragOver !== index }"
+                draggable="true"
+                @dragstart="dragStart(index)"
+                @dragover.prevent="dragEnter(index)"
+                @drop.prevent="drop(index)"
+                @dragend="dragFrom = null; dragOver = null"
+            >
                 <div class="mb-3 flex items-center justify-between">
-                    <span class="text-sm font-semibold uppercase tracking-wide text-slate-500" x-text="block.type"></span>
+                    <div class="flex items-center gap-2">
+                        <span class="cursor-grab rounded bg-slate-100 px-2 py-1 text-xs text-slate-500">⋮⋮</span>
+                        <span class="text-sm font-semibold uppercase tracking-wide text-slate-500" x-text="block.type"></span>
+                    </div>
                     <div class="flex items-center gap-2">
                         <button type="button" @click="move(index, -1)" class="rounded bg-slate-100 px-2 py-1 text-xs hover:bg-slate-200">{{ __('Up') }}</button>
                         <button type="button" @click="move(index, 1)" class="rounded bg-slate-100 px-2 py-1 text-xs hover:bg-slate-200">{{ __('Down') }}</button>
