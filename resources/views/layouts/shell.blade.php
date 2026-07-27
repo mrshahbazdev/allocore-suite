@@ -67,6 +67,7 @@
                         @endif
                     </a>
                 @endauth
+                @include('partials.locale-switcher')
                 <span class="text-sm font-medium text-slate-700">{{ auth()->user()?->name }}</span>
                 <a href="{{ route('profile') }}" class="text-sm text-indigo-600 hover:underline">{{ __('Profile') }}</a>
                 <form method="POST" action="{{ route('logout') }}">
