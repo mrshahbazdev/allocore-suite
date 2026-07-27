@@ -28,6 +28,23 @@
             'users' => \App\Models\User::count(),
             'subscriptions' => \App\Models\ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(),
         ])
+        @php($moduleBenefits = [
+            'north-star' => ['benefit' => 'Vision entwickeln', 'desc' => 'Klare Unternehmensvision und langfristige Ausrichtung definieren.'],
+            'org-matrix' => ['benefit' => 'Verantwortlichkeiten klären', 'desc' => 'Rolle, Entscheidungen und Verantwortlichkeiten transparent machen.'],
+            'sweet-spot' => ['benefit' => 'Profitabelste Kunden finden', 'desc' => 'Kundensegmente mit höchstem Deckungsbeitrag identifizieren.'],
+            'financial-platform' => ['benefit' => 'Finanzen im Griff', 'desc' => 'Umsatz, Kosten und Kennzahlen zentral analysieren.'],
+            'cash-core' => ['benefit' => 'Cashflow sicherstellen', 'desc' => 'Liquidität und Profitabilität frühzeitig erkennen.'],
+            'invoice-maker' => ['benefit' => 'Rechnungen ohne Reibung', 'desc' => 'Angebote und Rechnungen schnell und professionell erstellen.'],
+            'plan-hive' => ['benefit' => 'Projekte im Fokus', 'desc' => 'Projekte, Aufgaben und Termine zentral steuern.'],
+            'time-butler' => ['benefit' => 'Zeit sinnvoll nutzen', 'desc' => 'Urlaub, Fehlzeiten und Zeiterfassung organisieren.'],
+            'loop-engine' => ['benefit' => 'Abläufe automatisieren', 'desc' => 'Wiederkehrende Prozesse als Checklisten abbilden.'],
+            'focus-matrix' => ['benefit' => 'Prioritäten setzen', 'desc' => 'Wichtige Aufgaben von Ablenkungen unterscheiden.'],
+            'keyword-cluster' => ['benefit' => 'SEO-Struktur aufbauen', 'desc' => 'Keywords gruppieren und Content planen.'],
+            'lead-quality' => ['benefit' => 'Bessere Leads gewinnen', 'desc' => 'Anfragen bewerten und gezielt nachverfolgen.'],
+            'bunny-band' => ['benefit' => 'Kunden binden', 'desc' => 'Empfehlungs- und Treueprogramme aufsetzen.'],
+            'vision-flow' => ['benefit' => 'Mission leben', 'desc' => 'Werte und Vision im Alltag verankern.'],
+            'nur-du' => ['benefit' => 'Führung stärken', 'desc' => 'Persönliche Entwicklung und Führungskultur fördern.'],
+        ])
 
         <div class="flex min-h-full flex-col bg-slate-50">
             {{-- Header --}}
@@ -39,8 +56,10 @@
                     </a>
 
                     <div class="hidden items-center gap-8 lg:flex">
-                        <a href="#features" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.features') }}</a>
-                        <a href="#modules" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.modules') }}</a>
+                        <a href="#framework" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Framework') }}</a>
+                        <a href="{{ route('case-studies.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Case Studies') }}</a>
+                        <a href="{{ route('audit-example.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Audit Example') }}</a>
+                        <a href="#modules" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Solutions') }}</a>
                         <a href="{{ route('billing.plans') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
                     </div>
 
@@ -69,8 +88,10 @@
                 <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white lg:hidden">
                     <div class="mx-auto max-w-7xl px-6 py-4">
                         <div class="flex flex-col gap-2">
-                            <a href="#features" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('landing.nav.features') }}</a>
-                            <a href="#modules" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('landing.nav.modules') }}</a>
+                            <a href="#framework" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Framework') }}</a>
+                            <a href="{{ route('case-studies.index') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Case Studies') }}</a>
+                            <a href="{{ route('audit-example.index') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Audit Example') }}</a>
+                            <a href="#modules" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Solutions') }}</a>
                             <a href="{{ route('billing.plans') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
                             <div class="mt-2 border-t border-slate-200 pt-4">
                                 @include('partials.locale-switcher')
@@ -129,6 +150,37 @@
                                     <div class="mt-2 text-lg font-bold text-slate-900">{{ $stat['value'] }}</div>
                                 </div>
                             @endforeach
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Allocore Framework --}}
+                <section id="framework" class="bg-slate-50 py-24">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div class="mx-auto max-w-2xl text-center">
+                            <p class="text-sm font-semibold uppercase tracking-wider text-indigo-600">{{ __('Allocore Framework') }}</p>
+                            <h2 class="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('Sechs Dimensionen für nachhaltige Unternehmensentwicklung') }}</h2>
+                            <p class="mt-4 text-lg text-slate-600">{{ __('Allocore begleitet Ihr Unternehmen entlang eines bewährten Reifegradmodells — von der Strategie bis zum Vermächtnis.') }}</p>
+                        </div>
+
+                        <div class="mx-auto mt-16 grid max-w-5xl gap-4">
+                            @php($frameworkSteps = [
+                                ['title' => 'Strategie', 'desc' => 'Vision, Positionierung und langfristige Ziele klar definieren.'],
+                                ['title' => 'Umsatz', 'desc' => 'Umsatzquellen systematisieren und nachhaltig ausbauen.'],
+                                ['title' => 'Gewinn', 'desc' => 'Rentabilität und Cashflow steuern statt nur Umsatz zu jagen.'],
+                                ['title' => 'Ordnung', 'desc' => 'Prozesse, Projekte und Verantwortlichkeiten effizient aufstellen.'],
+                                ['title' => 'Einfluss', 'desc' => 'Sichtbarkeit, Leads und Marktpositionierung stärken.'],
+                                ['title' => 'Vermächtnis', 'desc' => 'Kultur, Werte und Nachfolge für langfristigen Erfolg sichern.'],
+                            ])
+                            <div class="relative grid gap-4 md:grid-cols-3">
+                                @foreach ($frameworkSteps as $index => $step)
+                                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-indigo-200 hover:shadow-md">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white">{{ $index + 1 }}</div>
+                                        <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ $step['title'] }}</h3>
+                                        <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $step['desc'] }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -249,16 +301,20 @@
                         @else
                             <div class="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 @forelse ($modules as $module)
+                                    @php($benefit = $moduleBenefits[$module->key] ?? null)
                                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
                                         <div class="flex items-start justify-between gap-4">
                                             <div>
-                                                <h3 class="text-lg font-semibold text-slate-900">{{ $module->name }}</h3>
-                                                <p class="mt-2 text-sm text-slate-600">{{ $module->description }}</p>
+                                                <h3 class="text-lg font-semibold text-slate-900">{{ $benefit['benefit'] ?? $module->name }}</h3>
+                                                @if ($benefit)
+                                                    <p class="text-xs font-medium text-indigo-600">{{ $module->name }}</p>
+                                                @endif
+                                                <p class="mt-2 text-sm text-slate-600">{{ $benefit['desc'] ?? $module->description }}</p>
                                             </div>
                                             <span class="inline-flex shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">{{ __('landing.modules.ready') }}</span>
                                         </div>
                                         <a href="{{ route('billing.plans', ['module' => $module->key]) }}" class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-indigo-600">
-                                            {{ __('Explore') }}
+                                            {{ $benefit ? __('Details ansehen') : __('Explore') }}
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                                         </a>
                                     </div>

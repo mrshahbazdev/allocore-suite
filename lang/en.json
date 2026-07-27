@@ -26,9 +26,9 @@
     "landing.features.analytics.title": "Analytics dashboard",
     "landing.features.analytics.desc": "Combined insights from every subscribed module in one place.",
 
-    "landing.modules.heading": "Connected modules",
-    "landing.modules.subheading": "Unlock the tools your team needs. Each module shares the same auth, team, and billing layer.",
-    "landing.modules.empty": "New modules are added as your product suite grows.",
+    "landing.modules.heading": "Solutions, not just tools",
+    "landing.modules.subheading": "Each Allocore module solves a concrete business problem — choose what your company needs next.",
+    "landing.modules.empty": "New solutions are added as your company evolves.",
     "landing.modules.ready": "Ready",
 
     "landing.how.heading": "How it works",
