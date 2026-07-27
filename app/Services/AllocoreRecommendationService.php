@@ -9,8 +9,11 @@ use App\Models\User;
 class AllocoreRecommendationService
 {
     /**
-     * Pillar-to-capability mapping. Lower scores surface first.
+     * Pillar-to-capability mapping in the Allocore needs pyramid order.
+     * Address lower levels before higher ones.
      */
+    protected array $pyramidOrder = ['Revenue', 'Profit', 'Order', 'Influence', 'Legacy'];
+
     protected array $pillarMap = [
         'Revenue' => [
             'modules' => ['financial-platform', 'invoice-maker', 'sweet-spot'],
@@ -66,8 +69,21 @@ class AllocoreRecommendationService
         $modules = Module::where('is_active', true)->get()->keyBy('key');
         $subscribedKeys = $modules->keys()->filter(fn ($key) => $user->hasModule($key))->all();
 
-        $items = collect($score->pillars ?? [])
-            ->sortBy('score')
+        $pillarsByName = collect($score->pillars ?? [])->keyBy('name');
+
+        $weakThreshold = 20;
+        $sorted = collect($this->pyramidOrder)
+            ->map(fn ($name) => $pillarsByName->get($name))
+            ->filter()
+            ->values();
+
+        $weak = $sorted->filter(fn (array $pillar) => ($pillar['score'] ?? 0) < $weakThreshold)->values();
+
+        if ($weak->isEmpty()) {
+            $weak = $sorted->take(1);
+        }
+
+        $items = $weak
             ->take(3)
             ->values()
             ->map(function (array $pillar, int $index) use ($modules, $subscribedKeys) {
