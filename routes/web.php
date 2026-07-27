@@ -112,6 +112,7 @@ Route::get('install/admin', [InstallController::class, 'admin'])->name('install.
 Route::post('install/run', [InstallController::class, 'run'])->name('install.run');
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
 Route::view('/offline', 'offline')->name('offline');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -152,6 +153,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('dashboard/export/pdf', [DashboardExportController::class, 'pdf'])->name('dashboard.export.pdf');
     Route::get('allocore-score', AllocoreScoreController::class)->name('allocore-score.index');
+    Route::put('allocore-score/public', [AllocoreScoreController::class, 'updatePublic'])->name('allocore-score.public.update');
     Route::get('tools', ToolsController::class)->name('tools.index');
     Route::get('recommendations', RecommendationController::class)->name('recommendations.index');
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
