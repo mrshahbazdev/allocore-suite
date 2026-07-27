@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->morphs('billable'); // User or Team
             $table->foreignId('plan_id')->constrained()->cascadeOnDelete();
-            $table->enum('payment_method', ['stripe', 'paypal', 'bank', 'manual', 'trial']);
+            $table->enum('payment_method', ['stripe', 'paypal', 'bank', 'manual', 'trial', 'free']);
             $table->enum('billing_interval', ['monthly', 'yearly'])->default('monthly');
             $table->enum('status', ['pending', 'active', 'cancelled', 'expired', 'rejected'])->default('pending');
             $table->string('gateway_reference')->nullable(); // Stripe sub id / PayPal sub id / bank ref

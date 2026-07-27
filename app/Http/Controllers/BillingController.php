@@ -42,7 +42,7 @@ class BillingController extends Controller
     {
         $validated = $request->validate([
             'interval' => 'required|in:monthly,yearly',
-            'payment_method' => 'required|in:stripe,paypal,bank',
+            'payment_method' => 'required|in:stripe,paypal,bank,free',
             'billable' => 'required|in:user,team',
             'coupon_code' => 'nullable|string|max:50',
         ]);
@@ -74,6 +74,12 @@ class BillingController extends Controller
             'total' => $pricing['total'],
             'status' => 'pending',
         ]);
+
+        if ($pricing['total'] <= 0 || $validated['payment_method'] === 'free') {
+            $this->activateSubscription($subscription);
+
+            return redirect()->route('dashboard')->with('success', __('Free plan activated! Your tools are now unlocked.'));
+        }
 
         return match ($validated['payment_method']) {
             'stripe' => $this->stripeCheckout($subscription, $plan, $pricing),
