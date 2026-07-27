@@ -1361,5 +1361,14 @@
     "Beginner-friendly": "Einsteigerfreundlich",
     "Simple explanation": "Einfache Erklärung",
     "Easy": "Einfach",
-    "Back to glossary": "Zurück zum Glossar"
+    "Back to glossary": "Zurück zum Glossar",
+
+    "Mini-Audit Questions": "Mini-Audit-Fragen",
+    "Manage the deep questions shown for each pillar in small audits.": "Verwalte die vertieften Fragen, die für jede Säule in kleinen Audits angezeigt werden.",
+    "Edit :pillar Mini-Audit Questions": ":pillar Mini-Audit-Fragen bearbeiten",
+    "These questions are used when a user starts a small audit for this pillar.": "Diese Fragen werden angezeigt, wenn ein Benutzer einen Small Audit für diese Säule startet.",
+    "questions configured": "Fragen konfiguriert",
+    "Save questions": "Fragen speichern",
+    "Add question": "Frage hinzufügen",
+    "Recommendation on failure": "Empfehlung bei Nicht-Erfüllung"
 }

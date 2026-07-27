@@ -1371,5 +1371,14 @@
     "Beginner-friendly": "Beginner-friendly",
     "Simple explanation": "Simple explanation",
     "Easy": "Easy",
-    "Back to glossary": "Back to glossary"
+    "Back to glossary": "Back to glossary",
+
+    "Mini-Audit Questions": "Mini-Audit Questions",
+    "Manage the deep questions shown for each pillar in small audits.": "Manage the deep questions shown for each pillar in small audits.",
+    "Edit :pillar Mini-Audit Questions": "Edit :pillar Mini-Audit Questions",
+    "These questions are used when a user starts a small audit for this pillar.": "These questions are used when a user starts a small audit for this pillar.",
+    "questions configured": "questions configured",
+    "Save questions": "Save questions",
+    "Add question": "Add question",
+    "Recommendation on failure": "Recommendation on failure"
 }
