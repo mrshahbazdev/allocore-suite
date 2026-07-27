@@ -1,186 +1,148 @@
 @extends('layouts.shell')
 
-@section('title', 'Dashboard — Allocore')
-@section('page-title', 'Dashboard')
-
-@section('topbar-actions')
-    <a href="{{ route('gmbh.create') }}" class="btn btn-primary btn-sm">+ Neue Analyse</a>
-@endsection
-
-@push('styles')
-<style>
-    .dashboard-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 28px;
-    }
-    .dashboard-main-grid {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 20px;
-    }
-    .dashboard-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .dashboard-side-stack { display: flex; flex-direction: column; gap: 16px; }
-    @media (max-width: 1200px) {
-        .dashboard-stats-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 900px) {
-        .dashboard-main-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-        .dashboard-stats-grid { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
-
-{{-- Stats Grid --}}
-<div class="dashboard-stats-grid">
-
-    <div class="card" style="padding:20px;">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">Unternehmen</div>
-        <div style="font-size:36px; font-weight:700; color:#818cf8;">{{ $stats['companies'] }}</div>
-        <a href="{{ route('companies.create') }}" style="font-size:12px; color:#6366f1; text-decoration:none; margin-top:6px; display:block;">+ Hinzufügen →</a>
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ __('Financial Platform') }}</p>
+            <h1 class="text-2xl font-bold text-slate-900">{{ __('Finance Dashboard') }}</h1>
+        </div>
+        <a href="{{ route('gmbh.create') }}" class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            {{ __('New analysis') }}
+        </a>
     </div>
 
-    <div class="card" style="padding:20px; border-color:rgba(16,185,129,0.2);">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">📊 GmbH Analysen</div>
-        <div style="font-size:36px; font-weight:700; color:#10b981;">{{ $stats['gmbh'] }}</div>
-        <a href="{{ route('gmbh.create') }}" style="font-size:12px; color:#10b981; text-decoration:none; margin-top:6px; display:block;">+ Neue Analyse →</a>
-    </div>
-
-    <div class="card" style="padding:20px; border-color:rgba(245,158,11,0.2);">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">📈 Jahresabschlüsse</div>
-        <div style="font-size:36px; font-weight:700; color:#f59e0b;">{{ $stats['jahresabschluss'] }}</div>
-        <a href="{{ route('jahresabschluss.create') }}" style="font-size:12px; color:#f59e0b; text-decoration:none; margin-top:6px; display:block;">+ Neu erstellen →</a>
-    </div>
-
-    <div class="card" style="padding:20px; border-color:rgba(168,85,247,0.2);">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">🏘 Immobilien</div>
-        <div style="font-size:36px; font-weight:700; color:#a855f7;">{{ $stats['immobilien'] }}</div>
-        <a href="{{ route('immobilien.create') }}" style="font-size:12px; color:#a855f7; text-decoration:none; margin-top:6px; display:block;">+ Analysieren →</a>
-    </div>
-
-    <div class="card" style="padding:20px; border-color:rgba(56,189,248,0.2);">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">👤 Leads</div>
-        <div style="font-size:36px; font-weight:700; color:#38bdf8;">{{ $stats['leads'] }}</div>
-        <a href="{{ route('leads.create') }}" style="font-size:12px; color:#38bdf8; text-decoration:none; margin-top:6px; display:block;">+ Neuer Lead →</a>
-    </div>
-
-    <div class="card" style="padding:20px; border-color:rgba(16,185,129,0.2);">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">💳 PayPal Umsatz</div>
-        <div style="font-size:36px; font-weight:700; color:#10b981;">{{ number_format($stats['paypal_revenue'], 0, ',', '.') }} €</div>
-        <a href="{{ route('paypal.index') }}" style="font-size:12px; color:#10b981; text-decoration:none; margin-top:6px; display:block;">Transaktionen →</a>
-    </div>
-
-</div>
-
-<div class="dashboard-main-grid">
-
-    {{-- Recent Analyses --}}
-    <div class="card">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-            <div class="card-title" style="margin-bottom:0">Letzte Analysen</div>
-            <a href="{{ route('analyses.index') }}" class="btn btn-secondary btn-sm">Alle anzeigen</a>
+    {{-- Stats --}}
+    <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Companies') }}</p>
+            <p class="mt-2 text-3xl font-bold text-slate-900">{{ $stats['companies'] }}</p>
+            <a href="{{ route('companies.create') }}" class="mt-3 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700">{{ __('Add company') }} →</a>
         </div>
 
-        @if($recentAnalyses->isEmpty())
-            <div style="text-align:center; padding:40px; color:#475569;">
-                <div style="font-size:40px; margin-bottom:12px;">📊</div>
-                <div style="font-size:14px; margin-bottom:8px;">Noch keine Analysen vorhanden</div>
-                <div style="font-size:12px; color:#334155; margin-bottom:16px;">Starten Sie mit einer GmbH oder Immobilien-Analyse</div>
-                <a href="{{ route('gmbh.create') }}" class="btn btn-primary btn-sm">Erste Analyse erstellen</a>
-            </div>
-        @else
-            <div class="dashboard-table-wrap">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Unternehmen</th>
-                        <th>Typ</th>
-                        <th>Score</th>
-                        <th>Datum</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($recentAnalyses as $a)
-                    <tr>
-                        <td style="font-weight:500; color:#e2e8f0;">{{ $a->name }}</td>
-                        <td>{{ $a->company->name ?? '—' }}</td>
-                        <td>
-                            @php $typeColors = ['gmbh'=>'#818cf8','jahresabschluss'=>'#fbbf24','immobilien'=>'#c084fc']; @endphp
-                            <span style="font-size:11px; color:{{ $typeColors[$a->type] ?? '#94a3b8' }}; font-weight:500;">
-                                {{ $a->typeLabel() }}
-                            </span>
-                        </td>
-                        <td>
-                            @if($a->total_score !== null)
-                                <span class="score-{{ $a->scoreColor() }}" style="font-weight:700; font-size:16px;">
-                                    {{ number_format($a->total_score, 1) }}
-                                </span>
-                                <span style="font-size:11px; color:#475569;">/100</span>
-                            @else
-                                <span style="color:#475569;">—</span>
-                            @endif
-                        </td>
-                        <td style="font-size:12px; color:#475569;">{{ $a->created_at->format('d.m.Y') }}</td>
-                        <td>
-                            <a href="{{ route($a->type . '.show', $a) }}" class="btn btn-secondary btn-sm">→</a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            </div>
-        @endif
-    </div>
-
-    {{-- Quick Start + Companies --}}
-    <div class="dashboard-side-stack">
-
-        <div class="card">
-            <div class="card-title">🚀 Quick Start</div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <a href="{{ route('gmbh.create') }}" class="btn btn-primary" style="justify-content:center;">
-                    📊 GmbH Analyse starten
-                </a>
-                <a href="{{ route('jahresabschluss.create') }}" class="btn btn-secondary" style="justify-content:center;">
-                    📈 Jahresabschluss anlegen
-                </a>
-                <a href="{{ route('immobilien.create') }}" class="btn btn-secondary" style="justify-content:center;">
-                    🏘 Immobilie analysieren
-                </a>
-                <a href="{{ route('companies.create') }}" class="btn btn-secondary" style="justify-content:center;">
-                    🏢 Unternehmen anlegen
-                </a>
-            </div>
+        <div class="rounded-xl border border-emerald-100 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('GmbH analyses') }}</p>
+            <p class="mt-2 text-3xl font-bold text-emerald-600">{{ $stats['gmbh'] }}</p>
+            <a href="{{ route('gmbh.create') }}" class="mt-3 inline-block text-sm font-medium text-emerald-600 hover:text-emerald-700">{{ __('New analysis') }} →</a>
         </div>
 
-        <div class="card">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-                <div class="card-title" style="margin-bottom:0;">🏢 Unternehmen</div>
-                <a href="{{ route('companies.index') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Alle →</a>
+        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Annual reports') }}</p>
+            <p class="mt-2 text-3xl font-bold text-amber-600">{{ $stats['jahresabschluss'] }}</p>
+            <a href="{{ route('jahresabschluss.create') }}" class="mt-3 inline-block text-sm font-medium text-amber-600 hover:text-amber-700">{{ __('Create report') }} →</a>
+        </div>
+
+        <div class="rounded-xl border border-purple-100 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Real estate') }}</p>
+            <p class="mt-2 text-3xl font-bold text-purple-600">{{ $stats['immobilien'] }}</p>
+            <a href="{{ route('immobilien.create') }}" class="mt-3 inline-block text-sm font-medium text-purple-600 hover:text-purple-700">{{ __('Analyze') }} →</a>
+        </div>
+
+        <div class="rounded-xl border border-sky-100 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Leads') }}</p>
+            <p class="mt-2 text-3xl font-bold text-sky-600">{{ $stats['leads'] }}</p>
+            <a href="{{ route('leads.create') }}" class="mt-3 inline-block text-sm font-medium text-sky-600 hover:text-sky-700">{{ __('New lead') }} →</a>
+        </div>
+
+        <div class="rounded-xl border border-emerald-100 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('PayPal revenue') }}</p>
+            <p class="mt-2 text-3xl font-bold text-emerald-600">{{ number_format($stats['paypal_revenue'], 0, ',', '.') }} €</p>
+            <a href="{{ route('paypal.index') }}" class="mt-3 inline-block text-sm font-medium text-emerald-600 hover:text-emerald-700">{{ __('Transactions') }} →</a>
+        </div>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-3">
+        {{-- Recent analyses --}}
+        <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-slate-900">{{ __('Recent analyses') }}</h2>
+                <a href="{{ route('analyses.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">{{ __('All analyses') }} →</a>
             </div>
-            @forelse($companies as $company)
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-                <div>
-                    <div style="font-size:13px; font-weight:500; color:#e2e8f0;">{{ $company->name }}</div>
-                    <div style="font-size:11px; color:#475569;">{{ $company->analyses_count }} Analysen</div>
+
+            @if ($recentAnalyses->isEmpty())
+                <div class="rounded-lg border border-dashed border-slate-300 p-10 text-center text-slate-600">
+                    <p class="font-semibold">{{ __('No analyses yet') }}</p>
+                    <p class="mt-1 text-sm">{{ __('Start with a GmbH or real-estate analysis.') }}</p>
+                    <a href="{{ route('gmbh.create') }}" class="mt-4 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Create first analysis') }}</a>
                 </div>
-                <a href="{{ route('companies.show', $company) }}" style="font-size:12px; color:#6366f1; text-decoration:none;">→</a>
-            </div>
-            @empty
-            <div style="font-size:13px; color:#475569; text-align:center; padding:16px 0;">
-                Noch keine Unternehmen
-            </div>
-            @endforelse
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-100 text-sm">
+                        <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            <tr>
+                                <th class="px-3 py-2">{{ __('Name') }}</th>
+                                <th class="px-3 py-2">{{ __('Company') }}</th>
+                                <th class="px-3 py-2">{{ __('Type') }}</th>
+                                <th class="px-3 py-2">{{ __('Score') }}</th>
+                                <th class="px-3 py-2">{{ __('Date') }}</th>
+                                <th class="px-3 py-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach ($recentAnalyses as $a)
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-3 py-3 font-medium text-slate-900">{{ $a->name }}</td>
+                                    <td class="px-3 py-3 text-slate-600">{{ $a->company->name ?? '—' }}</td>
+                                    <td class="px-3 py-3">
+                                        @php
+                                            $typeColors = [
+                                                'gmbh' => 'text-indigo-600 bg-indigo-50',
+                                                'jahresabschluss' => 'text-amber-600 bg-amber-50',
+                                                'immobilien' => 'text-purple-600 bg-purple-50',
+                                            ];
+                                        @endphp
+                                        <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $typeColors[$a->type] ?? 'text-slate-600 bg-slate-100' }}">
+                                            {{ $a->typeLabel() }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3">
+                                        @if ($a->total_score !== null)
+                                            <span class="font-bold text-slate-900">{{ number_format($a->total_score, 1) }}</span>
+                                            <span class="text-xs text-slate-500">/100</span>
+                                        @else
+                                            <span class="text-slate-400">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-3 py-3 text-xs text-slate-500">{{ $a->created_at->format('d.m.Y') }}</td>
+                                    <td class="px-3 py-3 text-right">
+                                        <a href="{{ route($a->type . '.show', $a) }}" class="rounded-lg border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">{{ __('View') }}</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </section>
+
+        {{-- Quick start + companies --}}
+        <div class="space-y-6">
+            <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="mb-4 text-lg font-semibold text-slate-900">{{ __('Quick start') }}</h2>
+                <div class="flex flex-col gap-2">
+                    <a href="{{ route('gmbh.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Start GmbH analysis') }}</a>
+                    <a href="{{ route('jahresabschluss.create') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Create annual report') }}</a>
+                    <a href="{{ route('immobilien.create') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Analyze real estate') }}</a>
+                    <a href="{{ route('companies.create') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Add company') }}</a>
+                </div>
+            </section>
+
+            <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-4 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-slate-900">{{ __('Companies') }}</h2>
+                    <a href="{{ route('companies.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">{{ __('All') }} →</a>
+                </div>
+                @forelse ($companies as $company)
+                    <div class="flex items-center justify-between border-b border-slate-100 py-3 last:border-b-0">
+                        <div>
+                            <p class="text-sm font-medium text-slate-900">{{ $company->name }}</p>
+                            <p class="text-xs text-slate-500">{{ $company->analyses_count }} {{ __('analyses') }}</p>
+                        </div>
+                        <a href="{{ route('companies.show', $company) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">→</a>
+                    </div>
+                @empty
+                    <p class="py-4 text-center text-sm text-slate-500">{{ __('No companies yet') }}</p>
+                @endforelse
+            </section>
         </div>
-
     </div>
-</div>
-
 @endsection
