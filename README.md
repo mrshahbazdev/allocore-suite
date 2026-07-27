@@ -89,6 +89,22 @@ Key environment variables you may need to configure in `.env`:
 | `SERVICES_SSL_COMMAND` | Optional SSL command for custom domains, e.g. `certbot certonly -d {domain} ...`. |
 | `MODULE_*` | API keys for third-party tool integrations. |
 
+## Shared hosting deployment
+
+This repository already includes pre-built assets (`public/build`) and an `.htaccess` file at the project root, so shared-hosting deployments do not need Node.js or npm.
+
+1. Upload all files to your hosting account (place the project in the domain root).
+2. Make sure `.env` exists and is writable (`chmod 664 .env`).
+3. Set `APP_INSTALLED=false` and open `http://your-domain.com/install` to run the web installer, or run the commands below via SSH:
+
+```bash
+php composer.phar install --no-dev
+php artisan key:generate
+php artisan migrate --seed
+```
+
+The root `.htaccess` redirects all traffic to the `public/` directory so the public URL stays clean.
+
 ## Queue, scheduler and SSL renewal
 
 Run a queue worker for notifications, scheduled reports and imports:
