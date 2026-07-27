@@ -79,6 +79,7 @@ use App\Http\Controllers\NotificationStreamController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\RoiCalculatorController;
 use App\Http\Controllers\ScheduledReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
@@ -119,6 +120,8 @@ Route::get('audit-example', [AuditExampleController::class, 'index'])->name('aud
 Route::get('audit-example/pdf', [AuditExampleController::class, 'pdf'])->name('audit-example.pdf');
 Route::get('case-studies', [CaseStudyController::class, 'index'])->name('case-studies.index');
 Route::get('case-studies/{caseStudy}', [CaseStudyController::class, 'show'])->name('case-studies.show');
+Route::get('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.index');
+Route::post('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.calculate');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
 Route::view('/offline', 'offline')->name('offline');
 
