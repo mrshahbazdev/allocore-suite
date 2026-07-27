@@ -11,6 +11,11 @@ class Module extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
+    public function getRouteKeyName(): string
+    {
+        return 'key';
+    }
+
     public function plans(): BelongsToMany
     {
         return $this->belongsToMany(Plan::class)->withTimestamps();
