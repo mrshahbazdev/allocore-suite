@@ -1321,5 +1321,22 @@
     "recommendations.headline_strong": "Starke Position. Beheben Sie die verbleibenden Lücken, um Exzellenz zu erreichen.",
     "recommendations.headline_solid": "Gute Grundlage. Konzentrieren Sie sich als Nächstes auf die schwächste Säule.",
     "recommendations.headline_weak": "Kritische Lücken erkannt. Priorisieren Sie die niedrigsten Säulen.",
-    "recommendations.headline_critical": "Dringender Handlungsbedarf. Beginnen Sie mit der schwächsten Säule."
+    "recommendations.headline_critical": "Dringender Handlungsbedarf. Beginnen Sie mit der schwächsten Säule.",
+
+    "Address first": "Zuerst angehen",
+    "Start free small audit": "Kostenlosen Small Audit starten",
+    "Free small audit": "Kostenloser Small Audit",
+    "Major audit": "Haupt-Audit",
+    "Small audit": "Small Audit",
+    "Challenge": "Challenge",
+    "KPI check": "KPI-Check",
+    "every 6 months": "alle 6 Monate",
+    "every 3 months": "alle 3 Monate",
+    "every 4 weeks": "alle 4 Wochen",
+    "every week": "jede Woche",
+    "Company age": "Unternehmensalter",
+    "years": "Jahre",
+    "Industry benchmark": "Branchenbenchmark",
+    "Embed widget": "Widget einbetten",
+    "Allocore Score certificate": "Allocore Score Zertifikat"
 }

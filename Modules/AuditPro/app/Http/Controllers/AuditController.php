@@ -2,6 +2,7 @@
 
 namespace Modules\AuditPro\Http\Controllers;
 
+use App\Models\AllocoreScore;
 use App\Services\AllocoreBenchmarkService;
 use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
@@ -42,25 +43,50 @@ class AuditController extends Controller
 
     public function start(Request $request): RedirectResponse
     {
+        return $this->createAudit($request, $request->input('audit_type', 'major'), null);
+    }
+
+    public function startSmall(Request $request, DefaultTemplateProvisioner $provisioner): RedirectResponse
+    {
+        $focusPillar = $request->input('focus_pillar');
+
+        if (! in_array($focusPillar, ['Revenue', 'Profit', 'Order', 'Influence', 'Legacy'], true)) {
+            return back()->with('error', __('Please select a valid pillar.'));
+        }
+
+        $template = $provisioner->provision($request->user()->currentTeam);
+
+        return $this->createAudit($request, 'small', $focusPillar, $template->id);
+    }
+
+    private function createAudit(Request $request, string $auditType, ?string $focusPillar, ?int $templateId = null): RedirectResponse
+    {
         $team = $request->user()->currentTeam;
+
         $validated = $request->validate([
             'template_id' => [
-                'required',
+                'nullable',
                 Rule::exists('auditpro_templates', 'id')->where('team_id', $team->id),
             ],
-            'audit_type' => 'required|in:major,small,challenge,kpi_check',
             'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:255',
             'company_age' => 'nullable|integer|min:0|max:250',
         ]);
 
-        $auditType = $validated['audit_type'];
-        $lastCompletedAt = Audit::where('team_id', $team->id)
+        if (! $templateId) {
+            $templateId = $validated['template_id'];
+        }
+
+        $cooldownQuery = Audit::where('team_id', $team->id)
             ->where('audit_type', $auditType)
-            ->where('status', 'completed')
-            ->latest('completed_at')
-            ->value('completed_at');
+            ->where('status', 'completed');
+
+        if ($focusPillar) {
+            $cooldownQuery->where('focus_pillar', $focusPillar);
+        }
+
+        $lastCompletedAt = $cooldownQuery->latest('completed_at')->value('completed_at');
 
         $cooldownDays = match ($auditType) {
             'major' => 180,
@@ -82,10 +108,11 @@ class AuditController extends Controller
 
         $audit = Audit::create([
             'team_id' => $team->id,
-            'template_id' => $validated['template_id'],
+            'template_id' => $templateId,
             'created_by' => $request->user()->id,
             'status' => 'in_progress',
             'audit_type' => $auditType,
+            'focus_pillar' => $focusPillar,
             'company_name' => $validated['company_name'] ?: ($team->company_name ?: $team->name),
             'industry' => $validated['industry'] ?: $team->industry,
             'size' => $validated['size'] ?: $team->size,
@@ -104,9 +131,28 @@ class AuditController extends Controller
         $overallMaturity = Maturity::label($overallScore);
         $radarLabels = $audit->results->pluck('level')->values();
         $radarScores = $audit->results->pluck('average_score')->map(fn ($score) => (float) $score)->values();
-        $allocoreScore = AllocoreScoreService::latestForTeam($audit->team_id);
+
+        if ($audit->audit_type === 'major') {
+            $allocoreScore = AllocoreScoreService::latestForTeam($audit->team_id);
+        } else {
+            $allocoreScore = AllocoreScore::make([
+                'team_id' => $audit->team_id,
+                'company_name' => $audit->company_name ?: ($audit->team->company_name ?: $audit->team->name),
+                'industry' => $audit->industry ?: $audit->team->industry,
+                'size' => $audit->size ?: $audit->team->size,
+                'company_age' => $audit->company_age ?? $audit->team->company_age,
+                'score' => round(($overallScore / 5) * 100, 2),
+                'maturity_level' => $overallMaturity,
+                'pillars' => $audit->results->map(fn ($r) => [
+                    'name' => $r->level,
+                    'score' => round(((float) $r->average_score / 5) * 100, 2),
+                    'maturity' => $r->maturity_level,
+                ])->values()->all(),
+            ]);
+        }
+
         $recommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, Auth::user());
-        $benchmark = $allocoreScore ? AllocoreBenchmarkService::percentile($allocoreScore) : null;
+        $benchmark = $allocoreScore && $allocoreScore->industry ? AllocoreBenchmarkService::percentile($allocoreScore) : null;
         $industryStats = $allocoreScore && $allocoreScore->industry ? AllocoreBenchmarkService::industryStats($allocoreScore->industry) : null;
 
         return view('auditpro::results', compact(

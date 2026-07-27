@@ -69,13 +69,16 @@ class AllocoreRecommendationService
         $items = collect($score->pillars ?? [])
             ->sortBy('score')
             ->take(3)
-            ->map(function (array $pillar) use ($modules, $subscribedKeys) {
+            ->values()
+            ->map(function (array $pillar, int $index) use ($modules, $subscribedKeys) {
                 $map = $this->pillarMap[$pillar['name']] ?? ['modules' => [], 'action' => '', 'kpis' => []];
                 $target = collect($map['modules'])->first(fn ($key) => $modules->has($key));
                 $module = $target ? $modules->get($target) : null;
                 $subscribed = $target && in_array($target, $subscribedKeys, true);
 
                 return [
+                    'priority' => $index + 1,
+                    'is_first' => $index === 0,
                     'pillar' => $pillar['name'],
                     'score' => $pillar['score'],
                     'maturity' => $pillar['maturity'],
@@ -87,7 +90,6 @@ class AllocoreRecommendationService
                     'kpis' => $this->buildKpis($pillar['score'], $map['kpis'] ?? []),
                 ];
             })
-            ->values()
             ->all();
 
         $headline = $this->headline($score->score);
