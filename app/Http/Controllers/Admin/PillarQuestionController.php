@@ -33,13 +33,21 @@ class PillarQuestionController extends Controller
 
         $provisioner->seedDefaults($pillar);
 
-        $questions = PillarQuestionBlueprint::forPillar($pillar)
+        $groups = PillarQuestionBlueprint::forPillar($pillar)
+            ->mains()
             ->orderBy('position')
-            ->get();
+            ->with('children')
+            ->get()
+            ->map(function ($main) {
+                return [
+                    'main' => $main,
+                    'follow_ups' => $main->children,
+                ];
+            });
 
         return view('admin.auditpro.pillar-questions.edit', [
             'pillar' => $pillar,
-            'questions' => $questions,
+            'groups' => $groups,
         ]);
     }
 
@@ -50,26 +58,45 @@ class PillarQuestionController extends Controller
         }
 
         $validated = $request->validate([
-            'questions' => 'required|array|min:1',
-            'questions.*.question' => 'required|string|max:5000',
-            'questions.*.description' => 'nullable|string|max:5000',
-            'questions.*.recommendation' => 'nullable|string|max:5000',
+            'groups' => 'required|array|min:1',
+            'groups.*.main.question' => 'required|string|max:5000',
+            'groups.*.main.description' => 'nullable|string|max:5000',
+            'groups.*.main.recommendation' => 'nullable|string|max:5000',
+            'groups.*.follow_ups' => 'array',
+            'groups.*.follow_ups.*.question' => 'required|string|max:5000',
+            'groups.*.follow_ups.*.description' => 'nullable|string|max:5000',
+            'groups.*.follow_ups.*.recommendation' => 'nullable|string|max:5000',
         ]);
 
         PillarQuestionBlueprint::where('pillar', $pillar)->delete();
 
-        foreach ($validated['questions'] as $index => $data) {
-            PillarQuestionBlueprint::create([
+        foreach ($validated['groups'] as $groupIndex => $groupData) {
+            $mainPosition = ($groupIndex + 1) * 10;
+
+            $main = PillarQuestionBlueprint::create([
                 'pillar' => $pillar,
-                'position' => $index + 1,
-                'question' => $data['question'],
-                'description' => $data['description'] ?? null,
-                'recommendation' => $data['recommendation'] ?? null,
+                'parent_id' => null,
+                'position' => $mainPosition,
+                'question' => $groupData['main']['question'],
+                'description' => $groupData['main']['description'] ?? null,
+                'recommendation' => $groupData['main']['recommendation'] ?? null,
                 'is_active' => true,
             ]);
+
+            foreach ($groupData['follow_ups'] ?? [] as $followUpIndex => $followUp) {
+                PillarQuestionBlueprint::create([
+                    'pillar' => $pillar,
+                    'parent_id' => $main->id,
+                    'position' => $mainPosition + $followUpIndex + 1,
+                    'question' => $followUp['question'],
+                    'description' => $followUp['description'] ?? null,
+                    'recommendation' => $followUp['recommendation'] ?? null,
+                    'is_active' => true,
+                ]);
+            }
         }
 
-        return redirect()->route('admin.pillar-questions.edit', $pillar)
-            ->with('success', __(':pillar mini-audit questions updated.', ['pillar' => $pillar]));
+        return redirect()->route('admin.audits.pillar-questions.edit', $pillar)
+            ->with('success', __(':pillar mini-audit question groups updated.', ['pillar' => $pillar]));
     }
 }

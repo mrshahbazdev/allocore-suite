@@ -17,6 +17,7 @@ class AuditQuestion extends Model
         'team_id',
         'template_id',
         'pillar_id',
+        'parent_id',
         'question',
         'description',
         'question_type',
@@ -46,6 +47,16 @@ class AuditQuestion extends Model
     public function pillar(): BelongsTo
     {
         return $this->belongsTo(AuditPillar::class, 'pillar_id');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('position');
     }
 
     public function dependency(): BelongsTo

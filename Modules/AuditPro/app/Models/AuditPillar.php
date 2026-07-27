@@ -37,4 +37,9 @@ class AuditPillar extends Model
     {
         return $this->hasMany(AuditQuestion::class, 'pillar_id')->orderBy('position');
     }
+
+    public function mainQuestions(): HasMany
+    {
+        return $this->questions()->whereNull('parent_id');
+    }
 }

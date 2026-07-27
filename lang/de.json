@@ -1368,7 +1368,18 @@
     "Edit :pillar Mini-Audit Questions": ":pillar Mini-Audit-Fragen bearbeiten",
     "These questions are used when a user starts a small audit for this pillar.": "Diese Fragen werden angezeigt, wenn ein Benutzer einen Small Audit für diese Säule startet.",
     "questions configured": "Fragen konfiguriert",
+    "question groups configured": "Fragegruppen konfiguriert",
     "Save questions": "Fragen speichern",
     "Add question": "Frage hinzufügen",
+    "Add question group": "Fragegruppe hinzufügen",
+    "Add follow-up": "Folgefrage hinzufügen",
+    "Remove group": "Gruppe entfernen",
+    "Remove": "Entfernen",
+    "Main question": "Hauptfrage",
+    "Follow-up": "Folgefrage",
+    "Follow-up questions": "Folgefragen",
+    "Question group": "Fragegruppe",
+    "Each group has one main question plus up to five follow-up questions. These are used when a user starts a small audit for this pillar.": "Jede Gruppe hat eine Hauptfrage plus bis zu fünf Folgefragen. Diese werden angezeigt, wenn ein Benutzer einen Small Audit für diese Säule startet.",
+    ":pillar mini-audit question groups updated.": ":pillar Mini-Audit-Fragegruppen aktualisiert.",
     "Recommendation on failure": "Empfehlung bei Nicht-Erfüllung"
 }
