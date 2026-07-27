@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\ApiTokenController as AdminApiTokenController;
+use App\Http\Controllers\Admin\AppearanceController as AdminAppearanceController;
 use App\Http\Controllers\Admin\AuditController as AdminAuditController;
 use App\Http\Controllers\Admin\AuditPillarController as AdminAuditPillarController;
 use App\Http\Controllers\Admin\AuditQuestionController as AdminAuditQuestionController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
 use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
+use App\Http\Controllers\Admin\LandingController as AdminLandingController;
 use App\Http\Controllers\Admin\LogViewerController as AdminLogViewerController;
 use App\Http\Controllers\Admin\MailSettingController;
 use App\Http\Controllers\Admin\MaintenanceController as AdminMaintenanceController;
@@ -37,6 +39,7 @@ use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\QueueMonitorController as AdminQueueMonitorController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SessionManagerController as AdminSessionManagerController;
+use App\Http\Controllers\Admin\SetupController as AdminSetupController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\StatusIncidentController as AdminStatusIncidentController;
 use App\Http\Controllers\Admin\SubscriptionApprovalController;
@@ -60,6 +63,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LanguageController;
@@ -106,7 +110,7 @@ Route::post('install/database', [InstallController::class, 'storeDatabase'])->na
 Route::get('install/admin', [InstallController::class, 'admin'])->name('install.admin');
 Route::post('install/run', [InstallController::class, 'run'])->name('install.run');
 
-Route::view('/', 'welcome');
+Route::get('/', HomeController::class)->name('home');
 Route::view('/offline', 'offline')->name('offline');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -253,7 +257,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('teams/{team}', [AdminTeamController::class, 'destroy'])->name('teams.destroy');
     Route::delete('teams/{team}/members/{user}', [AdminTeamController::class, 'removeMember'])->name('teams.members.remove');
     Route::get('modules', [AdminModuleController::class, 'index'])->name('modules.index');
+    Route::post('modules/{name}/install', [AdminModuleController::class, 'install'])->name('modules.install');
+    Route::patch('modules/{module}/toggle', [AdminModuleController::class, 'toggle'])->name('modules.toggle');
     Route::put('modules/{module}', [AdminModuleController::class, 'update'])->name('modules.update');
+
+    Route::get('setup', [AdminSetupController::class, 'index'])->name('setup.index');
+    Route::post('setup/site', [AdminSetupController::class, 'storeSite'])->name('setup.site');
+    Route::post('setup/modules', [AdminSetupController::class, 'storeModules'])->name('setup.modules');
+    Route::post('setup/appearance', [AdminSetupController::class, 'storeAppearance'])->name('setup.appearance');
+    Route::post('setup/complete', [AdminSetupController::class, 'complete'])->name('setup.complete');
+
+    Route::get('appearance', [AdminAppearanceController::class, 'index'])->name('appearance.index');
+    Route::put('appearance', [AdminAppearanceController::class, 'update'])->name('appearance.update');
+
+    Route::get('landing', [AdminLandingController::class, 'index'])->name('landing.index');
+    Route::put('landing', [AdminLandingController::class, 'update'])->name('landing.update');
+
     Route::get('plans', [PlanController::class, 'index'])->name('plans.index');
     Route::post('plans', [PlanController::class, 'store'])->name('plans.store');
     Route::put('plans/{plan}', [PlanController::class, 'update'])->name('plans.update');

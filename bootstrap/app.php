@@ -6,6 +6,7 @@ use App\Http\Middleware\CookieConsentMiddleware;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureInstalled;
 use App\Http\Middleware\EnsureModuleAccess;
+use App\Http\Middleware\EnsureSetup;
 use App\Http\Middleware\EnsureTwoFactor;
 use App\Http\Middleware\ResolveTeamBranding;
 use App\Http\Middleware\SetLocale;
@@ -38,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             CookieConsentMiddleware::class,
             ThemeMiddleware::class,
             EnsureTwoFactor::class,
+            EnsureSetup::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -21,10 +21,16 @@
     </section>
 
     <section class="py-12 lg:py-20">
-        <div class="mx-auto max-w-4xl px-6 lg:px-8">
-            <article class="prose prose-slate max-w-none">
-                {!! $translation->body !!}
-            </article>
-        </div>
+        @if (filled($translation->blocks ?? []))
+            @foreach ($translation->blocks as $block)
+                @include('blocks.'.$block['type'], ['block' => $block])
+            @endforeach
+        @else
+            <div class="mx-auto max-w-4xl px-6 lg:px-8">
+                <article class="prose prose-slate max-w-none">
+                    {!! $translation->body !!}
+                </article>
+            </div>
+        @endif
     </section>
 @endsection

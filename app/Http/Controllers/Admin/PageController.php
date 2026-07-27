@@ -45,6 +45,7 @@ class PageController extends Controller
             $rules["translations.{$locale}.og_description"] = 'nullable|string|max:1000';
             $rules["translations.{$locale}.og_image"] = 'nullable|string|max:1000';
             $rules["translations.{$locale}.body"] = 'nullable|string|max:50000';
+            $rules["translations.{$locale}.blocks"] = 'nullable|array';
         }
 
         $validated = $request->validate($rules);
@@ -101,6 +102,7 @@ class PageController extends Controller
             $rules["translations.{$locale}.og_description"] = 'nullable|string|max:1000';
             $rules["translations.{$locale}.og_image"] = 'nullable|string|max:1000';
             $rules["translations.{$locale}.body"] = 'nullable|string|max:50000';
+            $rules["translations.{$locale}.blocks"] = 'nullable|array';
         }
 
         $validated = $request->validate($rules);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SiteSetting;
 use App\Models\Team;
 use Closure;
 use Illuminate\Http\Request;
@@ -18,8 +19,20 @@ class ResolveTeamBranding
 
             if ($team) {
                 config(['app.team_branding' => $team->branding() + ['id' => $team->id]]);
+
+                return $next($request);
             }
         }
+
+        config([
+            'app.team_branding' => [
+                'name' => SiteSetting::value('site_name', config('app.name', 'Allocore Suite')),
+                'logo' => SiteSetting::value('site_logo'),
+                'favicon' => SiteSetting::value('site_favicon'),
+                'primary_color' => SiteSetting::value('primary_color', '#4f46e5'),
+                'accent_color' => SiteSetting::value('accent_color'),
+            ],
+        ]);
 
         return $next($request);
     }
