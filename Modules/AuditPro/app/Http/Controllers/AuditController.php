@@ -2,6 +2,7 @@
 
 namespace Modules\AuditPro\Http\Controllers;
 
+use App\Services\AllocoreBenchmarkService;
 use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
 use Illuminate\Http\RedirectResponse;
@@ -41,19 +42,54 @@ class AuditController extends Controller
 
     public function start(Request $request): RedirectResponse
     {
-        $teamId = $request->user()->current_team_id;
+        $team = $request->user()->currentTeam;
         $validated = $request->validate([
             'template_id' => [
                 'required',
-                Rule::exists('auditpro_templates', 'id')->where('team_id', $teamId),
+                Rule::exists('auditpro_templates', 'id')->where('team_id', $team->id),
             ],
+            'audit_type' => 'required|in:major,small,challenge,kpi_check',
+            'company_name' => 'nullable|string|max:255',
+            'industry' => 'nullable|string|max:255',
+            'size' => 'nullable|string|max:255',
+            'company_age' => 'nullable|integer|min:0|max:250',
         ]);
 
+        $auditType = $validated['audit_type'];
+        $lastCompletedAt = Audit::where('team_id', $team->id)
+            ->where('audit_type', $auditType)
+            ->where('status', 'completed')
+            ->latest('completed_at')
+            ->value('completed_at');
+
+        $cooldownDays = match ($auditType) {
+            'major' => 180,
+            'small' => 90,
+            'challenge' => 28,
+            'kpi_check' => 7,
+            default => 180,
+        };
+
+        if ($lastCompletedAt && $lastCompletedAt->diffInDays(now()) < $cooldownDays) {
+            $nextAt = $lastCompletedAt->clone()->addDays($cooldownDays)->format('Y-m-d');
+
+            return back()->with('error', __('A :type audit can be taken once every :days days. Next possible date: :date.', [
+                'type' => __($auditType),
+                'days' => $cooldownDays,
+                'date' => $nextAt,
+            ]));
+        }
+
         $audit = Audit::create([
-            'team_id' => $teamId,
+            'team_id' => $team->id,
             'template_id' => $validated['template_id'],
             'created_by' => $request->user()->id,
             'status' => 'in_progress',
+            'audit_type' => $auditType,
+            'company_name' => $validated['company_name'] ?: ($team->company_name ?: $team->name),
+            'industry' => $validated['industry'] ?: $team->industry,
+            'size' => $validated['size'] ?: $team->size,
+            'company_age' => $validated['company_age'] ?? $team->company_age,
         ]);
 
         return redirect()->route('audit.assessment', $audit);
@@ -70,6 +106,8 @@ class AuditController extends Controller
         $radarScores = $audit->results->pluck('average_score')->map(fn ($score) => (float) $score)->values();
         $allocoreScore = AllocoreScoreService::latestForTeam($audit->team_id);
         $recommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, Auth::user());
+        $benchmark = $allocoreScore ? AllocoreBenchmarkService::percentile($allocoreScore) : null;
+        $industryStats = $allocoreScore && $allocoreScore->industry ? AllocoreBenchmarkService::industryStats($allocoreScore->industry) : null;
 
         return view('auditpro::results', compact(
             'audit',
@@ -79,6 +117,8 @@ class AuditController extends Controller
             'radarScores',
             'allocoreScore',
             'recommendations',
+            'benchmark',
+            'industryStats',
         ));
     }
 

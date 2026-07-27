@@ -18,6 +18,20 @@
                     {{ $score->maturity_level }}
                 </span>
                 <p class="text-sm text-slate-500">{{ __('out of 100') }} &middot; {{ $score->calculated_at->diffForHumans() }}</p>
+
+                @if ($benchmark !== null)
+                    <p class="text-base text-slate-700">
+                        {{ __('Better than :percent% of companies in :industry.', ['percent' => $benchmark, 'industry' => $score->industry]) }}
+                    </p>
+                @endif
+
+                @if ($industryStats)
+                    <div class="mt-2 flex flex-wrap justify-center gap-4 text-sm text-slate-600">
+                        <span>{{ __('Industry average') }}: {{ $industryStats['average'] ?? '—' }}</span>
+                        <span>{{ __('Median') }}: {{ $industryStats['median'] ?? '—' }}</span>
+                        <span>{{ __('Benchmarks') }}: {{ $industryStats['count'] }}</span>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
@@ -42,7 +56,15 @@
         </div>
     </section>
 
-    <section class="py-12 text-center">
-        <a href="{{ route('home') }}" class="text-sm font-medium text-slate-500 hover:text-slate-900">{{ __('Powered by Allocore') }}</a>
+    <section class="border-t border-slate-200 bg-slate-50 py-12">
+        <div class="mx-auto max-w-5xl px-6 lg:px-8 text-center">
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{{ route('scorecard.certificate', $team->public_score_slug) }}" target="_blank" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Allocore Score certificate') }}</a>
+                <a href="{{ route('scorecard.embed', $team->public_score_slug) }}" target="_blank" class="rounded-lg border border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50">{{ __('Embed widget') }}</a>
+            </div>
+            <p class="mt-6 text-sm text-slate-500">
+                <a href="{{ route('home') }}" class="font-medium hover:text-slate-900">{{ __('Powered by Allocore') }}</a>
+            </p>
+        </div>
     </section>
 @endsection

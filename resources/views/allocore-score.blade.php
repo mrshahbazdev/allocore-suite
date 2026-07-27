@@ -27,6 +27,26 @@
                 </div>
                 <p class="mt-2 text-sm text-slate-500">{{ __('out of 100') }}</p>
                 <p class="mt-4 text-sm text-slate-600">{{ __('Calculated') }} {{ $score->calculated_at->diffForHumans() }}</p>
+
+                @if ($benchmark !== null)
+                    <div class="mt-6 rounded-lg bg-slate-50 p-4">
+                        <p class="text-sm text-slate-600">{{ __('Industry benchmark') }}</p>
+                        <p class="mt-1 text-lg font-semibold text-slate-900">{{ __('Better than :percent% in :industry', ['percent' => $benchmark, 'industry' => $score->industry]) }}</p>
+                    </div>
+                @endif
+
+                @if ($industryStats && $industryStats['count'])
+                    <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
+                        <div class="rounded-lg bg-slate-50 p-3">
+                            <p class="text-xs text-slate-500">{{ __('Industry avg') }}</p>
+                            <p class="font-semibold text-slate-900">{{ $industryStats['average'] }}</p>
+                        </div>
+                        <div class="rounded-lg bg-slate-50 p-3">
+                            <p class="text-xs text-slate-500">{{ __('Benchmarks') }}</p>
+                            <p class="font-semibold text-slate-900">{{ $industryStats['count'] }}</p>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
@@ -88,6 +108,44 @@
         @else
             <p class="mt-4 text-sm text-slate-500">{{ __('Complete more audits to see your score history.') }}</p>
         @endif
+
+        @if (count($history) > 0)
+            <div class="mt-6 overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="px-4 py-2">{{ __('Date') }}</th>
+                            <th class="px-4 py-2">{{ __('Score') }}</th>
+                            <th class="px-4 py-2">{{ __('Maturity') }}</th>
+                            <th class="px-4 py-2">{{ __('Change') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @php($previous = null)
+                        @foreach (array_reverse($history) as $entry)
+                            @php($change = $previous === null ? null : round($entry['score'] - $previous, 1))
+                            @php($previous = $entry['score'])
+                            <tr>
+                                <td class="px-4 py-2 text-slate-700">{{ $entry['date'] }}</td>
+                                <td class="px-4 py-2 font-semibold text-slate-900">{{ $entry['score'] }}</td>
+                                <td class="px-4 py-2 text-slate-600">{{ $entry['maturity'] }}</td>
+                                <td class="px-4 py-2">
+                                    @if ($change === null)
+                                        —
+                                    @elseif ($change > 0)
+                                        <span class="text-emerald-600">+{{ $change }}</span>
+                                    @elseif ($change < 0)
+                                        <span class="text-rose-600">{{ $change }}</span>
+                                    @else
+                                        <span class="text-slate-500">0</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     @endif
 
     @include('partials.allocore-recommendations', ['recommendations' => $recommendations])
@@ -119,6 +177,15 @@
                     <p class="text-sm text-slate-600">
                         {{ __('Public URL:') }} <a href="{{ route('scorecard.public', $team->public_score_slug) }}" target="_blank" class="font-medium text-indigo-600 hover:underline">{{ route('scorecard.public', $team->public_score_slug) }}</a>
                     </p>
+                    <p class="text-sm text-slate-600">
+                        <a href="{{ route('scorecard.certificate', $team->public_score_slug) }}" target="_blank" class="font-medium text-indigo-600 hover:underline">{{ __('Allocore Score certificate') }}</a>
+                    </p>
+                    @if ($embedCode)
+                        <div>
+                            <label for="embed-code" class="block text-sm font-medium text-slate-700">{{ __('Embed code for your website') }}</label>
+                            <textarea id="embed-code" readonly rows="3" class="mt-1 w-full rounded-lg border-slate-300 text-xs font-mono text-slate-600">{{ $embedCode }}</textarea>
+                        </div>
+                    @endif
                 @endif
 
                 <div class="flex items-center justify-end">
