@@ -92,8 +92,10 @@ class GlossaryService
 
     private function publishedTerms()
     {
-        return Cache::remember('glossary.published_terms', 300, function () {
-            return GlossaryTerm::published()->orderBy('term')->get();
+        $terms = Cache::remember('glossary.published_terms', 300, function () {
+            return GlossaryTerm::published()->orderBy('term')->get()->all();
         });
+
+        return collect($terms);
     }
 }
