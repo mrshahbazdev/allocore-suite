@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Announcement;
 use App\Models\Module;
 use App\Models\ToolSubscription;
+use App\Services\AllocoreScoreService;
 use App\Support\DashboardWidgetRegistry;
 use App\Support\ModuleStats;
 use Illuminate\Http\Request;
@@ -49,6 +50,9 @@ class DashboardController extends Controller
 
         $moduleStats = app(ModuleStats::class)->forUser($user);
 
-        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats'));
+        $allocoreScore = AllocoreScoreService::latestForTeam($user->current_team_id);
+        $allocoreHistory = AllocoreScoreService::historyForTeam($user->current_team_id, 12);
+
+        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory'));
     }
 }
