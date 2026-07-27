@@ -2,9 +2,12 @@
 
 namespace Modules\AuditPro\Http\Controllers;
 
+use App\Services\AllocoreRecommendationService;
+use App\Services\AllocoreScoreService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Modules\AuditPro\Models\Audit;
@@ -65,6 +68,8 @@ class AuditController extends Controller
         $overallMaturity = Maturity::label($overallScore);
         $radarLabels = $audit->results->pluck('level')->values();
         $radarScores = $audit->results->pluck('average_score')->map(fn ($score) => (float) $score)->values();
+        $allocoreScore = AllocoreScoreService::latestForTeam($audit->team_id);
+        $recommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, Auth::user());
 
         return view('auditpro::results', compact(
             'audit',
@@ -72,6 +77,8 @@ class AuditController extends Controller
             'overallMaturity',
             'radarLabels',
             'radarScores',
+            'allocoreScore',
+            'recommendations',
         ));
     }
 

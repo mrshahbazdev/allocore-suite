@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EnvController as AdminEnvController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
+use App\Http\Controllers\Admin\GlossaryTermController as AdminGlossaryTermController;
 use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
 use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
@@ -66,6 +67,7 @@ use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\GlobalSearchController;
+use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportController;
@@ -120,6 +122,8 @@ Route::get('audit-example', [AuditExampleController::class, 'index'])->name('aud
 Route::get('audit-example/pdf', [AuditExampleController::class, 'pdf'])->name('audit-example.pdf');
 Route::get('case-studies', [CaseStudyController::class, 'index'])->name('case-studies.index');
 Route::get('case-studies/{caseStudy}', [CaseStudyController::class, 'show'])->name('case-studies.show');
+Route::get('glossary', [GlossaryController::class, 'index'])->name('glossary.index');
+Route::get('glossary/{glossary}', [GlossaryController::class, 'show'])->name('glossary.show');
 Route::get('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.index');
 Route::post('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.calculate');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
@@ -324,6 +328,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('case-studies/{caseStudy}/edit', [AdminCaseStudyController::class, 'edit'])->name('case-studies.edit');
     Route::put('case-studies/{caseStudy}', [AdminCaseStudyController::class, 'update'])->name('case-studies.update');
     Route::delete('case-studies/{caseStudy}', [AdminCaseStudyController::class, 'destroy'])->name('case-studies.destroy');
+
+    Route::get('glossary', [AdminGlossaryTermController::class, 'index'])->name('glossary.index');
+    Route::get('glossary/create', [AdminGlossaryTermController::class, 'create'])->name('glossary.create');
+    Route::post('glossary', [AdminGlossaryTermController::class, 'store'])->name('glossary.store');
+    Route::get('glossary/{glossary}/edit', [AdminGlossaryTermController::class, 'edit'])->name('glossary.edit');
+    Route::put('glossary/{glossary}', [AdminGlossaryTermController::class, 'update'])->name('glossary.update');
+    Route::delete('glossary/{glossary}', [AdminGlossaryTermController::class, 'destroy'])->name('glossary.destroy');
 
     Route::get('module-data/{group}/{resource}', [AdminModuleDataController::class, 'index'])->name('module-data.index');
     Route::get('module-data/{group}/{resource}/{id}', [AdminModuleDataController::class, 'show'])->name('module-data.show');

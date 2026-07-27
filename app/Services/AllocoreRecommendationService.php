@@ -15,22 +15,42 @@ class AllocoreRecommendationService
         'Revenue' => [
             'modules' => ['financial-platform', 'invoice-maker', 'sweet-spot'],
             'action' => 'recommendations.revenue_action',
+            'kpis' => [
+                ['label' => 'Umsatzreife', 'unit' => 'score', 'target' => 80],
+                ['label' => 'Umsatzwachstum', 'unit' => '%', 'target' => 15],
+            ],
         ],
         'Profit' => [
             'modules' => ['cash-core', 'financial-platform', 'sweet-spot'],
             'action' => 'recommendations.profit_action',
+            'kpis' => [
+                ['label' => 'Profitabilität', 'unit' => 'score', 'target' => 80],
+                ['label' => 'Deckungsbeitrag', 'unit' => '%', 'target' => 25],
+            ],
         ],
         'Order' => [
             'modules' => ['plan-hive', 'time-butler', 'loop-engine', 'focus-matrix'],
             'action' => 'recommendations.order_action',
+            'kpis' => [
+                ['label' => 'Betriebliche Ordnung', 'unit' => 'score', 'target' => 80],
+                ['label' => 'Prozess-Compliance', 'unit' => '%', 'target' => 90],
+            ],
         ],
         'Influence' => [
             'modules' => ['keyword-cluster', 'lead-quality', 'bunny-band'],
             'action' => 'recommendations.influence_action',
+            'kpis' => [
+                ['label' => 'Markteinfluss', 'unit' => 'score', 'target' => 80],
+                ['label' => 'Lead-Qualität', 'unit' => 'score', 'target' => 80],
+            ],
         ],
         'Legacy' => [
             'modules' => ['vision-flow', 'nur-du', 'org-matrix'],
             'action' => 'recommendations.legacy_action',
+            'kpis' => [
+                ['label' => 'Unternehmensvermächtnis', 'unit' => 'score', 'target' => 80],
+                ['label' => 'Führungskultur', 'unit' => 'score', 'target' => 80],
+            ],
         ],
     ];
 
@@ -50,7 +70,7 @@ class AllocoreRecommendationService
             ->sortBy('score')
             ->take(3)
             ->map(function (array $pillar) use ($modules, $subscribedKeys) {
-                $map = $this->pillarMap[$pillar['name']] ?? ['modules' => [], 'action' => ''];
+                $map = $this->pillarMap[$pillar['name']] ?? ['modules' => [], 'action' => '', 'kpis' => []];
                 $target = collect($map['modules'])->first(fn ($key) => $modules->has($key));
                 $module = $target ? $modules->get($target) : null;
                 $subscribed = $target && in_array($target, $subscribedKeys, true);
@@ -64,6 +84,7 @@ class AllocoreRecommendationService
                     'module_name' => $module?->name,
                     'module_route' => $module?->route_prefix ? url('app/'.$module->route_prefix) : null,
                     'subscribed' => $subscribed,
+                    'kpis' => $this->buildKpis($pillar['score'], $map['kpis'] ?? []),
                 ];
             })
             ->values()
@@ -72,6 +93,30 @@ class AllocoreRecommendationService
         $headline = $this->headline($score->score);
 
         return compact('headline', 'items');
+    }
+
+    protected function buildKpis(float $score, array $definitions): array
+    {
+        return collect($definitions)->map(function (array $kpi) use ($score) {
+            $current = $kpi['unit'] === 'score' ? $score : $this->estimateKpiValue($score, $kpi);
+            $target = $kpi['target'];
+
+            return [
+                'label' => $kpi['label'],
+                'unit' => $kpi['unit'],
+                'current' => round($current, 1),
+                'target' => $target,
+                'gap' => max(0, $target - $current),
+                'progress' => $target > 0 ? min(100, ($current / $target) * 100) : 0,
+            ];
+        })->all();
+    }
+
+    protected function estimateKpiValue(float $score, array $kpi): float
+    {
+        $ratio = $score / 100;
+
+        return $kpi['target'] * $ratio;
     }
 
     protected function headline(float $score): string
