@@ -60,6 +60,17 @@
 
     @include('partials.allocore-recommendations', ['recommendations' => $recommendations])
 
+    @if ($audit->audit_type === 'small' && isset($recommendations['items'][0]))
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="text-base font-semibold text-slate-900">{{ __('Turn this into a 4-week challenge') }}</h3>
+            <p class="mt-1 text-sm text-slate-500">{{ __('A challenge guides you through Plan → Do → Check → Act using the recommended tools.') }}</p>
+            <form method="POST" action="{{ route('audit.challenges.store', $audit) }}" class="mt-4">
+                @csrf
+                <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Start challenge for :pillar', ['pillar' => $recommendations['items'][0]['pillar']]) }}</button>
+            </form>
+        </div>
+    @endif
+
     <section class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 px-5 py-4">
             <h2 class="font-semibold text-slate-900">{{ __('Pillar breakdown') }}</h2>

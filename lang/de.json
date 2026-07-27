@@ -1338,5 +1338,21 @@
     "years": "Jahre",
     "Industry benchmark": "Branchenbenchmark",
     "Embed widget": "Widget einbetten",
-    "Allocore Score certificate": "Allocore Score Zertifikat"
+    "Allocore Score certificate": "Allocore Score Zertifikat",
+
+    "Challenges": "Challenges",
+    "Challenge": "Challenge",
+    "Your challenges": "Deine Challenges",
+    "Cybernetic control loops based on your small audits.": "Kybernetische Regelkreise basierend auf deinen Small Audits.",
+    "Turn this into a 4-week challenge": "Daraus eine 4-Wochen-Challenge machen",
+    "A challenge guides you through Plan → Do → Check → Act using the recommended tools.": "Eine Challenge führt dich durch Plan → Do → Check → Act mit den empfohlenen Tools.",
+    "Start challenge for :pillar": "Challenge für :pillar starten",
+    "A 4-week cybernetic control loop: Plan → Do → Check → Act.": "Ein 4-wöchiger kybernetischer Regelkreis: Plan → Do → Check → Act.",
+    "Steps": "Schritte",
+    "Next challenge or small audit possible after": "Nächste Challenge oder Small Audit möglich ab",
+    "Progress updated": "Fortschritt aktualisiert",
+    "Challenge started for :pillar": "Challenge für :pillar gestartet",
+    "An active or recently completed challenge already exists for :pillar.": "Für :pillar gibt es bereits eine aktive oder kürzlich abgeschlossene Challenge.",
+    "This audit has no pillar to base a challenge on.": "Dieser Audit hat keine Säule, auf der eine Challenge basieren kann.",
+    "No challenges yet. Start one from a small audit result.": "Noch keine Challenges. Starte eine aus einem Small-Audit-Ergebnis."
 }

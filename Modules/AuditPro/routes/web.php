@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Http\Controllers\AuditController;
+use Modules\AuditPro\Http\Controllers\ChallengeController;
 use Modules\AuditPro\Http\Middleware\EnsureCurrentTeam;
 use Modules\AuditPro\Livewire\Assessment;
 use Modules\AuditPro\Livewire\AuditComparison;
@@ -22,6 +23,10 @@ Route::prefix('app/audit')
         Route::get('/audits/{audit}/report', [AuditController::class, 'report'])->name('report');
         Route::get('/audits/{audit}/report/download', [AuditController::class, 'downloadReport'])->name('report.download');
         Route::delete('/audits/{audit}', [AuditController::class, 'destroy'])->name('destroy');
+        Route::post('/audits/{audit}/challenge', [ChallengeController::class, 'store'])->name('challenges.store');
+        Route::get('/challenges', [ChallengeController::class, 'index'])->name('challenges.index');
+        Route::get('/challenges/{challenge}', [ChallengeController::class, 'show'])->name('challenges.show');
+        Route::put('/challenges/{challenge}/toggle-step', [ChallengeController::class, 'toggleStep'])->name('challenges.toggle-step');
         Route::get('/compare', AuditComparison::class)->name('compare');
         Route::get('/templates', TemplateList::class)->name('templates');
         Route::get('/templates/{template}', TemplateBuilder::class)->name('templates.builder');

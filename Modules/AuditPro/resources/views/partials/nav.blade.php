@@ -2,6 +2,7 @@
     @foreach ([
         'audit.index' => __('Overview'),
         'audit.audits' => __('Audits'),
+        'audit.challenges.index' => __('Challenges'),
         'audit.templates' => __('Templates'),
         'audit.compare' => __('Compare'),
     ] as $routeName => $label)
