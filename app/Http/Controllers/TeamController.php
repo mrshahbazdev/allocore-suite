@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Industry;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,8 +13,9 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         $teams = $request->user()->teams()->with('owner')->get();
+        $industryClusters = Industry::clusters()->with('children')->get();
 
-        return view('teams.index', compact('teams'));
+        return view('teams.index', compact('teams', 'industryClusters'));
     }
 
     public function store(Request $request)
@@ -22,6 +24,7 @@ class TeamController extends Controller
             'name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
+            'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
             'company_age' => 'nullable|integer|min:0|max:250',
         ]);
@@ -41,6 +44,7 @@ class TeamController extends Controller
             'name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
+            'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
             'company_age' => 'nullable|integer|min:0|max:250',
         ]);

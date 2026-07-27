@@ -21,7 +21,7 @@
 
                 @if ($benchmark !== null)
                     <p class="text-base text-slate-700">
-                        {{ __('Better than :percent% of companies in :industry.', ['percent' => $benchmark, 'industry' => $score->industry]) }}
+                        {{ __('Better than :percent% of companies in :industry.', ['percent' => $benchmark, 'industry' => $score->industry_sub ?: $score->industry]) }}
                     </p>
                 @endif
 

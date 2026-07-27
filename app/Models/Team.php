@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Team extends Model
 {
     protected $fillable = [
-        'name', 'owner_id', 'company_name', 'industry', 'size', 'company_age',
+        'name', 'owner_id', 'company_name', 'industry', 'industry_sub', 'size', 'company_age',
         'subdomain', 'custom_domain', 'custom_domain_verified_at',
         'ssl_status', 'ssl_issued_at', 'ssl_expires_at', 'ssl_last_error',
         'logo', 'favicon',

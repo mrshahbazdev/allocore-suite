@@ -36,7 +36,7 @@
             <dl class="mt-6 space-y-3 border-t border-slate-100 pt-5 text-sm">
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Performed by') }}</dt><dd class="font-medium text-slate-700">{{ $audit->creator?->name ?? __('Deleted user') }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Company') }}</dt><dd class="font-medium text-slate-700">{{ $audit->company_name ?: ($audit->team->company_name ?: $audit->team->name) }}</dd></div>
-                <div class="flex justify-between"><dt class="text-slate-500">{{ __('Industry') }}</dt><dd class="font-medium text-slate-700">{{ $audit->industry ?: ($audit->team->industry ?? '—') }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ __('Industry') }}</dt><dd class="font-medium text-slate-700">@include('partials.industry-display', ['industry' => $audit->industry ?: $audit->team->industry, 'industrySub' => $audit->industry_sub ?: $audit->team->industry_sub])</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Company size') }}</dt><dd class="font-medium text-slate-700">{{ $audit->size ?: ($audit->team->size ?? '—') }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Company age') }}</dt><dd class="font-medium text-slate-700">{{ $audit->company_age ? $audit->company_age.' '.__('years') : ($audit->team->company_age ? $audit->team->company_age.' '.__('years') : '—') }}</dd></div>
             </dl>
@@ -44,7 +44,7 @@
             @if ($benchmark !== null)
                 <div class="mt-6 rounded-lg bg-slate-50 p-4">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Industry benchmark') }}</p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">{{ __('Better than :percent% in :industry', ['percent' => $benchmark, 'industry' => $allocoreScore?->industry]) }}</p>
+                    <p class="mt-1 text-lg font-semibold text-slate-900">{{ __('Better than :percent% in :industry', ['percent' => $benchmark, 'industry' => $allocoreScore?->industry_sub ?: $allocoreScore?->industry]) }}</p>
                     @if ($industryStats && $industryStats['count'])
                         <p class="mt-1 text-xs text-slate-500">{{ __('Average') }} {{ $industryStats['average'] }} · {{ __('Median') }} {{ $industryStats['median'] }} · {{ __('Benchmarks') }} {{ $industryStats['count'] }}</p>
                     @endif

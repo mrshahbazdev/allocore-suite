@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
 use App\Http\Controllers\Admin\GlossaryTermController as AdminGlossaryTermController;
 use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
+use App\Http\Controllers\Admin\IndustryController as AdminIndustryController;
 use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Admin\LandingController as AdminLandingController;
@@ -342,6 +343,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('glossary/{glossary}/edit', [AdminGlossaryTermController::class, 'edit'])->name('glossary.edit');
     Route::put('glossary/{glossary}', [AdminGlossaryTermController::class, 'update'])->name('glossary.update');
     Route::delete('glossary/{glossary}', [AdminGlossaryTermController::class, 'destroy'])->name('glossary.destroy');
+
+    Route::get('industries', [AdminIndustryController::class, 'index'])->name('industries.index');
+    Route::get('industries/create', [AdminIndustryController::class, 'create'])->name('industries.create');
+    Route::post('industries', [AdminIndustryController::class, 'store'])->name('industries.store');
+    Route::get('industries/{industry}/edit', [AdminIndustryController::class, 'edit'])->name('industries.edit');
+    Route::put('industries/{industry}', [AdminIndustryController::class, 'update'])->name('industries.update');
+    Route::delete('industries/{industry}', [AdminIndustryController::class, 'destroy'])->name('industries.destroy');
 
     Route::get('module-data/{group}/{resource}', [AdminModuleDataController::class, 'index'])->name('module-data.index');
     Route::get('module-data/{group}/{resource}/{id}', [AdminModuleDataController::class, 'show'])->name('module-data.show');

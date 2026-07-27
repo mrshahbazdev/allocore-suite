@@ -12,6 +12,7 @@ class AllocoreScore extends Model
         'audit_id',
         'company_name',
         'industry',
+        'industry_sub',
         'size',
         'company_age',
         'score',

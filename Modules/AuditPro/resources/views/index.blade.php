@@ -24,7 +24,7 @@
                     @endforeach
                 </select>
                 <input type="text" name="company_name" value="{{ old('company_name', auth()->user()->currentTeam->company_name ?? auth()->user()->currentTeam->name) }}" placeholder="{{ __('Company name') }}" class="rounded-lg border-slate-300 text-sm" required>
-                <input type="text" name="industry" value="{{ old('industry', auth()->user()->currentTeam->industry) }}" placeholder="{{ __('Industry') }}" class="rounded-lg border-slate-300 text-sm" required>
+                @include('partials.industry-select', ['clusters' => $industryClusters, 'selected' => ['industry' => old('industry', auth()->user()->currentTeam->industry), 'industry_sub' => old('industry_sub', auth()->user()->currentTeam->industry_sub)], 'value' => auth()->user()->currentTeam]
                 <select name="size" required class="rounded-lg border-slate-300 text-sm">
                     <option value="">{{ __('Company size') }}</option>
                     <option value="1-10" {{ old('size', auth()->user()->currentTeam->size) === '1-10' ? 'selected' : '' }}>1–10</option>

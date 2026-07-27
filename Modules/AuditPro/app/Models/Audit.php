@@ -17,7 +17,7 @@ class Audit extends Model
 
     protected $fillable = [
         'team_id', 'template_id', 'created_by', 'status',
-        'company_name', 'industry', 'size', 'company_age',
+        'company_name', 'industry', 'industry_sub', 'size', 'company_age',
         'audit_type', 'focus_pillar', 'completed_at',
     ];
 

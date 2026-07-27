@@ -3,6 +3,7 @@
 namespace Modules\AuditPro\Http\Controllers;
 
 use App\Models\AllocoreScore;
+use App\Models\Industry;
 use App\Services\AllocoreBenchmarkService;
 use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
@@ -31,6 +32,7 @@ class AuditController extends Controller
             ->take(8)
             ->get();
         $templates = AuditTemplate::withCount('questions')->orderByDesc('is_default')->orderBy('name')->get();
+        $industryClusters = Industry::clusters()->get();
 
         $stats = [
             'total' => Audit::count(),
@@ -39,7 +41,7 @@ class AuditController extends Controller
             'average' => round((float) AuditResult::avg('average_score'), 2),
         ];
 
-        return view('auditpro::index', compact('audits', 'templates', 'stats'));
+        return view('auditpro::index', compact('audits', 'templates', 'stats', 'industryClusters'));
     }
 
     public function start(Request $request): RedirectResponse
@@ -71,6 +73,7 @@ class AuditController extends Controller
             ],
             'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
+            'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:255',
             'company_age' => 'nullable|integer|min:0|max:250',
         ]);
@@ -116,9 +119,20 @@ class AuditController extends Controller
             'focus_pillar' => $focusPillar,
             'company_name' => ($validated['company_name'] ?? null) ?: ($team->company_name ?: $team->name),
             'industry' => ($validated['industry'] ?? null) ?: $team->industry,
+            'industry_sub' => ($validated['industry_sub'] ?? null) ?: $team->industry_sub,
             'size' => ($validated['size'] ?? null) ?: $team->size,
             'company_age' => $validated['company_age'] ?? $team->company_age,
         ]);
+
+        if ($audit->audit_type === 'major') {
+            $team->update([
+                'company_name' => $audit->company_name,
+                'industry' => $audit->industry,
+                'industry_sub' => $audit->industry_sub,
+                'size' => $audit->size,
+                'company_age' => $audit->company_age,
+            ]);
+        }
 
         return redirect()->route('audit.assessment', $audit);
     }
@@ -140,6 +154,7 @@ class AuditController extends Controller
                 'team_id' => $audit->team_id,
                 'company_name' => $audit->company_name ?: ($audit->team->company_name ?: $audit->team->name),
                 'industry' => $audit->industry ?: $audit->team->industry,
+                'industry_sub' => $audit->industry_sub ?: $audit->team->industry_sub,
                 'size' => $audit->size ?: $audit->team->size,
                 'company_age' => $audit->company_age ?? $audit->team->company_age,
                 'score' => round(($overallScore / 5) * 100, 2),
@@ -154,7 +169,7 @@ class AuditController extends Controller
 
         $recommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, Auth::user());
         $benchmark = $allocoreScore && $allocoreScore->industry ? AllocoreBenchmarkService::percentile($allocoreScore) : null;
-        $industryStats = $allocoreScore && $allocoreScore->industry ? AllocoreBenchmarkService::industryStats($allocoreScore->industry) : null;
+        $industryStats = $allocoreScore && $allocoreScore->industry ? AllocoreBenchmarkService::industryStats($allocoreScore->industry, $allocoreScore->industry_sub) : null;
 
         return view('auditpro::results', compact(
             'audit',

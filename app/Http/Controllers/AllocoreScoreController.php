@@ -21,7 +21,7 @@ class AllocoreScoreController extends Controller
         $recommendations = app(AllocoreRecommendationService::class)->forScore($score, $user);
         $team = $user?->currentTeam;
         $benchmark = $score ? AllocoreBenchmarkService::percentile($score) : null;
-        $industryStats = $score && $score->industry ? AllocoreBenchmarkService::industryStats($score->industry) : null;
+        $industryStats = $score && $score->industry ? AllocoreBenchmarkService::industryStats($score->industry, $score->industry_sub) : null;
         $embedCode = $team && $team->public_score_enabled && $team->public_score_slug
             ? '<iframe src="'.route('scorecard.embed', $team->public_score_slug).'" width="280" height="160" frameborder="0"></iframe>'
             : null;
@@ -44,7 +44,7 @@ class AllocoreScoreController extends Controller
         $this->setPublicBranding($team);
 
         $benchmark = AllocoreBenchmarkService::percentile($score);
-        $industryStats = $score->industry ? AllocoreBenchmarkService::industryStats($score->industry) : null;
+        $industryStats = $score->industry ? AllocoreBenchmarkService::industryStats($score->industry, $score->industry_sub) : null;
 
         return view('scorecard', compact('team', 'score', 'benchmark', 'industryStats'));
     }
