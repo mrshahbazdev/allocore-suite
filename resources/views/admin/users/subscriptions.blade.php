@@ -36,6 +36,7 @@
                 <label class="block text-sm font-medium text-slate-700">{{ __('admin.subscriptions.method') }}</label>
                 <select name="payment_method" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="manual" @selected(old('payment_method') === 'manual')>{{ __('admin.subscriptions.manual') }}</option>
+                    <option value="free" @selected(old('payment_method') === 'free')>{{ __('admin.subscriptions.free') }}</option>
                     <option value="bank" @selected(old('payment_method') === 'bank')>{{ __('admin.subscriptions.bank') }}</option>
                     <option value="stripe" @selected(old('payment_method') === 'stripe')>{{ __('admin.subscriptions.stripe') }}</option>
                     <option value="paypal" @selected(old('payment_method') === 'paypal')>{{ __('admin.subscriptions.paypal') }}</option>

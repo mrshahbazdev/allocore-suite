@@ -23,7 +23,7 @@ class UserSubscriptionController extends Controller
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
             'billing_interval' => 'required|in:monthly,yearly',
-            'payment_method' => 'required|in:bank,stripe,paypal,manual',
+            'payment_method' => 'required|in:bank,stripe,paypal,manual,free',
             'status' => 'required|in:pending,active,cancelled',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after_or_equal:starts_at',
@@ -43,7 +43,7 @@ class UserSubscriptionController extends Controller
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
             'billing_interval' => 'required|in:monthly,yearly',
-            'payment_method' => 'required|in:bank,stripe,paypal,manual',
+            'payment_method' => 'required|in:bank,stripe,paypal,manual,free',
             'status' => 'required|in:pending,active,cancelled',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after_or_equal:starts_at',

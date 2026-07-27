@@ -15,9 +15,13 @@
                     <p class="mt-1 text-sm text-slate-500">{{ $plan->description }}</p>
                 @endif
                 <div class="mt-4">
-                    <span class="text-3xl font-bold text-slate-900">{{ number_format($plan->price_monthly, 2) }}</span>
-                    <span class="text-sm text-slate-500">{{ $plan->currency }} / {{ __('month') }}</span>
-                    <div class="text-xs text-slate-400">{{ __('or') }} {{ number_format($plan->price_yearly, 2) }} {{ $plan->currency }} / {{ __('year') }}</div>
+                    @if ($plan->price_monthly == 0 && $plan->price_yearly == 0)
+                        <span class="text-3xl font-bold text-emerald-600">{{ __('Free') }}</span>
+                    @else
+                        <span class="text-3xl font-bold text-slate-900">{{ number_format($plan->price_monthly, 2) }}</span>
+                        <span class="text-sm text-slate-500">{{ $plan->currency }} / {{ __('month') }}</span>
+                        <div class="text-xs text-slate-400">{{ __('or') }} {{ number_format($plan->price_yearly, 2) }} {{ $plan->currency }} / {{ __('year') }}</div>
+                    @endif
                 </div>
                 <ul class="mt-4 space-y-1 text-sm text-slate-600 flex-1">
                     @foreach ($plan->modules as $module)
@@ -44,14 +48,18 @@
                             @endif
                         </select>
                     </div>
-                    <select name="payment_method" class="w-full rounded-lg border-slate-300 text-sm">
-                        <option value="stripe">{{ __('Credit Card (Stripe)') }}</option>
-                        <option value="paypal">PayPal</option>
-                        <option value="bank">{{ __('Bank Transfer') }}</option>
-                    </select>
-                    <input type="text" name="coupon_code" placeholder="{{ __('Coupon code') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                    <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
-                        {{ __('Subscribe') }}
+                    @if ($plan->price_monthly == 0 && $plan->price_yearly == 0)
+                        <input type="hidden" name="payment_method" value="free">
+                    @else
+                        <select name="payment_method" class="w-full rounded-lg border-slate-300 text-sm">
+                            <option value="stripe">{{ __('Credit Card (Stripe)') }}</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="bank">{{ __('Bank Transfer') }}</option>
+                        </select>
+                        <input type="text" name="coupon_code" placeholder="{{ __('Coupon code') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    @endif
+                    <button class="w-full rounded-lg {{ $plan->price_monthly == 0 && $plan->price_yearly == 0 ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-indigo-600 hover:bg-indigo-500' }} px-4 py-2 text-sm font-semibold text-white">
+                        {{ ($plan->price_monthly == 0 && $plan->price_yearly == 0) ? __('Activate free') : __('Subscribe') }}
                     </button>
                 </form>
             </div>
