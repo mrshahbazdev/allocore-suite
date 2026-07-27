@@ -55,7 +55,7 @@ return new class extends Migration
             $table->unsignedInteger('expected_minutes')->nullable();
             $table->timestamps();
 
-            $table->index(['dentaltrack_product_type_id', 'sort_order']);
+            $table->index(['dentaltrack_product_type_id', 'sort_order'], 'dt_ptemplates_ptype_sort');
         });
 
         Schema::create('dentaltrack_workstations', function (Blueprint $table) {
@@ -125,7 +125,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['dentaltrack_order_id', 'event_type']);
-            $table->index(['dentaltrack_workstation_id', 'scanned_at']);
+            $table->index(['dentaltrack_workstation_id', 'scanned_at'], 'dt_scan_ws_scanned');
             $table->index(['user_id', 'scanned_at']);
         });
 
