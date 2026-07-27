@@ -29,29 +29,42 @@
             <button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">{{ __('Filter') }}</button>
         </form>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-slate-200">
-                <thead class="bg-slate-50"><tr><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Order') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Company / Lab') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Priority') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Status') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Due') }}</th><th class="px-4 py-2 text-right text-xs font-medium text-slate-500">{{ __('Actions') }}</th></tr></thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse ($orders as $order)
-                        <tr>
-                            <td class="px-4 py-3 text-sm font-medium"><a href="{{ route('dentaltrack.admin.orders.show', $order) }}" class="text-indigo-600 hover:underline">#{{ $order->id }}</a><div class="text-xs text-slate-500">{{ $order->patient_ref }}</div></td>
-                            <td class="px-4 py-3 text-sm">{{ $order->company?->name }}<div class="text-xs text-slate-500">{{ $order->lab?->name }}</div></td>
-                            <td class="px-4 py-3 text-sm capitalize">{{ $order->priority->value }}</td>
-                            <td class="px-4 py-3 text-sm capitalize">{{ str_replace('_', ' ', $order->status->value) }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $order->due_date?->format('Y-m-d') ?? '-' }}</td>
-                            <td class="px-4 py-3 text-right text-sm">
-                                <a href="{{ route('dentaltrack.admin.orders.sticker', $order) }}" class="text-slate-600 hover:underline">{{ __('Sticker') }}</a>
-                                <a href="{{ route('dentaltrack.admin.orders.edit', $order) }}" class="text-indigo-600 hover:underline ml-2">{{ __('Edit') }}</a>
-                                <form method="POST" action="{{ route('dentaltrack.admin.orders.destroy', $order) }}" class="inline ml-2" onsubmit="return confirm('{{ __('Delete?') }}')">@csrf @method('DELETE')<button class="text-rose-600 hover:underline">{{ __('Delete') }}</button></form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="6" class="px-4 py-4 text-sm text-slate-500">{{ __('No orders found.') }}</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div>{{ $orders->links() }}</div>
+        <form method="POST" action="{{ route('dentaltrack.admin.orders.print-stick') }}">
+            @csrf
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50"><tr><th class="px-4 py-2 text-left text-xs font-medium text-slate-500"><input type="checkbox" id="select-all" class="rounded border-slate-300"></th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Order') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Company / Lab') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Priority') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Status') }}</th><th class="px-4 py-2 text-left text-xs font-medium text-slate-500">{{ __('Due') }}</th><th class="px-4 py-2 text-right text-xs font-medium text-slate-500">{{ __('Actions') }}</th></tr></thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse ($orders as $order)
+                            <tr>
+                                <td class="px-4 py-3"><input type="checkbox" name="ids[]" value="{{ $order->id }}" class="rounded border-slate-300 order-checkbox"></td>
+                                <td class="px-4 py-3 text-sm font-medium"><a href="{{ route('dentaltrack.admin.orders.show', $order) }}" class="text-indigo-600 hover:underline">#{{ $order->id }}</a><div class="text-xs text-slate-500">{{ $order->patient_ref }}</div></td>
+                                <td class="px-4 py-3 text-sm">{{ $order->company?->name }}<div class="text-xs text-slate-500">{{ $order->lab?->name }}</div></td>
+                                <td class="px-4 py-3 text-sm capitalize">{{ $order->priority->value }}</td>
+                                <td class="px-4 py-3 text-sm capitalize">{{ str_replace('_', ' ', $order->status->value) }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $order->due_date?->format('Y-m-d') ?? '-' }}</td>
+                                <td class="px-4 py-3 text-right text-sm">
+                                    <a href="{{ route('dentaltrack.admin.orders.sticker', $order) }}" class="text-slate-600 hover:underline">{{ __('Sticker') }}</a>
+                                    <a href="{{ route('dentaltrack.admin.orders.edit', $order) }}" class="text-indigo-600 hover:underline ml-2">{{ __('Edit') }}</a>
+                                    <form method="POST" action="{{ route('dentaltrack.admin.orders.destroy', $order) }}" class="inline ml-2" onsubmit="return confirm('{{ __('Delete?') }}')">@csrf @method('DELETE')<button class="text-rose-600 hover:underline">{{ __('Delete') }}</button></form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="7" class="px-4 py-4 text-sm text-slate-500">{{ __('No orders found.') }}</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between">
+                <button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">{{ __('Print Stickers for Selected') }}</button>
+                <div>{{ $orders->links() }}</div>
+            </div>
+        </form>
     </div>
+
+    <script>
+        document.getElementById('select-all')?.addEventListener('change', function (e) {
+            document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = e.target.checked);
+        });
+    </script>
 @endsection

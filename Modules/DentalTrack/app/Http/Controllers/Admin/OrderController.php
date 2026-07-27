@@ -3,12 +3,14 @@
 namespace Modules\DentalTrack\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Modules\DentalTrack\Models\Company;
 use Modules\DentalTrack\Models\Lab;
 use Modules\DentalTrack\Models\Order;
+use Modules\DentalTrack\Models\OrderStep;
 use Modules\DentalTrack\Models\ProductType;
 use Modules\DentalTrack\Services\PredictionService;
 use Modules\DentalTrack\Services\QrCodeService;
@@ -71,9 +73,11 @@ class OrderController extends Controller
 
     public function show(Order $order): View
     {
-        $order->load(['company', 'lab', 'productType', 'steps.scanEvents', 'scanEvents.user', 'scanEvents.workstation', 'predictions', 'reworkEvents']);
+        $order->load(['company', 'lab', 'productType', 'steps.scanEvents', 'steps.assignedUser', 'scanEvents.user', 'scanEvents.workstation', 'predictions', 'reworkEvents']);
+        $users = User::orderBy('name')->get();
+        $qrSvg = $this->qrCodeService->generateForOrder($order);
 
-        return view('dentaltrack::admin.orders.show', compact('order'));
+        return view('dentaltrack::admin.orders.show', compact('order', 'users', 'qrSvg'));
     }
 
     public function edit(Order $order): View
@@ -117,6 +121,18 @@ class OrderController extends Controller
         }
 
         return $this->stickerPdfService->generateBatchOrderStickers($orders);
+    }
+
+    public function updateStep(Request $request, Order $order, OrderStep $step): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,in_progress,done,skipped',
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+
+        $step->update($validated);
+
+        return back()->with('success', __('Step updated.'));
     }
 
     private function rules(): array

@@ -55,6 +55,27 @@
                     </div>
                 </div>
             </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-slate-900">{{ __('Scan History') }}</h2>
+                <div class="mt-4 overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50"><tr><th class="px-3 py-2 text-left text-xs font-medium text-slate-500">{{ __('Time') }}</th><th class="px-3 py-2 text-left text-xs font-medium text-slate-500">{{ __('Workstation') }}</th><th class="px-3 py-2 text-left text-xs font-medium text-slate-500">{{ __('Technician') }}</th><th class="px-3 py-2 text-left text-xs font-medium text-slate-500">{{ __('Event') }}</th></tr></thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse ($order->scanEvents as $event)
+                                <tr>
+                                    <td class="px-3 py-2 text-sm">{{ $event->scanned_at?->format('Y-m-d H:i') }}</td>
+                                    <td class="px-3 py-2 text-sm">{{ $event->workstation?->name }}</td>
+                                    <td class="px-3 py-2 text-sm">{{ $event->user?->name }}</td>
+                                    <td class="px-3 py-2 text-sm capitalize">{{ str_replace('_', ' ', $event->event_type->value) }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="px-3 py-4 text-sm text-slate-500">{{ __('No scan events yet.') }}</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         @elseif(request('code'))
             <div class="rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-800">{{ __('No order found with this tracking code.') }}</div>
         @endif
