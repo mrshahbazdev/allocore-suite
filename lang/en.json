@@ -1348,5 +1348,21 @@
     "years": "years",
     "Industry benchmark": "Industry benchmark",
     "Embed widget": "Embed widget",
-    "Allocore Score certificate": "Allocore Score certificate"
+    "Allocore Score certificate": "Allocore Score certificate",
+
+    "Challenges": "Challenges",
+    "Challenge": "Challenge",
+    "Your challenges": "Your challenges",
+    "Cybernetic control loops based on your small audits.": "Cybernetic control loops based on your small audits.",
+    "Turn this into a 4-week challenge": "Turn this into a 4-week challenge",
+    "A challenge guides you through Plan → Do → Check → Act using the recommended tools.": "A challenge guides you through Plan → Do → Check → Act using the recommended tools.",
+    "Start challenge for :pillar": "Start challenge for :pillar",
+    "A 4-week cybernetic control loop: Plan → Do → Check → Act.": "A 4-week cybernetic control loop: Plan → Do → Check → Act.",
+    "Steps": "Steps",
+    "Next challenge or small audit possible after": "Next challenge or small audit possible after",
+    "Progress updated": "Progress updated",
+    "Challenge started for :pillar": "Challenge started for :pillar",
+    "An active or recently completed challenge already exists for :pillar.": "An active or recently completed challenge already exists for :pillar.",
+    "This audit has no pillar to base a challenge on.": "This audit has no pillar to base a challenge on.",
+    "No challenges yet. Start one from a small audit result.": "No challenges yet. Start one from a small audit result."
 }
