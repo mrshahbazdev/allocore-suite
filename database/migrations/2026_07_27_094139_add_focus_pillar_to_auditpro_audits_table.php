@@ -8,17 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('auditpro_audits', function (Blueprint $table) {
-            $table->string('focus_pillar')->nullable()->after('audit_type');
+        $hasColumn = Schema::hasColumn('auditpro_audits', 'focus_pillar');
 
-            $table->index(['team_id', 'audit_type', 'focus_pillar', 'completed_at']);
+        Schema::table('auditpro_audits', function (Blueprint $table) use ($hasColumn) {
+            if (! $hasColumn) {
+                $table->string('focus_pillar')->nullable()->after('audit_type');
+            }
+
+            $table->index(['team_id', 'audit_type', 'focus_pillar', 'completed_at'], 'idx_aap_focus');
         });
     }
 
     public function down(): void
     {
-        Schema::table('auditpro_audits', function (Blueprint $table) {
-            $table->dropColumn('focus_pillar');
+        $hasColumn = Schema::hasColumn('auditpro_audits', 'focus_pillar');
+
+        Schema::table('auditpro_audits', function (Blueprint $table) use ($hasColumn) {
+            if ($hasColumn) {
+                $table->dropColumn('focus_pillar');
+            }
         });
     }
 };
