@@ -14,7 +14,7 @@ class AuditTemplate extends Model
 
     protected $table = 'auditpro_templates';
 
-    protected $fillable = ['team_id', 'name', 'slug', 'description', 'created_by', 'is_default'];
+    protected $fillable = ['team_id', 'name', 'slug', 'focus_pillar', 'description', 'created_by', 'is_default'];
 
     protected function casts(): array
     {

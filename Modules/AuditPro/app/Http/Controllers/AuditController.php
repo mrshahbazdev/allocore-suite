@@ -17,6 +17,7 @@ use Modules\AuditPro\Models\AuditResult;
 use Modules\AuditPro\Models\AuditTemplate;
 use Modules\AuditPro\Services\AuditPdfService;
 use Modules\AuditPro\Services\DefaultTemplateProvisioner;
+use Modules\AuditPro\Services\PillarTemplateProvisioner;
 use Modules\AuditPro\Support\Maturity;
 
 class AuditController extends Controller
@@ -46,7 +47,7 @@ class AuditController extends Controller
         return $this->createAudit($request, $request->input('audit_type', 'major'), null);
     }
 
-    public function startSmall(Request $request, DefaultTemplateProvisioner $provisioner): RedirectResponse
+    public function startSmall(Request $request, PillarTemplateProvisioner $provisioner): RedirectResponse
     {
         $focusPillar = $request->input('focus_pillar');
 
@@ -54,7 +55,7 @@ class AuditController extends Controller
             return back()->with('error', __('Please select a valid pillar.'));
         }
 
-        $template = $provisioner->provision($request->user()->currentTeam);
+        $template = $provisioner->provision($request->user()->currentTeam, $focusPillar);
 
         return $this->createAudit($request, 'small', $focusPillar, $template->id);
     }
