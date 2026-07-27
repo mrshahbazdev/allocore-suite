@@ -1,3 +1,4 @@
+@php($page = $page ?? null)
 @php($isEdit = isset($page))
 @php($locales = config('app.available_locales', ['en']))
 
