@@ -5,6 +5,7 @@ use Modules\CashCore\Http\Controllers\BehaviorController;
 use Modules\CashCore\Http\Controllers\CashLeakController;
 use Modules\CashCore\Http\Controllers\CashTransactionController;
 use Modules\CashCore\Http\Controllers\CashUnlockerController;
+use Modules\CashCore\Http\Controllers\CategoryController;
 use Modules\CashCore\Http\Controllers\DashboardController;
 use Modules\CashCore\Http\Controllers\ExpenseScoringController;
 use Modules\CashCore\Http\Controllers\ProfitAllocationController;
@@ -25,6 +26,8 @@ Route::middleware(['auth', 'verified', 'module:cash-core', EnsureCurrentTeam::cl
         Route::delete('transactions/{transaction}', [CashTransactionController::class, 'destroy'])->name('transactions.destroy');
         Route::get('transactions/import', [CashTransactionController::class, 'importForm'])->name('transactions.import');
         Route::post('transactions/import', [CashTransactionController::class, 'import'])->name('transactions.import.store');
+
+        Route::resource('categories', CategoryController::class)->names('categories');
 
         Route::get('leaks', [CashLeakController::class, 'index'])->name('leaks.index');
         Route::post('leaks/detect', [CashLeakController::class, 'runDetection'])->name('leaks.detect');

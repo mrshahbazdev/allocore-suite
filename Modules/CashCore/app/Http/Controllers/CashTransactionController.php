@@ -17,6 +17,8 @@ class CashTransactionController extends Controller
     public function index(Request $request): View
     {
         $filter = $request->get('filter', 'all');
+        $categoryFilter = $request->get('category');
+
         $query = CashTransaction::with('category')->orderByDesc('transaction_date');
 
         if ($filter === 'income') {
@@ -25,10 +27,14 @@ class CashTransactionController extends Controller
             $query->expense();
         }
 
+        if ($categoryFilter) {
+            $query->where('cashcore_category_id', $categoryFilter);
+        }
+
         $transactions = $query->paginate(20)->withQueryString();
         $categories = CashCategory::all();
 
-        return view('cashcore::transactions.index', compact('transactions', 'categories', 'filter'));
+        return view('cashcore::transactions.index', compact('transactions', 'categories', 'filter', 'categoryFilter'));
     }
 
     public function create(): View

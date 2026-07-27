@@ -34,8 +34,29 @@
                             </td>
                         </tr>
                     @endforeach
+                    @if ($activeLeaks->isEmpty())
+                        <tr><td colspan="5" class="py-2 text-slate-500">{{ __('No active leaks.') }}</td></tr>
+                    @endif
                 </tbody>
             </table>
         </div>
+
+        @if ($resolvedLeaks->isNotEmpty())
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-slate-900">{{ __('Resolved / Ignored Leaks') }}</h2>
+                <table class="mt-3 min-w-full text-sm">
+                    <thead class="text-left text-xs uppercase tracking-wide text-slate-500"><tr><th class="pb-2 pr-4">{{ __('Title') }}</th><th class="pb-2 pr-4">{{ __('Status') }}</th><th class="pb-2 pr-4">{{ __('Amount') }}</th></tr></thead>
+                    <tbody class="divide-y divide-slate-200">
+                        @foreach ($resolvedLeaks as $leak)
+                            <tr>
+                                <td class="py-2 pr-4 font-medium">{{ $leak->title }}</td>
+                                <td class="py-2 pr-4">{{ __($leak->status) }}</td>
+                                <td class="py-2 pr-4">{{ number_format($leak->monthly_amount, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 @endsection
