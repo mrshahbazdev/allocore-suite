@@ -56,6 +56,8 @@
                     <a href="{{ route('allocore-score.index') }}" class="mt-4 inline-block text-sm font-semibold text-indigo-600 hover:underline">{{ __('View score history') }}</a>
                 </div>
             </div>
+
+            @include('partials.allocore-recommendations', ['recommendations' => $allocoreRecommendations])
         </div>
     @else
         <div class="mb-6 rounded-xl border border-dashed border-slate-300 bg-white p-6 text-slate-600">

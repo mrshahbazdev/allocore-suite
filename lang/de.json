@@ -1306,5 +1306,17 @@
     "No scheduled reports yet.": "Noch keine geplanten Berichte.",
     "Paused": "Pausiert",
     "Module not accessible.": "Modul nicht zugänglich.",
-    "Module has no API resource.": "Modul hat keine API-Ressource."
+    "Module has no API resource.": "Modul hat keine API-Ressource.",
+
+    "recommendations.revenue_action": "Verbessern Sie die Umsatzübersicht, Rechnungsstellung und Zahlungseingänge.",
+    "recommendations.profit_action": "Stärken Sie Rentabilitätsanalyse und Cashflow-Steuerung.",
+    "recommendations.order_action": "Optimieren Sie Projekte, Zeiterfassung und Standardarbeitsanweisungen.",
+    "recommendations.influence_action": "Steigern Sie SEO, Leads und Empfehlungsreichweite.",
+    "recommendations.legacy_action": "Richten Sie Vision, Kultur und Langfriststrategie aus.",
+    "recommendations.start_audit": "Führen Sie eine AuditPro-Bewertung durch, um personalisierte Empfehlungen zu erhalten.",
+    "recommendations.headline_excellent": "Ihr Unternehmen reift gut heran. Erhalten und optimieren Sie den Stand.",
+    "recommendations.headline_strong": "Starke Position. Beheben Sie die verbleibenden Lücken, um Exzellenz zu erreichen.",
+    "recommendations.headline_solid": "Gute Grundlage. Konzentrieren Sie sich als Nächstes auf die schwächste Säule.",
+    "recommendations.headline_weak": "Kritische Lücken erkannt. Priorisieren Sie die niedrigsten Säulen.",
+    "recommendations.headline_critical": "Dringender Handlungsbedarf. Beginnen Sie mit der schwächsten Säule."
 }
