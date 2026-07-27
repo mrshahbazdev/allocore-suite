@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\ModuleDataController as AdminModuleDataController
 use App\Http\Controllers\Admin\NotificationTemplateController as AdminNotificationTemplateController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Admin\PillarQuestionController as AdminPillarQuestionController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\QueueMonitorController as AdminQueueMonitorController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
@@ -323,6 +324,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('audits/questions/{question}/edit', [AdminAuditQuestionController::class, 'edit'])->name('audits.questions.edit');
     Route::put('audits/questions/{question}', [AdminAuditQuestionController::class, 'update'])->name('audits.questions.update');
     Route::delete('audits/questions/{question}', [AdminAuditQuestionController::class, 'destroy'])->name('audits.questions.destroy');
+
+    Route::get('audits/pillar-questions', [AdminPillarQuestionController::class, 'index'])->name('audits.pillar-questions.index');
+    Route::get('audits/pillar-questions/{pillar}/edit', [AdminPillarQuestionController::class, 'edit'])->name('audits.pillar-questions.edit');
+    Route::put('audits/pillar-questions/{pillar}', [AdminPillarQuestionController::class, 'update'])->name('audits.pillar-questions.update');
 
     Route::get('case-studies', [AdminCaseStudyController::class, 'index'])->name('case-studies.index');
     Route::get('case-studies/create', [AdminCaseStudyController::class, 'create'])->name('case-studies.create');

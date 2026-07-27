@@ -4,30 +4,50 @@ namespace Modules\AuditPro\Services;
 
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
+use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
 use Modules\AuditPro\Models\AuditTemplate;
+use Modules\AuditPro\Models\PillarQuestionBlueprint;
 
 class PillarTemplateProvisioner
 {
     public function provision(Team $team, string $pillar): AuditTemplate
     {
-        $slug = 'mini-'.strtolower($pillar);
+        $this->ensureDefaults($pillar);
 
         $existing = AuditTemplate::withoutGlobalScopes()
             ->where('team_id', $team->id)
-            ->where('slug', $slug)
+            ->where('slug', 'mini-'.strtolower($pillar))
             ->first();
 
-        if ($existing) {
+        if ($existing && $this->isFresh($existing, $pillar)) {
             return $existing;
         }
 
         return $this->synchronize($team, $pillar);
     }
 
+    private function isFresh(AuditTemplate $template, string $pillar): bool
+    {
+        $latestBlueprintAt = PillarQuestionBlueprint::where('pillar', $pillar)->max('updated_at');
+
+        if ($latestBlueprintAt && $template->updated_at->lessThan($latestBlueprintAt)) {
+            $hasInProgress = Audit::withoutGlobalScopes()
+                ->where('template_id', $template->id)
+                ->where('status', 'in_progress')
+                ->exists();
+
+            return $hasInProgress;
+        }
+
+        return true;
+    }
+
     public function synchronize(Team $team, string $pillar): AuditTemplate
     {
+        $this->ensureDefaults($pillar);
+
         return DB::transaction(function () use ($team, $pillar): AuditTemplate {
             $blueprint = $this->blueprintForPillar($pillar);
 
@@ -75,7 +95,7 @@ class PillarTemplateProvisioner
 
     private function blueprintForPillar(string $pillar): array
     {
-        return match ($pillar) {
+        $defaults = match ($pillar) {
             'Revenue' => $this->revenueBlueprint(),
             'Profit' => $this->profitBlueprint(),
             'Order' => $this->orderBlueprint(),
@@ -83,6 +103,54 @@ class PillarTemplateProvisioner
             'Legacy' => $this->legacyBlueprint(),
             default => $this->revenueBlueprint(),
         };
+
+        $questions = PillarQuestionBlueprint::forPillar($pillar)
+            ->orderBy('position')
+            ->get()
+            ->map(fn ($q) => [
+                'question' => $q->question,
+                'description' => $q->description,
+                'recommendation' => $q->recommendation,
+            ])
+            ->all();
+
+        if (! empty($questions)) {
+            $defaults['questions'] = $questions;
+        }
+
+        return $defaults;
+    }
+
+    public function seedDefaults(string $pillar): void
+    {
+        $this->ensureDefaults($pillar);
+    }
+
+    private function ensureDefaults(string $pillar): void
+    {
+        if (PillarQuestionBlueprint::where('pillar', $pillar)->exists()) {
+            return;
+        }
+
+        $defaults = match ($pillar) {
+            'Revenue' => $this->revenueBlueprint(),
+            'Profit' => $this->profitBlueprint(),
+            'Order' => $this->orderBlueprint(),
+            'Influence' => $this->influenceBlueprint(),
+            'Legacy' => $this->legacyBlueprint(),
+            default => $this->revenueBlueprint(),
+        };
+
+        foreach ($defaults['questions'] as $index => $question) {
+            PillarQuestionBlueprint::create([
+                'pillar' => $pillar,
+                'position' => $index + 1,
+                'question' => $question['question'],
+                'description' => $question['description'] ?? null,
+                'recommendation' => $question['recommendation'] ?? null,
+                'is_active' => true,
+            ]);
+        }
     }
 
     private function revenueBlueprint(): array
