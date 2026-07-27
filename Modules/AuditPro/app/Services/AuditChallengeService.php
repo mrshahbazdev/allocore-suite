@@ -4,11 +4,14 @@ namespace Modules\AuditPro\Services;
 
 use App\Models\Module;
 use App\Models\User;
+use App\Services\GlossaryService;
 use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditChallenge;
 
 class AuditChallengeService
 {
+    public function __construct(private GlossaryService $glossaryService) {}
+
     protected array $pillarMap = [
         'Revenue' => [
             'target' => 'Set a concrete monthly revenue target for the next 90 days.',
@@ -69,20 +72,25 @@ class AuditChallengeService
     {
         $actions = $this->pillarMap[$pillar] ?? $this->pillarMap['Revenue'];
         $module = $this->recommendedModule($pillar, $user);
+        $moduleKey = $module?->key;
+        $glossaryTerms = $this->glossaryService->relatedForModule($moduleKey) ?: $this->glossaryService->relatedForPillar($pillar);
 
         $stepKeys = ['plan', 'do', 'check', 'act'];
         $steps = [];
 
         foreach ($stepKeys as $index => $key) {
+            $label = $actions[$key];
             $steps[] = [
                 'id' => $key,
                 'order' => $index + 1,
-                'label' => $actions[$key],
+                'label' => $label,
+                'label_html' => $this->glossaryService->linkTerms($label),
                 'completed' => false,
-                'module_key' => $module?->key,
+                'module_key' => $moduleKey,
                 'module_name' => $module?->name,
                 'module_route' => $module?->route_prefix ? url('app/'.$module->route_prefix) : null,
                 'subscribed' => $module ? $user->hasModule($module->key) : false,
+                'glossary_terms' => $glossaryTerms,
             ];
         }
 

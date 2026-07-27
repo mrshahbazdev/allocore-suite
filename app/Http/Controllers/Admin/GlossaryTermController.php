@@ -64,14 +64,17 @@ class GlossaryTermController extends Controller
             'term' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255',
             'definition' => 'required|string|max:10000',
+            'simple_definition' => 'nullable|string|max:10000',
             'category' => 'nullable|string|max:100',
             'related_modules' => 'nullable|string|max:1000',
             'is_published' => 'nullable|boolean',
+            'is_beginner_friendly' => 'nullable|boolean',
             'sort_order' => 'nullable|integer',
         ]);
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['term']);
         $validated['is_published'] = $request->boolean('is_published');
+        $validated['is_beginner_friendly'] = $request->boolean('is_beginner_friendly');
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
 
         if (! empty($validated['related_modules'])) {

@@ -1354,5 +1354,12 @@
     "Challenge started for :pillar": "Challenge für :pillar gestartet",
     "An active or recently completed challenge already exists for :pillar.": "Für :pillar gibt es bereits eine aktive oder kürzlich abgeschlossene Challenge.",
     "This audit has no pillar to base a challenge on.": "Dieser Audit hat keine Säule, auf der eine Challenge basieren kann.",
-    "No challenges yet. Start one from a small audit result.": "Noch keine Challenges. Starte eine aus einem Small-Audit-Ergebnis."
+    "No challenges yet. Start one from a small audit result.": "Noch keine Challenges. Starte eine aus einem Small-Audit-Ergebnis.",
+
+    "Simple definition": "Einfache Definition",
+    "A plain-language explanation for entrepreneurs without a business background.": "Eine einfache Erklärung für Unternehmer ohne betriebswirtschaftlichen Hintergrund.",
+    "Beginner-friendly": "Einsteigerfreundlich",
+    "Simple explanation": "Einfache Erklärung",
+    "Easy": "Einfach",
+    "Back to glossary": "Zurück zum Glossar"
 }

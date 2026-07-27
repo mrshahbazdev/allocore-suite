@@ -15,8 +15,13 @@
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($group as $term)
                         <a href="{{ route('glossary.show', $term) }}" class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md">
-                            <h3 class="font-semibold text-indigo-700">{{ $term->term }}</h3>
-                            <p class="mt-2 line-clamp-3 text-sm text-slate-600">{{ $term->definition }}</p>
+                            <div class="flex items-start justify-between gap-2">
+                                <h3 class="font-semibold text-indigo-700">{{ $term->term }}</h3>
+                                @if ($term->is_beginner_friendly)
+                                    <span class="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">{{ __('Easy') }}</span>
+                                @endif
+                            </div>
+                            <p class="mt-2 line-clamp-3 text-sm text-slate-600">{{ $term->simple_definition ?: $term->definition }}</p>
                         </a>
                     @endforeach
                 </div>
