@@ -103,6 +103,11 @@
                 <a href="{{ route('admin.modules.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.modules.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Modules') }}</a>
                 <a href="{{ route('admin.plans.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.plans.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Plans') }}</a>
 
+                <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Customize') }}</div>
+                <a href="{{ route('admin.setup.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.setup.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Setup Wizard') }}</a>
+                <a href="{{ route('admin.appearance.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.appearance.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Appearance') }}</a>
+                <a href="{{ route('admin.landing.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.landing.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Landing Page') }}</a>
+
                 <div class="pt-2 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{{ __('Billing') }}</div>
                 <a href="{{ route('admin.billing.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.billing.index') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Billing Dashboard') }}</a>
                 <a href="{{ route('admin.subscriptions.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.subscriptions.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800' }}">{{ __('Subscriptions') }}</a>

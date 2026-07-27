@@ -15,7 +15,7 @@ return new class extends Migration
     public function down(): void
     {
         if (DB::getDriverName() === 'mysql') {
-            DB::statement("ALTER TABLE tool_subscriptions MODIFY payment_method ENUM('stripe', 'paypal', 'bank') NOT NULL");
+            DB::statement("ALTER TABLE tool_subscriptions MODIFY payment_method ENUM('stripe', 'paypal', 'bank', 'manual') NOT NULL");
         }
     }
 };

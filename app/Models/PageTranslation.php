@@ -19,6 +19,11 @@ class PageTranslation extends Model
         'og_description',
         'og_image',
         'body',
+        'blocks',
+    ];
+
+    protected $casts = [
+        'blocks' => 'array',
     ];
 
     public function page(): BelongsTo
