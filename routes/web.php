@@ -55,6 +55,7 @@ use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AllocoreScoreController;
 use App\Http\Controllers\ApiDocsController;
+use App\Http\Controllers\AuditExampleController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BlogController;
@@ -112,6 +113,8 @@ Route::get('install/admin', [InstallController::class, 'admin'])->name('install.
 Route::post('install/run', [InstallController::class, 'run'])->name('install.run');
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('audit-example', [AuditExampleController::class, 'index'])->name('audit-example.index');
+Route::get('audit-example/pdf', [AuditExampleController::class, 'pdf'])->name('audit-example.pdf');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
 Route::view('/offline', 'offline')->name('offline');
 
