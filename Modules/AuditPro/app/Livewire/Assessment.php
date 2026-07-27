@@ -41,7 +41,7 @@ class Assessment extends Component
     {
         abort_if($audit->status === 'completed', 404);
 
-        $this->audit = $audit->load('template.pillars.questions');
+        $this->audit = $audit->load('template.pillars.questions', 'template.pillars.mainQuestions.children');
         abort_unless($this->audit->template, 404);
 
         foreach ($this->pillars() as $pillar) {
@@ -242,9 +242,12 @@ class Assessment extends Component
 
     public function render()
     {
+        $pillar = $this->currentPillar();
+
         return view('auditpro::livewire.assessment', [
-            'pillar' => $this->currentPillar(),
+            'pillar' => $pillar,
             'questions' => $this->currentQuestions(),
+            'mainQuestions' => $pillar?->mainQuestions ?? collect(),
             'stepCount' => $this->pillars()->count(),
         ]);
     }
