@@ -26,12 +26,6 @@ class UserDashboard extends Model
                 $model->team_id = auth()->user()->current_team_id;
             }
         });
-
-        static::addGlobalScope('currentTeam', function ($builder) {
-            if (auth()->user()?->current_team_id) {
-                $builder->where('team_id', auth()->user()->current_team_id);
-            }
-        });
     }
 
     public function user()
