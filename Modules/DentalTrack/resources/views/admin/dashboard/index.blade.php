@@ -4,9 +4,24 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <h1 class="text-2xl font-bold text-slate-900">{{ __('DentalTrack Admin') }}</h1>
-            <a href="{{ route('dentaltrack.scan.index') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Open Scanner') }}</a>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('dentaltrack.scan.index') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Open Scanner') }}</a>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('dentaltrack.admin.orders.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Orders') }}</a>
+            <a href="{{ route('dentaltrack.admin.workstations.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Workstations') }}</a>
+            <a href="{{ route('dentaltrack.admin.labs.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Labs') }}</a>
+            <a href="{{ route('dentaltrack.admin.companies.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Companies') }}</a>
+            <a href="{{ route('dentaltrack.admin.product-types.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Product Types') }}</a>
+            <a href="{{ route('dentaltrack.admin.process-templates.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Templates') }}</a>
+            <a href="{{ route('dentaltrack.admin.scan-events.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Scan Events') }}</a>
+            <a href="{{ route('dentaltrack.admin.rework-events.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Rework') }}</a>
+            <a href="{{ route('dentaltrack.admin.reports.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Reports') }}</a>
+            <a href="{{ route('dentaltrack.admin.predictions.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Predictions') }}</a>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
