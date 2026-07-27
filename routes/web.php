@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\BlogCommentController as AdminBlogCommentControll
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
 use App\Http\Controllers\Admin\BlogTagController as AdminBlogTagController;
 use App\Http\Controllers\Admin\BulkUserController as AdminBulkUserController;
+use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EnvController as AdminEnvController;
@@ -59,6 +60,7 @@ use App\Http\Controllers\AuditExampleController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CaseStudyController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
@@ -115,6 +117,8 @@ Route::post('install/run', [InstallController::class, 'run'])->name('install.run
 Route::get('/', HomeController::class)->name('home');
 Route::get('audit-example', [AuditExampleController::class, 'index'])->name('audit-example.index');
 Route::get('audit-example/pdf', [AuditExampleController::class, 'pdf'])->name('audit-example.pdf');
+Route::get('case-studies', [CaseStudyController::class, 'index'])->name('case-studies.index');
+Route::get('case-studies/{caseStudy}', [CaseStudyController::class, 'show'])->name('case-studies.show');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
 Route::view('/offline', 'offline')->name('offline');
 
@@ -310,6 +314,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('audits/questions/{question}/edit', [AdminAuditQuestionController::class, 'edit'])->name('audits.questions.edit');
     Route::put('audits/questions/{question}', [AdminAuditQuestionController::class, 'update'])->name('audits.questions.update');
     Route::delete('audits/questions/{question}', [AdminAuditQuestionController::class, 'destroy'])->name('audits.questions.destroy');
+
+    Route::get('case-studies', [AdminCaseStudyController::class, 'index'])->name('case-studies.index');
+    Route::get('case-studies/create', [AdminCaseStudyController::class, 'create'])->name('case-studies.create');
+    Route::post('case-studies', [AdminCaseStudyController::class, 'store'])->name('case-studies.store');
+    Route::get('case-studies/{caseStudy}/edit', [AdminCaseStudyController::class, 'edit'])->name('case-studies.edit');
+    Route::put('case-studies/{caseStudy}', [AdminCaseStudyController::class, 'update'])->name('case-studies.update');
+    Route::delete('case-studies/{caseStudy}', [AdminCaseStudyController::class, 'destroy'])->name('case-studies.destroy');
 
     Route::get('module-data/{group}/{resource}', [AdminModuleDataController::class, 'index'])->name('module-data.index');
     Route::get('module-data/{group}/{resource}/{id}', [AdminModuleDataController::class, 'show'])->name('module-data.show');

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CaseStudy;
 use App\Models\Plan;
 use App\Models\Team;
 use App\Models\ToolSubscription;
@@ -71,6 +72,7 @@ class DemoSeeder extends Seeder
         $this->seedInvoiceMaker($team, $admin);
         $this->seedPlanHive($team, $admin);
         $this->seedLeadOs($team, $admin);
+        $this->seedCaseStudies();
     }
 
     protected function seedInvoiceMaker(Team $team, User $user): void
@@ -162,5 +164,45 @@ class DemoSeeder extends Seeder
                 'score' => 78,
             ]
         );
+    }
+
+    protected function seedCaseStudies(): void
+    {
+        $studies = [
+            [
+                'title' => 'Mittelständischer Dienstleister steigert Profitabilität',
+                'slug' => 'profitabilitaet-dienstleister',
+                'industry' => 'Dienstleistung',
+                'company' => 'MusterConsult GmbH',
+                'challenge' => 'Ungenaue Projektrentabilität, fehlende Transparenz über die profitabelsten Aufträge.',
+                'solution' => 'Einführung von CashCore und InvoiceMaker zur Deckungsbeitragsrechnung pro Projekt.',
+                'result' => 'Innerhalb von 6 Monaten konnte der operative Gewinn um 18% gesteigert werden.',
+                'metrics' => ['Gewinnmarge' => '+18%', 'Cash-Runway' => '+3 Monate', 'Zeitersparnis' => '8h/Woche'],
+            ],
+            [
+                'title' => 'Agentur skaliert mit klarer Vision und Prozessen',
+                'slug' => 'vision-prozesse-agentur',
+                'industry' => 'Agentur',
+                'company' => 'WachstumAgentur',
+                'challenge' => 'Schnelles Wachstum führte zu unklaren Verantwortlichkeiten und Reibungsverlusten.',
+                'solution' => 'VisionFlow und PlanHive zur Ziel- und Projektabstimmung über alle Teams.',
+                'result' => 'Onboarding neuer Mitarbeiter halbiert und Projektlieferung pünktlicher.',
+                'metrics' => ['Onboarding-Zeit' => '-50%', 'Termintreue' => '+35%', 'Mitarbeiterzufriedenheit' => '+22%'],
+            ],
+            [
+                'title' => 'Handwerksbetrieb gewinnt qualifizierte Leads',
+                'slug' => 'leads-handwerk',
+                'industry' => 'Handwerk',
+                'company' => 'BauPlus Schmidt',
+                'challenge' => 'Wenig Sichtbarkeit online und unstrukturierte Anfragenverwaltung.',
+                'solution' => 'LeadQuality und KeywordClustering zur systematischen Lead-Generierung und -Bewertung.',
+                'result' => 'Mehr qualifizierte Anfragen bei gleichem Marketing-Budget.',
+                'metrics' => ['Leads/Monat' => '+60%', 'Conversion' => '+12%', 'Akquise-Zeit' => '-25%'],
+            ],
+        ];
+
+        foreach ($studies as $study) {
+            CaseStudy::firstOrCreate(['slug' => $study['slug']], $study + ['is_published' => true, 'sort_order' => 0]);
+        }
     }
 }
