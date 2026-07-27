@@ -15,7 +15,7 @@
                                 @endif
                                 <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold text-indigo-700">{{ $item['score'] }}</span>
                             </div>
-                            <p class="mt-1 text-sm text-slate-600">{{ __($item['action']) }}</p>
+                            <p class="mt-1 text-sm text-slate-600">{!! $item['action_html'] ?? e(__($item['action'])) !!}</p>
                             @if ($item['module_name'])
                                 <p class="mt-1 text-sm text-slate-500">{{ __('Recommended tool:') }} <span class="font-medium text-slate-900">{{ $item['module_name'] }}</span></p>
                             @endif
@@ -35,6 +35,19 @@
                             </form>
                         </div>
                     </div>
+
+                    @if (! empty($item['glossary_terms']) && $item['glossary_terms']->isNotEmpty())
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            @foreach ($item['glossary_terms'] as $term)
+                                <a href="{{ route('glossary.show', $term->slug) }}" target="_blank" class="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100">
+                                    {{ $term->term }}
+                                    @if ($term->is_beginner_friendly)
+                                        <span class="text-[10px] text-emerald-600">({{ __('Easy') }})</span>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
 
                     @if (! empty($item['kpis']))
                         <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

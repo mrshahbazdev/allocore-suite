@@ -41,7 +41,16 @@
                             </button>
                         </form>
                         <div class="flex-1">
-                            <p class="text-sm font-semibold {{ $step['completed'] ? 'text-slate-500 line-through' : 'text-slate-900' }}">{{ $step['label'] }}</p>
+                            <p class="text-sm font-semibold {{ $step['completed'] ? 'text-slate-500 line-through' : 'text-slate-900' }}">{!! $step['label_html'] ?? e($step['label']) !!}</p>
+
+                            @if (! empty($step['glossary_terms']) && $step['glossary_terms']->isNotEmpty())
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    @foreach ($step['glossary_terms'] as $term)
+                                        <a href="{{ route('glossary.show', $term->slug) }}" target="_blank" class="rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100">{{ $term->term }}</a>
+                                    @endforeach
+                                </div>
+                            @endif
+
                             @if ($step['module_name'])
                                 <div class="mt-2 flex items-center gap-2">
                                     <span class="text-xs text-slate-500">{{ __('Tool:') }} {{ $step['module_name'] }}</span>

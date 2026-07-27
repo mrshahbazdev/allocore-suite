@@ -57,6 +57,8 @@ class AllocoreRecommendationService
         ],
     ];
 
+    public function __construct(private GlossaryService $glossaryService) {}
+
     public function forScore(?AllocoreScore $score, User $user): array
     {
         if (! $score) {
@@ -99,10 +101,12 @@ class AllocoreRecommendationService
                     'score' => $pillar['score'],
                     'maturity' => $pillar['maturity'],
                     'action' => $map['action'],
+                    'action_html' => $this->glossaryService->linkTerms(__($map['action'])),
                     'module_key' => $module?->key,
                     'module_name' => $module?->name,
                     'module_route' => $module?->route_prefix ? url('app/'.$module->route_prefix) : null,
                     'subscribed' => $subscribed,
+                    'glossary_terms' => $this->glossaryService->relatedForPillar($pillar['name']),
                     'kpis' => $this->buildKpis($pillar['score'], $map['kpis'] ?? []),
                 ];
             })

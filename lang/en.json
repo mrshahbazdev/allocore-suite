@@ -1364,5 +1364,12 @@
     "Challenge started for :pillar": "Challenge started for :pillar",
     "An active or recently completed challenge already exists for :pillar.": "An active or recently completed challenge already exists for :pillar.",
     "This audit has no pillar to base a challenge on.": "This audit has no pillar to base a challenge on.",
-    "No challenges yet. Start one from a small audit result.": "No challenges yet. Start one from a small audit result."
+    "No challenges yet. Start one from a small audit result.": "No challenges yet. Start one from a small audit result.",
+
+    "Simple definition": "Simple definition",
+    "A plain-language explanation for entrepreneurs without a business background.": "A plain-language explanation for entrepreneurs without a business background.",
+    "Beginner-friendly": "Beginner-friendly",
+    "Simple explanation": "Simple explanation",
+    "Easy": "Easy",
+    "Back to glossary": "Back to glossary"
 }

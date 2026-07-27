@@ -22,6 +22,12 @@
 </div>
 
 <div>
+    <label class="block text-sm font-medium text-slate-700">{{ __('Simple definition') }}</label>
+    <p class="text-xs text-slate-500">{{ __('A plain-language explanation for entrepreneurs without a business background.') }}</p>
+    <textarea name="simple_definition" rows="3" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('simple_definition', $glossary->simple_definition ?? '') }}</textarea>
+</div>
+
+<div>
     <label class="block text-sm font-medium text-slate-700">{{ __('Related modules') }}</label>
     <input name="related_modules" value="{{ old('related_modules', isset($glossary) ? collect($glossary->related_modules ?? [])->implode(', ') : '') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="financial-platform, sweet-spot">
     <p class="mt-1 text-xs text-slate-500">{{ __('Comma-separated module keys') }}</p>
@@ -35,5 +41,9 @@
     <div class="flex items-end gap-2">
         <input id="is_published" name="is_published" type="checkbox" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" @checked(old('is_published', $glossary->is_published ?? false))>
         <label for="is_published" class="text-sm font-medium text-slate-700">{{ __('Published') }}</label>
+    </div>
+    <div class="flex items-end gap-2">
+        <input id="is_beginner_friendly" name="is_beginner_friendly" type="checkbox" value="1" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" @checked(old('is_beginner_friendly', $glossary->is_beginner_friendly ?? false))>
+        <label for="is_beginner_friendly" class="text-sm font-medium text-slate-700">{{ __('Beginner-friendly') }}</label>
     </div>
 </div>
