@@ -15,6 +15,7 @@
             @foreach ($menu as $item)
                 <a href="{{ $item['url'] ?? '#' }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ $item['label'] ?? '' }}</a>
             @endforeach
+            <a href="{{ route('glossary.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Glossary') }}</a>
             <a href="{{ route('blog.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Blog') }}</a>
             <a href="{{ route('billing.plans') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('public.nav.pricing') }}</a>
             <a href="{{ route('api-docs.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('API Docs') }}</a>

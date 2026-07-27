@@ -23,6 +23,16 @@
                 <span class="pb-2 text-lg text-slate-400">/ 5</span>
             </div>
             <span class="mt-4 inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">{{ __($overallMaturity) }}</span>
+            @if ($allocoreScore)
+                <div class="mt-6 rounded-lg border border-slate-100 bg-slate-50 p-4">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ __('Allocore Score') }}</p>
+                    <div class="mt-2 flex items-end gap-2">
+                        <span class="text-4xl font-bold text-slate-900">{{ $allocoreScore->score }}</span>
+                        <span class="mb-1 text-sm text-slate-500">/ 100</span>
+                    </div>
+                    <p class="mt-1 text-sm text-slate-600">{{ $allocoreScore->maturity_level }}</p>
+                </div>
+            @endif
             <dl class="mt-6 space-y-3 border-t border-slate-100 pt-5 text-sm">
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Performed by') }}</dt><dd class="font-medium text-slate-700">{{ $audit->creator?->name ?? __('Deleted user') }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Industry') }}</dt><dd class="font-medium text-slate-700">{{ $audit->team->industry ?? '—' }}</dd></div>
@@ -35,6 +45,8 @@
             <div class="mx-auto mt-4 max-w-lg"><canvas id="auditRadar" height="280"></canvas></div>
         </section>
     </div>
+
+    @include('partials.allocore-recommendations', ['recommendations' => $recommendations])
 
     <section class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 px-5 py-4">
@@ -53,18 +65,6 @@
                     <div class="mt-3 h-2.5 rounded-full bg-slate-100">
                         <div class="h-2.5 rounded-full bg-indigo-500" style="width: {{ min(100, ((float) $result->average_score / 5) * 100) }}%"></div>
                     </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
-
-    <section class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="font-semibold text-slate-900">{{ __('Priority recommendations') }}</h2>
-        <div class="mt-4 grid gap-4 md:grid-cols-3">
-            @foreach ($audit->results->sortBy('average_score')->take(3) as $result)
-                <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
-                    <p class="font-semibold text-amber-900">{{ $result->level }}</p>
-                    <p class="mt-1 text-sm text-amber-800">{{ __('Focus improvement planning on this pillar, currently scoring :score out of 5.', ['score' => number_format((float) $result->average_score, 1)]) }}</p>
                 </div>
             @endforeach
         </div>
