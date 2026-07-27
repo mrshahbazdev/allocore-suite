@@ -21,6 +21,10 @@ class ProcessController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request): void {
                 $q->where('name_en', 'like', '%'.$request->search.'%')
@@ -29,8 +33,9 @@ class ProcessController extends Controller
         }
 
         $processes = $query->latest()->paginate(15)->withQueryString();
+        $categories = Process::where('is_latest_version', true)->whereNotNull('category')->distinct()->pluck('category');
 
-        return view('loopengine::processes.index', compact('processes'));
+        return view('loopengine::processes.index', compact('processes', 'categories'));
     }
 
     public function create(): View
@@ -50,8 +55,9 @@ class ProcessController extends Controller
     public function show(Process $process): View
     {
         $process->load('steps.options.transitions');
+        $users = auth()->user()->currentTeam?->users ?? collect();
 
-        return view('loopengine::processes.show', compact('process'));
+        return view('loopengine::processes.show', compact('process', 'users'));
     }
 
     public function edit(Process $process): View
@@ -103,6 +109,11 @@ class ProcessController extends Controller
         $process->update(['status' => 'archived']);
 
         return redirect()->route('loopengine.processes.index')->with('success', __('Process archived.'));
+    }
+
+    public function share(Process $process): View
+    {
+        return view('loopengine::processes.share', compact('process'));
     }
 
     public function reorderSteps(Request $request, Process $process): RedirectResponse

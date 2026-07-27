@@ -10,17 +10,38 @@
                 <h1 class="text-2xl font-bold text-slate-900">{{ __('LoopEngine') }}</h1>
                 <p class="text-sm text-slate-500">{{ __('Decision loop SOP builder with execution and audit trail.') }}</p>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('loopengine.templates.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Templates') }}</a>
+            <div class="flex flex-wrap gap-2">
                 <a href="{{ route('loopengine.processes.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('New Process') }}</a>
+                <a href="{{ route('loopengine.templates.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Templates') }}</a>
             </div>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Active Processes') }}</div><div class="text-2xl font-bold">{{ $processes }}</div></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Runs') }}</div><div class="text-2xl font-bold">{{ $runs }}</div></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Completed') }}</div><div class="text-2xl font-bold">{{ $completed }}</div></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Pending Assignments') }}</div><div class="text-2xl font-bold">{{ $pendingAssignments }}</div></div>
+            <a href="{{ route('loopengine.processes.index') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
+                <div class="text-xs uppercase text-slate-500">{{ __('Active Processes') }}</div>
+                <div class="text-2xl font-bold">{{ $processes }}</div>
+            </a>
+            <a href="{{ route('loopengine.runs.index') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
+                <div class="text-xs uppercase text-slate-500">{{ __('Runs') }}</div>
+                <div class="text-2xl font-bold">{{ $runs }}</div>
+            </a>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-xs uppercase text-slate-500">{{ __('Completed') }}</div>
+                <div class="text-2xl font-bold">{{ $completed }}</div>
+            </div>
+            <a href="{{ route('loopengine.team.assignments') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
+                <div class="text-xs uppercase text-slate-500">{{ __('Pending Assignments') }}</div>
+                <div class="text-2xl font-bold">{{ $pendingAssignments }}</div>
+            </a>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('loopengine.processes.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Processes') }}</a>
+            <a href="{{ route('loopengine.runs.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Runs') }}</a>
+            <a href="{{ route('loopengine.team.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Team') }}</a>
+            <a href="{{ route('loopengine.webhooks.index') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Webhooks') }}</a>
+            <a href="{{ route('loopengine.export.runs.csv') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Export Runs CSV') }}</a>
+            <a href="{{ route('loopengine.export.logs.csv') }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Export Logs CSV') }}</a>
         </div>
 
         <div class="grid gap-6 lg:grid-cols-2">
