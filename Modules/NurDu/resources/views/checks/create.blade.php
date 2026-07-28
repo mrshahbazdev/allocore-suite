@@ -8,12 +8,12 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Check Date') }}</label>
-                <input type="date" name="check_date" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm" required>
+                <input type="date" name="check_date" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Does what we are doing now clearly pay into our vision?') }}</label>
-                <select name="q1_answer" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm" required>
+                <select name="q1_answer" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
                     <option value="yes">{{ __('Yes') }}</option>
                     <option value="partially">{{ __('Partially') }}</option>
                     <option value="no">{{ __('No') }}</option>
@@ -22,25 +22,25 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('What decision or activity is currently most moving us away from the vision?') }}</label>
-                <textarea name="q2_answer" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm"></textarea>
+                <textarea name="q2_answer" rows="3" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500"></textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('What is the one thing we need to change in the next period to get closer to the vision?') }}</label>
-                <textarea name="q3_answer" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm"></textarea>
+                <textarea name="q3_answer" rows="3" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500"></textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Notes') }}</label>
-                <textarea name="notes" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm"></textarea>
+                <textarea name="notes" rows="3" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500"></textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Action Items') }}</label>
                 <div class="mt-1 space-y-2">
-                    <input type="text" name="action_items[]" class="block w-full rounded-lg border-slate-300 shadow-sm">
-                    <input type="text" name="action_items[]" class="block w-full rounded-lg border-slate-300 shadow-sm">
-                    <input type="text" name="action_items[]" class="block w-full rounded-lg border-slate-300 shadow-sm">
+                    <input type="text" name="action_items[]" class="block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
+                    <input type="text" name="action_items[]" class="block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
+                    <input type="text" name="action_items[]" class="block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
             </div>
 

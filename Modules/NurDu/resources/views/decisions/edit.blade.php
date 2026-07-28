@@ -8,15 +8,15 @@
             @csrf @method('PATCH')
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label>
-                <input type="text" name="title" value="{{ $decision->title }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm" required>
+                <input type="text" name="title" value="{{ $decision->title }}" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label>
-                <textarea name="description" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $decision->description }}</textarea>
+                <textarea name="description" rows="3" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">{{ $decision->description }}</textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Alignment') }}</label>
-                <select name="alignment" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="alignment" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="green" {{ $decision->alignment === 'green' ? 'selected' : '' }}>{{ __('Green — Strengthens vision') }}</option>
                     <option value="yellow" {{ $decision->alignment === 'yellow' ? 'selected' : '' }}>{{ __('Yellow — Neutral') }}</option>
                     <option value="red" {{ $decision->alignment === 'red' ? 'selected' : '' }}>{{ __('Red — Weakens vision') }}</option>
@@ -24,11 +24,11 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Justification') }}</label>
-                <textarea name="justification" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $decision->justification }}</textarea>
+                <textarea name="justification" rows="3" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">{{ $decision->justification }}</textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Decision Date') }}</label>
-                <input type="date" name="decision_date" value="{{ $decision->decision_date?->format('Y-m-d') }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="date" name="decision_date" value="{{ $decision->decision_date?->format('Y-m-d') }}" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
             </div>
             <div class="flex justify-end gap-3">
                 <a href="{{ route('nurdu.decisions.index') }}" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200">{{ __('Cancel') }}</a>
