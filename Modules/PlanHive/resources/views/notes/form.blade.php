@@ -12,8 +12,8 @@
                 @method('PUT')
             @endif
 
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $note->title) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Content') }}</label><textarea name="content" rows="8" class="mt-1 w-full rounded-lg border-slate-300">{{ old('content', $note->content) }}</textarea></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $note->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Content') }}</label><textarea name="content" rows="8" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('content', $note->content) }}</textarea></div>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
         </form>
     </div>

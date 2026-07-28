@@ -12,21 +12,21 @@
                 @method('PUT')
             @endif
 
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $reminder->title) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Remind At') }}</label><input type="datetime-local" name="remind_at" value="{{ old('remind_at', $reminder->remind_at?->format('Y-m-d\TH:i')) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $reminder->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Remind At') }}</label><input type="datetime-local" name="remind_at" value="{{ old('remind_at', $reminder->remind_at?->format('Y-m-d\TH:i')) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
 
             @if (! $reminder->exists)
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Type') }}</label>
-                        <select name="remindable_type" class="mt-1 w-full rounded-lg border-slate-300">
+                        <select name="remindable_type" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="project">{{ __('Project') }}</option>
                             <option value="task">{{ __('Task') }}</option>
                             <option value="goal">{{ __('Goal') }}</option>
                             <option value="note">{{ __('Note') }}</option>
                         </select>
                     </div>
-                    <div><label class="block text-sm font-medium text-slate-700">{{ __('ID') }}</label><input type="number" name="remindable_id" value="{{ old('remindable_id', $reminder->remindable_id) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
+                    <div><label class="block text-sm font-medium text-slate-700">{{ __('ID') }}</label><input type="number" name="remindable_id" value="{{ old('remindable_id', $reminder->remindable_id) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
                 </div>
             @else
                 <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="is_done" value="1" {{ old('is_done', $reminder->is_done) ? 'checked' : '' }} class="rounded border-slate-300"> {{ __('Done') }}</label>

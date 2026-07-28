@@ -12,15 +12,15 @@
                 @method('PUT')
             @endif
 
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $goal->title) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label><textarea name="description" rows="3" class="mt-1 w-full rounded-lg border-slate-300">{{ old('description', $goal->description) }}</textarea></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $goal->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label><textarea name="description" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $goal->description) }}</textarea></div>
             <div class="grid gap-4 sm:grid-cols-2">
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Target Date') }}</label><input type="date" name="target_date" value="{{ old('target_date', $goal->target_date?->format('Y-m-d')) }}" class="mt-1 w-full rounded-lg border-slate-300"></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Progress (%)') }}</label><input type="number" name="progress" min="0" max="100" value="{{ old('progress', $goal->progress ?? 0) }}" class="mt-1 w-full rounded-lg border-slate-300"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Target Date') }}</label><input type="date" name="target_date" value="{{ old('target_date', $goal->target_date?->format('Y-m-d')) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Progress (%)') }}</label><input type="number" name="progress" min="0" max="100" value="{{ old('progress', $goal->progress ?? 0) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
-                <select name="status" class="mt-1 w-full rounded-lg border-slate-300">
+                <select name="status" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="active" {{ old('status', $goal->status) === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
                     <option value="achieved" {{ old('status', $goal->status) === 'achieved' ? 'selected' : '' }}>{{ __('Achieved') }}</option>
                     <option value="dropped" {{ old('status', $goal->status) === 'dropped' ? 'selected' : '' }}>{{ __('Dropped') }}</option>
