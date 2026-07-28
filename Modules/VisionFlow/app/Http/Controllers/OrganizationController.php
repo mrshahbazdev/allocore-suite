@@ -119,7 +119,7 @@ class OrganizationController extends Controller
     public function show(Organization $organization): View
     {
         $this->authorizeOrg($organization);
-        $organization->load(['values', 'principles.value', 'strategicGoals' => fn ($q) => $q->with('values'), 'visions', 'missions' => fn ($q) => $q->with('vision'), 'projects']);
+        $organization->load(['values', 'principles.value', 'strategicGoals' => fn ($q) => $q->with('values'), 'visions', 'missions' => fn ($q) => $q->with('vision'), 'projects', 'decisionLogs']);
 
         return view('visionflow::organizations.show', compact('organization'));
     }

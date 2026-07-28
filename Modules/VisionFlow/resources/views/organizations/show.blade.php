@@ -14,13 +14,13 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Values') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->values_count }}</div></div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Principles') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->principles_count }}</div></div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Goals') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->strategic_goals_count }}</div></div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Visions') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->visions_count }}</div></div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Missions') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->missions_count }}</div></div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Projects') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->projects_count }}</div></div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Decisions') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->decision_logs_count ?? 0 }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Values') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->values->count() }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Principles') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->principles->count() }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Goals') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->strategicGoals->count() }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Visions') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->visions->count() }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Missions') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->missions->count() }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Projects') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->projects->count() }}</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-sm text-slate-500">{{ __('Decisions') }}</div><div class="mt-1 text-2xl font-bold text-slate-900">{{ $organization->decisionLogs->count() }}</div></div>
     </div>
 
     <div>
