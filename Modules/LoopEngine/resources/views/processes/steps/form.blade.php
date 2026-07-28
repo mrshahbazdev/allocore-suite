@@ -14,14 +14,14 @@
             <form method="POST" action="{{ route('loopengine.steps.update', $step) }}" class="space-y-4">
                 @csrf @method('PUT')
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Question (EN)') }}</label><textarea name="question_en" rows="2" class="mt-1 w-full rounded-lg border-slate-300" required>{{ old('question_en', $step->question_en) }}</textarea></div>
-                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Question (DE)') }}</label><textarea name="question_de" rows="2" class="mt-1 w-full rounded-lg border-slate-300">{{ old('question_de', $step->question_de) }}</textarea></div>
+                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Question (EN)') }}</label><textarea name="question_en" rows="2" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>{{ old('question_en', $step->question_en) }}</textarea></div>
+                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Question (DE)') }}</label><textarea name="question_de" rows="2" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('question_de', $step->question_de) }}</textarea></div>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-4">
                     <div><label class="block text-sm font-medium text-slate-700">{{ __('Order') }}</label><input type="number" name="order" value="{{ old('order', $step->order) }}" class="mt-1 w-full rounded-lg border-slate-300"></div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Step Type') }}</label>
-                        <select name="step_type" class="mt-1 w-full rounded-lg border-slate-300">
+                        <select name="step_type" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                             @foreach (['question' => 'Question', 'decision' => 'Decision', 'loop_check' => 'Loop Check', 'info' => 'Info', 'end' => 'End'] as $key => $label)
                                 <option value="{{ $key }}" {{ old('step_type', $step->step_type) === $key ? 'selected' : '' }}>{{ __($label) }}</option>
                             @endforeach
@@ -43,10 +43,10 @@
             <h2 class="text-lg font-semibold text-slate-900">{{ __('Add Option') }}</h2>
             <form method="POST" action="{{ route('loopengine.options.store', $step) }}" class="mt-4 grid gap-4 sm:grid-cols-5">
                 @csrf
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Label (EN)') }}</label><input type="text" name="label_en" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Label (DE)') }}</label><input type="text" name="label_de" class="mt-1 w-full rounded-lg border-slate-300"></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Value') }}</label><input type="text" name="value" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label><input type="text" name="color" class="mt-1 w-full rounded-lg border-slate-300" placeholder="green"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Label (EN)') }}</label><input type="text" name="label_en" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Label (DE)') }}</label><input type="text" name="label_de" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Value') }}</label><input type="text" name="value" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label><input type="text" name="color" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="green"></div>
                 <div class="flex items-end"><button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add') }}</button></div>
             </form>
 
@@ -70,7 +70,7 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Option') }}</label>
-                    <select name="option_id" class="mt-1 w-full rounded-lg border-slate-300">
+                    <select name="option_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option value="">{{ __('Default / None') }}</option>
                         @foreach ($step->options as $option)
                             <option value="{{ $option->id }}">{{ $option->localizedLabel() }}</option>
@@ -79,7 +79,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Action') }}</label>
-                    <select name="action_type" class="mt-1 w-full rounded-lg border-slate-300">
+                    <select name="action_type" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option value="next_step">{{ __('Next Step') }}</option>
                         <option value="goto_step">{{ __('Go To Step') }}</option>
                         <option value="start_process">{{ __('Start Process') }}</option>
@@ -87,8 +87,8 @@
                         <option value="end">{{ __('End') }}</option>
                     </select>
                 </div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Target Step ID') }}</label><input type="number" name="target_step_id" class="mt-1 w-full rounded-lg border-slate-300"></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Target Process ID') }}</label><input type="number" name="target_process_id" class="mt-1 w-full rounded-lg border-slate-300"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Target Step ID') }}</label><input type="number" name="target_step_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Target Process ID') }}</label><input type="number" name="target_process_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
                 <div class="flex items-end"><button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add') }}</button></div>
             </form>
 

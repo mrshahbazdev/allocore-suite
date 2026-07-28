@@ -13,7 +13,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Process') }}</label>
-                    <select name="process_id" class="mt-1 w-full rounded-lg border-slate-300">
+                    <select name="process_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         @foreach ($processes as $process)
                             <option value="{{ $process->id }}" {{ old('process_id', $assignment->process_id) == $process->id ? 'selected' : '' }}>{{ $process->localizedName() }}</option>
                         @endforeach
@@ -22,7 +22,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('User') }}</label>
-                    <select name="user_id" class="mt-1 w-full rounded-lg border-slate-300">
+                    <select name="user_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" {{ old('user_id', $assignment->user_id) == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                         @endforeach
@@ -31,7 +31,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
-                    <select name="status" class="mt-1 w-full rounded-lg border-slate-300">
+                    <select name="status" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         @foreach (['pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'] as $key => $label)
                             <option value="{{ $key }}" {{ old('status', $assignment->status) === $key ? 'selected' : '' }}>{{ __($label) }}</option>
                         @endforeach
@@ -40,7 +40,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Notes') }}</label>
-                    <textarea name="notes" rows="3" class="mt-1 w-full rounded-lg border-slate-300">{{ old('notes', $assignment->notes) }}</textarea>
+                    <textarea name="notes" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('notes', $assignment->notes) }}</textarea>
                 </div>
 
                 <div class="flex gap-2">

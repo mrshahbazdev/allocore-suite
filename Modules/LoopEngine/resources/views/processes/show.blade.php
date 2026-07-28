@@ -15,7 +15,7 @@
                 <form method="POST" action="{{ route('loopengine.runs.start', $process) }}" class="inline flex flex-wrap items-center gap-2">
                     @csrf
                     @if ($users->isNotEmpty())
-                        <select name="assigned_to" class="rounded-lg border-slate-300 text-sm">
+                        <select name="assigned_to" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                             <option value="">{{ __('Assign to me') }}</option>
                             @foreach ($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>

@@ -27,11 +27,11 @@
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Description (EN)') }}</label>
-                        <textarea name="description_en" rows="3" class="mt-1 w-full rounded-lg border-slate-300">{{ old('description_en', $process->description_en) }}</textarea>
+                        <textarea name="description_en" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description_en', $process->description_en) }}</textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Description (DE)') }}</label>
-                        <textarea name="description_de" rows="3" class="mt-1 w-full rounded-lg border-slate-300">{{ old('description_de', $process->description_de) }}</textarea>
+                        <textarea name="description_de" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description_de', $process->description_de) }}</textarea>
                     </div>
                 </div>
 
@@ -42,12 +42,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Tags') }}</label>
-                        <input type="text" name="tags" value="{{ old('tags') }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="sales, onboarding">
+                        <input type="text" name="tags" value="{{ old('tags') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="sales, onboarding">
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" name="is_public" value="1" {{ old('is_public', true) ? 'checked' : '' }} class="rounded border-slate-300">
+                    <input type="checkbox" name="is_public" value="1" {{ old('is_public', true) ? 'checked' : '' }} class="rounded border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     <span class="text-sm text-slate-700">{{ __('Public') }}</span>
                 </div>
 

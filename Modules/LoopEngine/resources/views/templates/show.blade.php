@@ -20,13 +20,13 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Rating') }}</label>
-                    <select name="rating" class="mt-1 rounded-lg border-slate-300">
+                    <select name="rating" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         @foreach (range(1, 5) as $i)
                             <option value="{{ $i }}">{{ $i }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Review') }}</label><input type="text" name="review" class="mt-1 rounded-lg border-slate-300"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Review') }}</label><input type="text" name="review" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Submit') }}</button>
             </form>
         </div>
