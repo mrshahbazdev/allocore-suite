@@ -22,7 +22,7 @@
                 <div class="flex items-center justify-between"><div class="text-xs uppercase text-slate-500">{{ __('Projects') }}</div><svg class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M3.75 7.5h16.5M3.75 3h16.5m-16.5 9h16.5"/></svg></div>
                 <div class="mt-1 text-3xl font-bold text-slate-900">{{ $stats['projects'] }}</div>
             </a>
-            <a href="{{ route('planhive.tasks.index') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-indigo-200">
+            <a href="{{ route('planhive.projects.index') }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-indigo-200">
                 <div class="flex items-center justify-between"><div class="text-xs uppercase text-slate-500">{{ __('Tasks') }}</div><svg class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
                 <div class="mt-1 text-3xl font-bold text-slate-900">{{ $stats['tasks'] }}</div>
             </a>
