@@ -79,6 +79,8 @@
 
         @if (request()->is('app/dentaltrack*'))
             @include('dentaltrack::partials.nav')
+        @elseif (request()->is('app/orgmatrix*'))
+            @include('orgmatrix::partials.nav')
         @endif
 
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
