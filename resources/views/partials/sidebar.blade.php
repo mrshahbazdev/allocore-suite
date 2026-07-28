@@ -5,7 +5,7 @@
     'strategie' => ['north-star', 'vision-flow', 'nur-du', 'org-matrix'],
     'umsatz' => ['financial-platform', 'invoice-maker', 'cash-core', 'sweet-spot'],
     'ordnung' => ['plan-hive', 'time-butler', 'loop-engine', 'focus-matrix'],
-    'einfluss' => ['keyword-cluster', 'lead-quality', 'bunny-band'],
+    'einfluss' => ['keyword-cluster', 'lead-quality'],
 ])
 @php($groupNames = [
     'strategie' => __('Strategie & Führung'),

@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\AuditPro\Models\Audit;
-use Modules\BunnyBand\Models\Transaction;
 use Modules\CashCore\Models\CashTransaction;
 use Modules\ClusterForge\Models\KeywordCluster;
 use Modules\DentalTrack\Models\Order;
@@ -39,7 +38,6 @@ class ModuleStats
         'loop-engine' => ['model' => Process::class, 'label' => 'Processes'],
         'smart-kpi' => ['model' => Company::class, 'label' => 'Companies'],
         'cash-core' => ['model' => CashTransaction::class, 'label' => 'Transactions'],
-        'bunny-band' => ['model' => Transaction::class, 'label' => 'Transactions'],
         'dental-track' => ['model' => Order::class, 'label' => 'Orders'],
         'focus-matrix' => ['model' => Task::class, 'label' => 'Tasks'],
         'org-matrix' => ['model' => Organization::class, 'label' => 'Organizations'],

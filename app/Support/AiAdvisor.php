@@ -79,7 +79,6 @@ class AiAdvisor
         $suggest('dental-track', 'cash-core', 'advisor.lab_cash', __('Record payments for dental lab orders to track cash impact.'), url('app/dentaltrack'));
         $suggest('loop-engine', 'plan-hive', 'advisor.sop_projects', __('Attach LoopEngine SOPs to PlanHive projects.'), url('app/loopengine'));
         $suggest('nur-du', 'vision-flow', 'advisor.vision_mission', __('Align your Nur-Du vision with VisionFlow missions.'), url('app/nurdu'));
-        $suggest('bunny-band', 'lead-quality', 'advisor.reward_referrals', __('Reward lead referrals through BunnyBand.'), url('app/bunnyband'));
         $suggest('org-matrix', 'plan-hive', 'advisor.org_projects', __('Assign projects to organizational units.'), url('app/orgmatrix'));
 
         return $recommendations;

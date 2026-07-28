@@ -103,7 +103,7 @@ class AuditChallengeService
             'Revenue' => ['financial-platform', 'invoice-maker', 'sweet-spot'],
             'Profit' => ['cash-core', 'financial-platform', 'sweet-spot'],
             'Order' => ['plan-hive', 'time-butler', 'loop-engine', 'focus-matrix'],
-            'Influence' => ['keyword-cluster', 'lead-quality', 'bunny-band'],
+            'Influence' => ['keyword-cluster', 'lead-quality'],
             'Legacy' => ['vision-flow', 'nur-du', 'org-matrix'],
         ];
 

@@ -40,7 +40,7 @@ class AllocoreRecommendationService
             ],
         ],
         'Influence' => [
-            'modules' => ['keyword-cluster', 'lead-quality', 'bunny-band'],
+            'modules' => ['keyword-cluster', 'lead-quality'],
             'action' => 'recommendations.influence_action',
             'kpis' => [
                 ['label' => 'Markteinfluss', 'unit' => 'score', 'target' => 80],

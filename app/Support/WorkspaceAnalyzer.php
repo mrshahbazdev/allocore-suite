@@ -78,12 +78,6 @@ class WorkspaceAnalyzer
             'action' => 'app/nurdu',
         ],
         [
-            'title_key' => 'workspace.referral_rewards',
-            'desc_key' => 'workspace.referral_rewards_desc',
-            'modules' => ['bunny-band', 'lead-quality'],
-            'action' => 'app/bunnyband/dashboard',
-        ],
-        [
             'title_key' => 'workspace.org_projects',
             'desc_key' => 'workspace.org_projects_desc',
             'modules' => ['org-matrix', 'plan-hive'],
