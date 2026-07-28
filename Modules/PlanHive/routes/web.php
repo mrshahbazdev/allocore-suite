@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified', 'module:plan-hive', EnsureCurrentTeam::cl
             'index' => 'goals.index', 'create' => 'goals.create', 'store' => 'goals.store',
         ]);
         Route::get('/calendar', [CalendarEventController::class, 'index'])->name('calendar.index');
+        Route::post('/calendar', [CalendarEventController::class, 'storeGlobal'])->name('calendar.store');
         Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.all');
         Route::resource('projects.calendar-events', CalendarEventController::class)->shallow()->names([
             'index' => 'calendar-events.index', 'create' => 'calendar-events.create', 'store' => 'calendar-events.store',
