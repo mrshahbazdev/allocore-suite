@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="grid gap-6 xl:grid-cols-[1fr_340px]">
+        <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="grid grid-cols-7 gap-px border-b border-slate-200 bg-slate-100 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                     <div class="bg-white py-3">{{ __('Sun') }}</div>
@@ -44,33 +44,33 @@
                 </div>
                 <div class="grid grid-cols-7 gap-px bg-slate-100">
                     @for ($i = 0; $i < $firstDayOfWeek; $i++)
-                        <div class="min-h-[90px] bg-slate-50 sm:min-h-[120px]"></div>
+                        <div class="min-h-24 bg-slate-50 sm:min-h-32"></div>
                     @endfor
 
                     @for ($d = 1; $d <= $daysInMonth; $d++)
                         @php($day = $current->copy()->startOfMonth()->addDays($d - 1))
                         @php($dayEvents = $events->filter(fn ($e) => $e->start_at->isSameDay($day))->values())
-                        <div class="group flex min-h-[90px] flex-col justify-between bg-white p-2 transition hover:bg-slate-50 sm:min-h-[120px]">
+                        <div class="group flex min-h-24 flex-col justify-between bg-white p-2 transition hover:bg-slate-50 sm:min-h-32">
                             <div class="flex justify-end">
                                 <span class="flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold {{ $day->isToday() ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-700 group-hover:text-indigo-700' }}">{{ $d }}</span>
                             </div>
                             <div class="mt-1 flex flex-col gap-1">
                                 @foreach ($dayEvents->take(2) as $event)
                                     @php($chipColor = $event->project?->color ?? '#4f46e5')
-                                    <a href="{{ route('planhive.calendar-events.edit', $event) }}" class="truncate rounded-md border border-slate-100 bg-indigo-50 px-2 py-1 text-[10px] font-medium leading-tight text-indigo-700 transition hover:bg-indigo-100 sm:text-xs" title="{{ $event->title }}">
+                                    <a href="{{ route('planhive.calendar-events.edit', $event) }}" class="truncate rounded-md border border-slate-100 bg-indigo-50 px-2 py-1 text-xs font-medium leading-tight text-indigo-700 transition hover:bg-indigo-100" title="{{ $event->title }}">
                                         <span class="mr-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full" style="background-color: {{ $chipColor }}"></span>
                                         <span class="truncate">{{ $event->title }}</span>
                                     </a>
                                 @endforeach
                                 @if ($dayEvents->count() > 2)
-                                    <a href="{{ route('planhive.calendar.index', ['month' => $month]) }}" class="text-[10px] font-medium text-slate-500 hover:text-indigo-600 sm:text-xs" title="{{ $dayEvents->slice(2)->pluck('title')->implode(', ') }}">+{{ $dayEvents->count() - 2 }} {{ __('more') }}</a>
+                                    <span class="text-xs font-medium text-slate-500" title="{{ $dayEvents->slice(2)->pluck('title')->implode(', ') }}">+{{ $dayEvents->count() - 2 }} {{ __('more') }}</span>
                                 @endif
                             </div>
                         </div>
                     @endfor
 
                     @for ($i = 0; $i < $blankEnd; $i++)
-                        <div class="min-h-[90px] bg-slate-50 sm:min-h-[120px]"></div>
+                        <div class="min-h-24 bg-slate-50 sm:min-h-32"></div>
                     @endfor
                 </div>
 
