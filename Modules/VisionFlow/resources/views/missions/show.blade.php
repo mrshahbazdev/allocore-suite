@@ -20,10 +20,10 @@
 
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
         <div><div class="text-sm text-slate-500">{{ __("Title") }}</div><div class="mt-1 text-slate-900">{{ $item->title }}</div></div>
-        <div><div class="text-sm text-slate-500">{{ __("Vision") }}</div><div class="mt-1 text-slate-900">{{ ${{ vision.content ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Vision") }}</div><div class="mt-1 text-slate-900">{{ $item->vision->content ?? '-' }}</div></div>
         <div><div class="text-sm text-slate-500">{{ __("Description") }}</div><div class="mt-1 text-slate-900">{{ $item->description }}</div></div>
         <div><div class="text-sm text-slate-500">{{ __("Status") }}</div><div class="mt-1"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ match(strtolower($item->status)) { 'approved' => 'bg-emerald-100 text-emerald-700', 'active' => 'bg-emerald-100 text-emerald-700', 'completed' => 'bg-emerald-100 text-emerald-700', 'current' => 'bg-emerald-100 text-emerald-700', 'archived' => 'bg-slate-100 text-slate-600', 'on_hold' => 'bg-slate-100 text-slate-600', 'paused' => 'bg-slate-100 text-slate-600', 'proposed' => 'bg-amber-100 text-amber-700', 'reviewing' => 'bg-amber-100 text-amber-700', 'drafting' => 'bg-amber-100 text-amber-700', 'draft' => 'bg-slate-100 text-slate-600', default => 'bg-slate-100 text-slate-700' } }}">{{ $item->status }}</span></div></div>
-        <div><div class="text-sm text-slate-500">{{ __("Owner") }}</div><div class="mt-1 text-slate-900">{{ ${{ owner.name ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Owner") }}</div><div class="mt-1 text-slate-900">{{ $item->owner->name ?? '-' }}</div></div>
         <div><div class="text-sm text-slate-500">{{ __("Next Review At") }}</div><div class="mt-1 text-slate-900">{{ $item->next_review_at }}</div></div>
     </div>
 </div>
