@@ -40,7 +40,7 @@
                             @endforeach
                         </div>
                     @else
-                        <textarea name="response_text" rows="4" class="w-full rounded-lg border-slate-300" placeholder="{{ __('Your response...') }}"></textarea>
+                        <textarea name="response_text" rows="4" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('Your response...') }}"></textarea>
                     @endif
 
                     <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Continue') }}</button>

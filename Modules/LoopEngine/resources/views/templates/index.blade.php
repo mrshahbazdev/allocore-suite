@@ -8,10 +8,10 @@
         <h1 class="text-2xl font-bold text-slate-900">{{ __('Template Marketplace') }}</h1>
 
         <form method="GET" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-wrap items-end gap-3">
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Search') }}</label><input type="text" name="search" value="{{ request('search') }}" class="mt-1 rounded-lg border-slate-300"></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Search') }}</label><input type="text" name="search" value="{{ request('search') }}" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Category') }}</label>
-                <select name="category" class="mt-1 rounded-lg border-slate-300">
+                <select name="category" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">{{ __('All') }}</option>
                     @foreach ($categories as $cat)
                         <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>

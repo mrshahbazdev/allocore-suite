@@ -11,10 +11,10 @@
         </div>
 
         <form method="GET" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-wrap items-end gap-3">
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Search') }}</label><input type="text" name="search" value="{{ request('search') }}" class="mt-1 rounded-lg border-slate-300"></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Search') }}</label><input type="text" name="search" value="{{ request('search') }}" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
-                <select name="status" class="mt-1 rounded-lg border-slate-300">
+                <select name="status" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">{{ __('All') }}</option>
                     <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
@@ -24,7 +24,7 @@
             @if ($categories->isNotEmpty())
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Category') }}</label>
-                    <select name="category" class="mt-1 rounded-lg border-slate-300">
+                    <select name="category" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option value="">{{ __('All') }}</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>{{ $category }}</option>

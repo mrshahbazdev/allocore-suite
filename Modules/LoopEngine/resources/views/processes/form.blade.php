@@ -18,8 +18,8 @@
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Description (EN)') }}</label><textarea name="description_en" rows="3" class="mt-1 w-full rounded-lg border-slate-300">{{ old('description_en', $process->description_en) }}</textarea></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Description (DE)') }}</label><textarea name="description_de" rows="3" class="mt-1 w-full rounded-lg border-slate-300">{{ old('description_de', $process->description_de) }}</textarea></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Description (EN)') }}</label><textarea name="description_en" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description_en', $process->description_en) }}</textarea></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Description (DE)') }}</label><textarea name="description_de" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description_de', $process->description_de) }}</textarea></div>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
