@@ -64,19 +64,19 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Date') }}</label>
-                        <input type="date" name="date" value="{{ now()->format('Y-m-d') }}" class="mt-1 w-full rounded-lg border-slate-300" required>
+                        <input type="date" name="date" value="{{ now()->format('Y-m-d') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-sm font-medium text-slate-700">{{ __('Start') }}</label><input type="time" name="start_time" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-                        <div><label class="block text-sm font-medium text-slate-700">{{ __('End') }}</label><input type="time" name="end_time" class="mt-1 w-full rounded-lg border-slate-300"></div>
+                        <div><label class="block text-sm font-medium text-slate-700">{{ __('Start') }}</label><input type="time" name="start_time" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+                        <div><label class="block text-sm font-medium text-slate-700">{{ __('End') }}</label><input type="time" name="end_time" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Break (min)') }}</label>
-                        <input type="number" name="break_minutes" value="0" min="0" class="mt-1 w-full rounded-lg border-slate-300">
+                        <input type="number" name="break_minutes" value="0" min="0" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Notes') }}</label>
-                        <textarea name="notes" rows="2" class="mt-1 w-full rounded-lg border-slate-300"></textarea>
+                        <textarea name="notes" rows="2" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                     </div>
                     <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
                 </form>

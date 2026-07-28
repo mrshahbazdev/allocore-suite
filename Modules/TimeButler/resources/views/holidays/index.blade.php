@@ -13,11 +13,11 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Year') }}</label>
-                    <input type="number" name="year" value="{{ $year }}" class="mt-1 rounded-lg border-slate-300" required>
+                    <input type="number" name="year" value="{{ $year }}" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Federal State') }}</label>
-                    <select name="state" class="mt-1 rounded-lg border-slate-300" required>
+                    <select name="state" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                         @foreach ($states as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
@@ -30,7 +30,7 @@
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <form method="GET" class="mb-4 flex gap-3">
-                <input type="number" name="year" value="{{ $year }}" class="rounded-lg border-slate-300">
+                <input type="number" name="year" value="{{ $year }}" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 <button class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Filter') }}</button>
             </form>
 

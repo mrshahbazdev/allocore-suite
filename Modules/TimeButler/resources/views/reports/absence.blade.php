@@ -8,11 +8,11 @@
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h1 class="text-2xl font-bold text-slate-900">{{ __('Absence Report') }}</h1>
             <form method="GET" class="mt-4 flex flex-wrap items-end gap-3">
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Start') }}</label><input type="date" name="start" value="{{ $start->format('Y-m-d') }}" class="mt-1 rounded-lg border-slate-300"></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('End') }}</label><input type="date" name="end" value="{{ $end->format('Y-m-d') }}" class="mt-1 rounded-lg border-slate-300"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Start') }}</label><input type="date" name="start" value="{{ $start->format('Y-m-d') }}" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('End') }}</label><input type="date" name="end" value="{{ $end->format('Y-m-d') }}" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('User') }}</label>
-                    <select name="user_id" class="mt-1 rounded-lg border-slate-300">
+                    <select name="user_id" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option value="">{{ __('All') }}</option>
                         @foreach ($users as $u)
                             <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
