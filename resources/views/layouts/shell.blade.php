@@ -77,6 +77,10 @@
             </div>
         </header>
 
+        @if (request()->is('app/dentaltrack*'))
+            @include('dentaltrack::partials.nav')
+        @endif
+
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
             @if (session('success'))
                 <div class="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>
