@@ -15,7 +15,7 @@ class OrganizationController extends Controller
     public function index(Request $request): View
     {
         $organizations = Organization::where('team_id', $request->user()->current_team_id)
-            ->withCount(['values', 'principles', 'strategicGoals', 'missions', 'projects'])
+            ->withCount(['values', 'principles', 'strategicGoals', 'visions', 'missions', 'projects', 'decisionLogs'])
             ->latest()
             ->get();
 
@@ -50,6 +50,70 @@ class OrganizationController extends Controller
         ActivityLog::log('created', 'VisionFlow organization: '.$organization->name, $organization, $request->user(), ['team_id' => $organization->team_id]);
 
         return redirect()->route('visionflow.organizations.show', $organization)->with('success', __('Organization created successfully.'));
+    }
+
+    public function demo(Request $request): RedirectResponse
+    {
+        $teamId = $request->user()->current_team_id;
+        $userId = $request->user()->id;
+        $slug = 'demo-'.uniqid();
+
+        $organization = Organization::create([
+            'team_id' => $teamId,
+            'user_id' => $userId,
+            'name' => 'Demo Organization',
+            'slug' => $slug,
+            'description' => 'A sample organization to explore VisionFlow.',
+        ]);
+
+        $value = $organization->values()->create([
+            'title' => 'Customer Focus',
+            'description' => 'We put the customer first.',
+            'status' => 'approved',
+            'sort_order' => 1,
+        ]);
+
+        $organization->principles()->create([
+            'value_id' => $value->id,
+            'statement' => 'Listen to customers and respond fast.',
+            'status' => 'approved',
+            'alignment_score' => 95,
+        ]);
+
+        $organization->strategicGoals()->create([
+            'title' => 'Expand market reach',
+            'description' => 'Grow into adjacent markets.',
+            'category' => 'market',
+            'time_horizon' => '2026-12-31',
+            'status' => 'active',
+        ]);
+
+        $vision = $organization->visions()->create([
+            'content' => 'Become the most trusted alignment platform for SMEs.',
+            'status' => 'approved',
+            'version' => 1,
+            'is_current' => true,
+        ]);
+
+        $mission = $organization->missions()->create([
+            'vision_id' => $vision->id,
+            'title' => 'Deliver clarity at scale',
+            'description' => 'Help teams align around shared goals.',
+            'owner_id' => $userId,
+            'status' => 'active',
+            'review_cadence' => 'quarterly',
+        ]);
+
+        $organization->projects()->create([
+            'mission_id' => $mission->id,
+            'name' => 'Onboarding refresh',
+            'description' => 'Improve new user onboarding.',
+            'status' => 'active',
+        ]);
+
+        ActivityLog::log('created', 'VisionFlow demo organization: '.$organization->name, $organization, $request->user(), ['team_id' => $organization->team_id]);
+
+        return redirect()->route('visionflow.organizations.show', $organization)->with('success', __('Demo organization created.'));
     }
 
     public function show(Organization $organization): View

@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function __invoke(Request $request): View
     {
         $organizations = Organization::where('team_id', $request->user()->current_team_id)
-            ->withCount(['values', 'principles', 'strategicGoals', 'missions', 'projects'])
+            ->withCount(['values', 'principles', 'strategicGoals', 'visions', 'missions', 'projects', 'decisionLogs'])
             ->latest()
             ->get();
 
