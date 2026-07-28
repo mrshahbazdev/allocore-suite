@@ -1,13 +1,30 @@
-@extends('layouts.shell', ['title' => $item->title ?? $item->name ?? $item->content ?? __('Decision Log')])
+@extends('layouts.shell', ['title' => $item->title ?? $item->name ?? $item->statement ?? $item->content])
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
-    <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-slate-900">{{ $item->title ?? $item->name ?? $item->content }}</h1>
-        <a href="{{ route('visionflow.organizations.decision-logs.index', $organization) }}" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200">{{ __('Back') }}</a>
+    <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <a href="{{ route('visionflow.organizations.show', $organization) }}" class="hover:text-indigo-600">{{ $organization->name }}</a>
+        <span>/</span>
+        <a href="{{ route('visionflow.organizations.decision-logs.index', $organization) }}" class="hover:text-indigo-600">{{ __('Decision Log') }}</a>
+        <span>/</span>
+        <span class="text-slate-900">{{ $item->title ?? $item->name ?? $item->statement ?? $item->content }}</span>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-        <div><div class="text-sm text-slate-500">{{ __('Title') }}</div><div class="mt-1 text-slate-900">{{ $item->title }}</div></div><div><div class="text-sm text-slate-500">{{ __('Description') }}</div><div class="mt-1 text-slate-900">{{ $item->description }}</div></div><div><div class="text-sm text-slate-500">{{ __('Decision') }}</div><div class="mt-1 text-slate-900">{{ $item->decision }}</div></div><div><div class="text-sm text-slate-500">{{ __('Supporting Value') }}</div><div class="mt-1 text-slate-900">{{ $item->value.title }}</div></div><div><div class="text-sm text-slate-500">{{ __('Supporting Mission') }}</div><div class="mt-1 text-slate-900">{{ $item->mission.title }}</div></div><div><div class="text-sm text-slate-500">{{ __('Recorded By') }}</div><div class="mt-1 text-slate-900">{{ $item->user.name }}</div></div>
+
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+        <h1 class="text-3xl font-bold text-slate-900">{{ $item->title ?? $item->name ?? $item->statement ?? $item->content }}</h1>
+        <a href="{{ route('visionflow.organizations.decision-logs.index', $organization) }}" class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+            {{ __('Back') }}
+        </a>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+        <div><div class="text-sm text-slate-500">{{ __("Title") }}</div><div class="mt-1 text-slate-900">{{ $item->title }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Description") }}</div><div class="mt-1 text-slate-900">{{ $item->description }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Decision") }}</div><div class="mt-1 text-slate-900">{{ $item->decision }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Supporting Value") }}</div><div class="mt-1 text-slate-900">{{ ${{ value.title ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Supporting Mission") }}</div><div class="mt-1 text-slate-900">{{ ${{ mission.title ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Recorded By") }}</div><div class="mt-1 text-slate-900">{{ ${{ user.name ?? '-' }}</div></div>
     </div>
 </div>
 @endsection

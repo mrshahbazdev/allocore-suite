@@ -17,6 +17,7 @@ Route::middleware(['auth', 'verified', 'module:vision-flow', EnsureCurrentTeam::
     ->name('visionflow.')
     ->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
+        Route::post('organizations/demo', [OrganizationController::class, 'demo'])->name('organizations.demo');
         Route::resource('organizations', OrganizationController::class);
 
         Route::prefix('organizations/{organization}')->name('organizations.')->group(function (): void {
