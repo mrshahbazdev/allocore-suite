@@ -14,7 +14,7 @@
                 @foreach ($allocations as $allocation)
                     <div class="grid gap-4 sm:grid-cols-3">
                         <div class="font-medium capitalize">{{ $allocation->bucket }}</div>
-                        <div><input type="number" step="0.01" name="allocations[{{ $loop->index }}][percentage]" value="{{ $allocation->percentage }}" class="w-full rounded-lg border-slate-300" required></div>
+                        <div><input type="number" step="0.01" name="allocations[{{ $loop->index }}][percentage]" value="{{ $allocation->percentage }}" class="w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required></div>
                         <div class="text-right font-mono">{{ number_format($allocation->allocated_amount, 2) }}</div>
                         <input type="hidden" name="allocations[{{ $loop->index }}][bucket]" value="{{ $allocation->bucket }}">
                     </div>

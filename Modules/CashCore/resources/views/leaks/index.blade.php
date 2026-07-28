@@ -25,7 +25,7 @@
                             <td class="py-2 pr-4">{{ number_format($leak->monthly_amount, 2) }}</td>
                             <td class="py-2">
                                 <form method="POST" action="{{ route('cashcore.leaks.status', $leak) }}" class="inline">@csrf @method('PUT')
-                                    <select name="status" onchange="this.form.submit()" class="rounded-lg border-slate-300 text-xs">
+                                    <select name="status" onchange="this.form.submit()" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                                         @foreach (['detected', 'reviewed', 'resolved', 'ignored'] as $s)
                                             <option value="{{ $s }}" {{ $leak->status === $s ? 'selected' : '' }}>{{ __($s) }}</option>
                                         @endforeach

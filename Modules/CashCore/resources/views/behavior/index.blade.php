@@ -18,9 +18,9 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Type') }}</label>
-                    <select name="review_type" class="mt-1 rounded-lg border-slate-300"><option value="monthly">{{ __('Monthly') }}</option><option value="quarterly">{{ __('Quarterly') }}</option><option value="annual">{{ __('Annual') }}</option></select>
+                    <select name="review_type" class="mt-1 rounded-lg  focus:border-indigo-500 focus:ring-indigo-500"><option value="monthly">{{ __('Monthly') }}</option><option value="quarterly">{{ __('Quarterly') }}</option><option value="annual">{{ __('Annual') }}</option></select>
                 </div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Date') }}</label><input type="date" name="scheduled_date" class="mt-1 rounded-lg border-slate-300" required></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Date') }}</label><input type="date" name="scheduled_date" class="mt-1 rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required></div>
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Schedule') }}</button>
             </form>
         </div>
