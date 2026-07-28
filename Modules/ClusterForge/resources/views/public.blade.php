@@ -12,7 +12,7 @@
 
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($cluster->clusters ?? [] as $topic => $keywords)
-                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                     <h2 class="mb-3 font-semibold text-slate-900">{{ $topic }}</h2>
                     <ul class="flex flex-wrap gap-2">
                         @foreach ($keywords as $keyword)
