@@ -22,9 +22,9 @@
         <div><div class="text-sm text-slate-500">{{ __("Title") }}</div><div class="mt-1 text-slate-900">{{ $item->title }}</div></div>
         <div><div class="text-sm text-slate-500">{{ __("Description") }}</div><div class="mt-1 text-slate-900">{{ $item->description }}</div></div>
         <div><div class="text-sm text-slate-500">{{ __("Decision") }}</div><div class="mt-1 text-slate-900">{{ $item->decision }}</div></div>
-        <div><div class="text-sm text-slate-500">{{ __("Supporting Value") }}</div><div class="mt-1 text-slate-900">{{ ${{ value.title ?? '-' }}</div></div>
-        <div><div class="text-sm text-slate-500">{{ __("Supporting Mission") }}</div><div class="mt-1 text-slate-900">{{ ${{ mission.title ?? '-' }}</div></div>
-        <div><div class="text-sm text-slate-500">{{ __("Recorded By") }}</div><div class="mt-1 text-slate-900">{{ ${{ user.name ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Supporting Value") }}</div><div class="mt-1 text-slate-900">{{ $item->value->title ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Supporting Mission") }}</div><div class="mt-1 text-slate-900">{{ $item->mission->title ?? '-' }}</div></div>
+        <div><div class="text-sm text-slate-500">{{ __("Recorded By") }}</div><div class="mt-1 text-slate-900">{{ $item->user->name ?? '-' }}</div></div>
     </div>
 </div>
 @endsection

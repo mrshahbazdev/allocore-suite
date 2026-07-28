@@ -40,9 +40,9 @@
                     @foreach ($items as $item)
                         <tr class="transition hover:bg-slate-50">
                             <td class="px-5 py-4 text-sm text-slate-900">{{ $item->title }}</td>
-                            <td class="px-5 py-4 text-sm text-slate-700">{{ $value.title ?? '-' }}</td>
-                            <td class="px-5 py-4 text-sm text-slate-700">{{ $mission.title ?? '-' }}</td>
-                            <td class="px-5 py-4 text-sm text-slate-700">{{ $user.name ?? '-' }}</td>
+                            <td class="px-5 py-4 text-sm text-slate-700">{{ $item->value->title ?? '-' }}</td>
+                            <td class="px-5 py-4 text-sm text-slate-700">{{ $item->mission->title ?? '-' }}</td>
+                            <td class="px-5 py-4 text-sm text-slate-700">{{ $item->user->name ?? '-' }}</td>
                             <td class="px-5 py-4 text-right">
                                 <div class="flex justify-end gap-2">
                                     
