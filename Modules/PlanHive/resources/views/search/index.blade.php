@@ -7,7 +7,7 @@
     <div class="space-y-6">
         <h1 class="text-2xl font-bold text-slate-900">{{ __('Search') }}</h1>
         <form method="GET" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex gap-3">
-            <input type="text" name="q" value="{{ $term }}" placeholder="{{ __('Search projects, tasks, contacts...') }}" class="w-full rounded-lg border-slate-300">
+            <input type="text" name="q" value="{{ $term }}" placeholder="{{ __('Search projects, tasks, contacts...') }}" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Search') }}</button>
         </form>
 

@@ -41,11 +41,11 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Member Email') }}</label>
-                    <input type="email" name="email" class="mt-1 rounded-lg border-slate-300" required>
+                    <input type="email" name="email" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Role') }}</label>
-                    <select name="role" class="mt-1 rounded-lg border-slate-300">
+                    <select name="role" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option value="member">{{ __('Member') }}</option>
                         <option value="manager">{{ __('Manager') }}</option>
                         <option value="boss">{{ __('Boss') }}</option>

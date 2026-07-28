@@ -12,9 +12,9 @@
                 @method('PUT')
             @endif
 
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $document->title) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $document->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
             @if (! $document->exists)
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('File') }}</label><input type="file" name="file" class="mt-1 w-full rounded-lg border-slate-300" required></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('File') }}</label><input type="file" name="file" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
             @endif
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
         </form>

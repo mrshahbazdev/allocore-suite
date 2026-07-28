@@ -12,11 +12,11 @@
                 @method('PUT')
             @endif
 
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $event->title) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-            <div><label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label><textarea name="description" rows="2" class="mt-1 w-full rounded-lg border-slate-300">{{ old('description', $event->description) }}</textarea></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $event->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+            <div><label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label><textarea name="description" rows="2" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $event->description) }}</textarea></div>
             <div class="grid gap-4 sm:grid-cols-2">
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Start') }}</label><input type="datetime-local" name="start_at" value="{{ old('start_at', $event->start_at?->format('Y-m-d\TH:i')) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('End') }}</label><input type="datetime-local" name="end_at" value="{{ old('end_at', $event->end_at?->format('Y-m-d\TH:i')) }}" class="mt-1 w-full rounded-lg border-slate-300"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Start') }}</label><input type="datetime-local" name="start_at" value="{{ old('start_at', $event->start_at?->format('Y-m-d\TH:i')) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('End') }}</label><input type="datetime-local" name="end_at" value="{{ old('end_at', $event->end_at?->format('Y-m-d\TH:i')) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
             </div>
             <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="all_day" value="1" {{ old('all_day', $event->all_day) ? 'checked' : '' }} class="rounded border-slate-300"> {{ __('All day') }}</label>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
