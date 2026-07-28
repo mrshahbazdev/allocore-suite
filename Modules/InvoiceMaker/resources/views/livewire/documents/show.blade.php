@@ -1,13 +1,24 @@
 <div>
-    @include('invoicemaker::partials.nav')
     @php($isEstimate = $invoice->isEstimate())
+    @php($statusClass = match($invoice->status) {
+        'paid' => 'bg-emerald-100 text-emerald-700',
+        'sent' => 'bg-indigo-100 text-indigo-700',
+        'overdue' => 'bg-rose-100 text-rose-700',
+        'draft' => 'bg-slate-100 text-slate-700',
+        'cancelled' => 'bg-slate-100 text-slate-500',
+        default => 'bg-slate-100 text-slate-700',
+    })
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ $isEstimate ? __('Estimate') : __('Invoice') }}</p><h1 class="text-2xl font-bold text-slate-900">{{ $invoice->invoice_number }}</h1><p class="text-sm text-slate-500">{{ $invoice->client->company_name ?: $invoice->client->name }} · {{ ucfirst($invoice->status) }}</p></div>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ $isEstimate ? __('Estimate') : __('Invoice') }}</p>
+            <h1 class="text-3xl font-bold text-slate-900">{{ $invoice->invoice_number }}</h1>
+            <p class="mt-1 text-sm text-slate-500">{{ $invoice->client->company_name ?: $invoice->client->name }} · <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $statusClass }}">{{ ucfirst($invoice->status) }}</span></p>
+        </div>
         <div class="flex flex-wrap gap-2">
-            <a href="{{ route($isEstimate ? 'invoicemaker.estimates.edit' : 'invoicemaker.invoices.edit', $invoice) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Edit') }}</a>
-            <a href="{{ route('invoicemaker.invoices.preview', $invoice) }}" target="_blank" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Preview PDF') }}</a>
-            <a href="{{ route('invoicemaker.invoices.download', $invoice) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Download') }}</a>
-            @if($invoice->status === 'draft')<button wire:click="markSent" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">{{ __('Mark sent') }}</button>@endif
+            <a href="{{ route($isEstimate ? 'invoicemaker.estimates.edit' : 'invoicemaker.invoices.edit', $invoice) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500">{{ __('Edit') }}</a>
+            <a href="{{ route('invoicemaker.invoices.preview', $invoice) }}" target="_blank" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500">{{ __('Preview PDF') }}</a>
+            <a href="{{ route('invoicemaker.invoices.download', $invoice) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500">{{ __('Download') }}</a>
+            @if($invoice->status === 'draft')<button wire:click="markSent" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">{{ __('Mark sent') }}</button>@endif
         </div>
     </div>
 
@@ -22,7 +33,7 @@
             <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 class="mb-4 font-semibold text-slate-900">{{ __('Comments') }}</h2>
                 <div class="mb-5 space-y-3">@forelse($invoice->comments as $entry)<div class="rounded-lg bg-slate-50 p-3"><div class="flex justify-between text-xs text-slate-500"><span>{{ $entry->author_name ?: $entry->user?->name }}</span><span>{{ $entry->created_at->diffForHumans() }}</span></div><p class="mt-1 text-sm text-slate-700">{{ $entry->comment }}</p></div>@empty<p class="text-sm text-slate-500">{{ __('No comments.') }}</p>@endforelse</div>
-                <form wire:submit="addComment" class="flex gap-2"><input wire:model="comment" class="flex-1 rounded-lg border-slate-300 text-sm" placeholder="{{ __('Add an internal comment') }}"><button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">{{ __('Add') }}</button></form>
+                <form wire:submit="addComment" class="flex gap-2"><input wire:model="comment" class="flex-1 rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('Add an internal comment') }}"><button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">{{ __('Add') }}</button></form>
             </div>
         </section>
 
@@ -30,10 +41,10 @@
             @unless($isEstimate)
                 <form wire:submit="addPayment" class="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                     <h2 class="font-semibold text-slate-900">{{ __('Record payment') }}</h2>
-                    <label class="block"><span class="text-sm text-slate-600">{{ __('Amount') }}</span><input wire:model="payment_amount" type="number" min="0.01" step="0.01" class="mt-1 w-full rounded-lg border-slate-300 text-sm">@error('payment_amount')<span class="text-xs text-rose-600">{{ $message }}</span>@enderror</label>
-                    <label class="block"><span class="text-sm text-slate-600">{{ __('Method') }}</span><select wire:model="payment_method" class="mt-1 w-full rounded-lg border-slate-300 text-sm">@foreach(['bank_transfer', 'credit_card', 'cash', 'check', 'paypal', 'stripe'] as $method)<option value="{{ $method }}">{{ ucwords(str_replace('_', ' ', $method)) }}</option>@endforeach</select></label>
-                    <label class="block"><span class="text-sm text-slate-600">{{ __('Date') }}</span><input wire:model="payment_date" type="date" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></label>
-                    <label class="block"><span class="text-sm text-slate-600">{{ __('Notes') }}</span><textarea wire:model="payment_notes" rows="2" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></textarea></label>
+                    <label class="block"><span class="text-sm text-slate-600">{{ __('Amount') }}</span><input wire:model="payment_amount" type="number" min="0.01" step="0.01" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">@error('payment_amount')<span class="text-xs text-rose-600">{{ $message }}</span>@enderror</label>
+                    <label class="block"><span class="text-sm text-slate-600">{{ __('Method') }}</span><select wire:model="payment_method" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">@foreach(['bank_transfer', 'credit_card', 'cash', 'check', 'paypal', 'stripe'] as $method)<option value="{{ $method }}">{{ ucwords(str_replace('_', ' ', $method)) }}</option>@endforeach</select></label>
+                    <label class="block"><span class="text-sm text-slate-600">{{ __('Date') }}</span><input wire:model="payment_date" type="date" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></label>
+                    <label class="block"><span class="text-sm text-slate-600">{{ __('Notes') }}</span><textarea wire:model="payment_notes" rows="2" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea></label>
                     <button @disabled($invoice->amount_due <= 0) class="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{{ __('Record payment') }}</button>
                 </form>
             @endunless
