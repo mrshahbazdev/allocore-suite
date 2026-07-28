@@ -51,11 +51,11 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Name') }}</label>
-                    <input type="text" name="name" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="text" name="name" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label>
-                    <input type="color" name="color" value="#3b82f6" class="mt-1 h-10 w-full rounded-lg border-slate-300">
+                    <input type="color" name="color" value="#3b82f6" class="mt-1 h-10 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div class="space-y-2 text-sm">
                     <label class="flex items-center gap-2"><input type="checkbox" name="requires_approval" value="1" checked class="rounded border-slate-300"> {{ __('Requires approval') }}</label>

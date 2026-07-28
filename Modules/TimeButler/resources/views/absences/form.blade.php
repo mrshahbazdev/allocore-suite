@@ -11,7 +11,7 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Absence Type') }}</label>
-                <select name="absence_type_id" class="mt-1 w-full rounded-lg border-slate-300" required>
+                <select name="absence_type_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                     @foreach ($types as $type)
                         <option value="{{ $type->id }}">{{ $type->name }}</option>
                     @endforeach
@@ -21,11 +21,11 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Start Date') }}</label>
-                    <input type="date" name="start_date" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="date" name="start_date" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('End Date') }}</label>
-                    <input type="date" name="end_date" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="date" name="end_date" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
             </div>
 
@@ -42,7 +42,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Substitute (optional)') }}</label>
-                <select name="substitute_id" class="mt-1 w-full rounded-lg border-slate-300">
+                <select name="substitute_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">{{ __('None') }}</option>
                     @foreach ($users as $u)
                         @if ($u->id !== auth()->id())
@@ -54,7 +54,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Notes') }}</label>
-                <textarea name="notes" rows="3" class="mt-1 w-full rounded-lg border-slate-300"></textarea>
+                <textarea name="notes" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
             </div>
 
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Submit Request') }}</button>

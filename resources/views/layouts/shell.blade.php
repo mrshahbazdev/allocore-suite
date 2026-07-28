@@ -93,6 +93,8 @@
             @include('financialplatform::partials.nav')
         @elseif (request()->is('app/sweetspot*'))
             @include('sweetspot::partials.nav')
+        @elseif (request()->is('app/timebutler*'))
+            @include('timebutler::partials.nav')
         @endif
 
         <main class="flex-1 p-4 sm:p-6 lg:p-8">

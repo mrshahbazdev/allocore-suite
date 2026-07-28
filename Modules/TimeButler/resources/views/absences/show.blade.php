@@ -39,7 +39,7 @@
 
                 <form method="POST" action="{{ route('timebutler.absences.reject', $absence) }}" class="flex items-center gap-2">
                     @csrf
-                    <input type="text" name="rejection_reason" placeholder="{{ __('Reason') }}" class="rounded-lg border-slate-300 text-sm" required>
+                    <input type="text" name="rejection_reason" placeholder="{{ __('Reason') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                     <button class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500">{{ __('Reject') }}</button>
                 </form>
             @endif
@@ -54,7 +54,7 @@
             <form method="POST" action="{{ route('timebutler.absences.destroy', $absence) }}">
                 @csrf
                 @method('DELETE')
-                <button class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Delete') }}</button>
+                <button class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500">{{ __('Delete') }}</button>
             </form>
         </div>
     </div>

@@ -10,7 +10,7 @@ return new class extends Migration
         Module::updateOrCreate(
             ['key' => 'time-butler'],
             [
-                'name' => 'TimeButler',
+                'name' => 'Time Check',
                 'description' => 'Employee vacation, absence & time tracking with team calendar and German holidays.',
                 'icon' => 'clock',
                 'route_prefix' => 'timebutler',
