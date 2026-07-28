@@ -22,9 +22,23 @@
 
     <p class="text-slate-700">{{ $organization->description }}</p>
 
-    <div class="flex gap-3">
-        <a href="{{ route('orgmatrix.organizations.roles.index', $organization) }}" class="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Manage Roles') }}</a>
-        <a href="{{ route('orgmatrix.organizations.people.index', $organization) }}" class="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Manage People') }}</a>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <a href="{{ route('orgmatrix.organizations.roles.index', $organization) }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+            <div class="text-xs uppercase text-slate-500">{{ __('Roles') }}</div>
+            <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('Manage & assign roles') }}</div>
+        </a>
+        <a href="{{ route('orgmatrix.organizations.people.index', $organization) }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+            <div class="text-xs uppercase text-slate-500">{{ __('People') }}</div>
+            <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('Manage people') }}</div>
+        </a>
+        <a href="{{ route('orgmatrix.organizations.assignments.index', $organization) }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+            <div class="text-xs uppercase text-slate-500">{{ __('Assignments') }}</div>
+            <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('View all assignments') }}</div>
+        </a>
+        <a href="{{ route('orgmatrix.organizations.chart', $organization) }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+            <div class="text-xs uppercase text-slate-500">{{ __('Org Chart') }}</div>
+            <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('View hierarchy') }}</div>
+        </a>
     </div>
 </div>
 @endsection

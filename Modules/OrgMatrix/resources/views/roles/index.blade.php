@@ -28,9 +28,12 @@
                             <div class="font-semibold text-slate-900">{{ $role->name }}</div>
                             <div class="text-sm text-slate-500">{{ $role->department }} — {{ $role->criticality }} — {{ $role->assignments_count }} {{ __('assignments') }}</div>
                             @foreach ($role->assignments as $assignment)
-                                <div class="text-sm text-slate-600 mt-1">
-                                    {{ $assignment->person->full_name }}{{ $assignment->is_primary ? ' (Primary)' : '' }}
-                                    {{ $assignment->succession_horizon ? ' — '.$assignment->succession_horizon : '' }}
+                                <div class="flex items-center justify-between text-sm text-slate-600 mt-1">
+                                    <span>{{ $assignment->person->full_name }}{{ $assignment->is_primary ? ' (Primary)' : '' }}{{ $assignment->succession_horizon ? ' — '.$assignment->succession_horizon : '' }}</span>
+                                    <form method="POST" action="{{ route('orgmatrix.organizations.roles.assignments.destroy', [$organization, $role, $assignment]) }}" onsubmit="return confirm('{{ __('Remove assignment?') }}')">
+                                        @csrf @method('DELETE')
+                                        <button class="text-rose-600 hover:underline">{{ __('Remove') }}</button>
+                                    </form>
                                 </div>
                             @endforeach
                         </div>
