@@ -12,6 +12,27 @@
             </div>
         </div>
 
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <a href="{{ route('dentaltrack.track') }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+                <div class="text-xs uppercase text-slate-500">{{ __('Track Order') }}</div>
+                <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('Enter tracking code') }}</div>
+            </a>
+            <a href="{{ route('dentaltrack.scan.index') }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+                <div class="text-xs uppercase text-slate-500">{{ __('Scan QR') }}</div>
+                <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('Workstation → Order') }}</div>
+            </a>
+            @if (auth()->user()?->isAdmin())
+                <a href="{{ route('dentaltrack.admin.orders.index') }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+                    <div class="text-xs uppercase text-slate-500">{{ __('Manage Orders') }}</div>
+                    <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('Add & update orders') }}</div>
+                </a>
+                <a href="{{ route('dentaltrack.admin.workstations.index') }}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50">
+                    <div class="text-xs uppercase text-slate-500">{{ __('Workstations') }}</div>
+                    <div class="mt-1 text-sm font-medium text-indigo-700">{{ __('Manage labs & stations') }}</div>
+                </a>
+            @endif
+        </div>
+
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('Pending') }}</div><div class="text-2xl font-bold">{{ $counts['pending'] ?? 0 }}</div></div>
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-xs uppercase text-slate-500">{{ __('In Progress') }}</div><div class="text-2xl font-bold">{{ $counts['in_progress'] ?? 0 }}</div></div>
