@@ -71,6 +71,21 @@
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">{{ __('Workstation Status') }}</h2>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                @forelse ($workstationStatus as $ws)
+                    <div class="rounded-xl border border-slate-200 p-4">
+                        <div class="font-medium">{{ $ws['name'] }}</div>
+                        <div class="text-sm text-slate-500">{{ __('Active Orders') }}: {{ $ws['active_orders'] }}</div>
+                        <div class="mt-2 text-xs font-semibold {{ $ws['idle'] ? 'text-amber-600' : 'text-emerald-600' }}">{{ $ws['idle'] ? __('Idle') : __('Working') }}</div>
+                    </div>
+                @empty
+                    <div class="text-sm text-slate-500">{{ __('No active workstations.') }}</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">{{ __('Recent Scans') }}</h2>
             <div class="mt-4 overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200">

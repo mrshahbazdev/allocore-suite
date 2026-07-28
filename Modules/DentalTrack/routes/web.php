@@ -57,6 +57,7 @@ Route::middleware(['auth', 'verified', 'module:dental-track', EnsureCurrentTeam:
         Route::resource('orders', OrderController::class);
         Route::get('orders/{order}/sticker', [OrderController::class, 'sticker'])->name('orders.sticker');
         Route::post('orders/print-stickers', [OrderController::class, 'printStickers'])->name('orders.print-stick');
+        Route::put('orders/{order}/steps/{step}', [OrderController::class, 'updateStep'])->name('orders.steps.update');
 
         Route::get('scan-events', [ScanEventController::class, 'index'])->name('scan-events.index');
 

@@ -33,7 +33,7 @@
             </form>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm grid gap-6 sm:grid-cols-2">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div>
                 <div class="text-sm text-slate-500">{{ __('Patient Ref') }}</div>
                 <div class="font-medium">{{ $order->patient_ref ?? '-' }}</div>
@@ -58,6 +58,13 @@
                 <div class="text-sm text-slate-500">{{ __('Tracking Code') }}</div>
                 <div class="font-medium font-mono">{{ $order->tracking_code }}</div>
             </div>
+            <div class="sm:col-span-2 lg:col-span-1">
+                <div class="text-sm text-slate-500">{{ __('Order QR') }}</div>
+                <div class="mt-2 flex flex-col items-start gap-2">
+                    <div class="rounded border border-slate-200 p-2 bg-white">{!! $qrSvg !!}</div>
+                    <a href="{{ $order->trackUrl() }}" target="_blank" class="text-xs text-indigo-600 hover:underline">{{ __('Public track link') }}</a>
+                </div>
+            </div>
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -66,11 +73,34 @@
                 <div class="flex justify-between text-sm font-medium text-slate-700 mb-1"><span>{{ __('Steps') }}</span><span>{{ $order->progressPercentage() }}%</span></div>
                 <div class="h-2.5 w-full rounded-full bg-slate-200"><div class="h-2.5 rounded-full bg-indigo-600" style="width: {{ $order->progressPercentage() }}%"></div></div>
             </div>
-            <div class="mt-4 space-y-2">
+            <div class="mt-4 space-y-3">
                 @foreach ($order->steps as $step)
-                    <div class="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-2">
-                        <span class="text-sm">{{ $step->sort_order }}. {{ $step->step_name }}</span>
-                        <span class="text-xs font-semibold capitalize {{ $step->status->value === 'done' ? 'text-emerald-600' : ($step->status->value === 'in_progress' ? 'text-indigo-600' : 'text-slate-500') }}">{{ str_replace('_', ' ', $step->status->value) }}</span>
+                    <div class="rounded-lg border border-slate-200 p-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium">{{ $step->sort_order }}. {{ $step->step_name }}</span>
+                            <span class="text-xs font-semibold capitalize {{ $step->status->value === 'done' ? 'text-emerald-600' : ($step->status->value === 'in_progress' ? 'text-indigo-600' : 'text-slate-500') }}">{{ str_replace('_', ' ', $step->status->value) }}</span>
+                        </div>
+                        <form method="POST" action="{{ route('dentaltrack.admin.orders.steps.update', [$order, $step]) }}" class="mt-3 flex flex-wrap items-end gap-2">
+                            @csrf @method('PUT')
+                            <div>
+                                <label class="text-xs text-slate-500">{{ __('Status') }}</label>
+                                <select name="status" class="rounded-lg border-slate-300 text-xs">
+                                    @foreach (['pending','in_progress','done','skipped'] as $s)
+                                        <option value="{{ $s }}" {{ $step->status->value === $s ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-500">{{ __('Technician') }}</label>
+                                <select name="assigned_to" class="rounded-lg border-slate-300 text-xs">
+                                    <option value="">{{ __('None') }}</option>
+                                    @foreach ($users as $u)
+                                        <option value="{{ $u->id }}" {{ $step->assigned_to == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button class="rounded-lg bg-slate-900 px-3 py-1 text-xs font-semibold text-white hover:bg-slate-700">{{ __('Update') }}</button>
+                        </form>
                     </div>
                 @endforeach
             </div>
