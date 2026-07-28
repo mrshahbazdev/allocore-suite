@@ -14,8 +14,9 @@ class CalendarEventController extends Controller
 {
     public function index(Request $request, ?Project $project = null): View
     {
-        $start = Carbon::parse($request->get('start', now()->startOfMonth()));
-        $end = Carbon::parse($request->get('end', now()->endOfMonth()));
+        $month = $request->get('month', now()->format('Y-m'));
+        $start = Carbon::parse($month)->startOfMonth();
+        $end = Carbon::parse($month)->endOfMonth();
 
         $query = CalendarEvent::query()
             ->whereBetween('start_at', [$start, $end])
@@ -28,7 +29,9 @@ class CalendarEventController extends Controller
 
         $events = $query->get();
 
-        return view('planhive::calendar.index', compact('events', 'start', 'end', 'project'));
+        $projects = Project::query()->get();
+
+        return view('planhive::calendar.index', compact('events', 'start', 'end', 'month', 'project', 'projects'));
     }
 
     public function create(Project $project): View
@@ -51,6 +54,25 @@ class CalendarEventController extends Controller
         $project->calendarEvents()->create($validated + ['team_id' => $project->team_id, 'user_id' => auth()->id()]);
 
         return redirect()->route('planhive.calendar.index')->with('success', __('Event created.'));
+    }
+
+    public function storeGlobal(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'project_id' => 'required|exists:planhive_projects,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_at' => 'required|date',
+            'end_at' => 'nullable|date|after_or_equal:start_at',
+            'all_day' => 'nullable|boolean',
+        ]);
+
+        $project = Project::findOrFail($validated['project_id']);
+        $validated['all_day'] = $request->boolean('all_day');
+
+        $project->calendarEvents()->create($validated + ['team_id' => $project->team_id, 'user_id' => auth()->id()]);
+
+        return redirect()->route('planhive.calendar.index', ['month' => now()->format('Y-m')])->with('success', __('Event created.'));
     }
 
     public function edit(CalendarEvent $calendarEvent): View
