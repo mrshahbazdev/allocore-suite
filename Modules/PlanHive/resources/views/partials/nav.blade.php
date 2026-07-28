@@ -1,15 +1,10 @@
 @php($links = [
     ['route' => 'planhive.dashboard', 'active' => 'planhive.dashboard', 'label' => __('Dashboard')],
     ['route' => 'planhive.projects.index', 'active' => 'planhive.projects.*', 'label' => __('Projects')],
-    ['route' => 'planhive.tasks.index', 'active' => 'planhive.tasks.*', 'label' => __('Tasks')],
-    ['route' => 'planhive.goals.index', 'active' => 'planhive.goals.*', 'label' => __('Goals')],
     ['route' => 'planhive.calendar.index', 'active' => 'planhive.calendar.*', 'label' => __('Calendar')],
-    ['route' => 'planhive.contacts.index', 'active' => 'planhive.contacts.*', 'label' => __('Contacts')],
-    ['route' => 'planhive.notes.index', 'active' => 'planhive.notes.*', 'label' => __('Notes')],
-    ['route' => 'planhive.documents.index', 'active' => 'planhive.documents.*', 'label' => __('Docs')],
-    ['route' => 'planhive.reminders.index', 'active' => 'planhive.reminders.*', 'label' => __('Reminders')],
-    ['route' => 'planhive.search', 'active' => 'planhive.search', 'label' => __('Search')],
+    ['route' => 'planhive.reminders.all', 'active' => 'planhive.reminders.*', 'label' => __('Reminders')],
     ['route' => 'planhive.reports.index', 'active' => 'planhive.reports.*', 'label' => __('Reports')],
+    ['route' => 'planhive.search', 'active' => 'planhive.search', 'label' => __('Search')],
 ])
 
 <div class="border-b border-slate-200 bg-white">

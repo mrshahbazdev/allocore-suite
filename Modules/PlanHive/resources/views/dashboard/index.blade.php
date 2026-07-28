@@ -12,7 +12,7 @@
                 <p class="mt-1 text-sm text-slate-500">{{ __('Projects, tasks, goals & team calendar.') }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('planhive.tasks.create') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('New Task') }}</a>
+                <a href="{{ route('planhive.calendar.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Calendar') }}</a>
                 <a href="{{ route('planhive.projects.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">{{ __('New Project') }}</a>
             </div>
         </div>
