@@ -77,7 +77,7 @@ class NurDuController extends Controller
             ]);
         }
 
-        ActivityLog::log('created', 'Nur-Du demo data seeded', null, $request->user(), ['team_id' => $teamId]);
+        ActivityLog::log('created', 'Nur-Du demo data seeded', $vision, $request->user(), ['team_id' => $teamId]);
 
         return redirect()->route('nurdu.dashboard')->with('success', __('Demo data created. Explore Vision, Quarterly Focus, Decisions and Checks.'));
     }
