@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified', 'module:org-matrix', EnsureCurrentTeam::c
     ->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
 
+        Route::post('organizations/demo', [OrganizationController::class, 'seedDemo'])->name('organizations.demo');
         Route::resource('organizations', OrganizationController::class);
 
         Route::prefix('organizations/{organization}')->name('organizations.')->group(function (): void {

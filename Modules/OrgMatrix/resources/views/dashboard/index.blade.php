@@ -23,7 +23,16 @@
     </div>
 
     @if ($organizations->isEmpty())
-        <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">{{ __('No organizations yet.') }}</div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center space-y-4">
+            <div class="text-slate-500">{{ __('No organizations yet.') }}</div>
+            <form method="POST" action="{{ route('orgmatrix.organizations.demo') }}">
+                @csrf
+                <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Create Demo Organization') }}</button>
+            </form>
+            <div>
+                <a href="{{ route('orgmatrix.organizations.create') }}" class="text-sm text-indigo-600 hover:underline">{{ __('or create your own') }}</a>
+            </div>
+        </div>
     @else
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach ($organizations as $organization)
