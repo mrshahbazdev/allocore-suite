@@ -72,7 +72,9 @@ class CalendarEventController extends Controller
 
         $project->calendarEvents()->create($validated + ['team_id' => $project->team_id, 'user_id' => auth()->id()]);
 
-        return redirect()->route('planhive.calendar.index', ['month' => now()->format('Y-m')])->with('success', __('Event created.'));
+        $month = $request->input('month', now()->format('Y-m'));
+
+        return redirect()->route('planhive.calendar.index', ['month' => $month])->with('success', __('Event created.'));
     }
 
     public function edit(CalendarEvent $calendarEvent): View
