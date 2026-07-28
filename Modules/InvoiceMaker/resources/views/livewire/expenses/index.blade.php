@@ -1,15 +1,14 @@
 <div>
-    @include('invoicemaker::partials.nav')
     <div class="mb-6 flex items-end justify-between"><div><h1 class="text-2xl font-bold text-slate-900">{{ __('Expenses') }}</h1><p class="text-sm text-slate-500">{{ __('Track operating costs and automatically post them to the cash book.') }}</p></div><button wire:click="$toggle('showForm')" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">{{ __('Record expense') }}</button></div>
     @if($showForm)
         <form wire:submit="save" class="mb-6 grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-3">
-            <label><span class="text-sm text-slate-600">{{ __('Amount') }}</span><input wire:model="amount" type="number" min="0.01" step="0.01" class="mt-1 w-full rounded-lg border-slate-300 text-sm">@error('amount')<span class="text-xs text-rose-600">{{ $message }}</span>@enderror</label>
-            <label><span class="text-sm text-slate-600">{{ __('Date') }}</span><input wire:model="date" type="date" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></label>
-            <label><span class="text-sm text-slate-600">{{ __('Category') }}</span><select wire:model="category_id" class="mt-1 w-full rounded-lg border-slate-300 text-sm"><option value="">{{ __('Uncategorized') }}</option>@foreach($categories as $category)<option value="{{ $category->id }}">{{ $category->name }}</option>@endforeach</select></label>
-            <label><span class="text-sm text-slate-600">{{ __('Partner') }}</span><input wire:model="partner_name" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></label>
-            <label><span class="text-sm text-slate-600">{{ __('Reference') }}</span><input wire:model="reference_number" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></label>
-            <label><span class="text-sm text-slate-600">{{ __('Description') }}</span><input wire:model="description" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></label>
-            <div class="flex justify-end gap-2 sm:col-span-2 lg:col-span-3"><button type="button" wire:click="$set('showForm', false)" class="rounded-lg border border-slate-300 px-4 py-2 text-sm">{{ __('Cancel') }}</button><button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">{{ __('Save expense') }}</button></div>
+            <label><span class="text-sm text-slate-600">{{ __('Amount') }}</span><input wire:model="amount" type="number" min="0.01" step="0.01" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">@error('amount')<span class="text-xs text-rose-600">{{ $message }}</span>@enderror</label>
+            <label><span class="text-sm text-slate-600">{{ __('Date') }}</span><input wire:model="date" type="date" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></label>
+            <label><span class="text-sm text-slate-600">{{ __('Category') }}</span><select wire:model="category_id" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"><option value="">{{ __('Uncategorized') }}</option>@foreach($categories as $category)<option value="{{ $category->id }}">{{ $category->name }}</option>@endforeach</select></label>
+            <label><span class="text-sm text-slate-600">{{ __('Partner') }}</span><input wire:model="partner_name" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></label>
+            <label><span class="text-sm text-slate-600">{{ __('Reference') }}</span><input wire:model="reference_number" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></label>
+            <label><span class="text-sm text-slate-600">{{ __('Description') }}</span><input wire:model="description" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></label>
+            <div class="flex justify-end gap-2 sm:col-span-2 lg:col-span-3"><button type="button" wire:click="$set('showForm', false)" class="rounded-lg border border-slate-300 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">{{ __('Cancel') }}</button><button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">{{ __('Save expense') }}</button></div>
         </form>
     @endif
     <div class="rounded-xl border border-slate-200 bg-white shadow-sm">

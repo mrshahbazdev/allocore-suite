@@ -87,6 +87,8 @@
             @include('nurdu::partials.nav')
         @elseif (request()->is('app/cashcore*'))
             @include('cashcore::partials.nav')
+        @elseif (request()->is('app/invoices*'))
+            @include('invoicemaker::partials.nav')
         @endif
 
         <main class="flex-1 p-4 sm:p-6 lg:p-8">

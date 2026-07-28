@@ -1,5 +1,4 @@
 <div>
-    @include('invoicemaker::partials.nav')
     @php($isEstimate = $type === \Modules\InvoiceMaker\Models\Invoice::TYPE_ESTIMATE)
     <div class="mb-6 flex items-end justify-between gap-4">
         <div><h1 class="text-2xl font-bold text-slate-900">{{ $isEstimate ? __('Estimates') : __('Invoices') }}</h1><p class="text-sm text-slate-500">{{ $isEstimate ? __('Create proposals and convert accepted estimates.') : __('Track drafts, outstanding balances, payments, and recurring billing.') }}</p></div>
@@ -7,19 +6,27 @@
     </div>
     <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row">
-            <input wire:model.live.debounce.300ms="search" type="search" placeholder="{{ __('Search number or client') }}" class="w-full rounded-lg border-slate-300 text-sm sm:max-w-sm">
-            <select wire:model.live="status" class="rounded-lg border-slate-300 text-sm"><option value="">{{ __('All statuses') }}</option>@foreach (['draft', 'sent', 'paid', 'overdue', 'cancelled'] as $value)<option value="{{ $value }}">{{ ucfirst($value) }}</option>@endforeach</select>
+            <input wire:model.live.debounce.300ms="search" type="search" placeholder="{{ __('Search number or client') }}" class="w-full rounded-lg border-slate-300 text-sm sm:max-w-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <select wire:model.live="status" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"><option value="">{{ __('All statuses') }}</option>@foreach (['draft', 'sent', 'paid', 'overdue', 'cancelled'] as $value)<option value="{{ $value }}">{{ ucfirst($value) }}</option>@endforeach</select>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500"><tr><th class="px-5 py-3">{{ __('Number') }}</th><th class="px-5 py-3">{{ __('Client') }}</th><th class="px-5 py-3">{{ __('Due') }}</th><th class="px-5 py-3">{{ __('Status') }}</th><th class="px-5 py-3 text-right">{{ __('Amount') }}</th><th class="px-5 py-3 text-right">{{ __('Actions') }}</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                 @forelse ($documents as $document)
-                    <tr>
-                        <td class="px-5 py-4"><a href="{{ route($isEstimate ? 'invoicemaker.estimates.show' : 'invoicemaker.invoices.show', $document) }}" class="font-medium text-indigo-600 hover:underline">{{ $document->invoice_number }}</a>@if($document->is_recurring)<span class="ml-2 rounded bg-violet-100 px-2 py-0.5 text-xs text-violet-700">{{ __('Recurring') }}</span>@endif</td>
+                    @php($statusClass = match($document->status) {
+                        'paid' => 'bg-emerald-100 text-emerald-700',
+                        'sent' => 'bg-indigo-100 text-indigo-700',
+                        'overdue' => 'bg-rose-100 text-rose-700',
+                        'draft' => 'bg-slate-100 text-slate-700',
+                        'cancelled' => 'bg-slate-100 text-slate-500',
+                        default => 'bg-slate-100 text-slate-700',
+                    })
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-5 py-4"><a href="{{ route($isEstimate ? 'invoicemaker.estimates.show' : 'invoicemaker.invoices.show', $document) }}" class="font-semibold text-indigo-600 hover:text-indigo-500">{{ $document->invoice_number }}</a>@if($document->is_recurring)<span class="ml-2 inline-flex rounded bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">{{ __('Recurring') }}</span>@endif</td>
                         <td class="px-5 py-4 text-slate-600">{{ $document->client->company_name ?: $document->client->name }}</td>
                         <td class="px-5 py-4 text-slate-600">{{ $document->due_date->format('M d, Y') }}</td>
-                        <td class="px-5 py-4"><span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">{{ ucfirst($document->status) }}</span></td>
+                        <td class="px-5 py-4"><span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $statusClass }}">{{ ucfirst($document->status) }}</span></td>
                         <td class="px-5 py-4 text-right font-medium">{{ $document->currency_symbol }}{{ number_format((float) $document->grand_total, 2) }}</td>
                         <td class="whitespace-nowrap px-5 py-4 text-right">
                             <a href="{{ route($isEstimate ? 'invoicemaker.estimates.edit' : 'invoicemaker.invoices.edit', $document) }}" class="text-indigo-600 hover:underline">{{ __('Edit') }}</a>
