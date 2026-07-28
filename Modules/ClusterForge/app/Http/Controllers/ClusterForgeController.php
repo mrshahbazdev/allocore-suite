@@ -32,7 +32,14 @@ class ClusterForgeController extends Controller
 
         $clusters = $query->paginate(15)->withQueryString();
 
-        return view('clusterforge::index', compact('clusters'));
+        $stats = [
+            'total' => (clone $query)->count(),
+            'processing' => KeywordCluster::where('team_id', auth()->user()->current_team_id)->where('status', 'processing')->count(),
+            'completed' => KeywordCluster::where('team_id', auth()->user()->current_team_id)->where('status', 'completed')->count(),
+            'failed' => KeywordCluster::where('team_id', auth()->user()->current_team_id)->where('status', 'failed')->count(),
+        ];
+
+        return view('clusterforge::index', compact('clusters', 'stats'));
     }
 
     public function store(Request $request, KeywordClusterService $service): RedirectResponse
