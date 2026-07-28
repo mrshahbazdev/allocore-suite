@@ -23,7 +23,7 @@
                 <form method="POST" action="{{ route('focusmatrix.delegations.decline', $delegation) }}">
                     @csrf
                     <div>
-                        <input type="text" name="reason" placeholder="{{ __('Reason (optional)') }}" class="rounded-lg border-slate-300 shadow-sm text-sm">
+                        <input type="text" name="reason" placeholder="{{ __('Reason (optional)') }}" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm">
                         <button class="ml-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500">{{ __('Decline') }}</button>
                     </div>
                 </form>
@@ -35,7 +35,7 @@
                 @csrf @method('PATCH')
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Update status') }}</label>
-                    <select name="status" class="mt-1 rounded-lg border-slate-300 shadow-sm">
+                    <select name="status" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         @foreach (['open','invited','accepted','declined','in_progress','done','overdue','cancelled'] as $s)
                             <option value="{{ $s }}" {{ $delegation->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
                         @endforeach

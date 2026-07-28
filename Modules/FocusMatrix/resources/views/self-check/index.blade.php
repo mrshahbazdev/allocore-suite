@@ -9,19 +9,19 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('What did others do that I should have delegated earlier?') }}</label>
-                <textarea name="q1_others_could_do" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $current?->q1_others_could_do }}</textarea>
+                <textarea name="q1_others_could_do" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ $current?->q1_others_could_do }}</textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('What did I delegate too late?') }}</label>
-                <textarea name="q2_delegated_late" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $current?->q2_delegated_late }}</textarea>
+                <textarea name="q2_delegated_late" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ $current?->q2_delegated_late }}</textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('What will I omit next week?') }}</label>
-                <textarea name="q3_to_omit_next_week" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $current?->q3_to_omit_next_week }}</textarea>
+                <textarea name="q3_to_omit_next_week" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ $current?->q3_to_omit_next_week }}</textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Which decisions needed my unique contribution?') }}</label>
-                <textarea name="q4_focused_decisions" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $current?->q4_focused_decisions }}</textarea>
+                <textarea name="q4_focused_decisions" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ $current?->q4_focused_decisions }}</textarea>
             </div>
             <div class="flex items-center gap-4">
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save Self-Check') }}</button>

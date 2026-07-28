@@ -11,7 +11,7 @@
             <input type="hidden" name="answer" id="answer" value="yes">
             <div id="category-box" class="mb-4 text-left">
                 <label class="block text-sm font-medium text-slate-700">{{ __('Only-You Category') }}</label>
-                <select name="only_you_category" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="only_you_category" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     @foreach (Modules\FocusMatrix\Models\Task::CATEGORIES as $key => $label)
                         <option value="{{ $key }}">{{ $label }}</option>
                     @endforeach

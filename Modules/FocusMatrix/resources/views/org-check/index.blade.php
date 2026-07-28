@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Notes') }}</label>
-                    <textarea name="notes" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $current?->notes }}</textarea>
+                    <textarea name="notes" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ $current?->notes }}</textarea>
                 </div>
                 @if ($current)
                     <div class="text-sm text-slate-500">{{ __('Health score') }}: <strong>{{ $current->health_score }}%</strong></div>

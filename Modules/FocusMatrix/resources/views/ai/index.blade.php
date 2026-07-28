@@ -9,7 +9,7 @@
             @csrf @method('PUT')
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Provider') }}</label>
-                <select name="provider" id="provider" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="provider" id="provider" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     @foreach (Modules\FocusMatrix\Models\AiSetting::PROVIDERS as $key => $label)
                         <option value="{{ $key }}" {{ ($setting['provider'] ?? '') === $key ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
@@ -17,21 +17,21 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('API Key') }}</label>
-                <input type="password" name="api_key" placeholder="{{ $setting['masked_key'] ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="password" name="api_key" placeholder="{{ $setting['masked_key'] ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Model') }}</label>
-                <select name="model" id="model" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="model" id="model" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     <option value="">{{ __('Default') }}</option>
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Monthly limit') }}</label>
-                <input type="number" name="monthly_limit" value="{{ $setting['monthly_limit'] ?? 200 }}" min="10" max="10000" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="number" name="monthly_limit" value="{{ $setting['monthly_limit'] ?? 200 }}" min="10" max="10000" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <div class="flex items-center gap-2">
                 <input type="hidden" name="enabled" value="0">
-                <input type="checkbox" name="enabled" value="1" {{ ($setting['enabled'] ?? true) ? 'checked' : '' }} id="enabled" class="rounded border-slate-300 text-indigo-600">
+                <input type="checkbox" name="enabled" value="1" {{ ($setting['enabled'] ?? true) ? 'checked' : '' }} id="enabled" class="rounded border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 text-indigo-600">
                 <label for="enabled" class="text-sm text-slate-700">{{ __('Enabled') }}</label>
             </div>
             @if ($setting)

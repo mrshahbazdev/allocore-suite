@@ -13,12 +13,12 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label>
-                <textarea name="description" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">{{ $task->description }}</textarea>
+                <textarea name="description" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ $task->description }}</textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
-                    <select name="status" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                    <select name="status" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         @foreach (['inbox','keep','delegate','drop','done'] as $s)
                             <option value="{{ $s }}" {{ $task->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
                         @endforeach
@@ -26,7 +26,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Only-You Category') }}</label>
-                    <select name="only_you_category" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                    <select name="only_you_category" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         <option value="">—</option>
                         @foreach (Modules\FocusMatrix\Models\Task::CATEGORIES as $key => $label)
                             <option value="{{ $key }}" {{ $task->only_you_category === $key ? 'selected' : '' }}>{{ $label }}</option>

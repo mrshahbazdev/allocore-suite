@@ -9,7 +9,7 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Task') }}</label>
-                <select name="task_id" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="task_id" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     @foreach ($tasks as $t)
                         <option value="{{ $t->id }}" {{ ($task->id ?? null) == $t->id ? 'selected' : '' }}>{{ $t->title }}</option>
                     @endforeach
@@ -17,7 +17,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Delegate (team member)') }}</label>
-                <select name="delegate_user_id" id="delegate_user_id" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="delegate_user_id" id="delegate_user_id" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     <option value="">—</option>
                     @foreach ($candidates as $candidate)
                         <option value="{{ $candidate['id'] }}">{{ $candidate['name'] }} ({{ $candidate['email'] }})</option>
@@ -26,17 +26,17 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Or external name') }}</label>
-                <input type="text" name="delegate_name_fallback" id="delegate_name_fallback" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="text" name="delegate_name_fallback" id="delegate_name_fallback" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Goal') }}</label>
-                <textarea name="goal" id="goal" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm" required></textarea>
+                <textarea name="goal" id="goal" rows="3" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" required></textarea>
                 <button type="button" onclick="aiDraft()" class="mt-2 text-sm text-indigo-600 hover:underline">{{ __('AI draft') }}</button>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Decision scope') }}</label>
-                    <select name="decision_scope" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                    <select name="decision_scope" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         @foreach (Modules\FocusMatrix\Models\Delegation::SCOPES as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
@@ -44,16 +44,16 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Deadline') }}</label>
-                    <input type="date" name="deadline" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                    <input type="date" name="deadline" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                 </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Resources') }}</label>
-                <textarea name="resources" id="resources" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm"></textarea>
+                <textarea name="resources" id="resources" rows="2" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
             </div>
             <div class="flex items-center gap-2">
                 <input type="hidden" name="no_micromanagement" value="0">
-                <input type="checkbox" name="no_micromanagement" value="1" checked id="no_micromanagement" class="rounded border-slate-300 text-indigo-600">
+                <input type="checkbox" name="no_micromanagement" value="1" checked id="no_micromanagement" class="rounded border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 text-indigo-600">
                 <label for="no_micromanagement" class="text-sm text-slate-700">{{ __('No micromanagement') }}</label>
             </div>
             <div class="flex justify-end">

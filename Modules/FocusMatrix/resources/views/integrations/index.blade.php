@@ -27,11 +27,11 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Slack webhook URL') }}</label>
-                <input type="url" name="webhook_url" value="{{ $slack['connected'] ? ($slack['webhook_preview'] ?? '') : '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="url" name="webhook_url" value="{{ $slack['connected'] ? ($slack['webhook_preview'] ?? '') : '' }}" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Label') }}</label>
-                <input type="text" name="label" value="{{ $slack['label'] ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="text" name="label" value="{{ $slack['label'] ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save Slack') }}</button>
         </form>
@@ -40,11 +40,11 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Teams webhook URL') }}</label>
-                <input type="url" name="webhook_url" value="{{ $teams['connected'] ? ($teams['webhook_preview'] ?? '') : '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="url" name="webhook_url" value="{{ $teams['connected'] ? ($teams['webhook_preview'] ?? '') : '' }}" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Label') }}</label>
-                <input type="text" name="label" value="{{ $teams['label'] ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="text" name="label" value="{{ $teams['label'] ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
             </div>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save Teams') }}</button>
         </form>
@@ -53,7 +53,7 @@
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
         <h2 class="text-lg font-semibold text-slate-900">{{ __('Calendar Feed (ICS)') }}</h2>
         <p class="text-sm text-slate-500">{{ __('Use this URL in Outlook, Google Calendar or Apple Calendar:') }}</p>
-        <input type="text" readonly value="{{ $ics['url'] }}" class="block w-full rounded-lg border-slate-300 bg-slate-50 text-sm" onclick="this.select()">
+        <input type="text" readonly value="{{ $ics['url'] }}" class="block w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 text-sm" onclick="this.select()">
         <form method="POST" action="{{ route('focusmatrix.integrations.ics.regenerate') }}">
             @csrf
             <button class="rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-500">{{ __('Regenerate token') }}</button>
