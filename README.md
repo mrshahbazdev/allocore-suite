@@ -21,7 +21,6 @@ Allocore Suite is the central hub for the Allocore product family. Customers can
 | **LoopEngine** | Decision-loop SOP builder with steps, runs, audit trails and webhooks. |
 | **SmartKpi** | Hierarchical KPI management with companies, departments, problems, actions, forecasts and goals. |
 | **CashCore** | Profit First financial intelligence: cash transparency, leak detection and profit allocation. |
-| **BunnyBand** | Reward-based micro-task platform with tasks, referrals, levels, wallet, deposits and withdrawals. |
 | **DentalTrack** | QR-based production tracking for dental labs with orders, workstations and AI predictions. |
 | **FocusMatrix** | Bilingual productivity OS for managers using the Only-You-Principle. |
 | **OrgMatrix** | Organizational intelligence: visualize org structures, roles, people and succession plans. |

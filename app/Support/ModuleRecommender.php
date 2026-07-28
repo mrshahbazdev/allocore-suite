@@ -22,7 +22,6 @@ class ModuleRecommender
         'loop-engine' => ['process', 'operations', 'sop'],
         'smart-kpi' => ['analytics', 'kpi', 'performance', 'strategy'],
         'cash-core' => ['finance', 'cash', 'profit'],
-        'bunny-band' => ['rewards', 'referral', 'community'],
         'dental-track' => ['manufacturing', 'operations', 'tracking'],
         'focus-matrix' => ['productivity', 'tasks', 'manager'],
         'org-matrix' => ['people', 'org', 'structure'],
@@ -40,7 +39,6 @@ class ModuleRecommender
         ['modules' => ['lead-quality', 'invoice-maker'], 'suggest' => 'sweet-spot', 'reason_key' => 'recommendations.combo_customer_score'],
         ['modules' => ['plan-hive', 'time-butler'], 'suggest' => 'focus-matrix', 'reason_key' => 'recommendations.combo_capacity'],
         ['modules' => ['audit', 'smart-kpi'], 'suggest' => 'kpi-tool', 'reason_key' => 'recommendations.combo_governance'],
-        ['modules' => ['keyword-cluster', 'lead-quality'], 'suggest' => 'bunny-band', 'reason_key' => 'recommendations.combo_growth_referral'],
         ['modules' => ['dental-track', 'invoice-maker'], 'suggest' => 'cash-core', 'reason_key' => 'recommendations.combo_lab_billing'],
         ['modules' => ['vision-flow', 'plan-hive'], 'suggest' => 'nur-du', 'reason_key' => 'recommendations.combo_strategy'],
         ['modules' => ['org-matrix', 'time-butler'], 'suggest' => 'plan-hive', 'reason_key' => 'recommendations.combo_people_projects'],
@@ -48,7 +46,6 @@ class ModuleRecommender
         ['modules' => ['focus-matrix', 'plan-hive'], 'suggest' => 'time-butler', 'reason_key' => 'recommendations.combo_productivity'],
         ['modules' => ['kpi-tool', 'smart-kpi'], 'suggest' => 'financial-platform', 'reason_key' => 'recommendations.combo_kpi_finance'],
         ['modules' => ['cash-core', 'financial-platform'], 'suggest' => 'audit', 'reason_key' => 'recommendations.combo_audit_finance'],
-        ['modules' => ['lead-quality', 'bunny-band'], 'suggest' => 'sweet-spot', 'reason_key' => 'recommendations.combo_referral_score'],
         ['modules' => ['vision-flow', 'nur-du'], 'suggest' => 'org-matrix', 'reason_key' => 'recommendations.combo_culture_structure'],
     ];
 

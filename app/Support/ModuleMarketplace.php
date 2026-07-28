@@ -18,7 +18,6 @@ class ModuleMarketplace
         'loop-engine' => ['category' => 'Operations', 'features' => ['Decision SOPs', 'Process runs', 'Templates']],
         'smart-kpi' => ['category' => 'Analytics', 'features' => ['Hierarchical KPIs', 'Forecasts', 'Problems & actions']],
         'cash-core' => ['category' => 'Finance', 'features' => ['Cashflow', 'Profit First', 'Expense tracking']],
-        'bunny-band' => ['category' => 'Community', 'features' => ['Rewards', 'Referrals', 'Levels']],
         'dental-track' => ['category' => 'Manufacturing', 'features' => ['QR tracking', 'Production board', 'Predictions']],
         'focus-matrix' => ['category' => 'Productivity', 'features' => ['Triage', 'Delegation', 'Manager tools']],
         'org-matrix' => ['category' => 'People', 'features' => ['Org chart', 'Roles', 'People directory']],

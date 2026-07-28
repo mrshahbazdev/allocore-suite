@@ -41,7 +41,6 @@
             'focus-matrix' => ['benefit' => 'Prioritäten setzen', 'desc' => 'Wichtige Aufgaben von Ablenkungen unterscheiden.'],
             'keyword-cluster' => ['benefit' => 'SEO-Struktur aufbauen', 'desc' => 'Keywords gruppieren und Content planen.'],
             'lead-quality' => ['benefit' => 'Bessere Leads gewinnen', 'desc' => 'Anfragen bewerten und gezielt nachverfolgen.'],
-            'bunny-band' => ['benefit' => 'Kunden binden', 'desc' => 'Empfehlungs- und Treueprogramme aufsetzen.'],
             'vision-flow' => ['benefit' => 'Mission leben', 'desc' => 'Werte und Vision im Alltag verankern.'],
             'nur-du' => ['benefit' => 'Führung stärken', 'desc' => 'Persönliche Entwicklung und Führungskultur fördern.'],
         ])
