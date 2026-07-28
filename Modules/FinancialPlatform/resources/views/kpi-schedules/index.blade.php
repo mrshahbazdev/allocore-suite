@@ -10,7 +10,7 @@
         @csrf
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('kpi_schedules.frequency') }}</label>
-            <select name="frequency" class="mt-2 w-full rounded-lg border-slate-300 text-sm">
+            <select name="frequency" class="mt-2 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                 <option value="daily">{{ __('kpi_schedules.daily') }}</option>
                 <option value="weekly">{{ __('kpi_schedules.weekly') }}</option>
                 <option value="monthly" selected>{{ __('kpi_schedules.monthly') }}</option>
@@ -18,7 +18,7 @@
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('kpi_schedules.recipients') }}</label>
-            <input type="text" name="recipients" required class="mt-2 w-full rounded-lg border-slate-300 text-sm" placeholder="{{ __('kpi_schedules.recipients_placeholder') }}">
+            <input type="text" name="recipients" required class="mt-2 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('kpi_schedules.recipients_placeholder') }}">
             <p class="mt-1 text-xs text-slate-500">{{ __('kpi_schedules.recipients_help') }}</p>
         </div>
         <button class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('kpi_schedules.create') }}</button>

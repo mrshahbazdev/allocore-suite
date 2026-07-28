@@ -163,32 +163,32 @@ $settings = $settings ?? [];
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">SeoStory base URL</label>
-                    <input type="url" name="seostory_base_url" value="{{ old('seostory_base_url', $settings['seostory_base_url'] ?? 'https://financial.seostory.de') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="url" name="seostory_base_url" value="{{ old('seostory_base_url', $settings['seostory_base_url'] ?? 'https://financial.seostory.de') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">SeoStory API token</label>
-                    <input type="text" name="seostory_api_token" value="{{ old('seostory_api_token', $settings['seostory_api_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="text" name="seostory_api_token" value="{{ old('seostory_api_token', $settings['seostory_api_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Google Search Console access token</label>
-                    <input type="text" name="gsc_access_token" value="{{ old('gsc_access_token', $settings['gsc_access_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="text" name="gsc_access_token" value="{{ old('gsc_access_token', $settings['gsc_access_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Google Search Console site URL</label>
-                    <input type="url" name="gsc_site_url" value="{{ old('gsc_site_url', $settings['gsc_site_url'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="url" name="gsc_site_url" value="{{ old('gsc_site_url', $settings['gsc_site_url'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Target sales</label>
-                    <input type="number" step="0.01" min="0" name="target_sales" value="{{ old('target_sales', $settings['target_sales'] ?? 0) }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="number" step="0.01" min="0" name="target_sales" value="{{ old('target_sales', $settings['target_sales'] ?? 0) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Actual source</label>
-                    <select name="actual_source" class="mt-1 w-full rounded-lg border-slate-300">
+                    <select name="actual_source" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         @foreach (['analysis' => 'Financial analyses', 'invoicemaker' => 'InvoiceMaker', 'seostory' => 'SeoStory financial analyses', 'manual' => 'Manual entry'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('actual_source', $settings['actual_source'] ?? 'invoicemaker') === $value)>{{ $label }}</option>
                         @endforeach
@@ -197,13 +197,13 @@ $settings = $settings ?? [];
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">SeoStory actual revenue</label>
-                    <input type="number" step="0.01" min="0" name="seostory_revenue" value="{{ old('seostory_revenue', $settings['seostory_revenue'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="number" step="0.01" min="0" name="seostory_revenue" value="{{ old('seostory_revenue', $settings['seostory_revenue'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                     <p class="mt-1 text-xs text-slate-500">Manual fallback until SeoStory API is configured.</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Manual actual sales</label>
-                    <input type="number" step="0.01" min="0" name="actual_manual" value="{{ old('actual_manual', $settings['actual_manual'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="number" step="0.01" min="0" name="actual_manual" value="{{ old('actual_manual', $settings['actual_manual'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div class="border-t border-slate-200 pt-4">
@@ -214,11 +214,11 @@ $settings = $settings ?? [];
                         <div class="mt-3 grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-medium text-slate-700">{{ $label }} — current</label>
-                                <input type="number" step="0.01" min="0" name="metric_{{ $key }}_current" value="{{ old('metric_'.$key.'_current', $settings['metrics'][$key.'_current'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                                <input type="number" step="0.01" min="0" name="metric_{{ $key }}_current" value="{{ old('metric_'.$key.'_current', $settings['metrics'][$key.'_current'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-700">{{ $label }} — previous</label>
-                                <input type="number" step="0.01" min="0" name="metric_{{ $key }}_previous" value="{{ old('metric_'.$key.'_previous', $settings['metrics'][$key.'_previous'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300">
+                                <input type="number" step="0.01" min="0" name="metric_{{ $key }}_previous" value="{{ old('metric_'.$key.'_previous', $settings['metrics'][$key.'_previous'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                         </div>
                     @endforeach

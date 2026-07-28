@@ -14,11 +14,11 @@
             <form method="GET" class="flex items-end gap-3">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Year') }}</label>
-                    <input type="number" name="year" value="{{ $year }}" class="mt-1 rounded-lg border-slate-300">
+                    <input type="number" name="year" value="{{ $year }}" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Month') }}</label>
-                    <input type="number" name="month" value="{{ $month }}" min="1" max="12" class="mt-1 rounded-lg border-slate-300">
+                    <input type="number" name="month" value="{{ $month }}" min="1" max="12" class="mt-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <button class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Filter') }}</button>
             </form>
@@ -63,15 +63,15 @@
                 <input type="hidden" name="month" value="{{ $month }}">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Category') }}</label>
-                    <input type="text" name="category" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="text" name="category" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Amount') }}</label>
-                    <input type="number" step="0.01" name="amount" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="number" step="0.01" name="amount" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Currency') }}</label>
-                    <input type="text" name="currency" value="EUR" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300">
+                    <input type="text" name="currency" value="EUR" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
             </form>

@@ -51,20 +51,20 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('From') }}</label>
-                        <input type="text" name="from_currency" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300" required>
+                        <input type="text" name="from_currency" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('To') }}</label>
-                        <input type="text" name="to_currency" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300" required>
+                        <input type="text" name="to_currency" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Rate') }}</label>
-                    <input type="number" step="0.00000001" name="rate" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="number" step="0.00000001" name="rate" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Date') }}</label>
-                    <input type="date" name="date" value="{{ now()->format('Y-m-d') }}" class="mt-1 w-full rounded-lg border-slate-300" required>
+                    <input type="date" name="date" value="{{ now()->format('Y-m-d') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
             </form>

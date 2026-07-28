@@ -29,7 +29,7 @@
                 @csrf
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-slate-700">{{ __('Import file') }}</label>
-                    <input type="file" name="file" accept=".csv,.mt940,.txt" class="mt-1 block w-full rounded-lg border-slate-300 text-sm" required>
+                    <input type="file" name="file" accept=".csv,.mt940,.txt" class="mt-1 block w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                 </div>
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Import') }}</button>
             </form>
