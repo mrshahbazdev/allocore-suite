@@ -15,7 +15,7 @@
         <form method="GET" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-wrap items-end gap-3">
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Type') }}</label>
-                <select name="filter" class="mt-1 rounded-lg border-slate-300" onchange="this.form.submit()">
+                <select name="filter" class="mt-1 rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" onchange="this.form.submit()">
                     <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>{{ __('All') }}</option>
                     <option value="income" {{ $filter === 'income' ? 'selected' : '' }}>{{ __('Income') }}</option>
                     <option value="expense" {{ $filter === 'expense' ? 'selected' : '' }}>{{ __('Expense') }}</option>
@@ -23,7 +23,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Category') }}</label>
-                <select name="category" class="mt-1 rounded-lg border-slate-300" onchange="this.form.submit()">
+                <select name="category" class="mt-1 rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" onchange="this.form.submit()">
                     <option value="">{{ __('All') }}</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}" {{ $categoryFilter == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>

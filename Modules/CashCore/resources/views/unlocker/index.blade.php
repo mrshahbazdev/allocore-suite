@@ -24,7 +24,7 @@
                             <td class="py-2 pr-4">{{ number_format($blocker->blocked_amount, 2) }}</td>
                             <td class="py-2 pr-4">
                                 <form method="POST" action="{{ route('cashcore.unlocker.status', $blocker) }}" class="inline">@csrf @method('PUT')
-                                    <select name="status" onchange="this.form.submit()" class="rounded-lg border-slate-300 text-xs">
+                                    <select name="status" onchange="this.form.submit()" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                                         @foreach (['active' => 'Active', 'in_progress' => 'In Progress', 'resolved' => 'Resolved'] as $s => $label)
                                             <option value="{{ $s }}" {{ $blocker->status === $s ? 'selected' : '' }}>{{ __($label) }}</option>
                                         @endforeach

@@ -12,10 +12,10 @@
                 @if ($category->exists) @method('PUT') @endif
 
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Name') }}</label><input type="text" name="name" value="{{ old('name', $category->name) }}" class="mt-1 w-full rounded-lg border-slate-300" required></div>
+                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Name') }}</label><input type="text" name="name" value="{{ old('name', $category->name) }}" class="mt-1 w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required></div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Type') }}</label>
-                        <select name="type" class="mt-1 w-full rounded-lg border-slate-300">
+                        <select name="type" class="mt-1 w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                             @foreach (['income' => 'Income', 'expense' => 'Expense'] as $key => $label)
                                 <option value="{{ $key }}" {{ old('type', $category->type) === $key ? 'selected' : '' }}>{{ __($label) }}</option>
                             @endforeach
@@ -24,8 +24,8 @@
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Icon') }}</label><input type="text" name="icon" value="{{ old('icon', $category->icon) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="💰"></div>
-                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label><input type="text" name="color" value="{{ old('color', $category->color) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="#22c55e"></div>
+                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Icon') }}</label><input type="text" name="icon" value="{{ old('icon', $category->icon) }}" class="mt-1 w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" placeholder="💰"></div>
+                    <div><label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label><input type="text" name="color" value="{{ old('color', $category->color) }}" class="mt-1 w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" placeholder="#22c55e"></div>
                 </div>
 
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
