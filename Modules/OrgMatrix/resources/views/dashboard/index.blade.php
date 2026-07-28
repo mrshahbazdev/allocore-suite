@@ -2,7 +2,10 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
-    <h1 class="text-2xl font-bold text-slate-900">{{ __('OrgMatrix') }}</h1>
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <h1 class="text-2xl font-bold text-slate-900">{{ __('OrgMatrix') }}</h1>
+        <a href="{{ route('orgmatrix.organizations.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 w-fit">{{ __('New Organization') }}</a>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -17,10 +20,6 @@
             <div class="text-sm text-slate-500">{{ __('Total People') }}</div>
             <div class="text-3xl font-bold text-indigo-600">{{ $total_people }}</div>
         </div>
-    </div>
-
-    <div class="flex justify-end">
-        <a href="{{ route('orgmatrix.organizations.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('New Organization') }}</a>
     </div>
 
     @if ($organizations->isEmpty())
