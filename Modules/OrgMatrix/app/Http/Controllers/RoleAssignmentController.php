@@ -13,6 +13,19 @@ use Modules\OrgMatrix\Models\RoleAssignment;
 
 class RoleAssignmentController extends Controller
 {
+    public function index(Organization $organization): View
+    {
+        $this->authorizeOrganization($organization);
+
+        $assignments = $organization->assignments()
+            ->with(['role', 'person'])
+            ->orderByDesc('is_primary')
+            ->orderBy('created_at')
+            ->get();
+
+        return view('orgmatrix::assignments.index', compact('organization', 'assignments'));
+    }
+
     public function create(Organization $organization, Role $role): View
     {
         $this->authorizeOrganization($organization);

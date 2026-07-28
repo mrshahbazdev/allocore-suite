@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified', 'module:org-matrix', EnsureCurrentTeam::c
 
             Route::get('chart', [OrgChartController::class, 'index'])->name('chart');
 
+            Route::get('assignments', [RoleAssignmentController::class, 'index'])->name('assignments.index');
+
             Route::get('roles/{role}/assign', [RoleAssignmentController::class, 'create'])->name('roles.assignments.create');
             Route::post('roles/{role}/assign', [RoleAssignmentController::class, 'store'])->name('roles.assignments.store');
             Route::delete('roles/{role}/assign/{assignment}', [RoleAssignmentController::class, 'destroy'])->name('roles.assignments.destroy');

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Modules\OrgMatrix\Models\Concerns\BelongsToCurrentTeam;
 
 class Organization extends Model
@@ -49,5 +50,10 @@ class Organization extends Model
     public function people(): HasMany
     {
         return $this->hasMany(Person::class);
+    }
+
+    public function assignments(): HasManyThrough
+    {
+        return $this->hasManyThrough(RoleAssignment::class, Role::class);
     }
 }

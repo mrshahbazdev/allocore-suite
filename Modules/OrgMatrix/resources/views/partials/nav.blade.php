@@ -10,6 +10,7 @@
         ['route' => 'orgmatrix.organizations.show', 'label' => __('Overview'), 'params' => [$organization]],
         ['route' => 'orgmatrix.organizations.roles.index', 'label' => __('Roles'), 'params' => [$organization]],
         ['route' => 'orgmatrix.organizations.people.index', 'label' => __('People'), 'params' => [$organization]],
+        ['route' => 'orgmatrix.organizations.assignments.index', 'label' => __('Assignments'), 'params' => [$organization]],
         ['route' => 'orgmatrix.organizations.chart', 'label' => __('Org Chart'), 'params' => [$organization]],
     ]))
 @endif
