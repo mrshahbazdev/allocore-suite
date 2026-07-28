@@ -13,7 +13,7 @@
                 @for ($i = 1; $i <= 10; $i++)
                     <label class="block">
                         <span class="mb-1 block text-sm font-medium text-slate-700">{{ __('Question') }} {{ $i }}</span>
-                        <input name="q{{ $i }}" type="number" min="0" max="10" class="w-full rounded-lg border-slate-300" />
+                        <input name="q{{ $i }}" type="number" min="0" max="10" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
                     </label>
                 @endfor
             </div>

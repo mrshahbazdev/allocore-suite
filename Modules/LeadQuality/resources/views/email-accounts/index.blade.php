@@ -38,7 +38,7 @@
                 @foreach (['email_address','provider','imap_host','imap_port','imap_encryption','smtp_host','smtp_port','smtp_encryption','username','password'] as $field)
                     <label class="block md:col-span-1">
                         <span class="mb-1 block text-sm font-medium text-slate-700">{{ ucfirst(str_replace('_', ' ', $field)) }}</span>
-                        <input name="{{ $field }}" class="w-full rounded-lg border-slate-300" />
+                        <input name="{{ $field }}" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
                     </label>
                 @endforeach
             </div>

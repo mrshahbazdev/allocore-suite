@@ -26,7 +26,7 @@
             <h2 class="text-lg font-semibold text-slate-900">{{ __('New sequence') }}</h2>
             <label class="block">
                 <span class="mb-1 block text-sm font-medium text-slate-700">{{ __('Name') }}</span>
-                <input name="name" class="w-full rounded-lg border-slate-300" />
+                <input name="name" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
             </label>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">{{ __('Create') }}</button>
         </form>

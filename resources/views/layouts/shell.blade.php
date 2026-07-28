@@ -103,6 +103,8 @@
             @include('focusmatrix::partials.nav')
         @elseif (request()->is('app/clusters*'))
             @include('clusterforge::partials.nav')
+        @elseif (request()->is('app/leads*'))
+            @include('leadquality::partials.nav')
         @endif
 
         <main class="flex-1 p-4 sm:p-6 lg:p-8">

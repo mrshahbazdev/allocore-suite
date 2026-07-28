@@ -46,13 +46,13 @@
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('Log activity') }}</h2>
                 <form method="POST" action="{{ route('leadquality.contacts.activities.store', $contact) }}" class="mt-4 space-y-3">
                     @csrf
-                    <select name="type" class="w-full rounded-lg border-slate-300 text-sm">
+                    <select name="type" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                         <option value="outreach">{{ __('Outreach') }}</option>
                         <option value="follow-up">{{ __('Follow-up') }}</option>
                         <option value="meeting">{{ __('Meeting') }}</option>
                         <option value="reminder">{{ __('Reminder') }}</option>
                     </select>
-                    <textarea name="notes" rows="4" class="w-full rounded-lg border-slate-300 text-sm" placeholder="{{ __('Notes') }}"></textarea>
+                    <textarea name="notes" rows="4" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="{{ __('Notes') }}"></textarea>
                     <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">{{ __('Log') }}</button>
                 </form>
             </div>
@@ -61,7 +61,7 @@
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('Run AI analysis') }}</h2>
                 <form method="POST" action="{{ route('leadquality.contacts.analyze', $contact) }}" class="mt-4">
                     @csrf
-                    <button class="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Analyze lead') }}</button>
+                    <button class="w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Analyze lead') }}</button>
                 </form>
             </div>
 

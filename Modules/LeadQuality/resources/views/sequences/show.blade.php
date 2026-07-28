@@ -35,10 +35,10 @@
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('Update sequence') }}</h2>
                 <label class="block">
                     <span class="mb-1 block text-sm font-medium text-slate-700">{{ __('Name') }}</span>
-                    <input name="name" value="{{ $sequence->name }}" class="w-full rounded-lg border-slate-300" />
+                    <input name="name" value="{{ $sequence->name }}" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
                 </label>
                 <label class="flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" name="is_active" value="1" @checked($sequence->is_active) />
+                    <input type="checkbox" name="is_active" value="1" @checked($sequence->is_active) class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
                     {{ __('Active') }}
                 </label>
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">{{ __('Save') }}</button>
@@ -49,17 +49,17 @@
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('Add step') }}</h2>
                 <label class="block">
                     <span class="mb-1 block text-sm font-medium text-slate-700">{{ __('Delay days') }}</span>
-                    <input name="delay_days" type="number" min="0" class="w-full rounded-lg border-slate-300" />
+                    <input name="delay_days" type="number" min="0" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
                 </label>
                 <label class="block">
                     <span class="mb-1 block text-sm font-medium text-slate-700">{{ __('Subject') }}</span>
-                    <input name="subject" class="w-full rounded-lg border-slate-300" />
+                    <input name="subject" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
                 </label>
                 <label class="block">
                     <span class="mb-1 block text-sm font-medium text-slate-700">{{ __('Body') }}</span>
-                    <textarea name="body" rows="5" class="w-full rounded-lg border-slate-300"></textarea>
+                    <textarea name="body" rows="5" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                 </label>
-                <button class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Add') }}</button>
+                <button class="rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 text-sm font-medium text-slate-700">{{ __('Add') }}</button>
             </form>
         </div>
     </div>
