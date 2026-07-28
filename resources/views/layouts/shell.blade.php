@@ -99,6 +99,8 @@
             @include('planhive::partials.nav')
         @elseif (request()->is('app/loopengine*'))
             @include('loopengine::partials.nav')
+        @elseif (request()->is('app/focusmatrix*'))
+            @include('focusmatrix::partials.nav')
         @endif
 
         <main class="flex-1 p-4 sm:p-6 lg:p-8">

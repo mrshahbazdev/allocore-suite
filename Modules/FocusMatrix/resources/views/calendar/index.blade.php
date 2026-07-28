@@ -11,15 +11,15 @@
         </div>
         <form method="POST" action="{{ route('focusmatrix.calendar.events.store') }}" class="grid md:grid-cols-4 gap-4">
             @csrf
-            <input type="text" name="title" placeholder="{{ __('Title') }}" class="rounded-lg border-slate-300 shadow-sm" required>
-            <input type="datetime-local" name="starts_at" class="rounded-lg border-slate-300 shadow-sm" required>
-            <input type="datetime-local" name="ends_at" class="rounded-lg border-slate-300 shadow-sm" required>
-            <select name="color" class="rounded-lg border-slate-300 shadow-sm">
+            <input type="text" name="title" placeholder="{{ __('Title') }}" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" required>
+            <input type="datetime-local" name="starts_at" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" required>
+            <input type="datetime-local" name="ends_at" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" required>
+            <select name="color" class="rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                 @foreach (Modules\FocusMatrix\Models\CalendarEvent::COLORS as $color)
                     <option value="{{ $color }}">{{ ucfirst($color) }}</option>
                 @endforeach
             </select>
-            <label class="flex items-center gap-2 md:col-span-4 text-sm"><input type="checkbox" name="all_day" value="1" class="rounded border-slate-300"> {{ __('All day') }}</label>
+            <label class="flex items-center gap-2 md:col-span-4 text-sm"><input type="checkbox" name="all_day" value="1" class="rounded border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"> {{ __('All day') }}</label>
             <div class="md:col-span-4">
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add Event') }}</button>
             </div>
