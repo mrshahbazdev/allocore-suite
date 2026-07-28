@@ -19,7 +19,7 @@
                 <a href="{{ route('nurdu.checks.show', $check) }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300">
                     <div class="font-semibold text-slate-900">{{ $check->check_date->format('Y-m-d') }}</div>
                     <div class="text-sm text-slate-600 mt-2">{{ $check->actionItems->count() }} {{ __('action items') }}</div>
-                    <div class="mt-2 inline-flex rounded-full px-2 py-1 text-xs font-medium bg-slate-100">{{ $check->q1_answer }}</div>
+                    <div class="mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ match($check->q1_answer) { 'yes' => 'bg-emerald-100 text-emerald-700', 'partially' => 'bg-amber-100 text-amber-700', 'no' => 'bg-rose-100 text-rose-700', default => 'bg-slate-100 text-slate-700' } }}">{{ $check->q1_answer }}</div>
                 </a>
             @endforeach
         </div>

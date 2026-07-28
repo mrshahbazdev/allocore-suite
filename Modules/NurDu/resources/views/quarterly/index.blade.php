@@ -13,7 +13,7 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Quarter') }}</label>
-                <select name="quarter" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <select name="quarter" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="Q1" {{ $currentQuarter === 'Q1' ? 'selected' : '' }}>Q1</option>
                     <option value="Q2" {{ $currentQuarter === 'Q2' ? 'selected' : '' }}>Q2</option>
                     <option value="Q3" {{ $currentQuarter === 'Q3' ? 'selected' : '' }}>Q3</option>
@@ -22,11 +22,11 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Year') }}</label>
-                <input type="number" name="year" value="{{ $currentYear }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm" required>
+                <input type="number" name="year" value="{{ $currentYear }}" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-slate-700">{{ __('Notes') }}</label>
-                <input type="text" name="notes" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm">
+                <input type="text" name="notes" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
             </div>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
         </form>

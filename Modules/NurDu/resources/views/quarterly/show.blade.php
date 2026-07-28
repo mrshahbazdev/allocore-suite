@@ -15,9 +15,9 @@
         <h2 class="text-lg font-semibold text-slate-900">{{ __('Add Priority') }}</h2>
         <form method="POST" action="{{ route('nurdu.quarterly.priorities.store', $quarterlyFocus) }}" class="mt-4 grid md:grid-cols-3 gap-4">
             @csrf
-            <input type="text" name="title" placeholder="Title" class="rounded-lg border-slate-300 shadow-sm" required>
-            <input type="text" name="owner" placeholder="Owner" class="rounded-lg border-slate-300 shadow-sm">
-            <input type="text" name="kpi" placeholder="KPI" class="rounded-lg border-slate-300 shadow-sm">
+            <input type="text" name="title" placeholder="Title" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
+            <input type="text" name="owner" placeholder="Owner" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
+            <input type="text" name="kpi" placeholder="KPI" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
             <div class="md:col-span-3 flex justify-end">
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add Priority') }}</button>
             </div>
@@ -30,18 +30,18 @@
                 <form method="POST" action="{{ route('nurdu.priorities.update', $priority) }}" class="space-y-3">
                     @csrf @method('PATCH')
                     <div class="grid md:grid-cols-2 gap-4">
-                        <input type="text" name="title" value="{{ $priority->title }}" class="rounded-lg border-slate-300 shadow-sm" required>
-                        <select name="status" class="rounded-lg border-slate-300 shadow-sm">
+                        <input type="text" name="title" value="{{ $priority->title }}" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
+                        <select name="status" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="on_track" {{ $priority->status === 'on_track' ? 'selected' : '' }}>{{ __('On Track') }}</option>
                             <option value="at_risk" {{ $priority->status === 'at_risk' ? 'selected' : '' }}>{{ __('At Risk') }}</option>
                             <option value="off_track" {{ $priority->status === 'off_track' ? 'selected' : '' }}>{{ __('Off Track') }}</option>
                         </select>
                     </div>
                     <div class="grid md:grid-cols-2 gap-4">
-                        <input type="text" name="owner" value="{{ $priority->owner }}" class="rounded-lg border-slate-300 shadow-sm">
-                        <input type="text" name="kpi" value="{{ $priority->kpi }}" class="rounded-lg border-slate-300 shadow-sm">
+                        <input type="text" name="owner" value="{{ $priority->owner }}" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
+                        <input type="text" name="kpi" value="{{ $priority->kpi }}" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
-                    <textarea name="notes" rows="2" class="w-full rounded-lg border-slate-300 shadow-sm">{{ $priority->notes }}</textarea>
+                    <textarea name="notes" rows="2" class="w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">{{ $priority->notes }}</textarea>
                     <div class="flex justify-between items-center">
                         <button class="text-indigo-600 hover:underline text-sm">{{ __('Update') }}</button>
                     </div>

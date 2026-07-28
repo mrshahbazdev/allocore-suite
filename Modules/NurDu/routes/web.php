@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\NurDu\Http\Controllers\DashboardController;
 use Modules\NurDu\Http\Controllers\DecisionController;
+use Modules\NurDu\Http\Controllers\NurDuController;
 use Modules\NurDu\Http\Controllers\QuarterlyFocusController;
 use Modules\NurDu\Http\Controllers\VisionCheckController;
 use Modules\NurDu\Http\Controllers\VisionController;
@@ -13,6 +14,7 @@ Route::middleware(['auth', 'verified', 'module:nur-du', EnsureCurrentTeam::class
     ->name('nurdu.')
     ->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
+        Route::post('demo', [NurDuController::class, 'demo'])->name('demo');
 
         Route::get('vision', [VisionController::class, 'index'])->name('vision.index');
         Route::post('vision', [VisionController::class, 'store'])->name('vision.store');

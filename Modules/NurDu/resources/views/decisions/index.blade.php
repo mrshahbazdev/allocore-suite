@@ -27,7 +27,7 @@
                     @foreach ($decisions as $decision)
                         <tr class="hover:bg-slate-50">
                             <td class="px-4 py-3">{{ $decision->title }}</td>
-                            <td class="px-4 py-3"><span class="rounded-full px-2 py-1 text-xs font-medium bg-slate-100">{{ $decision->alignment }}</span></td>
+                            <td class="px-4 py-3"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ match($decision->alignment) { 'green' => 'bg-emerald-100 text-emerald-700', 'yellow' => 'bg-amber-100 text-amber-700', 'red' => 'bg-rose-100 text-rose-700', default => 'bg-slate-100 text-slate-700' } }}">{{ $decision->alignment }}</span></td>
                             <td class="px-4 py-3">{{ $decision->decision_date?->format('Y-m-d') }}</td>
                             <td class="px-4 py-3 flex gap-3">
                                 <a href="{{ route('nurdu.decisions.edit', $decision) }}" class="text-indigo-600 hover:underline">{{ __('Edit') }}</a>
