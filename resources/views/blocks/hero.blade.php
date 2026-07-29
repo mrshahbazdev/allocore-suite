@@ -6,7 +6,7 @@
     @endif
     <div class="relative {{ $s['container_class'] ?: 'mx-auto max-w-5xl px-6 lg:px-8' }} {{ $s['text_align_class'] }}">
         @if ($s['rounded_class'])
-            <div class="{{ $s['rounded_class'] }} border border-white/10 bg-white/5 p-8 backdrop-blur lg:p-12">
+            <div class="{{ $s['rounded_class'] }} {{ $s['border_class'] ? $s['border_class'] : 'border border-white/10' }} bg-white/5 p-8 backdrop-blur lg:p-12">
         @endif
         <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl">{{ $block['heading'] ?? '' }}</h1>
         <p class="mt-6 text-lg leading-8 opacity-90">{{ $block['subheading'] ?? '' }}</p>
