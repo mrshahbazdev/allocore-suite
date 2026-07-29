@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .reveal {
+        opacity: 0;
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        will-change: opacity, transform;
+    }
+
+    .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+
+    .reveal-fade-up {
+        transform: translateY(2rem);
+    }
+
+    .reveal-fade-in {
+        transform: scale(0.98);
+    }
+
+    .reveal-slide-left {
+        transform: translateX(2rem);
+    }
+
+    .reveal-slide-right {
+        transform: translateX(-2rem);
+    }
+
+    .reveal-zoom-in {
+        transform: scale(0.92);
+    }
+}
