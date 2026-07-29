@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Models\GlossaryTerm;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class GlossaryService
 {
-    public function linkTerms(?string $text): string
+    public function linkTerms(?string $text, int $limit = -1): string
     {
         if (empty($text)) {
             return '';
@@ -19,17 +20,75 @@ class GlossaryService
             return e($text);
         }
 
-        $escaped = e($text);
+        $patterns = $terms->sortByDesc(fn ($term) => mb_strlen($term['term']))
+            ->map(fn ($term) => preg_quote($term['term'], '/'))
+            ->all();
 
-        return $terms->sortByDesc(fn ($term) => mb_strlen($term->term))
-            ->reduce(function (string $carry, GlossaryTerm $term) {
-                $pattern = '/\b'.preg_quote($term->term, '/').'\b/iu';
-                $url = route('glossary.show', $term->slug);
+        $pattern = '/\b('.implode('|', $patterns).')\b/iu';
+        $termMap = $terms->keyBy(fn ($term) => mb_strtolower($term['term']));
+        $replaced = 0;
 
-                return preg_replace_callback($pattern, function ($matches) use ($url, $term) {
-                    return '<a href="'.$url.'" class="border-b border-dotted border-indigo-500 text-indigo-600 hover:text-indigo-800" title="'.e($term->term).'">'.$matches[0].'</a>';
-                }, $carry, 1);
-            }, $escaped);
+        return preg_replace_callback($pattern, function ($matches) use ($termMap, $limit, &$replaced) {
+            if ($limit !== -1 && $replaced >= $limit) {
+                return $matches[0];
+            }
+
+            $term = $termMap->get(mb_strtolower($matches[1]));
+
+            if (! $term) {
+                return $matches[0];
+            }
+
+            $replaced++;
+            $url = route('glossary.show', $term['slug']);
+            $title = e(Str::limit($term['simple_definition'] ?: $term['definition'], 160));
+
+            return '<a href="'.$url.'" class="border-b border-dotted border-indigo-500 text-indigo-600 hover:text-indigo-800" title="'.$title.'">'.$matches[0].'</a>';
+        }, e($text));
+    }
+
+    public function linkHtml(?string $html): string
+    {
+        if (empty($html)) {
+            return '';
+        }
+
+        $terms = $this->publishedTerms();
+
+        if ($terms->isEmpty()) {
+            return $html;
+        }
+
+        $inLink = false;
+        $inSkip = false;
+        $self = $this;
+
+        return preg_replace_callback('/<[^>]+>|[^<]+/s', function ($matches) use (&$inLink, &$inSkip, $self) {
+            $chunk = $matches[0];
+
+            if (str_starts_with($chunk, '<')) {
+                $tag = strtolower(trim($chunk, '<'));
+                $tagName = strtok($tag, " \t\r\n/>");
+
+                if (in_array($tagName, ['script', 'style', 'textarea', 'title', 'head'], true)) {
+                    $inSkip = ! str_starts_with($chunk, '</');
+                }
+
+                if ($tagName === 'a') {
+                    $inLink = ! str_starts_with($chunk, '</');
+                }
+
+                return $chunk;
+            }
+
+            if ($inSkip || $inLink || trim($chunk) === '') {
+                return $chunk;
+            }
+
+            $text = htmlspecialchars_decode($chunk, ENT_QUOTES | ENT_HTML5);
+
+            return $self->linkTerms($text);
+        }, $html) ?? $html;
     }
 
     public function relatedForModule(?string $moduleKey, int $limit = 5)
@@ -87,13 +146,13 @@ class GlossaryService
         }
 
         return "Use the following Allocore glossary definitions when explaining business concepts to users:\n\n"
-            .$terms->map(fn (GlossaryTerm $term) => $term->term.': '.($term->simple_definition ?: $term->definition))->implode("\n");
+            .$terms->map(fn ($term) => $term['term'].': '.($term['simple_definition'] ?: $term['definition']))->implode("\n");
     }
 
     private function publishedTerms()
     {
         $terms = Cache::remember('glossary.published_terms', 300, function () {
-            return GlossaryTerm::published()->orderBy('term')->get()->all();
+            return GlossaryTerm::published()->orderBy('term')->get()->map(fn (GlossaryTerm $term) => $term->toArray())->all();
         });
 
         return collect($terms);

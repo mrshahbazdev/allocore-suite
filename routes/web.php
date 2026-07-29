@@ -119,7 +119,7 @@ Route::post('install/database', [InstallController::class, 'storeDatabase'])->na
 Route::get('install/admin', [InstallController::class, 'admin'])->name('install.admin');
 Route::post('install/run', [InstallController::class, 'run'])->name('install.run');
 
-Route::get('/', HomeController::class)->name('home');
+Route::get('/', HomeController::class)->name('home')->middleware('glossary.link');
 Route::get('audit-example', [AuditExampleController::class, 'index'])->name('audit-example.index');
 Route::get('audit-example/pdf', [AuditExampleController::class, 'pdf'])->name('audit-example.pdf');
 Route::get('case-studies', [CaseStudyController::class, 'index'])->name('case-studies.index');

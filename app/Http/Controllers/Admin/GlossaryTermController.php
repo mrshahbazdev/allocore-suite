@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\GlossaryTerm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class GlossaryTermController extends Controller
@@ -33,6 +34,7 @@ class GlossaryTermController extends Controller
         $validated = $this->validateData($request);
 
         GlossaryTerm::create($validated);
+        Cache::forget('glossary.published_terms');
 
         return redirect()->route('admin.glossary.index')->with('success', __('Glossary term created.'));
     }
@@ -47,6 +49,7 @@ class GlossaryTermController extends Controller
         $validated = $this->validateData($request);
 
         $glossary->update($validated);
+        Cache::forget('glossary.published_terms');
 
         return redirect()->route('admin.glossary.index')->with('success', __('Glossary term updated.'));
     }
@@ -54,6 +57,7 @@ class GlossaryTermController extends Controller
     public function destroy(GlossaryTerm $glossary)
     {
         $glossary->delete();
+        Cache::forget('glossary.published_terms');
 
         return redirect()->route('admin.glossary.index')->with('success', __('Glossary term deleted.'));
     }

@@ -8,6 +8,7 @@ use App\Http\Middleware\EnsureInstalled;
 use App\Http\Middleware\EnsureModuleAccess;
 use App\Http\Middleware\EnsureSetup;
 use App\Http\Middleware\EnsureTwoFactor;
+use App\Http\Middleware\GlossaryLinkMiddleware;
 use App\Http\Middleware\ResolveTeamBranding;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ThemeMiddleware;
@@ -29,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureAdmin::class,
             'api-token' => ApiTokenMiddleware::class,
             '2fa' => EnsureTwoFactor::class,
+            'glossary.link' => GlossaryLinkMiddleware::class,
         ]);
 
         $middleware->web(append: [
