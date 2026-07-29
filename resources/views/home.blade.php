@@ -4,6 +4,8 @@
 
 @section('content')
     @foreach ($blocks as $block)
-        @include('blocks.'.$block['type'], ['block' => $block])
+        @if ($block['enabled'] ?? true)
+            @include('blocks.'.$block['type'], ['block' => $block])
+        @endif
     @endforeach
 @endsection
