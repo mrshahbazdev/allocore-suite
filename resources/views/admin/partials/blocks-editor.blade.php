@@ -81,19 +81,19 @@
                         <div class="grid gap-3 md:grid-cols-2">
                             <template x-if="block.type === 'hero'">
                                 <div class="col-span-2 grid gap-3 md:grid-cols-2">
-                                    <input type="text" :name="`{{ $name }}[${index}][heading]`" x-model="block.heading" placeholder="Heading" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][subheading]`" x-model="block.subheading" placeholder="Subheading" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][image]`" x-model="block.image" placeholder="Background image URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][cta_text]`" x-model="block.cta_text" placeholder="CTA text" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][cta_url]`" x-model="block.cta_url" placeholder="CTA URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][heading]`" x-model="block.heading" placeholder="{{ __('Heading') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][subheading]`" x-model="block.subheading" placeholder="{{ __('Subheading') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][image]`" x-model="block.image" placeholder="{{ __('Background image URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][cta_text]`" x-model="block.cta_text" placeholder="{{ __('CTA text') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][cta_url]`" x-model="block.cta_url" placeholder="{{ __('CTA URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
                             </template>
                             <template x-if="block.type === 'cta'">
                                 <div class="col-span-2 grid gap-3 md:grid-cols-2">
-                                    <input type="text" :name="`{{ $name }}[${index}][title]`" x-model="block.title" placeholder="Title" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][text]`" x-model="block.text" placeholder="Text" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][button_text]`" x-model="block.button_text" placeholder="Button text" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <input type="text" :name="`{{ $name }}[${index}][button_url]`" x-model="block.button_url" placeholder="Button URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][title]`" x-model="block.title" placeholder="{{ __('Title') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][text]`" x-model="block.text" placeholder="{{ __('Text') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][button_text]`" x-model="block.button_text" placeholder="{{ __('Button text') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="`{{ $name }}[${index}][button_url]`" x-model="block.button_url" placeholder="{{ __('Button URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
                             </template>
                         </div>
@@ -101,7 +101,7 @@
 
                     <template x-if="['features','faq','stats','testimonials','pricing','steps','logos'].includes(block.type)">
                         <div class="space-y-3">
-                            <input type="text" :name="`{{ $name }}[${index}][title]`" x-model="block.title" placeholder="Section title" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" :name="`{{ $name }}[${index}][title]`" x-model="block.title" placeholder="{{ __('Section title') }}" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <template x-for="(item, i) in (block.items || [])" :key="i">
                                 <div class="rounded-lg border border-slate-100 bg-slate-50 p-3 space-y-2">
                                     <div class="flex items-center justify-between">
@@ -110,38 +110,38 @@
                                     </div>
                                     <template x-if="block.type === 'features'">
                                         <div class="grid gap-2 md:grid-cols-2">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][title]`" x-model="item.title" placeholder="Feature title" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][description]`" x-model="item.description" placeholder="Feature description" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][title]`" x-model="item.title" placeholder="{{ __('Feature title') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][description]`" x-model="item.description" placeholder="{{ __('Feature description') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'faq'">
                                         <div class="grid gap-2">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][question]`" x-model="item.question" placeholder="Question" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][answer]`" x-model="item.answer" placeholder="Answer" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][question]`" x-model="item.question" placeholder="{{ __('Question') }}" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][answer]`" x-model="item.answer" placeholder="{{ __('Answer') }}" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'stats'">
                                         <div class="grid gap-2 md:grid-cols-3">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][label]`" x-model="item.label" placeholder="Label" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][value]`" x-model="item.value" placeholder="Value" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][suffix]`" x-model="item.suffix" placeholder="Suffix (e.g. %, +)" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][label]`" x-model="item.label" placeholder="{{ __('Label') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][value]`" x-model="item.value" placeholder="{{ __('Value') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][suffix]`" x-model="item.suffix" placeholder="{{ __('Suffix (e.g. %, +)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'testimonials'">
                                         <div class="grid gap-2">
                                             <textarea :name="`{{ $name }}[${index}][items][${i}][quote]`" x-model="item.quote" placeholder="Quote" rows="2" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                             <div class="grid gap-2 md:grid-cols-2">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][author]`" x-model="item.author" placeholder="Author" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][role]`" x-model="item.role" placeholder="Role / Company" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][author]`" x-model="item.author" placeholder="{{ __('Author') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][role]`" x-model="item.role" placeholder="{{ __('Role / Company') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                             </div>
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'pricing'">
                                         <div class="grid gap-2">
                                             <div class="grid gap-2 md:grid-cols-4">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][name]`" x-model="item.name" placeholder="Plan name" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][price]`" x-model="item.price" placeholder="Price" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][period]`" x-model="item.period" placeholder="Period (e.g. month)" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][name]`" x-model="item.name" placeholder="{{ __('Plan name') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][price]`" x-model="item.price" placeholder="{{ __('Price') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][period]`" x-model="item.period" placeholder="{{ __('Period (e.g. month)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                                 <label class="flex items-center gap-2 text-xs text-slate-600">
                                                     <input type="hidden" :name="`{{ $name }}[${index}][items][${i}][highlighted]`" value="0">
                                                     <input type="checkbox" :name="`{{ $name }}[${index}][items][${i}][highlighted]`" value="1" x-model="item.highlighted" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
@@ -150,21 +150,21 @@
                                             </div>
                                             <textarea :name="`{{ $name }}[${index}][items][${i}][features]`" x-model="item.features" placeholder="Features, one per line" rows="3" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                             <div class="grid gap-2 md:grid-cols-2">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][cta_text]`" x-model="item.cta_text" placeholder="Button text" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][cta_url]`" x-model="item.cta_url" placeholder="Button URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][cta_text]`" x-model="item.cta_text" placeholder="{{ __('Button text') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][cta_url]`" x-model="item.cta_url" placeholder="{{ __('Button URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                             </div>
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'steps'">
                                         <div class="grid gap-2">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][title]`" x-model="item.title" placeholder="Step title" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][title]`" x-model="item.title" placeholder="{{ __('Step title') }}" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                             <textarea :name="`{{ $name }}[${index}][items][${i}][description]`" x-model="item.description" placeholder="Step description" rows="2" class="w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'logos'">
                                         <div class="grid gap-2 md:grid-cols-2">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][name]`" x-model="item.name" placeholder="Logo name" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][image_url]`" x-model="item.image_url" placeholder="Logo image URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][name]`" x-model="item.name" placeholder="{{ __('Logo name') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][image_url]`" x-model="item.image_url" placeholder="{{ __('Logo image URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         </div>
                                     </template>
                                 </div>
@@ -181,16 +181,16 @@
 
                     <template x-if="block.type === 'image'">
                         <div class="grid gap-3 md:grid-cols-2">
-                            <input type="text" :name="`{{ $name }}[${index}][src]`" x-model="block.src" placeholder="Image URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <input type="text" :name="`{{ $name }}[${index}][alt]`" x-model="block.alt" placeholder="Alt text" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" :name="`{{ $name }}[${index}][src]`" x-model="block.src" placeholder="{{ __('Image URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" :name="`{{ $name }}[${index}][alt]`" x-model="block.alt" placeholder="{{ __('Alt text') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                     </template>
 
                     <template x-if="block.type === 'divider'">
                         <div class="grid gap-3 md:grid-cols-3">
-                            <input type="text" :name="`{{ $name }}[${index}][color]`" x-model="block.color" placeholder="Color (#e2e8f0)" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <input type="text" :name="`{{ $name }}[${index}][width]`" x-model="block.width" placeholder="Width (e.g. 60%, 200px)" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <input type="text" :name="`{{ $name }}[${index}][icon]`" x-model="block.icon" placeholder="Icon image URL" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" :name="`{{ $name }}[${index}][color]`" x-model="block.color" placeholder="{{ __('Color (#e2e8f0)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" :name="`{{ $name }}[${index}][width]`" x-model="block.width" placeholder="{{ __('Width (e.g. 60%, 200px)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" :name="`{{ $name }}[${index}][icon]`" x-model="block.icon" placeholder="{{ __('Icon image URL') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                     </template>
 
@@ -209,11 +209,11 @@
                         <div class="grid gap-3 p-3 md:grid-cols-3">
                             <label class="block text-xs text-slate-600">
                                 {{ __('Background color') }}
-                                <input type="text" :name="`{{ $name }}[${index}][style][bg]`" x-model="block.style.bg" placeholder="#f8fafc" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <input type="text" :name="`{{ $name }}[${index}][style][bg]`" x-model="block.style.bg" placeholder="{{ __('#f8fafc') }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </label>
                             <label class="block text-xs text-slate-600">
                                 {{ __('Text color') }}
-                                <input type="text" :name="`{{ $name }}[${index}][style][text_color]`" x-model="block.style.text_color" placeholder="#0f172a" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <input type="text" :name="`{{ $name }}[${index}][style][text_color]`" x-model="block.style.text_color" placeholder="{{ __('#0f172a') }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </label>
                             <label class="block text-xs text-slate-600">
                                 {{ __('Text align') }}

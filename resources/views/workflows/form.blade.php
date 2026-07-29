@@ -35,7 +35,7 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-slate-700">{{ __('Subject type contains') }}</label>
-            <input type="text" name="subject_type" value="{{ old('subject_type', $workflow->subject_type) }}" placeholder="e.g. VisionFlow\\Models\\Organization" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <input type="text" name="subject_type" value="{{ old('subject_type', $workflow->subject_type) }}" placeholder="{{ __('e.g. VisionFlow\\Models\\Organization') }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
             <p class="mt-1 text-xs text-slate-500">{{ __('Optional. Leave empty to match any model.') }}</p>
         </div>
 
@@ -52,7 +52,7 @@
         <div class="mb-4 grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Target module key') }}</label>
-                <input type="text" name="action_payload[module]" value="{{ old('action_payload.module', $workflow->action_payload['module'] ?? '') }}" placeholder="e.g. plan-hive" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <input type="text" name="action_payload[module]" value="{{ old('action_payload.module', $workflow->action_payload['module'] ?? '') }}" placeholder="{{ __('e.g. plan-hive') }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Record name') }}</label>

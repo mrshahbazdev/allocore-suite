@@ -17,7 +17,7 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-700">{{ __('mail.driver') }}</label>
                             <select name="driver" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="smtp" {{ old('driver', $setting?->driver) === 'smtp' ? 'selected' : '' }}>SMTP</option>
+                                <option value="smtp" {{ old('driver', $setting?->driver) === 'smtp' ? 'selected' : '' }}>{{ __('SMTP') }}</option>
                             </select>
                         </div>
 
@@ -35,8 +35,8 @@
                             <label class="block text-sm font-medium text-slate-700">{{ __('mail.encryption') }}</label>
                             <select name="encryption" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="none" {{ old('encryption', $setting?->encryption) === null ? 'selected' : '' }}>{{ __('mail.encryption_none') }}</option>
-                                <option value="tls" {{ old('encryption', $setting?->encryption) === 'tls' ? 'selected' : '' }}>TLS</option>
-                                <option value="ssl" {{ old('encryption', $setting?->encryption) === 'ssl' ? 'selected' : '' }}>SSL</option>
+                                <option value="tls" {{ old('encryption', $setting?->encryption) === 'tls' ? 'selected' : '' }}>{{ __('TLS') }}</option>
+                                <option value="ssl" {{ old('encryption', $setting?->encryption) === 'ssl' ? 'selected' : '' }}>{{ __('SSL') }}</option>
                             </select>
                         </div>
 

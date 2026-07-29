@@ -25,7 +25,7 @@
         <table class="min-w-full divide-y divide-slate-200 text-sm">
             <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
                 <tr>
-                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">{{ __('ID') }}</th>
                     <th class="px-4 py-3">{{ __('Connection') }}</th>
                     <th class="px-4 py-3">{{ __('Queue') }}</th>
                     <th class="px-4 py-3">{{ __('Exception') }}</th>

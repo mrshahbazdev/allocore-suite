@@ -2,7 +2,7 @@
 @section('title', 'Jahresabschluss — Allocore')
 @section('page-title', '📈 Jahresabschluss-Analysen')
 @section('topbar-actions')
-    <a href="{{ route('jahresabschluss.create') }}" class="btn btn-primary btn-sm">+ Neue Analyse</a>
+    <a href="{{ route('jahresabschluss.create') }}" class="btn btn-primary btn-sm">{{ __('+ Neue Analyse') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -17,7 +17,7 @@
 <div class="card">
     <div class="ja-index-table-wrap">
     <table class="data-table">
-        <thead><tr><th>Analyse</th><th>Unternehmen</th><th>Status</th><th>Erstellt</th><th></th></tr></thead>
+        <thead><tr><th>{{ __('Analyse') }}</th><th>{{ __('Unternehmen') }}</th><th>{{ __('Status') }}</th><th>{{ __('Erstellt') }}</th><th></th></tr></thead>
         <tbody>
             @forelse($analyses as $a)
             <tr>
@@ -27,8 +27,8 @@
                 <td style="font-size:12px; color:#475569;">{{ $a->created_at->format('d.m.Y') }}</td>
                 <td>
                     <div class="ja-index-actions">
-                        <a href="{{ route('jahresabschluss.show', $a) }}" class="btn btn-secondary btn-sm">Ansehen</a>
-                        <a href="{{ route('jahresabschluss.pdf', $a) }}" class="btn btn-secondary btn-sm">PDF</a>
+                        <a href="{{ route('jahresabschluss.show', $a) }}" class="btn btn-secondary btn-sm">{{ __('Ansehen') }}</a>
+                        <a href="{{ route('jahresabschluss.pdf', $a) }}" class="btn btn-secondary btn-sm">{{ __('PDF') }}</a>
                         <form method="POST" action="{{ route('jahresabschluss.destroy', $a) }}" onsubmit="return confirm('Löschen?')">
                             @csrf @method('DELETE')
                             <button class="btn btn-danger btn-sm">🗑</button>
@@ -37,8 +37,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="5" style="text-align:center; color:#475569; padding:40px;">
-                Noch keine Analysen. <a href="{{ route('jahresabschluss.create') }}" style="color:#6366f1;">Jetzt erstellen →</a>
+            <tr><td colspan="5" style="text-align:center; color:#475569; padding:40px;">{{ __('Noch keine Analysen.') }}<a href="{{ route('jahresabschluss.create') }}" style="color:#6366f1;">{{ __('Jetzt erstellen →') }}</a>
             </td></tr>
             @endforelse
         </tbody>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Batch Order Stickers</title>
+    <title>{{ __('Batch Order Stickers') }}</title>
     <style>
         body { margin: 0; padding: 0; font-family: sans-serif; }
         .page { width: 595px; padding: 20px; }
@@ -17,7 +17,7 @@
     <div class="page">
         @foreach ($stickers as $sticker)
             <div class="sticker">
-                <img src="{{ $sticker['qrImage'] }}" class="qr" alt="QR">
+                <img src="{{ $sticker['qrImage'] }}" class="qr" alt="{{ __('QR') }}">
                 <div class="id">#{{ $sticker['order']->id }}</div>
                 <div class="label">{{ $sticker['order']->patient_ref ?? '' }}</div>
                 <div class="label">{{ $sticker['order']->tracking_code }}</div>

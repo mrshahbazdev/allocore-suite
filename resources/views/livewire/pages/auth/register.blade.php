@@ -64,7 +64,7 @@ new #[Layout('layouts.guest')] class extends Component
     <form wire:submit="register" class="space-y-5">
         <div>
             <x-input-label for="name" :value="__('auth.full_name')" class="text-sm font-medium text-slate-700" />
-            <x-text-input wire:model="name" id="name" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 shadow-sm" type="text" name="name" required autofocus autocomplete="name" placeholder="Jane Doe" />
+            <x-text-input wire:model="name" id="name" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 shadow-sm" type="text" name="name" required autofocus autocomplete="name" placeholder="{{ __('Jane Doe') }}" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 

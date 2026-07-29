@@ -2,8 +2,8 @@
 @section('title', 'Jahresabschluss — ' . $analysis->name)
 @section('page-title', '📈 ' . $analysis->name)
 @section('topbar-actions')
-    <a href="{{ route('jahresabschluss.pdf', $analysis) }}" class="btn btn-secondary btn-sm">⬇ PDF</a>
-    <a href="{{ route('jahresabschluss.index') }}" class="btn btn-secondary btn-sm">← Zurück</a>
+    <a href="{{ route('jahresabschluss.pdf', $analysis) }}" class="btn btn-secondary btn-sm">{{ __('⬇ PDF') }}</a>
+    <a href="{{ route('jahresabschluss.index') }}" class="btn btn-secondary btn-sm">{{ __('← Zurück') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -28,15 +28,15 @@
 
 {{-- KPI Grid: Rows = KPIs, Cols = Years --}}
 <div class="card" style="margin-bottom:20px;">
-    <div class="card-title">📊 KPI-Übersicht (Mehrjahresvergleich)</div>
+    <div class="card-title">{{ __('📊 KPI-Übersicht (Mehrjahresvergleich)') }}</div>
     @if($years->isEmpty())
-        <p style="color:#475569;">Keine Jahreswerte vorhanden.</p>
+        <p style="color:#475569;">{{ __('Keine Jahreswerte vorhanden.') }}</p>
     @else
     <div class="ja-show-table-wrap">
     <table class="data-table">
         <thead>
             <tr>
-                <th>KPI</th>
+                <th>{{ __('KPI') }}</th>
                 @foreach($years as $y)
                     <th style="text-align:center;">{{ $y->year_label }}</th>
                 @endforeach
@@ -73,7 +73,7 @@
 {{-- Auto-generated Bericht --}}
 @if($bericht)
 <div class="card" style="margin-bottom:20px; border-color:rgba(99,102,241,0.25); background:rgba(99,102,241,0.05);">
-    <div class="card-title">📝 Automatischer Bericht</div>
+    <div class="card-title">{{ __('📝 Automatischer Bericht') }}</div>
     <p style="font-size:14px; color:#cbd5e1; line-height:1.7;">{{ $bericht }}</p>
 </div>
 @endif

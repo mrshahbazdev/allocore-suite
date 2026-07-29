@@ -29,7 +29,7 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Scan workstation QR') }}</label>
-                    <input type="text" name="qr_data" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="WS-... or paste URL" autofocus>
+                    <input type="text" name="qr_data" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('WS-... or paste URL') }}" autofocus>
                 </div>
                 <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Set Workstation') }}</button>
             </form>
@@ -66,7 +66,7 @@
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Scan order QR') }}</label>
-                    <input type="text" name="qr_data" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="ORD-... or paste URL">
+                    <input type="text" name="qr_data" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('ORD-... or paste URL') }}">
                 </div>
                 <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Find Order') }}</button>
             </form>

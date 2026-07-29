@@ -9,8 +9,8 @@
         <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-slate-700">{{ __('Database driver') }}</label>
             <select id="db_driver" name="db_driver" onchange="toggleDriver(this.value)" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
-                <option value="sqlite" {{ old('db_driver', 'sqlite') === 'sqlite' ? 'selected' : '' }}>SQLite</option>
-                <option value="mysql" {{ old('db_driver') === 'mysql' ? 'selected' : '' }}>MySQL</option>
+                <option value="sqlite" {{ old('db_driver', 'sqlite') === 'sqlite' ? 'selected' : '' }}>{{ __('SQLite') }}</option>
+                <option value="mysql" {{ old('db_driver') === 'mysql' ? 'selected' : '' }}>{{ __('MySQL') }}</option>
             </select>
         </div>
 

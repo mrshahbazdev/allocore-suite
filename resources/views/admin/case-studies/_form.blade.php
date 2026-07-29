@@ -8,7 +8,7 @@
 <div class="grid gap-5 md:grid-cols-2">
     <div>
         <label class="block text-sm font-medium text-slate-700">{{ __('Slug') }}</label>
-        <input name="slug" value="{{ old('slug', $caseStudy->slug ?? '') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="auto-generated">
+        <input name="slug" value="{{ old('slug', $caseStudy->slug ?? '') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('auto-generated') }}">
     </div>
     <div>
         <label class="block text-sm font-medium text-slate-700">{{ __('Company') }}</label>
@@ -23,7 +23,7 @@
     </div>
     <div>
         <label class="block text-sm font-medium text-slate-700">{{ __('Image URL') }}</label>
-        <input name="image" value="{{ old('image', $caseStudy->image ?? '') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://...">
+        <input name="image" value="{{ old('image', $caseStudy->image ?? '') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('https://...') }}">
     </div>
 </div>
 

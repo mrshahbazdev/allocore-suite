@@ -26,7 +26,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('admin.api_tokens.abilities') }}</label>
-                <input name="abilities" value="{{ old('abilities') }}" placeholder="read, write" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <input name="abilities" value="{{ old('abilities') }}" placeholder="{{ __('read, write') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 <p class="mt-1 text-xs text-slate-500">{{ __('admin.api_tokens.abilities_help') }}</p>
             </div>
 

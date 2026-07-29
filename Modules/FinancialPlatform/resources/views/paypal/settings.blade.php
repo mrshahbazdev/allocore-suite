@@ -4,7 +4,7 @@
 @section('page-title', 'PayPal-Einstellungen')
 
 @section('topbar-actions')
-    <a href="{{ route('paypal.index') }}" class="btn btn-secondary btn-sm">Zurück</a>
+    <a href="{{ route('paypal.index') }}" class="btn btn-secondary btn-sm">{{ __('Zurück') }}</a>
 @endsection
 
 @push('styles')
@@ -23,7 +23,7 @@
 @section('content')
 <div class="settings-grid">
     <div class="card">
-        <div class="card-title">PayPal API-Konfiguration</div>
+        <div class="card-title">{{ __('PayPal API-Konfiguration') }}</div>
 
         @php
             $configPath = storage_path('app/paypal_config.json');
@@ -34,25 +34,25 @@
             @csrf
 
             <div class="form-group">
-                <label class="form-label">Modus</label>
+                <label class="form-label">{{ __('Modus') }}</label>
                 <select name="paypal_mode" class="form-control" style="max-width:300px;">
-                    <option value="sandbox" {{ old('paypal_mode', $existing['mode'] ?? 'sandbox') === 'sandbox' ? 'selected' : '' }}>Sandbox (Test)</option>
-                    <option value="live" {{ old('paypal_mode', $existing['mode'] ?? '') === 'live' ? 'selected' : '' }}>Live (Produktion)</option>
+                    <option value="sandbox" {{ old('paypal_mode', $existing['mode'] ?? 'sandbox') === 'sandbox' ? 'selected' : '' }}>{{ __('Sandbox (Test)') }}</option>
+                    <option value="live" {{ old('paypal_mode', $existing['mode'] ?? '') === 'live' ? 'selected' : '' }}>{{ __('Live (Produktion)') }}</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Client ID *</label>
+                <label class="form-label">{{ __('Client ID *') }}</label>
                 <input type="text" name="paypal_client_id" class="form-control" required
                     value="{{ old('paypal_client_id', $existing['client_id'] ?? '') }}"
-                    placeholder="PayPal Client ID eingeben">
+                    placeholder="{{ __('PayPal Client ID eingeben') }}">
             </div>
 
             <div class="form-group">
-                <label class="form-label">Client Secret *</label>
+                <label class="form-label">{{ __('Client Secret *') }}</label>
                 <input type="password" name="paypal_client_secret" class="form-control" required
                     value="{{ old('paypal_client_secret', $existing['client_secret'] ?? '') }}"
-                    placeholder="PayPal Client Secret eingeben">
+                    placeholder="{{ __('PayPal Client Secret eingeben') }}">
             </div>
 
             @if($existing)
@@ -61,36 +61,36 @@
                 </div>
             @endif
 
-            <button type="submit" class="btn btn-primary">Einstellungen speichern</button>
+            <button type="submit" class="btn btn-primary">{{ __('Einstellungen speichern') }}</button>
         </form>
     </div>
 
     <div style="display:flex; flex-direction:column; gap:16px;">
         <div class="card info-card">
-            <h4>Einrichtung</h4>
-            <p>So erhalten Sie Ihre PayPal API-Zugangsdaten:</p>
+            <h4>{{ __('Einrichtung') }}</h4>
+            <p>{{ __('So erhalten Sie Ihre PayPal API-Zugangsdaten:') }}</p>
             <ul>
-                <li>Melden Sie sich bei <a href="https://developer.paypal.com" target="_blank">developer.paypal.com</a> an</li>
-                <li>Erstellen Sie eine neue App unter <strong>Apps & Credentials</strong></li>
-                <li>Kopieren Sie <strong>Client ID</strong> und <strong>Secret</strong></li>
-                <li>Verwenden Sie den <strong>Sandbox-Modus</strong> zum Testen</li>
+                <li>{{ __('Melden Sie sich bei') }}<a href="https://developer.paypal.com" target="_blank">{{ __('developer.paypal.com') }}</a>{{ __('an') }}</li>
+                <li>{{ __('Erstellen Sie eine neue App unter') }}<strong>{{ __('Apps & Credentials') }}</strong></li>
+                <li>{{ __('Kopieren Sie') }}<strong>{{ __('Client ID') }}</strong>{{ __('und') }}<strong>{{ __('Secret') }}</strong></li>
+                <li>{{ __('Verwenden Sie den') }}<strong>{{ __('Sandbox-Modus') }}</strong>{{ __('zum Testen') }}</li>
             </ul>
         </div>
 
         <div class="card info-card">
-            <h4>Unterstützte Funktionen</h4>
+            <h4>{{ __('Unterstützte Funktionen') }}</h4>
             <ul>
-                <li>PayPal Checkout-Zahlungen</li>
-                <li>Sandbox- und Live-Modus</li>
-                <li>Lead-verknüpfte Zahlungen</li>
-                <li>Transaktionsverlauf</li>
-                <li>Automatische Erfassung</li>
+                <li>{{ __('PayPal Checkout-Zahlungen') }}</li>
+                <li>{{ __('Sandbox- und Live-Modus') }}</li>
+                <li>{{ __('Lead-verknüpfte Zahlungen') }}</li>
+                <li>{{ __('Transaktionsverlauf') }}</li>
+                <li>{{ __('Automatische Erfassung') }}</li>
             </ul>
         </div>
 
         <div class="card info-card">
-            <h4>Währungen</h4>
-            <p>EUR, USD, GBP und CHF werden unterstützt.</p>
+            <h4>{{ __('Währungen') }}</h4>
+            <p>{{ __('EUR, USD, GBP und CHF werden unterstützt.') }}</p>
         </div>
     </div>
 </div>

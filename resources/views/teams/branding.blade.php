@@ -12,12 +12,12 @@
 
     <div>
         <label class="block text-sm font-medium text-slate-700">{{ __('Subdomain') }}</label>
-        <input type="text" name="subdomain" value="{{ old('subdomain', $team->subdomain) }}" placeholder="yourteam" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <input type="text" name="subdomain" value="{{ old('subdomain', $team->subdomain) }}" placeholder="{{ __('yourteam') }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
     </div>
 
     <div>
         <label class="block text-sm font-medium text-slate-700">{{ __('Custom domain') }}</label>
-        <input type="text" name="custom_domain" value="{{ old('custom_domain', $team->custom_domain) }}" placeholder="tools.yourcompany.com" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <input type="text" name="custom_domain" value="{{ old('custom_domain', $team->custom_domain) }}" placeholder="{{ __('tools.yourcompany.com') }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
         @if ($team->custom_domain)
             <div class="mt-2 flex items-center gap-2 text-sm">
                 @if ($team->custom_domain_verified_at)

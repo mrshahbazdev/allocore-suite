@@ -44,7 +44,7 @@
 {{-- HEADER --}}
 <div class="header">
     <div class="header-left">
-        <div class="logo">⬡ Allocore <span>Financial</span></div>
+        <div class="logo">{{ __('⬡ Allocore') }}<span>{{ __('Financial') }}</span></div>
         <div class="sub">Jahresabschluss-Analyse · {{ $analysis->name }}</div>
     </div>
     <div class="header-right">
@@ -62,22 +62,22 @@
 {{-- AUTO BERICHT --}}
 @if(!empty($bericht))
 <div class="section">
-    <div class="section-title">Automatischer Analyse-Bericht</div>
+    <div class="section-title">{{ __('Automatischer Analyse-Bericht') }}</div>
     <div class="bericht-box">{{ $bericht }}</div>
 </div>
 @endif
 
 {{-- MULTI-YEAR KPI TABLE --}}
 <div class="section">
-    <div class="section-title">KPI-Übersicht — Mehrjahresvergleich</div>
+    <div class="section-title">{{ __('KPI-Übersicht — Mehrjahresvergleich') }}</div>
     <table>
         <thead>
             <tr>
-                <th style="width:180px;">Kennzahl</th>
-                <th style="width:50px;">Einheit</th>
+                <th style="width:180px;">{{ __('Kennzahl') }}</th>
+                <th style="width:50px;">{{ __('Einheit') }}</th>
                 @foreach($years as $y)
                     <th class="year-header">{{ $y->year_label }}</th>
-                    <th style="text-align:center; width:60px;">Ampel</th>
+                    <th style="text-align:center; width:60px;">{{ __('Ampel') }}</th>
                 @endforeach
             </tr>
         </thead>
@@ -104,11 +104,11 @@
 
 {{-- YEAR-BY-YEAR BILANZ --}}
 <div class="section">
-    <div class="section-title">Rohdaten — Bilanz & GuV</div>
+    <div class="section-title">{{ __('Rohdaten — Bilanz & GuV') }}</div>
     <table>
         <thead>
             <tr>
-                <th>Position</th>
+                <th>{{ __('Position') }}</th>
                 @foreach($years as $y)<th class="year-header">{{ $y->year_label }} (€)</th>@endforeach
             </tr>
         </thead>
@@ -143,7 +143,7 @@
 </div>
 
 <div class="disclaimer">
-    <strong>Hinweis:</strong> Diese Analyse basiert auf den eingegebenen Daten. Alle KPIs wurden automatisch berechnet.
+    <strong>{{ __('Hinweis:') }}</strong> Diese Analyse basiert auf den eingegebenen Daten. Alle KPIs wurden automatisch berechnet.
     Keine Anlageberatung. Erstellt via Allocore Financial Platform, {{ now()->format('d.m.Y H:i') }}.
 </div>
 

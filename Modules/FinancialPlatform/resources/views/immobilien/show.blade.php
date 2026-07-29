@@ -2,8 +2,8 @@
 @section('title', 'Immobilienanalyse — ' . $analysis->name)
 @section('page-title', '🏘 ' . $analysis->name)
 @section('topbar-actions')
-    <a href="{{ route('immobilien.pdf', $analysis) }}" class="btn btn-secondary btn-sm">⬇ PDF</a>
-    <a href="{{ route('immobilien.index') }}" class="btn btn-secondary btn-sm">← Zurück</a>
+    <a href="{{ route('immobilien.pdf', $analysis) }}" class="btn btn-secondary btn-sm">{{ __('⬇ PDF') }}</a>
+    <a href="{{ route('immobilien.index') }}" class="btn btn-secondary btn-sm">{{ __('← Zurück') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -46,7 +46,7 @@
 <div class="immobilien-score-grid">
     {{-- Score --}}
     <div class="card" style="text-align:center; padding:28px 16px; border-color:{{ $colorHex }}40;">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; margin-bottom:10px;">Score</div>
+        <div style="font-size:11px; color:#64748b; text-transform:uppercase; margin-bottom:10px;">{{ __('Score') }}</div>
         <div class="score-lg score-{{ $color }}">{{ number_format($score, 1) }}</div>
         <div style="font-size:13px; color:#475569; margin-top:4px;">/100</div>
         <div style="margin-top:12px;"><span class="badge badge-{{ $color }}">
@@ -59,7 +59,7 @@
 
     {{-- Empfehlung --}}
     <div class="card" style="border-color:{{ $colorHex }}30;">
-        <div class="card-title">🎯 Empfehlung</div>
+        <div class="card-title">{{ __('🎯 Empfehlung') }}</div>
         <div style="font-size:15px; font-weight:600; color:{{ $colorHex }}; margin-bottom:16px; line-height:1.4;">
             {{ $analysis->recommendation }}
         </div>
@@ -82,7 +82,7 @@
 
     {{-- Cashflow Summary --}}
     <div class="card">
-        <div class="card-title">💰 Cashflow-Übersicht (p.a.)</div>
+        <div class="card-title">{{ __('💰 Cashflow-Übersicht (p.a.)') }}</div>
         <div style="display:flex; flex-direction:column; gap:10px;">
             @foreach([
                 ['Bruttoertrag', $derived['noi'] + ($input->management_costs_pct/100 * $derived['noi']), '#94a3b8'],
@@ -104,10 +104,10 @@
 {{-- KPI Table --}}
 <div class="immobilien-kpi-grid">
 <div class="card">
-    <div class="card-title">📊 KPI-Ergebnisse</div>
+    <div class="card-title">{{ __('📊 KPI-Ergebnisse') }}</div>
     <div class="immobilien-table-wrap">
     <table class="data-table">
-        <thead><tr><th>KPI</th><th>Wert</th><th>Gewicht</th><th>Status</th></tr></thead>
+        <thead><tr><th>{{ __('KPI') }}</th><th>{{ __('Wert') }}</th><th>{{ __('Gewicht') }}</th><th>{{ __('Status') }}</th></tr></thead>
         <tbody>
             @foreach($analysis->kpiResults->unique('kpi_code') as $kpi)
             <tr>
@@ -129,7 +129,7 @@
 
 @if($input)
 <div class="card">
-    <div class="card-title">📋 Objektdaten</div>
+    <div class="card-title">{{ __('📋 Objektdaten') }}</div>
     <div class="immobilien-table-wrap">
     <table class="data-table">
         <tbody>
@@ -162,7 +162,7 @@
 <div style="text-align:right; margin-top:12px;">
     <form method="POST" action="{{ route('immobilien.destroy', $analysis) }}" onsubmit="return confirm('Löschen?')">
         @csrf @method('DELETE')
-        <button class="btn btn-danger btn-sm">🗑 Analyse löschen</button>
+        <button class="btn btn-danger btn-sm">{{ __('🗑 Analyse löschen') }}</button>
     </form>
 </div>
 

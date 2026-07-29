@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Workstation Sticker</title>
+    <title>{{ __('Workstation Sticker') }}</title>
     <style>
         body { margin: 0; padding: 0; font-family: sans-serif; }
         .sticker { width: 170.08px; height: 170.08px; padding: 8px; box-sizing: border-box; text-align: center; }
@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="sticker">
-        <img src="{{ $qrImage }}" class="qr" alt="QR">
+        <img src="{{ $qrImage }}" class="qr" alt="{{ __('QR') }}">
         <div class="name">{{ $workstation->name }}</div>
         <div class="type">{{ $workstation->type->value }}</div>
     </div>

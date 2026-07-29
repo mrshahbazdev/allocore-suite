@@ -14,10 +14,10 @@
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Quarter') }}</label>
                 <select name="quarter" class="mt-1 block w-full rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
-                    <option value="Q1" {{ $currentQuarter === 'Q1' ? 'selected' : '' }}>Q1</option>
-                    <option value="Q2" {{ $currentQuarter === 'Q2' ? 'selected' : '' }}>Q2</option>
-                    <option value="Q3" {{ $currentQuarter === 'Q3' ? 'selected' : '' }}>Q3</option>
-                    <option value="Q4" {{ $currentQuarter === 'Q4' ? 'selected' : '' }}>Q4</option>
+                    <option value="Q1" {{ $currentQuarter === 'Q1' ? 'selected' : '' }}>{{ __('Q1') }}</option>
+                    <option value="Q2" {{ $currentQuarter === 'Q2' ? 'selected' : '' }}>{{ __('Q2') }}</option>
+                    <option value="Q3" {{ $currentQuarter === 'Q3' ? 'selected' : '' }}>{{ __('Q3') }}</option>
+                    <option value="Q4" {{ $currentQuarter === 'Q4' ? 'selected' : '' }}>{{ __('Q4') }}</option>
                 </select>
             </div>
             <div>

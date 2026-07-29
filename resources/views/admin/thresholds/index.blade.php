@@ -40,16 +40,16 @@
                                         <td class="px-4 py-3 text-slate-600">{{ $threshold->unit }}</td>
                                         <td class="px-4 py-3">
                                             @if ($threshold->lower_is_better)
-                                                <input type="number" step="0.01" name="green_max" value="{{ $threshold->green_max }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="max">
+                                                <input type="number" step="0.01" name="green_max" value="{{ $threshold->green_max }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="{{ __('max') }}">
                                             @else
-                                                <input type="number" step="0.01" name="green_min" value="{{ $threshold->green_min }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="min">
+                                                <input type="number" step="0.01" name="green_min" value="{{ $threshold->green_min }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="{{ __('min') }}">
                                             @endif
                                         </td>
                                         <td class="px-4 py-3">
                                             @if ($threshold->lower_is_better)
-                                                <input type="number" step="0.01" name="yellow_max" value="{{ $threshold->yellow_max }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="max">
+                                                <input type="number" step="0.01" name="yellow_max" value="{{ $threshold->yellow_max }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="{{ __('max') }}">
                                             @else
-                                                <input type="number" step="0.01" name="yellow_min" value="{{ $threshold->yellow_min }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="min">
+                                                <input type="number" step="0.01" name="yellow_min" value="{{ $threshold->yellow_min }}" class="w-24 rounded-lg border-slate-300 text-sm" placeholder="{{ __('min') }}">
                                             @endif
                                         </td>
                                         <td class="px-4 py-3">

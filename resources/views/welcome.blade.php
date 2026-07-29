@@ -48,7 +48,7 @@
         <div class="flex min-h-full flex-col bg-slate-50">
             {{-- Header --}}
             <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-                <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="Global">
+                <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
                     <a href="/" class="flex items-center gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white">A</div>
                         <span class="text-lg font-bold text-slate-900">{{ $siteName }}</span>
@@ -76,7 +76,7 @@
                     </div>
 
                     <button type="button" id="mobile-menu-button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-slate-600 lg:hidden" aria-expanded="false" aria-controls="mobile-menu">
-                        <span class="sr-only">Open main menu</span>
+                        <span class="sr-only">{{ __('Open main menu') }}</span>
                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>

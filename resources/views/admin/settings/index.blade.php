@@ -37,22 +37,22 @@
 
                         <div>
                             <x-input-label for="hero_cta_primary_label" :value="__('Hero primary CTA label')" />
-                            <x-text-input id="hero_cta_primary_label" name="hero_cta_primary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_primary_label', $settings['hero_cta_primary_label'])" placeholder="Start free" />
+                            <x-text-input id="hero_cta_primary_label" name="hero_cta_primary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_primary_label', $settings['hero_cta_primary_label'])" placeholder="{{ __('Start free') }}" />
                         </div>
 
                         <div>
                             <x-input-label for="hero_cta_primary_link" :value="__('Hero primary CTA link')" />
-                            <x-text-input id="hero_cta_primary_link" name="hero_cta_primary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_primary_link', $settings['hero_cta_primary_link'])" placeholder="/register" />
+                            <x-text-input id="hero_cta_primary_link" name="hero_cta_primary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_primary_link', $settings['hero_cta_primary_link'])" placeholder="{{ __('/register') }}" />
                         </div>
 
                         <div>
                             <x-input-label for="hero_cta_secondary_label" :value="__('Hero secondary CTA label')" />
-                            <x-text-input id="hero_cta_secondary_label" name="hero_cta_secondary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_secondary_label', $settings['hero_cta_secondary_label'])" placeholder="Log in" />
+                            <x-text-input id="hero_cta_secondary_label" name="hero_cta_secondary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_secondary_label', $settings['hero_cta_secondary_label'])" placeholder="{{ __('Log in') }}" />
                         </div>
 
                         <div>
                             <x-input-label for="hero_cta_secondary_link" :value="__('Hero secondary CTA link')" />
-                            <x-text-input id="hero_cta_secondary_link" name="hero_cta_secondary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_secondary_link', $settings['hero_cta_secondary_link'])" placeholder="/login" />
+                            <x-text-input id="hero_cta_secondary_link" name="hero_cta_secondary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('hero_cta_secondary_link', $settings['hero_cta_secondary_link'])" placeholder="{{ __('/login') }}" />
                         </div>
 
                         <div class="md:col-span-2">
@@ -61,22 +61,22 @@
 
                         <div>
                             <x-input-label for="cta_primary_label" :value="__('Bottom primary CTA label')" />
-                            <x-text-input id="cta_primary_label" name="cta_primary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_primary_label', $settings['cta_primary_label'])" placeholder="Create free account" />
+                            <x-text-input id="cta_primary_label" name="cta_primary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_primary_label', $settings['cta_primary_label'])" placeholder="{{ __('Create free account') }}" />
                         </div>
 
                         <div>
                             <x-input-label for="cta_primary_link" :value="__('Bottom primary CTA link')" />
-                            <x-text-input id="cta_primary_link" name="cta_primary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_primary_link', $settings['cta_primary_link'])" placeholder="/register" />
+                            <x-text-input id="cta_primary_link" name="cta_primary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_primary_link', $settings['cta_primary_link'])" placeholder="{{ __('/register') }}" />
                         </div>
 
                         <div>
                             <x-input-label for="cta_secondary_label" :value="__('Bottom secondary CTA label')" />
-                            <x-text-input id="cta_secondary_label" name="cta_secondary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_secondary_label', $settings['cta_secondary_label'])" placeholder="View pricing" />
+                            <x-text-input id="cta_secondary_label" name="cta_secondary_label" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_secondary_label', $settings['cta_secondary_label'])" placeholder="{{ __('View pricing') }}" />
                         </div>
 
                         <div>
                             <x-input-label for="cta_secondary_link" :value="__('Bottom secondary CTA link')" />
-                            <x-text-input id="cta_secondary_link" name="cta_secondary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_secondary_link', $settings['cta_secondary_link'])" placeholder="/billing/plans" />
+                            <x-text-input id="cta_secondary_link" name="cta_secondary_link" type="text" class="mt-2 block w-full rounded-lg border-slate-300" :value="old('cta_secondary_link', $settings['cta_secondary_link'])" placeholder="{{ __('/billing/plans') }}" />
                         </div>
 
                         <div class="md:col-span-2">

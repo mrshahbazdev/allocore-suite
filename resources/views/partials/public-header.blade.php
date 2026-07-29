@@ -1,7 +1,7 @@
 @php($brand = config('app.team_branding') ?? [])
 @php($menu = \App\Models\SiteSetting::value('public_nav_menu', []))
 <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-    <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="Global">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
         <a href="/" class="flex items-center gap-3">
             @if ($brand['logo'] ?? false)
                 <img src="{{ $brand['logo'] }}" alt="" class="h-10 w-10 object-contain rounded-xl">

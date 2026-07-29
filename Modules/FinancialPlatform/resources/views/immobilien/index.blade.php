@@ -2,7 +2,7 @@
 @section('title', 'Immobilienanalyse — Allocore')
 @section('page-title', '🏘 Immobilien-Analysen')
 @section('topbar-actions')
-    <a href="{{ route('immobilien.create') }}" class="btn btn-primary btn-sm">+ Neue Analyse</a>
+    <a href="{{ route('immobilien.create') }}" class="btn btn-primary btn-sm">{{ __('+ Neue Analyse') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -25,7 +25,7 @@
 <div class="card">
     <div class="immobilien-table-wrap">
     <table class="data-table">
-        <thead><tr><th>Analyse</th><th>Unternehmen</th><th>Score</th><th>Empfehlung</th><th>Erstellt</th><th></th></tr></thead>
+        <thead><tr><th>{{ __('Analyse') }}</th><th>{{ __('Unternehmen') }}</th><th>{{ __('Score') }}</th><th>{{ __('Empfehlung') }}</th><th>{{ __('Erstellt') }}</th><th></th></tr></thead>
         <tbody>
             @forelse($analyses as $a)
             <tr>
@@ -41,8 +41,8 @@
                 <td style="font-size:12px; color:#475569;">{{ $a->created_at->format('d.m.Y') }}</td>
                 <td>
                     <div class="immobilien-row-actions">
-                        <a href="{{ route('immobilien.show', $a) }}" class="btn btn-secondary btn-sm">Ansehen</a>
-                        <a href="{{ route('immobilien.pdf', $a) }}" class="btn btn-secondary btn-sm">PDF</a>
+                        <a href="{{ route('immobilien.show', $a) }}" class="btn btn-secondary btn-sm">{{ __('Ansehen') }}</a>
+                        <a href="{{ route('immobilien.pdf', $a) }}" class="btn btn-secondary btn-sm">{{ __('PDF') }}</a>
                         <form method="POST" action="{{ route('immobilien.destroy', $a) }}" onsubmit="return confirm('Löschen?')">
                             @csrf @method('DELETE')
                             <button class="btn btn-danger btn-sm">🗑</button>
@@ -51,8 +51,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="6" style="text-align:center; color:#475569; padding:40px;">
-                Noch keine Analysen. <a href="{{ route('immobilien.create') }}" style="color:#6366f1;">Jetzt starten →</a>
+            <tr><td colspan="6" style="text-align:center; color:#475569; padding:40px;">{{ __('Noch keine Analysen.') }}<a href="{{ route('immobilien.create') }}" style="color:#6366f1;">{{ __('Jetzt starten →') }}</a>
             </td></tr>
             @endforelse
         </tbody>

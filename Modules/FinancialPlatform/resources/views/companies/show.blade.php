@@ -2,8 +2,8 @@
 @section('title', $company->name . ' — Allocore')
 @section('page-title', '🏢 ' . $company->name)
 @section('topbar-actions')
-    <a href="{{ route('companies.edit', $company) }}" class="btn btn-secondary btn-sm">✏ Bearbeiten</a>
-    <a href="{{ route('companies.index') }}" class="btn btn-secondary btn-sm">← Zurück</a>
+    <a href="{{ route('companies.edit', $company) }}" class="btn btn-secondary btn-sm">{{ __('✏ Bearbeiten') }}</a>
+    <a href="{{ route('companies.index') }}" class="btn btn-secondary btn-sm">{{ __('← Zurück') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -49,7 +49,7 @@
 @section('content')
 <div class="company-show-grid">
     <div class="card" style="align-self:start;">
-        <div class="card-title">Informationen</div>
+        <div class="card-title">{{ __('Informationen') }}</div>
         @foreach([
             ['Branche', $company->industry ?? '—'],
             ['Währung', $company->currency ?? 'EUR'],
@@ -68,14 +68,14 @@
     <div class="card">
         <div class="company-analyses-head">
             <div class="card-title" style="margin-bottom:0;">Analysen ({{ $analyses->count() }})</div>
-            <a href="{{ route('gmbh.create') }}" class="btn btn-primary btn-sm">+ Neue Analyse</a>
+            <a href="{{ route('gmbh.create') }}" class="btn btn-primary btn-sm">{{ __('+ Neue Analyse') }}</a>
         </div>
         @if($analyses->isEmpty())
-            <div style="text-align:center; padding:30px; color:#475569;">Noch keine Analysen für dieses Unternehmen.</div>
+            <div style="text-align:center; padding:30px; color:#475569;">{{ __('Noch keine Analysen für dieses Unternehmen.') }}</div>
         @else
         <div class="company-analyses-table-wrap">
         <table class="data-table">
-            <thead><tr><th>Name</th><th>Typ</th><th>Score</th><th>Datum</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Name') }}</th><th>{{ __('Typ') }}</th><th>{{ __('Score') }}</th><th>{{ __('Datum') }}</th><th></th></tr></thead>
             <tbody>
             @foreach($analyses as $a)
             <tr>

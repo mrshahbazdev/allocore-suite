@@ -12,8 +12,8 @@
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Plan') }}</dt><dd class="font-medium">{{ $subscription->plan->name }} ({{ $subscription->billing_interval }})</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Amount') }}</dt><dd class="font-medium">{{ number_format($subscription->plan->priceFor($subscription->billing_interval), 2) }} {{ $subscription->plan->currency }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Account holder') }}</dt><dd class="font-medium">{{ config('services.bank.account_holder') ?: '—' }}</dd></div>
-                <div class="flex justify-between"><dt class="text-slate-500">IBAN</dt><dd class="font-medium">{{ config('services.bank.iban') ?: '—' }}</dd></div>
-                <div class="flex justify-between"><dt class="text-slate-500">BIC</dt><dd class="font-medium">{{ config('services.bank.bic') ?: '—' }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ __('IBAN') }}</dt><dd class="font-medium">{{ config('services.bank.iban') ?: '—' }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ __('BIC') }}</dt><dd class="font-medium">{{ config('services.bank.bic') ?: '—' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Bank') }}</dt><dd class="font-medium">{{ config('services.bank.bank_name') ?: '—' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-500">{{ __('Payment reference') }}</dt><dd class="font-medium">SUB-{{ $subscription->id }}</dd></div>
             </dl>

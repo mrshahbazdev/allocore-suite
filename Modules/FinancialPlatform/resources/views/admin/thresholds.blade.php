@@ -4,10 +4,8 @@
 
 @section('content')
 
-<div style="font-size:12px; color:#64748b; margin-bottom:20px; line-height:1.6; background:rgba(220,38,38,0.05); border:1px solid rgba(220,38,38,0.15); padding:12px 16px; border-radius:8px;">
-    ⚠ Schwellwerte steuern das Traffic-Light-System. Änderungen wirken sich auf <strong>neue</strong> Berechnungen aus.
-    Bestehende KPI-Ergebnisse müssen neu berechnet werden.
-</div>
+<div style="font-size:12px; color:#64748b; margin-bottom:20px; line-height:1.6; background:rgba(220,38,38,0.05); border:1px solid rgba(220,38,38,0.15); padding:12px 16px; border-radius:8px;">{{ __('⚠ Schwellwerte steuern das Traffic-Light-System. Änderungen wirken sich auf') }}<strong>{{ __('neue') }}</strong>{{ __('Berechnungen aus.
+    Bestehende KPI-Ergebnisse müssen neu berechnet werden.') }}</div>
 
 @foreach($grouped as $tool => $thresholds)
 <div class="card" style="margin-bottom:16px;">
@@ -19,13 +17,13 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width:140px;">KPI</th>
-                <th>Einheit</th>
-                <th>Grün ab/bis</th>
-                <th>Gelb ab/bis</th>
-                <th>Gewicht</th>
+                <th style="width:140px;">{{ __('KPI') }}</th>
+                <th>{{ __('Einheit') }}</th>
+                <th>{{ __('Grün ab/bis') }}</th>
+                <th>{{ __('Gelb ab/bis') }}</th>
+                <th>{{ __('Gewicht') }}</th>
                 <th>Lower=Better</th>
-                <th>Aktiv</th>
+                <th>{{ __('Aktiv') }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -41,16 +39,16 @@
                 <form method="POST" action="{{ route('admin.thresholds.update', $t) }}" id="form-{{ $t->id }}">
                 @csrf @method('PATCH')
                 @if($t->lower_is_better)
-                    <input type="number" step="0.01" name="green_max" class="form-control" style="width:80px;" value="{{ $t->green_max }}" title="Grün MAX">
+                    <input type="number" step="0.01" name="green_max" class="form-control" style="width:80px;" value="{{ $t->green_max }}" title="{{ __('Grün MAX') }}">
                 @else
-                    <input type="number" step="0.01" name="green_min" class="form-control" style="width:80px;" value="{{ $t->green_min }}" title="Grün MIN">
+                    <input type="number" step="0.01" name="green_min" class="form-control" style="width:80px;" value="{{ $t->green_min }}" title="{{ __('Grün MIN') }}">
                 @endif
             </td>
             <td>
                 @if($t->lower_is_better)
-                    <input type="number" step="0.01" name="yellow_max" class="form-control" style="width:80px;" value="{{ $t->yellow_max }}" title="Gelb MAX">
+                    <input type="number" step="0.01" name="yellow_max" class="form-control" style="width:80px;" value="{{ $t->yellow_max }}" title="{{ __('Gelb MAX') }}">
                 @else
-                    <input type="number" step="0.01" name="yellow_min" class="form-control" style="width:80px;" value="{{ $t->yellow_min }}" title="Gelb MIN">
+                    <input type="number" step="0.01" name="yellow_min" class="form-control" style="width:80px;" value="{{ $t->yellow_min }}" title="{{ __('Gelb MIN') }}">
                 @endif
             </td>
             <td>

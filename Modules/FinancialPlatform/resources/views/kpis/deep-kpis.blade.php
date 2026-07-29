@@ -28,33 +28,33 @@ $settings = $settings ?? [];
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl font-bold text-slate-900">Deep KPIs</h1>
-                        <p class="mt-1 text-sm text-slate-500">Revenue, profit, order, influence and legacy metrics aligned with the Business Readiness framework.</p>
+                        <h1 class="text-2xl font-bold text-slate-900">{{ __('Deep KPIs') }}</h1>
+                        <p class="mt-1 text-sm text-slate-500">{{ __('Revenue, profit, order, influence and legacy metrics aligned with the Business Readiness framework.') }}</p>
                     </div>
-                    <a href="{{ url('app/finance') }}" class="text-sm font-medium text-indigo-600 hover:underline">Back to dashboard</a>
+                    <a href="{{ url('app/finance') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Back to dashboard') }}</a>
                 </div>
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="text-lg font-semibold text-slate-900">Revenue</h2>
+                <h2 class="text-lg font-semibold text-slate-900">{{ __('Revenue') }}</h2>
 
                 <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <div class="text-sm font-semibold text-slate-900">Umsatzbedarf</div>
+                    <div class="text-sm font-semibold text-slate-900">{{ __('Umsatzbedarf') }}</div>
                     <div class="mt-3 grid gap-4 sm:grid-cols-4">
                         <div>
-                            <div class="text-xs uppercase tracking-wide text-slate-500">Target sales</div>
+                            <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Target sales') }}</div>
                             <div class="mt-1 text-xl font-semibold text-slate-900">{{ number_format($revenue['umsatzbedarf']['target'] ?? 0, 2) }}</div>
                         </div>
                         <div>
-                            <div class="text-xs uppercase tracking-wide text-slate-500">Actual sales</div>
+                            <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Actual sales') }}</div>
                             <div class="mt-1 text-xl font-semibold text-slate-900">{{ number_format($revenue['umsatzbedarf']['actual'] ?? 0, 2) }}</div>
                         </div>
                         <div>
-                            <div class="text-xs uppercase tracking-wide text-slate-500">Target / Actual</div>
+                            <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Target / Actual') }}</div>
                             <div class="mt-1 text-xl font-semibold text-slate-900">{{ $revenue['umsatzbedarf']['ratio'] !== null ? number_format($revenue['umsatzbedarf']['ratio'], 4) : '—' }}</div>
                         </div>
                         <div>
-                            <div class="text-xs uppercase tracking-wide text-slate-500">Achievement</div>
+                            <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Achievement') }}</div>
                             <div class="mt-1 text-xl font-semibold text-slate-900">{{ number_format($revenue['umsatzbedarf']['achievement'] ?? 0, 1) }}%</div>
                         </div>
                     </div>
@@ -65,16 +65,16 @@ $settings = $settings ?? [];
                 </div>
 
                 <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <div class="text-sm font-semibold text-slate-900">Leadqualität</div>
+                    <div class="text-sm font-semibold text-slate-900">{{ __('Leadqualität') }}</div>
                     <div class="mt-3 overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead>
                                 <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
-                                    <th class="pb-2 pr-4">KPI</th>
-                                    <th class="pb-2 pr-4 text-right">Current month</th>
-                                    <th class="pb-2 pr-4 text-right">Previous month</th>
-                                    <th class="pb-2 pr-4 text-right">Ratio</th>
-                                    <th class="pb-2 pr-4 text-right">Change</th>
+                                    <th class="pb-2 pr-4">{{ __('KPI') }}</th>
+                                    <th class="pb-2 pr-4 text-right">{{ __('Current month') }}</th>
+                                    <th class="pb-2 pr-4 text-right">{{ __('Previous month') }}</th>
+                                    <th class="pb-2 pr-4 text-right">{{ __('Ratio') }}</th>
+                                    <th class="pb-2 pr-4 text-right">{{ __('Change') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200">
@@ -94,15 +94,15 @@ $settings = $settings ?? [];
 
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                        <div class="text-sm font-semibold text-slate-900">Abschlussquote</div>
+                        <div class="text-sm font-semibold text-slate-900">{{ __('Abschlussquote') }}</div>
                         <div class="mt-3 grid grid-cols-2 gap-4">
                             <div>
-                                <div class="text-xs uppercase tracking-wide text-slate-500">Current</div>
+                                <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Current') }}</div>
                                 <div class="mt-1 text-lg font-semibold text-slate-900">{{ ($revenue['abschlussquote']['conversionRateCurrent'] ?? null) !== null ? number_format($revenue['abschlussquote']['conversionRateCurrent'], 1).'%' : '—' }}</div>
                                 <div class="text-xs text-slate-500">{{ $revenue['abschlussquote']['newCustomersCurrent'] ?? 0 }} / {{ $revenue['abschlussquote']['leadsCurrent'] ?? 0 }}</div>
                             </div>
                             <div>
-                                <div class="text-xs uppercase tracking-wide text-slate-500">Previous</div>
+                                <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Previous') }}</div>
                                 <div class="mt-1 text-lg font-semibold text-slate-900">{{ ($revenue['abschlussquote']['conversionRatePrevious'] ?? null) !== null ? number_format($revenue['abschlussquote']['conversionRatePrevious'], 1).'%' : '—' }}</div>
                                 <div class="text-xs text-slate-500">{{ $revenue['abschlussquote']['newCustomersPrevious'] ?? 0 }} / {{ $revenue['abschlussquote']['leadsPrevious'] ?? 0 }}</div>
                             </div>
@@ -110,15 +110,15 @@ $settings = $settings ?? [];
                     </div>
 
                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                        <div class="text-sm font-semibold text-slate-900">Vertragstreue Kunden</div>
+                        <div class="text-sm font-semibold text-slate-900">{{ __('Vertragstreue Kunden') }}</div>
                         <div class="mt-3 grid grid-cols-2 gap-4">
                             <div>
-                                <div class="text-xs uppercase tracking-wide text-slate-500">Avg. days to payment</div>
+                                <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Avg. days to payment') }}</div>
                                 <div class="mt-1 text-lg font-semibold text-slate-900">{{ ($revenue['vertragstreue']['averageDaysCurrent'] ?? null) !== null ? number_format($revenue['vertragstreue']['averageDaysCurrent'], 1) : '—' }}</div>
                                 <div class="text-xs text-slate-500">{{ $revenue['vertragstreue']['invoicesCurrent'] ?? 0 }} invoices</div>
                             </div>
                             <div>
-                                <div class="text-xs uppercase tracking-wide text-slate-500">Previous month</div>
+                                <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('Previous month') }}</div>
                                 <div class="mt-1 text-lg font-semibold text-slate-900">{{ ($revenue['vertragstreue']['averageDaysPrevious'] ?? null) !== null ? number_format($revenue['vertragstreue']['averageDaysPrevious'], 1) : '—' }}</div>
                                 <div class="text-xs text-slate-500">{{ $revenue['vertragstreue']['invoicesPrevious'] ?? 0 }} invoices</div>
                             </div>
@@ -151,7 +151,7 @@ $settings = $settings ?? [];
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-900">Configure Deep KPIs</h2>
+            <h2 class="text-lg font-semibold text-slate-900">{{ __('Configure Deep KPIs') }}</h2>
 
             <form method="POST" action="{{ route('financialplatform.deep-kpis.sync') }}" class="mb-4">
                 @csrf
@@ -162,32 +162,32 @@ $settings = $settings ?? [];
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">SeoStory base URL</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('SeoStory base URL') }}</label>
                     <input type="url" name="seostory_base_url" value="{{ old('seostory_base_url', $settings['seostory_base_url'] ?? 'https://financial.seostory.de') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">SeoStory API token</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('SeoStory API token') }}</label>
                     <input type="text" name="seostory_api_token" value="{{ old('seostory_api_token', $settings['seostory_api_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Google Search Console access token</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('Google Search Console access token') }}</label>
                     <input type="text" name="gsc_access_token" value="{{ old('gsc_access_token', $settings['gsc_access_token'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Google Search Console site URL</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('Google Search Console site URL') }}</label>
                     <input type="url" name="gsc_site_url" value="{{ old('gsc_site_url', $settings['gsc_site_url'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Target sales</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('Target sales') }}</label>
                     <input type="number" step="0.01" min="0" name="target_sales" value="{{ old('target_sales', $settings['target_sales'] ?? 0) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Actual source</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('Actual source') }}</label>
                     <select name="actual_source" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                         @foreach (['analysis' => 'Financial analyses', 'invoicemaker' => 'InvoiceMaker', 'seostory' => 'SeoStory financial analyses', 'manual' => 'Manual entry'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('actual_source', $settings['actual_source'] ?? 'invoicemaker') === $value)>{{ $label }}</option>
@@ -196,19 +196,19 @@ $settings = $settings ?? [];
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">SeoStory actual revenue</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('SeoStory actual revenue') }}</label>
                     <input type="number" step="0.01" min="0" name="seostory_revenue" value="{{ old('seostory_revenue', $settings['seostory_revenue'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
-                    <p class="mt-1 text-xs text-slate-500">Manual fallback until SeoStory API is configured.</p>
+                    <p class="mt-1 text-xs text-slate-500">{{ __('Manual fallback until SeoStory API is configured.') }}</p>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Manual actual sales</label>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('Manual actual sales') }}</label>
                     <input type="number" step="0.01" min="0" name="actual_manual" value="{{ old('actual_manual', $settings['actual_manual'] ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div class="border-t border-slate-200 pt-4">
-                    <div class="text-sm font-semibold text-slate-900">Lead quality metrics</div>
-                    <p class="text-xs text-slate-500">Enter current and previous month values. CTR will be calculated from clicks/impressions when left empty.</p>
+                    <div class="text-sm font-semibold text-slate-900">{{ __('Lead quality metrics') }}</div>
+                    <p class="text-xs text-slate-500">{{ __('Enter current and previous month values. CTR will be calculated from clicks/impressions when left empty.') }}</p>
 
                     @foreach (['impressions' => 'Impressions', 'clicks' => 'Clicks', 'ctr' => 'CTR (%)', 'average_position' => 'Avg. Google position', 'page_value' => 'Page value'] as $key => $label)
                         <div class="mt-3 grid grid-cols-2 gap-3">
@@ -224,7 +224,7 @@ $settings = $settings ?? [];
                     @endforeach
                 </div>
 
-                <button class="inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Save Deep KPIs</button>
+                <button class="inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save Deep KPIs') }}</button>
             </form>
         </div>
     </div>

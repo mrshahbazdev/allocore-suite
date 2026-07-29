@@ -43,7 +43,7 @@
 
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-slate-700">{{ __('Slack webhook URL') }}</label>
-                    <input type="url" name="preferences[{{ $type }}][slack_webhook]" value="{{ $preference->slack_webhook }}" placeholder="https://hooks.slack.com/services/..." class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <input type="url" name="preferences[{{ $type }}][slack_webhook]" value="{{ $preference->slack_webhook }}" placeholder="{{ __('https://hooks.slack.com/services/...') }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
             </div>
         @endforeach

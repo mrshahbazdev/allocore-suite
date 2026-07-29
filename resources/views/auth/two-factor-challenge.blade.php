@@ -20,7 +20,7 @@
 
             <div>
                 <label for="recovery_code" class="block text-sm font-medium text-slate-700">{{ __('Recovery code') }}</label>
-                <input id="recovery_code" name="recovery_code" type="text" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="xxxx-xxxx">
+                <input id="recovery_code" name="recovery_code" type="text" class="mt-2 block w-full rounded-lg border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('xxxx-xxxx') }}">
             </div>
 
             <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700">{{ __('Verify') }}</button>

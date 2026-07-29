@@ -168,7 +168,7 @@
                     <label for="public_score_slug" class="block text-sm font-medium text-slate-700">{{ __('Public slug') }}</label>
                     <div class="mt-1 flex rounded-md shadow-sm">
                         <span class="inline-flex items-center rounded-l-md border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">{{ url('scorecard/') }}/</span>
-                        <input type="text" name="public_score_slug" id="public_score_slug" value="{{ old('public_score_slug', $team->public_score_slug) }}" class="block w-full rounded-none rounded-r-md border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="my-company">
+                        <input type="text" name="public_score_slug" id="public_score_slug" value="{{ old('public_score_slug', $team->public_score_slug) }}" class="block w-full rounded-none rounded-r-md border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('my-company') }}">
                     </div>
                     @error('public_score_slug')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>

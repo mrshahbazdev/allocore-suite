@@ -42,7 +42,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Tags') }}</label>
-                        <input type="text" name="tags" value="{{ old('tags') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="sales, onboarding">
+                        <input type="text" name="tags" value="{{ old('tags') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('sales, onboarding') }}">
                     </div>
                 </div>
 

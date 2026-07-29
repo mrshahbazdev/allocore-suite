@@ -9,7 +9,7 @@
         <form method="GET" action="{{ route('dentaltrack.track') }}" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Tracking Code') }}</label>
-                <input type="text" name="code" value="{{ $code ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="8-character code" maxlength="8">
+                <input type="text" name="code" value="{{ $code ?? '' }}" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('8-character code') }}" maxlength="8">
             </div>
             <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Track') }}</button>
         </form>

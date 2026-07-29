@@ -4,9 +4,9 @@
 @section('page-title', '📊 ' . $analysis->name)
 
 @section('topbar-actions')
-    <a href="{{ route('gmbh.pdf', $analysis) }}" class="btn btn-secondary btn-sm">⬇ PDF Export</a>
-    <a href="{{ route('gmbh.edit', $analysis) }}" class="btn btn-secondary btn-sm">✏ Bearbeiten</a>
-    <a href="{{ route('gmbh.index') }}" class="btn btn-secondary btn-sm">← Zurück</a>
+    <a href="{{ route('gmbh.pdf', $analysis) }}" class="btn btn-secondary btn-sm">{{ __('⬇ PDF Export') }}</a>
+    <a href="{{ route('gmbh.edit', $analysis) }}" class="btn btn-secondary btn-sm">{{ __('✏ Bearbeiten') }}</a>
+    <a href="{{ route('gmbh.index') }}" class="btn btn-secondary btn-sm">{{ __('← Zurück') }}</a>
 @endsection
 
 @push('styles')
@@ -50,9 +50,9 @@
 
     {{-- Score Gauge --}}
     <div class="card" style="text-align:center; padding:28px 20px; border-color:{{ $colorHex }}40;">
-        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px;">Gesamt-Score</div>
+        <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px;">{{ __('Gesamt-Score') }}</div>
         <div class="score-lg score-{{ $color }}">{{ number_format($score, 1) }}</div>
-        <div style="font-size:14px; color:#475569; margin-top:4px;">/100 Punkte</div>
+        <div style="font-size:14px; color:#475569; margin-top:4px;">{{ __('/100 Punkte') }}</div>
         <div style="margin-top:16px;">
             <span class="badge badge-{{ $color }}">
                 @if($color === 'green') ✅ Positiv
@@ -69,20 +69,20 @@
 
     {{-- Company Info --}}
     <div class="card">
-        <div class="card-title">🏢 Unternehmen</div>
+        <div class="card-title">{{ __('🏢 Unternehmen') }}</div>
         <div style="font-size:20px; font-weight:600; color:#e2e8f0; margin-bottom:8px;">{{ $analysis->company->name }}</div>
         <div style="display:flex; flex-direction:column; gap:6px;">
             <div style="font-size:13px; color:#94a3b8;">
-                <span style="color:#64748b;">Branche:</span> {{ $analysis->company->industry ?? '—' }}
+                <span style="color:#64748b;">{{ __('Branche:') }}</span> {{ $analysis->company->industry ?? '—' }}
             </div>
             <div style="font-size:13px; color:#94a3b8;">
-                <span style="color:#64748b;">Währung:</span> {{ $analysis->company->currency }}
+                <span style="color:#64748b;">{{ __('Währung:') }}</span> {{ $analysis->company->currency }}
             </div>
             <div style="font-size:13px; color:#94a3b8;">
-                <span style="color:#64748b;">Erstellt:</span> {{ $analysis->created_at->format('d.m.Y H:i') }}
+                <span style="color:#64748b;">{{ __('Erstellt:') }}</span> {{ $analysis->created_at->format('d.m.Y H:i') }}
             </div>
             <div style="font-size:13px; color:#94a3b8;">
-                <span style="color:#64748b;">Status:</span>
+                <span style="color:#64748b;">{{ __('Status:') }}</span>
                 <span class="badge badge-green">{{ ucfirst($analysis->status) }}</span>
             </div>
         </div>
@@ -90,20 +90,20 @@
 
     {{-- Recommendation --}}
     <div class="card" style="border-color:{{ $colorHex }}30; background:{{ $colorHex }}08;">
-        <div class="card-title">🎯 Empfehlung</div>
+        <div class="card-title">{{ __('🎯 Empfehlung') }}</div>
         <div style="font-size:16px; font-weight:600; color:{{ $colorHex }}; line-height:1.4; margin-bottom:16px;">
             {{ $analysis->recommendation ?? '—' }}
         </div>
         @if($input)
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
             <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
-                <div style="font-size:11px; color:#64748b;">Umsatz</div>
+                <div style="font-size:11px; color:#64748b;">{{ __('Umsatz') }}</div>
                 <div style="font-size:15px; font-weight:600; color:#e2e8f0; margin-top:2px;">
                     {{ number_format($input->revenue_current / 1000, 0) }}k €
                 </div>
             </div>
             <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
-                <div style="font-size:11px; color:#64748b;">Eigenkapital</div>
+                <div style="font-size:11px; color:#64748b;">{{ __('Eigenkapital') }}</div>
                 <div style="font-size:15px; font-weight:600; color:#e2e8f0; margin-top:2px;">
                     {{ number_format($input->equity / 1000, 0) }}k €
                 </div>
@@ -117,16 +117,16 @@
 <div class="gmbh-show-kpi-grid">
 
     <div class="card">
-        <div class="card-title">📊 KPI Übersicht</div>
+        <div class="card-title">{{ __('📊 KPI Übersicht') }}</div>
         @if($analysis->kpiResults->isNotEmpty())
         <div class="gmbh-show-table-wrap">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>KPI</th>
-                    <th>Wert</th>
-                    <th>Gewicht</th>
-                    <th>Status</th>
+                    <th>{{ __('KPI') }}</th>
+                    <th>{{ __('Wert') }}</th>
+                    <th>{{ __('Gewicht') }}</th>
+                    <th>{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -152,14 +152,14 @@
         </table>
         </div>
         @else
-            <div style="color:#475569; font-size:13px;">Keine KPIs berechnet.</div>
+            <div style="color:#475569; font-size:13px;">{{ __('Keine KPIs berechnet.') }}</div>
         @endif
     </div>
 
     {{-- Input Summary --}}
     @if($input)
     <div class="card">
-        <div class="card-title">📋 Eingabewerte</div>
+        <div class="card-title">{{ __('📋 Eingabewerte') }}</div>
         <div class="gmbh-show-table-wrap">
         <table class="data-table">
             <tbody>
@@ -193,7 +193,7 @@
 {{-- Chart --}}
 @if($analysis->kpiResults->isNotEmpty())
 <div class="card" style="margin-bottom:20px;">
-    <div class="card-title">📉 KPI Score-Visualisierung</div>
+    <div class="card-title">{{ __('📉 KPI Score-Visualisierung') }}</div>
     <div id="kpiChart"></div>
 </div>
 
@@ -227,7 +227,7 @@ new ApexCharts(document.querySelector("#kpiChart"), {
     <form method="POST" action="{{ route('gmbh.destroy', $analysis) }}"
           onsubmit="return confirm('Analyse wirklich löschen?')">
         @csrf @method('DELETE')
-        <button type="submit" class="btn btn-danger btn-sm">🗑 Löschen</button>
+        <button type="submit" class="btn btn-danger btn-sm">{{ __('🗑 Löschen') }}</button>
     </form>
 </div>
 

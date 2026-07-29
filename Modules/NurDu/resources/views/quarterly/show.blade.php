@@ -15,9 +15,9 @@
         <h2 class="text-lg font-semibold text-slate-900">{{ __('Add Priority') }}</h2>
         <form method="POST" action="{{ route('nurdu.quarterly.priorities.store', $quarterlyFocus) }}" class="mt-4 grid md:grid-cols-3 gap-4">
             @csrf
-            <input type="text" name="title" placeholder="Title" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
-            <input type="text" name="owner" placeholder="Owner" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
-            <input type="text" name="kpi" placeholder="KPI" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
+            <input type="text" name="title" placeholder="{{ __('Title') }}" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500" required>
+            <input type="text" name="owner" placeholder="{{ __('Owner') }}" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
+            <input type="text" name="kpi" placeholder="{{ __('KPI') }}" class="rounded-lg  focus:border-indigo-500 focus:ring-indigo-500">
             <div class="md:col-span-3 flex justify-end">
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add Priority') }}</button>
             </div>

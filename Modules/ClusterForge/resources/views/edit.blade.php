@@ -35,7 +35,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Tags') }}</label>
-                    <input type="text" name="tags" value="{{ old('tags', implode(', ', $cluster->tags ?? [])) }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="seo, content">
+                    <input type="text" name="tags" value="{{ old('tags', implode(', ', $cluster->tags ?? [])) }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('seo, content') }}">
                 </div>
             </div>
             <div>
