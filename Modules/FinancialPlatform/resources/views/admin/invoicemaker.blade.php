@@ -3,7 +3,7 @@
 @section('page-title', '🧾 Invoice Maker Integration')
 
 @section('topbar-actions')
-    <a href="{{ route('admin.index') }}" class="btn btn-secondary btn-sm">Zurück</a>
+    <a href="{{ route('admin.index') }}" class="btn btn-secondary btn-sm">{{ __('Zurück') }}</a>
 @endsection
 
 @push('styles')
@@ -26,29 +26,26 @@
 @section('content')
 <div class="settings-grid">
     <div class="card">
-        <div class="card-title">API-Konfiguration</div>
+        <div class="card-title">{{ __('API-Konfiguration') }}</div>
 
         <form method="POST" action="{{ route('admin.invoicemaker.save') }}">
             @csrf
 
             <div class="form-group">
-                <label class="form-label">Invoice Maker URL *</label>
+                <label class="form-label">{{ __('Invoice Maker URL *') }}</label>
                 <input type="url" name="base_url" class="form-control"
                     value="{{ old('base_url', $settings['base_url']) }}"
-                    placeholder="https://invoice.allocore.de">
-                <p class="form-hint">Die URL der Invoice Maker-Instanz (z.B. https://invoice.allocore.de)</p>
+                    placeholder="{{ __('https://invoice.allocore.de') }}">
+                <p class="form-hint">{{ __('Die URL der Invoice Maker-Instanz (z.B. https://invoice.allocore.de)') }}</p>
             </div>
 
             <div class="form-group">
-                <label class="form-label">API-Key *</label>
+                <label class="form-label">{{ __('API-Key *') }}</label>
                 <input type="text" name="api_key" class="form-control"
                     value="{{ old('api_key', $settings['api_key']) }}"
-                    placeholder="alc_xxxxxxxxxxxxxxxx">
-                <p class="form-hint">
-                    Den API-Key in Invoice Maker unter
-                    <strong>Admin → Einstellungen → Allocore Integration</strong> generieren
-                    und hier einfügen.
-                </p>
+                    placeholder="{{ __('alc_xxxxxxxxxxxxxxxx') }}">
+                <p class="form-hint">{{ __('Den API-Key in Invoice Maker unter') }}<strong>{{ __('Admin → Einstellungen → Allocore Integration') }}</strong>{{ __('generieren
+                    und hier einfügen.') }}</p>
             </div>
 
             @if($errors->any())
@@ -60,53 +57,53 @@
             @endif
 
             <div class="btn-row">
-                <button type="submit" class="btn btn-primary">Einstellungen speichern</button>
+                <button type="submit" class="btn btn-primary">{{ __('Einstellungen speichern') }}</button>
             </div>
         </form>
 
         <div style="border-top: 1px solid rgba(220,38,38,0.1); margin-top: 24px; padding-top: 18px;">
-            <div class="card-title">Verbindung testen</div>
+            <div class="card-title">{{ __('Verbindung testen') }}</div>
             <form method="POST" action="{{ route('admin.invoicemaker.test') }}">
                 @csrf
-                <button type="submit" class="btn btn-secondary">Verbindung testen</button>
+                <button type="submit" class="btn btn-secondary">{{ __('Verbindung testen') }}</button>
             </form>
         </div>
     </div>
 
     <div style="display:flex; flex-direction:column; gap:16px;">
         <div class="card info-card">
-            <h4>Einrichtung</h4>
-            <p>So verbinden Sie Allocore mit Invoice Maker:</p>
+            <h4>{{ __('Einrichtung') }}</h4>
+            <p>{{ __('So verbinden Sie Allocore mit Invoice Maker:') }}</p>
             <ul>
-                <li>Öffnen Sie <a href="https://invoice.allocore.de" target="_blank">invoice.allocore.de</a></li>
-                <li>Gehen Sie zu <strong>Admin → Einstellungen → Allocore</strong></li>
-                <li>Klicken Sie auf <strong>API-Key generieren</strong></li>
-                <li>Kopieren Sie den generierten Key und fügen Sie ihn hier ein</li>
-                <li>Klicken Sie auf <strong>Einstellungen speichern</strong></li>
-                <li>Testen Sie die Verbindung mit dem Button unten</li>
+                <li>{{ __('Öffnen Sie') }}<a href="https://invoice.allocore.de" target="_blank">{{ __('invoice.allocore.de') }}</a></li>
+                <li>{{ __('Gehen Sie zu') }}<strong>{{ __('Admin → Einstellungen → Allocore') }}</strong></li>
+                <li>{{ __('Klicken Sie auf') }}<strong>{{ __('API-Key generieren') }}</strong></li>
+                <li>{{ __('Kopieren Sie den generierten Key und fügen Sie ihn hier ein') }}</li>
+                <li>{{ __('Klicken Sie auf') }}<strong>{{ __('Einstellungen speichern') }}</strong></li>
+                <li>{{ __('Testen Sie die Verbindung mit dem Button unten') }}</li>
             </ul>
         </div>
 
         <div class="card info-card">
-            <h4>Funktionsweise</h4>
-            <p>Nach erfolgreicher Verbindung werden automatisch Rechnungen erstellt, wenn:</p>
+            <h4>{{ __('Funktionsweise') }}</h4>
+            <p>{{ __('Nach erfolgreicher Verbindung werden automatisch Rechnungen erstellt, wenn:') }}</p>
             <ul>
-                <li>Ein Benutzer eine PayPal-Zahlung abschließt</li>
-                <li>Der Benutzer wird als Kunde synchronisiert</li>
-                <li>Eine Rechnung mit allen Zahlungsdetails wird erstellt</li>
-                <li>Die Rechnung ist sofort auf Invoice Maker verfügbar</li>
+                <li>{{ __('Ein Benutzer eine PayPal-Zahlung abschließt') }}</li>
+                <li>{{ __('Der Benutzer wird als Kunde synchronisiert') }}</li>
+                <li>{{ __('Eine Rechnung mit allen Zahlungsdetails wird erstellt') }}</li>
+                <li>{{ __('Die Rechnung ist sofort auf Invoice Maker verfügbar') }}</li>
             </ul>
         </div>
 
         <div class="card info-card">
-            <h4>Status</h4>
+            <h4>{{ __('Status') }}</h4>
             @php
                 $isConfigured = !empty($settings['api_key']) && !empty($settings['base_url']);
             @endphp
             @if($isConfigured)
-                <p style="color: #34d399;">Konfiguriert — API-Key und URL sind gesetzt.</p>
+                <p style="color: #34d399;">{{ __('Konfiguriert — API-Key und URL sind gesetzt.') }}</p>
             @else
-                <p style="color: #fbbf24;">Nicht konfiguriert — Bitte API-Key und URL eingeben.</p>
+                <p style="color: #fbbf24;">{{ __('Nicht konfiguriert — Bitte API-Key und URL eingeben.') }}</p>
             @endif
         </div>
     </div>

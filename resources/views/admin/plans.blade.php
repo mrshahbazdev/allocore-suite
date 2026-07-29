@@ -28,7 +28,7 @@
                         </select>
                         <input type="number" step="0.01" name="price_monthly" value="{{ $plan->price_monthly }}" class="rounded-lg border-slate-300 text-sm" placeholder="{{ __('Monthly price') }}">
                         <input type="number" step="0.01" name="price_yearly" value="{{ $plan->price_yearly }}" class="rounded-lg border-slate-300 text-sm" placeholder="{{ __('Yearly price') }}">
-                        <input type="text" name="currency" value="{{ $plan->currency }}" maxlength="3" class="rounded-lg border-slate-300 text-sm" placeholder="EUR">
+                        <input type="text" name="currency" value="{{ $plan->currency }}" maxlength="3" class="rounded-lg border-slate-300 text-sm" placeholder="{{ __('EUR') }}">
                     </div>
                     <textarea name="description" rows="2" class="mt-3 w-full rounded-lg border-slate-300 text-sm" placeholder="{{ __('Description') }}">{{ $plan->description }}</textarea>
                     <div class="mt-3 flex flex-wrap gap-4">

@@ -2,7 +2,7 @@
 @section('title', 'Unternehmen — Allocore')
 @section('page-title', '🏢 Unternehmen')
 @section('topbar-actions')
-    <a href="{{ route('companies.create') }}" class="btn btn-primary btn-sm">+ Unternehmen anlegen</a>
+    <a href="{{ route('companies.create') }}" class="btn btn-primary btn-sm">{{ __('+ Unternehmen anlegen') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -48,7 +48,7 @@
             {{ $c->analyses_count }} {{ $c->analyses_count === 1 ? 'Analyse' : 'Analysen' }}
         </div>
         <div class="company-card-actions">
-            <a href="{{ route('companies.show', $c) }}" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center;">Ansehen →</a>
+            <a href="{{ route('companies.show', $c) }}" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center;">{{ __('Ansehen →') }}</a>
             <a href="{{ route('companies.edit', $c) }}" class="btn btn-secondary btn-sm">✏</a>
             <form method="POST" action="{{ route('companies.destroy', $c) }}" onsubmit="return confirm('Löschen?')">
                 @csrf @method('DELETE')
@@ -59,8 +59,8 @@
     @empty
     <div class="card" style="grid-column:1/-1; text-align:center; padding:60px;">
         <div style="font-size:40px; margin-bottom:12px;">🏢</div>
-        <div style="font-size:16px; font-weight:600; color:#c7d2fe; margin-bottom:8px;">Noch keine Unternehmen</div>
-        <a href="{{ route('companies.create') }}" class="btn btn-primary">+ Erstes Unternehmen anlegen</a>
+        <div style="font-size:16px; font-weight:600; color:#c7d2fe; margin-bottom:8px;">{{ __('Noch keine Unternehmen') }}</div>
+        <a href="{{ route('companies.create') }}" class="btn btn-primary">{{ __('+ Erstes Unternehmen anlegen') }}</a>
     </div>
     @endforelse
 </div>

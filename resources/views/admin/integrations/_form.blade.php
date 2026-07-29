@@ -12,7 +12,7 @@ if (! is_array($config) || empty($config)) {
 
 <div>
     <label class="block text-sm font-medium text-slate-700">{{ __('Type') }}</label>
-    <input name="type" value="{{ old('type', $integration->type ?? '') }}" placeholder="e.g. stripe, mailchimp, webhook" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+    <input name="type" value="{{ old('type', $integration->type ?? '') }}" placeholder="{{ __('e.g. stripe, mailchimp, webhook') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
 </div>
 
 <div>

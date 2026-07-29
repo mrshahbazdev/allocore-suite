@@ -2,7 +2,7 @@
 @section('title', 'Jahresabschluss erstellen — Allocore')
 @section('page-title', '📈 Jahresabschluss — Neue Analyse')
 @section('topbar-actions')
-    <a href="{{ route('jahresabschluss.index') }}" class="btn btn-secondary btn-sm">← Zurück</a>
+    <a href="{{ route('jahresabschluss.index') }}" class="btn btn-secondary btn-sm">{{ __('← Zurück') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -40,16 +40,16 @@
 
 {{-- Basic Info --}}
 <div class="card" style="margin-bottom:16px;">
-    <div class="card-title">📋 Grunddaten</div>
+    <div class="card-title">{{ __('📋 Grunddaten') }}</div>
     <div class="form-grid">
         <div class="form-group">
-            <label class="form-label">Name der Analyse *</label>
-            <input type="text" name="name" class="form-control" placeholder="Jahresabschluss 2024" value="{{ old('name') }}" required>
+            <label class="form-label">{{ __('Name der Analyse *') }}</label>
+            <input type="text" name="name" class="form-control" placeholder="{{ __('Jahresabschluss 2024') }}" value="{{ old('name') }}" required>
         </div>
         <div class="form-group">
-            <label class="form-label">Unternehmen *</label>
+            <label class="form-label">{{ __('Unternehmen *') }}</label>
             <select name="company_id" class="form-control" required>
-                <option value="">— Bitte wählen —</option>
+                <option value="">{{ __('— Bitte wählen —') }}</option>
                 @foreach($companies as $c)
                     <option value="{{ $c->id }}" {{ old('company_id')==$c->id?'selected':'' }}>{{ $c->name }}</option>
                 @endforeach
@@ -76,49 +76,47 @@
     <div class="card-title">📅 Jahr {{ $i+1 }}</div>
     <input type="hidden" name="years[{{ $i }}][year_order]" value="{{ $i+1 }}">
     <div class="form-group">
-        <label class="form-label">Jahrbezeichnung *</label>
+        <label class="form-label">{{ __('Jahrbezeichnung *') }}</label>
         <input type="text" name="years[{{ $i }}][year_label]" class="form-control"
             placeholder="{{ date('Y') - (2-$i) }}" value="{{ old("years.$i.year_label", date('Y') - (2-$i)) }}" required>
     </div>
     <div class="ja-year-grid">
-        <div class="form-group"><label class="form-label">Umsatz (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Umsatz (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][revenue]" class="form-control" placeholder="2.000.000" value="{{ old("years.$i.revenue") }}"></div>
-        <div class="form-group"><label class="form-label">EBIT (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('EBIT (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][ebit]" class="form-control" placeholder="200.000" value="{{ old("years.$i.ebit") }}"></div>
-        <div class="form-group"><label class="form-label">Jahresüberschuss (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Jahresüberschuss (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][net_profit]" class="form-control" placeholder="120.000" value="{{ old("years.$i.net_profit") }}"></div>
-        <div class="form-group"><label class="form-label">Eigenkapital (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Eigenkapital (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][equity]" class="form-control" placeholder="600.000" value="{{ old("years.$i.equity") }}"></div>
-        <div class="form-group"><label class="form-label">Bilanzsumme (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Bilanzsumme (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][total_assets]" class="form-control" placeholder="1.500.000" value="{{ old("years.$i.total_assets") }}"></div>
-        <div class="form-group"><label class="form-label">Umlaufvermögen (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Umlaufvermögen (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][current_assets]" class="form-control" placeholder="700.000" value="{{ old("years.$i.current_assets") }}"></div>
-        <div class="form-group"><label class="form-label">Kasse / Cash (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Kasse / Cash (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][cash]" class="form-control" placeholder="200.000" value="{{ old("years.$i.cash") }}"></div>
-        <div class="form-group"><label class="form-label">Forderungen (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Forderungen (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][receivables]" class="form-control" placeholder="300.000" value="{{ old("years.$i.receivables") }}"></div>
-        <div class="form-group"><label class="form-label">Vorräte (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Vorräte (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][inventory]" class="form-control" placeholder="100.000" value="{{ old("years.$i.inventory") }}"></div>
-        <div class="form-group"><label class="form-label">Kurzfr. Verbindlichkeiten (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Kurzfr. Verbindlichkeiten (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][current_liabilities]" class="form-control" placeholder="400.000" value="{{ old("years.$i.current_liabilities") }}"></div>
-        <div class="form-group"><label class="form-label">Gesamtverbindlichkeiten (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Gesamtverbindlichkeiten (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][total_liabilities]" class="form-control" placeholder="900.000" value="{{ old("years.$i.total_liabilities") }}"></div>
-        <div class="form-group"><label class="form-label">Zinsaufwand (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Zinsaufwand (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][interest_exp]" class="form-control" placeholder="30.000" value="{{ old("years.$i.interest_exp") }}"></div>
-        <div class="form-group"><label class="form-label">Materialaufwand (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Materialaufwand (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][material_costs]" class="form-control" placeholder="500.000" value="{{ old("years.$i.material_costs") }}"></div>
-        <div class="form-group"><label class="form-label">Personalaufwand (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Personalaufwand (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][personnel_costs]" class="form-control" placeholder="400.000" value="{{ old("years.$i.personnel_costs") }}"></div>
-        <div class="form-group"><label class="form-label">Verbindlichkeiten L+L (€)</label>
+        <div class="form-group"><label class="form-label">{{ __('Verbindlichkeiten L+L (€)') }}</label>
             <input type="number" step="0.01" name="years[{{ $i }}][payables]" class="form-control" placeholder="150.000" value="{{ old("years.$i.payables") }}"></div>
     </div>
 </div>
 </div>
 @endforeach
 
-<button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:14px;">
-    📈 Jahresabschluss berechnen & speichern
-</button>
+<button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:14px;">{{ __('📈 Jahresabschluss berechnen & speichern') }}</button>
 
 </form>
 

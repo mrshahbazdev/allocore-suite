@@ -2,7 +2,7 @@
 @section('title', 'Immobilie analysieren — Allocore')
 @section('page-title', '🏘 Neue Immobilienanalyse')
 @section('topbar-actions')
-    <a href="{{ route('immobilien.index') }}" class="btn btn-secondary btn-sm">← Zurück</a>
+    <a href="{{ route('immobilien.index') }}" class="btn btn-secondary btn-sm">{{ __('← Zurück') }}</a>
 @endsection
 @push('styles')
 <style>
@@ -42,95 +42,95 @@
 <div class="immo-create-left">
 
   <div class="card">
-    <div class="card-title">📋 Grunddaten</div>
+    <div class="card-title">{{ __('📋 Grunddaten') }}</div>
     <div class="form-grid">
       <div class="form-group col-span-2">
-        <label class="form-label">Name der Analyse *</label>
-        <input type="text" name="name" class="form-control" placeholder="Mehrfamilienhaus Berlin 2024" value="{{ old('name') }}" required>
+        <label class="form-label">{{ __('Name der Analyse *') }}</label>
+        <input type="text" name="name" class="form-control" placeholder="{{ __('Mehrfamilienhaus Berlin 2024') }}" value="{{ old('name') }}" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Unternehmen *</label>
+        <label class="form-label">{{ __('Unternehmen *') }}</label>
         <select name="company_id" class="form-control" required>
-          <option value="">— Bitte wählen —</option>
+          <option value="">{{ __('— Bitte wählen —') }}</option>
           @foreach($companies as $c)
             <option value="{{ $c->id }}" {{ old('company_id')==$c->id?'selected':'' }}>{{ $c->name }}</option>
           @endforeach
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Objekttyp</label>
+        <label class="form-label">{{ __('Objekttyp') }}</label>
         <select name="property_type" class="form-control">
-          <option value="Mehrfamilienhaus">Mehrfamilienhaus</option>
-          <option value="Einfamilienhaus">Einfamilienhaus</option>
-          <option value="Eigentumswohnung">Eigentumswohnung</option>
-          <option value="Gewerbeobjekt">Gewerbeobjekt</option>
+          <option value="Mehrfamilienhaus">{{ __('Mehrfamilienhaus') }}</option>
+          <option value="Einfamilienhaus">{{ __('Einfamilienhaus') }}</option>
+          <option value="Eigentumswohnung">{{ __('Eigentumswohnung') }}</option>
+          <option value="Gewerbeobjekt">{{ __('Gewerbeobjekt') }}</option>
         </select>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">🏠 Kaufdaten</div>
+    <div class="card-title">{{ __('🏠 Kaufdaten') }}</div>
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label">Kaufpreis (€) *</label>
+        <label class="form-label">{{ __('Kaufpreis (€) *') }}</label>
         <input type="number" step="0.01" name="purchase_price" class="form-control" placeholder="500.000" value="{{ old('purchase_price') }}" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Nebenkosten (€) *</label>
+        <label class="form-label">{{ __('Nebenkosten (€) *') }}</label>
         <input type="number" step="0.01" name="closing_costs" class="form-control" placeholder="40.000" value="{{ old('closing_costs') }}" required>
-        <div style="font-size:11px; color:#475569; margin-top:3px;">Notar, GrESt, Makler</div>
+        <div style="font-size:11px; color:#475569; margin-top:3px;">{{ __('Notar, GrESt, Makler') }}</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Renovierungskosten (€)</label>
+        <label class="form-label">{{ __('Renovierungskosten (€)') }}</label>
         <input type="number" step="0.01" name="renovation_costs" class="form-control" placeholder="0" value="{{ old('renovation_costs', 0) }}">
       </div>
       <div class="form-group">
-        <label class="form-label">Wohnfläche (m²)</label>
+        <label class="form-label">{{ __('Wohnfläche (m²)') }}</label>
         <input type="number" step="0.01" name="area_sqm" class="form-control" placeholder="200" value="{{ old('area_sqm') }}">
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">💰 Mieteinnahmen</div>
+    <div class="card-title">{{ __('💰 Mieteinnahmen') }}</div>
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label">Aktuelle Nettokaltmiete/Monat (€) *</label>
+        <label class="form-label">{{ __('Aktuelle Nettokaltmiete/Monat (€) *') }}</label>
         <input type="number" step="0.01" name="rent_net" class="form-control" placeholder="2.500" value="{{ old('rent_net') }}" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Marktmiete/Monat (Potenzial) (€)</label>
+        <label class="form-label">{{ __('Marktmiete/Monat (Potenzial) (€)') }}</label>
         <input type="number" step="0.01" name="market_rent" class="form-control" placeholder="3.000" value="{{ old('market_rent') }}">
       </div>
       <div class="form-group">
-        <label class="form-label">Leerstandsquote (%)</label>
+        <label class="form-label">{{ __('Leerstandsquote (%)') }}</label>
         <input type="number" step="0.1" name="vacancy_rate" class="form-control" placeholder="5" value="{{ old('vacancy_rate', 5) }}">
       </div>
       <div class="form-group">
-        <label class="form-label">Bewirtschaftungskosten (% der Bruttomiete)</label>
+        <label class="form-label">{{ __('Bewirtschaftungskosten (% der Bruttomiete)') }}</label>
         <input type="number" step="0.1" name="management_costs_pct" class="form-control" placeholder="10" value="{{ old('management_costs_pct', 10) }}">
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">🏦 Finanzierung</div>
+    <div class="card-title">{{ __('🏦 Finanzierung') }}</div>
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label">Eigenkapital (€) *</label>
+        <label class="form-label">{{ __('Eigenkapital (€) *') }}</label>
         <input type="number" step="0.01" name="equity" class="form-control" placeholder="150.000" value="{{ old('equity') }}" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Zinssatz (% p.a.) *</label>
+        <label class="form-label">{{ __('Zinssatz (% p.a.) *') }}</label>
         <input type="number" step="0.01" name="loan_rate" class="form-control" placeholder="3.5" value="{{ old('loan_rate', 3.5) }}" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Tilgungsrate (% p.a.) *</label>
+        <label class="form-label">{{ __('Tilgungsrate (% p.a.) *') }}</label>
         <input type="number" step="0.01" name="repayment_rate" class="form-control" placeholder="2.0" value="{{ old('repayment_rate', 2) }}" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Kreditlaufzeit (Jahre)</label>
+        <label class="form-label">{{ __('Kreditlaufzeit (Jahre)') }}</label>
         <input type="number" name="loan_term_years" class="form-control" placeholder="25" value="{{ old('loan_term_years', 25) }}">
       </div>
     </div>
@@ -141,47 +141,45 @@
 {{-- Right Panel: Scores --}}
 <div class="immo-create-right">
   <div class="card">
-    <div class="card-title">🎯 Qualitative Scores</div>
+    <div class="card-title">{{ __('🎯 Qualitative Scores') }}</div>
 
     <div class="form-group">
-      <label class="form-label">Lage-Score (1–10) *</label>
+      <label class="form-label">{{ __('Lage-Score (1–10) *') }}</label>
       <input type="range" name="location_score" id="loc" min="1" max="10" step="1" value="{{ old('location_score', 7) }}"
         style="width:100%; accent-color:#6366f1;" oninput="document.getElementById('loc_v').textContent=this.value">
       <div style="display:flex; justify-content:space-between; font-size:11px; color:#475569; margin-top:4px;">
-        <span>1 — Ländlich</span>
+        <span>{{ __('1 — Ländlich') }}</span>
         <span style="font-size:18px; font-weight:700; color:#818cf8;" id="loc_v">{{ old('location_score', 7) }}</span>
-        <span>10 — Toplage</span>
+        <span>{{ __('10 — Toplage') }}</span>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Zustand-Score (1–10) *</label>
+      <label class="form-label">{{ __('Zustand-Score (1–10) *') }}</label>
       <input type="range" name="condition_score" id="cond" min="1" max="10" step="1" value="{{ old('condition_score', 7) }}"
         style="width:100%; accent-color:#6366f1;" oninput="document.getElementById('cond_v').textContent=this.value">
       <div style="display:flex; justify-content:space-between; font-size:11px; color:#475569; margin-top:4px;">
-        <span>1 — Sanierungsbedürftig</span>
+        <span>{{ __('1 — Sanierungsbedürftig') }}</span>
         <span style="font-size:18px; font-weight:700; color:#818cf8;" id="cond_v">{{ old('condition_score', 7) }}</span>
-        <span>10 — Neubau</span>
+        <span>{{ __('10 — Neubau') }}</span>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Mietsteigerungspotenzial (1–10)</label>
+      <label class="form-label">{{ __('Mietsteigerungspotenzial (1–10)') }}</label>
       <input type="range" name="rent_growth_score" id="rg" min="1" max="10" step="1" value="{{ old('rent_growth_score', 5) }}"
         style="width:100%; accent-color:#6366f1;" oninput="document.getElementById('rg_v').textContent=this.value">
       <div style="display:flex; justify-content:space-between; font-size:11px; color:#475569; margin-top:4px;">
-        <span>1 — Kein Potenzial</span>
+        <span>{{ __('1 — Kein Potenzial') }}</span>
         <span style="font-size:18px; font-weight:700; color:#818cf8;" id="rg_v">{{ old('rent_growth_score', 5) }}</span>
-        <span>10 — Hoch</span>
+        <span>{{ __('10 — Hoch') }}</span>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">⚖️ KPI-Gewichtung (manuell)</div>
-    <div style="font-size:11px; color:#64748b; margin-bottom:10px;">
-      Prozentanteile je KPI (0-100). Die Summe darf 100% nicht ueberschreiten.
-    </div>
+    <div class="card-title">{{ __('⚖️ KPI-Gewichtung (manuell)') }}</div>
+    <div style="font-size:11px; color:#64748b; margin-bottom:10px;">{{ __('Prozentanteile je KPI (0-100). Die Summe darf 100% nicht ueberschreiten.') }}</div>
     @foreach([
       ['CASHFLOW', 'Cashflow p.a.', 10, '#10b981'],
       ['CF_RENDITE', 'Cashflow-Rendite', 20, '#10b981'],
@@ -209,9 +207,7 @@
     @endforeach
   </div>
 
-  <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:14px;">
-    🏘 Analyse berechnen & speichern
-  </button>
+  <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:14px;">{{ __('🏘 Analyse berechnen & speichern') }}</button>
 </div>
 
 </div>

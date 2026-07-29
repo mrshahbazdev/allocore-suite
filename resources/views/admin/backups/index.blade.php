@@ -11,19 +11,19 @@
     <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <a href="{{ route('admin.backups.export.users') }}" class="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:bg-slate-50">
             <div class="text-sm font-semibold text-slate-900">{{ __('admin.backups.export_users') }}</div>
-            <div class="text-xs text-slate-500">CSV</div>
+            <div class="text-xs text-slate-500">{{ __('CSV') }}</div>
         </a>
         <a href="{{ route('admin.backups.export.teams') }}" class="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:bg-slate-50">
             <div class="text-sm font-semibold text-slate-900">{{ __('admin.backups.export_teams') }}</div>
-            <div class="text-xs text-slate-500">CSV</div>
+            <div class="text-xs text-slate-500">{{ __('CSV') }}</div>
         </a>
         <a href="{{ route('admin.backups.export.invoices') }}" class="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:bg-slate-50">
             <div class="text-sm font-semibold text-slate-900">{{ __('admin.backups.export_invoices') }}</div>
-            <div class="text-xs text-slate-500">CSV</div>
+            <div class="text-xs text-slate-500">{{ __('CSV') }}</div>
         </a>
         <a href="{{ route('admin.backups.export.payments') }}" class="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:bg-slate-50">
             <div class="text-sm font-semibold text-slate-900">{{ __('admin.backups.export_payments') }}</div>
-            <div class="text-xs text-slate-500">CSV</div>
+            <div class="text-xs text-slate-500">{{ __('CSV') }}</div>
         </a>
     </div>
 

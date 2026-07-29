@@ -24,7 +24,7 @@
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div><label class="block text-sm font-medium text-slate-700">{{ __('Category') }}</label><input type="text" name="category" value="{{ old('category', $process->category) }}" class="mt-1 w-full rounded-lg border-slate-300"></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Icon') }}</label><input type="text" name="icon" value="{{ old('icon', $process->icon) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="e.g. document-check"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Icon') }}</label><input type="text" name="icon" value="{{ old('icon', $process->icon) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="{{ __('e.g. document-check') }}"></div>
             </div>
 
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Allocore Suite — Dashboard Report</title>
+    <title>{{ __('Allocore Suite — Dashboard Report') }}</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #334155; }
         h1 { font-size: 22px; color: #1e293b; margin-bottom: 4px; }
@@ -22,68 +22,68 @@
     </style>
 </head>
 <body>
-    <h1>Allocore Suite Dashboard</h1>
+    <h1>{{ __('Allocore Suite Dashboard') }}</h1>
     <p class="meta">{{ $user->name }} · {{ $user->email }} · {{ now()->format('F j, Y') }}</p>
 
     <div class="grid">
         <div class="grid-row">
-            <div class="grid-cell"><div class="stat-label">Active tools</div><div class="stat-value">{{ $stats['active_modules'] }}</div></div>
-            <div class="grid-cell"><div class="stat-label">Locked add-ons</div><div class="stat-value">{{ $stats['locked_modules'] }}</div></div>
-            <div class="grid-cell"><div class="stat-label">Total tools</div><div class="stat-value">{{ $stats['total_modules'] }}</div></div>
-            <div class="grid-cell"><div class="stat-label">Workspace members</div><div class="stat-value">{{ $stats['workspace_members'] }}</div></div>
+            <div class="grid-cell"><div class="stat-label">{{ __('Active tools') }}</div><div class="stat-value">{{ $stats['active_modules'] }}</div></div>
+            <div class="grid-cell"><div class="stat-label">{{ __('Locked add-ons') }}</div><div class="stat-value">{{ $stats['locked_modules'] }}</div></div>
+            <div class="grid-cell"><div class="stat-label">{{ __('Total tools') }}</div><div class="stat-value">{{ $stats['total_modules'] }}</div></div>
+            <div class="grid-cell"><div class="stat-label">{{ __('Workspace members') }}</div><div class="stat-value">{{ $stats['workspace_members'] }}</div></div>
         </div>
     </div>
 
     @if ($subscription)
-        <p><strong>Current plan:</strong> {{ $subscription->plan?->name ?? __('Free') }}
+        <p><strong>{{ __('Current plan:') }}</strong> {{ $subscription->plan?->name ?? __('Free') }}
         @if ($subscription->ends_at)
-            · <strong>Renews:</strong> {{ $subscription->ends_at->format('F j, Y') }}
+            · <strong>{{ __('Renews:') }}</strong> {{ $subscription->ends_at->format('F j, Y') }}
         @endif
         </p>
     @endif
 
-    <h2>Active Tools</h2>
+    <h2>{{ __('Active Tools') }}</h2>
     @if ($activeModules->isEmpty())
-        <p>No active tools yet.</p>
+        <p>{{ __('No active tools yet.') }}</p>
     @else
         <table>
-            <thead><tr><th>Tool</th><th>Description</th><th>Status</th></tr></thead>
+            <thead><tr><th>{{ __('Tool') }}</th><th>{{ __('Description') }}</th><th>{{ __('Status') }}</th></tr></thead>
             <tbody>
                 @foreach ($activeModules as $module)
                     <tr>
                         <td>{{ $module->name }}</td>
                         <td>{{ $module->description }}</td>
-                        <td><span class="badge badge-active">Active</span></td>
+                        <td><span class="badge badge-active">{{ __('Active') }}</span></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     @endif
 
-    <h2>Available Add-ons</h2>
+    <h2>{{ __('Available Add-ons') }}</h2>
     @if ($lockedModules->isEmpty())
-        <p>All available tools are active.</p>
+        <p>{{ __('All available tools are active.') }}</p>
     @else
         <table>
-            <thead><tr><th>Tool</th><th>Description</th><th>Status</th></tr></thead>
+            <thead><tr><th>{{ __('Tool') }}</th><th>{{ __('Description') }}</th><th>{{ __('Status') }}</th></tr></thead>
             <tbody>
                 @foreach ($lockedModules as $module)
                     <tr>
                         <td>{{ $module->name }}</td>
                         <td>{{ $module->description }}</td>
-                        <td><span class="badge badge-locked">Locked</span></td>
+                        <td><span class="badge badge-locked">{{ __('Locked') }}</span></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     @endif
 
-    <h2>Recent Activity</h2>
+    <h2>{{ __('Recent Activity') }}</h2>
     @if ($activityLogs->isEmpty())
-        <p>No recent activity recorded.</p>
+        <p>{{ __('No recent activity recorded.') }}</p>
     @else
         <table>
-            <thead><tr><th>Event</th><th>Time</th></tr></thead>
+            <thead><tr><th>{{ __('Event') }}</th><th>{{ __('Time') }}</th></tr></thead>
             <tbody>
                 @foreach ($activityLogs as $log)
                     <tr>

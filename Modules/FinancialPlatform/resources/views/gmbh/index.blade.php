@@ -4,7 +4,7 @@
 @section('page-title', '📊 GmbH Analysen')
 
 @section('topbar-actions')
-    <a href="{{ route('gmbh.create') }}" class="btn btn-primary btn-sm">+ Neue Analyse</a>
+    <a href="{{ route('gmbh.create') }}" class="btn btn-primary btn-sm">{{ __('+ Neue Analyse') }}</a>
 @endsection
 
 @push('styles')
@@ -22,9 +22,9 @@
 @if($analyses->isEmpty())
 <div class="card" style="text-align:center; padding:60px 20px;">
     <div style="font-size:48px; margin-bottom:16px;">📊</div>
-    <div style="font-size:18px; font-weight:600; color:#c7d2fe; margin-bottom:8px;">Noch keine GmbH-Analysen</div>
-    <div style="font-size:13px; color:#475569; margin-bottom:24px;">Erstellen Sie Ihre erste GmbH-Analyse und erhalten Sie einen Finanz-Score von 0–100.</div>
-    <a href="{{ route('gmbh.create') }}" class="btn btn-primary">📊 Erste Analyse erstellen</a>
+    <div style="font-size:18px; font-weight:600; color:#c7d2fe; margin-bottom:8px;">{{ __('Noch keine GmbH-Analysen') }}</div>
+    <div style="font-size:13px; color:#475569; margin-bottom:24px;">{{ __('Erstellen Sie Ihre erste GmbH-Analyse und erhalten Sie einen Finanz-Score von 0–100.') }}</div>
+    <a href="{{ route('gmbh.create') }}" class="btn btn-primary">{{ __('📊 Erste Analyse erstellen') }}</a>
 </div>
 @else
 <div class="card">
@@ -32,12 +32,12 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th>Analyse</th>
-                <th>Unternehmen</th>
-                <th>Score</th>
-                <th>Empfehlung</th>
-                <th>Erstellt</th>
-                <th style="text-align:right;">Aktionen</th>
+                <th>{{ __('Analyse') }}</th>
+                <th>{{ __('Unternehmen') }}</th>
+                <th>{{ __('Score') }}</th>
+                <th>{{ __('Empfehlung') }}</th>
+                <th>{{ __('Erstellt') }}</th>
+                <th style="text-align:right;">{{ __('Aktionen') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -75,8 +75,8 @@
                 <td style="font-size:12px; color:#475569;">{{ $a->created_at->format('d.m.Y') }}</td>
                 <td style="text-align:right;">
                     <div class="gmbh-index-actions">
-                        <a href="{{ route('gmbh.show', $a) }}" class="btn btn-secondary btn-sm">Ansehen</a>
-                        <a href="{{ route('gmbh.pdf', $a) }}" class="btn btn-secondary btn-sm">PDF</a>
+                        <a href="{{ route('gmbh.show', $a) }}" class="btn btn-secondary btn-sm">{{ __('Ansehen') }}</a>
+                        <a href="{{ route('gmbh.pdf', $a) }}" class="btn btn-secondary btn-sm">{{ __('PDF') }}</a>
                         <form method="POST" action="{{ route('gmbh.destroy', $a) }}" onsubmit="return confirm('Löschen?')">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">🗑</button>

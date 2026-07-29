@@ -54,8 +54,8 @@
                 <div class="border-t border-slate-200 bg-slate-50 px-4 py-4">
                     <h3 class="mb-3 text-sm font-semibold text-slate-700">{{ __('Add new variable') }}</h3>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <input type="text" name="new_key" placeholder="NEW_KEY" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" {{ $writable ? '' : 'disabled' }}>
-                        <input type="text" name="new_value" placeholder="value" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" {{ $writable ? '' : 'disabled' }}>
+                        <input type="text" name="new_key" placeholder="{{ __('NEW_KEY') }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" {{ $writable ? '' : 'disabled' }}>
+                        <input type="text" name="new_value" placeholder="{{ __('value') }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" {{ $writable ? '' : 'disabled' }}>
                     </div>
                 </div>
             </div>

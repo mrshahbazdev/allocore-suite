@@ -4,8 +4,8 @@
 @section('page-title', 'Lead-Verwaltung')
 
 @section('topbar-actions')
-    <a href="{{ route('leads.export') }}" class="btn btn-secondary btn-sm">CSV Export</a>
-    <a href="{{ route('leads.create') }}" class="btn btn-primary btn-sm">+ Neuer Lead</a>
+    <a href="{{ route('leads.export') }}" class="btn btn-secondary btn-sm">{{ __('CSV Export') }}</a>
+    <a href="{{ route('leads.create') }}" class="btn btn-primary btn-sm">{{ __('+ Neuer Lead') }}</a>
 @endsection
 
 @push('styles')
@@ -32,44 +32,44 @@
 <div class="leads-stats">
     <div class="card lead-stat">
         <div class="num" style="color:#818cf8;">{{ $stats['total'] }}</div>
-        <div class="lbl">Gesamt</div>
+        <div class="lbl">{{ __('Gesamt') }}</div>
     </div>
     <div class="card lead-stat">
         <div class="num" style="color:#38bdf8;">{{ $stats['new'] }}</div>
-        <div class="lbl">Neu</div>
+        <div class="lbl">{{ __('Neu') }}</div>
     </div>
     <div class="card lead-stat">
         <div class="num" style="color:#fbbf24;">{{ $stats['contacted'] }}</div>
-        <div class="lbl">Kontaktiert</div>
+        <div class="lbl">{{ __('Kontaktiert') }}</div>
     </div>
     <div class="card lead-stat">
         <div class="num" style="color:#10b981;">{{ $stats['qualified'] }}</div>
-        <div class="lbl">Qualifiziert</div>
+        <div class="lbl">{{ __('Qualifiziert') }}</div>
     </div>
     <div class="card lead-stat">
         <div class="num" style="color:#c084fc;">{{ $stats['transferred'] }}</div>
-        <div class="lbl">An LeadOS</div>
+        <div class="lbl">{{ __('An LeadOS') }}</div>
     </div>
 </div>
 
 {{-- Filters --}}
 <form method="GET" action="{{ route('leads.index') }}" class="filters-bar">
-    <input type="text" name="search" class="form-control" placeholder="Name, E-Mail, Firma..." value="{{ request('search') }}">
+    <input type="text" name="search" class="form-control" placeholder="{{ __('Name, E-Mail, Firma...') }}" value="{{ request('search') }}">
     <select name="status" class="form-control">
-        <option value="">Alle Status</option>
+        <option value="">{{ __('Alle Status') }}</option>
         @foreach(['new'=>'Neu','contacted'=>'Kontaktiert','qualified'=>'Qualifiziert','proposal'=>'Angebot','won'=>'Gewonnen','lost'=>'Verloren'] as $k=>$v)
             <option value="{{ $k }}" {{ request('status') === $k ? 'selected' : '' }}>{{ $v }}</option>
         @endforeach
     </select>
     <select name="priority" class="form-control">
-        <option value="">Alle Prioritäten</option>
+        <option value="">{{ __('Alle Prioritäten') }}</option>
         @foreach(['low'=>'Niedrig','medium'=>'Mittel','high'=>'Hoch','critical'=>'Kritisch'] as $k=>$v)
             <option value="{{ $k }}" {{ request('priority') === $k ? 'selected' : '' }}>{{ $v }}</option>
         @endforeach
     </select>
-    <button type="submit" class="btn btn-secondary btn-sm">Filtern</button>
+    <button type="submit" class="btn btn-secondary btn-sm">{{ __('Filtern') }}</button>
     @if(request()->hasAny(['search','status','priority']))
-        <a href="{{ route('leads.index') }}" class="btn btn-secondary btn-sm" style="color:#f87171;">Zurücksetzen</a>
+        <a href="{{ route('leads.index') }}" class="btn btn-secondary btn-sm" style="color:#f87171;">{{ __('Zurücksetzen') }}</a>
     @endif
 </form>
 
@@ -81,21 +81,19 @@
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
             <div class="card-title" style="margin-bottom:0">Leads ({{ $leads->total() }})</div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <input type="url" name="leados_api_url" class="form-control" placeholder="LeadOS URL (z.B. https://lead.os)"
+                <input type="url" name="leados_api_url" class="form-control" placeholder="{{ __('LeadOS URL (z.B. https://lead.os)') }}"
                     value="{{ old('leados_api_url') }}" style="min-width:200px; font-size:12px; padding:6px 10px;">
-                <input type="text" name="leados_token" class="form-control" placeholder="LeadOS API-Token"
+                <input type="text" name="leados_token" class="form-control" placeholder="{{ __('LeadOS API-Token') }}"
                     value="{{ old('leados_token') }}" style="min-width:160px; font-size:12px; padding:6px 10px;">
-                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Ausgewählte Leads an LeadOS übertragen?')">
-                    An LeadOS senden
-                </button>
+                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Ausgewählte Leads an LeadOS übertragen?')">{{ __('An LeadOS senden') }}</button>
             </div>
         </div>
 
         @if($leads->isEmpty())
             <div style="text-align:center; padding:40px; color:#475569;">
                 <div style="font-size:40px; margin-bottom:12px;">👤</div>
-                <div style="font-size:14px; margin-bottom:8px;">Noch keine Leads vorhanden</div>
-                <a href="{{ route('leads.create') }}" class="btn btn-primary btn-sm">Ersten Lead erstellen</a>
+                <div style="font-size:14px; margin-bottom:8px;">{{ __('Noch keine Leads vorhanden') }}</div>
+                <a href="{{ route('leads.create') }}" class="btn btn-primary btn-sm">{{ __('Ersten Lead erstellen') }}</a>
             </div>
         @else
             <div class="dashboard-table-wrap">
@@ -103,13 +101,13 @@
                 <thead>
                     <tr>
                         <th class="checkbox-cell"><input type="checkbox" id="selectAll"></th>
-                        <th>Name</th>
-                        <th>E-Mail</th>
-                        <th>Unternehmen</th>
-                        <th>Status</th>
-                        <th>Priorität</th>
-                        <th>Quelle</th>
-                        <th>LeadOS</th>
+                        <th>{{ __('Name') }}</th>
+                        <th>{{ __('E-Mail') }}</th>
+                        <th>{{ __('Unternehmen') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th>{{ __('Priorität') }}</th>
+                        <th>{{ __('Quelle') }}</th>
+                        <th>{{ __('LeadOS') }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -144,13 +142,13 @@
                         <td style="font-size:12px;">{{ $lead->source }}</td>
                         <td>
                             @if($lead->transferred_to_leados)
-                                <span class="badge badge-green">Übertragen</span>
+                                <span class="badge badge-green">{{ __('Übertragen') }}</span>
                             @else
-                                <span class="badge badge-gray">Ausstehend</span>
+                                <span class="badge badge-gray">{{ __('Ausstehend') }}</span>
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('leads.show', $lead) }}" class="btn btn-secondary btn-sm">Ansehen</a>
+                            <a href="{{ route('leads.show', $lead) }}" class="btn btn-secondary btn-sm">{{ __('Ansehen') }}</a>
                         </td>
                     </tr>
                     @endforeach

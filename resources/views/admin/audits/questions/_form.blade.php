@@ -54,7 +54,7 @@
 
 <div>
     <label class="block text-sm font-medium text-slate-700">{{ __('admin.audit_questions.options') }}</label>
-    <input name="options" value="{{ old('options', isset($question) && is_array($question->options) ? implode(', ', $question->options) : '') }}" placeholder="Option A, Option B, Option C" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+    <input name="options" value="{{ old('options', isset($question) && is_array($question->options) ? implode(', ', $question->options) : '') }}" placeholder="{{ __('Option A, Option B, Option C') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
     <p class="mt-1 text-xs text-slate-500">{{ __('admin.audit_questions.options_help') }}</p>
 </div>
 

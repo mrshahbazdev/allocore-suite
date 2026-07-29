@@ -25,7 +25,7 @@
     <div class="card" style="text-align:center; padding:14px; border-color:{{ $c }}25;">
         <div style="font-size:10px; color:#64748b; margin-bottom:4px;">{{ $t }}</div>
         <div style="font-size:28px; font-weight:700; color:{{ $c }};">{{ $v }}</div>
-        <div style="font-size:10px; color:#475569; margin-top:2px;">Analysen</div>
+        <div style="font-size:10px; color:#475569; margin-top:2px;">{{ __('Analysen') }}</div>
     </div>
     @endforeach
 </div>
@@ -34,9 +34,9 @@
 
     {{-- Recent Users --}}
     <div class="card">
-        <div class="card-title">👥 Neueste Benutzer</div>
+        <div class="card-title">{{ __('👥 Neueste Benutzer') }}</div>
         <table class="data-table">
-            <thead><tr><th>Name</th><th>E-Mail</th><th>Rolle</th><th>Seit</th></tr></thead>
+            <thead><tr><th>{{ __('Name') }}</th><th>{{ __('E-Mail') }}</th><th>{{ __('Rolle') }}</th><th>{{ __('Seit') }}</th></tr></thead>
             <tbody>
             @foreach($recentUsers as $u)
             <tr>
@@ -52,15 +52,15 @@
             </tbody>
         </table>
         <div style="margin-top:12px;">
-            <a href="{{ route('admin.users') }}" class="btn btn-secondary btn-sm">Alle Benutzer →</a>
+            <a href="{{ route('admin.users') }}" class="btn btn-secondary btn-sm">{{ __('Alle Benutzer →') }}</a>
         </div>
     </div>
 
     {{-- Top Analyses by Score --}}
     <div class="card">
-        <div class="card-title">🏆 Top-Analysen (nach Score)</div>
+        <div class="card-title">{{ __('🏆 Top-Analysen (nach Score)') }}</div>
         <table class="data-table">
-            <thead><tr><th>Analyse</th><th>Typ</th><th>User</th><th>Score</th></tr></thead>
+            <thead><tr><th>{{ __('Analyse') }}</th><th>{{ __('Typ') }}</th><th>{{ __('User') }}</th><th>{{ __('Score') }}</th></tr></thead>
             <tbody>
             @foreach($topAnalyses as $a)
             <tr>
@@ -79,7 +79,7 @@
             </tbody>
         </table>
         <div style="margin-top:12px;">
-            <a href="{{ route('analyses.index') }}" class="btn btn-secondary btn-sm">Alle Analysen →</a>
+            <a href="{{ route('analyses.index') }}" class="btn btn-secondary btn-sm">{{ __('Alle Analysen →') }}</a>
         </div>
     </div>
 

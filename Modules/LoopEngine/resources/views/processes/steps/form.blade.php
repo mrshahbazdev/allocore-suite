@@ -46,7 +46,7 @@
                 <div><label class="block text-sm font-medium text-slate-700">{{ __('Label (EN)') }}</label><input type="text" name="label_en" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
                 <div><label class="block text-sm font-medium text-slate-700">{{ __('Label (DE)') }}</label><input type="text" name="label_de" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></div>
                 <div><label class="block text-sm font-medium text-slate-700">{{ __('Value') }}</label><input type="text" name="value" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
-                <div><label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label><input type="text" name="color" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="green"></div>
+                <div><label class="block text-sm font-medium text-slate-700">{{ __('Color') }}</label><input type="text" name="color" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('green') }}"></div>
                 <div class="flex items-end"><button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Add') }}</button></div>
             </form>
 

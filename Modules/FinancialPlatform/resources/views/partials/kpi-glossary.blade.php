@@ -17,7 +17,7 @@
 @endphp
 
 <div class="card" style="margin-top:16px;">
-    <div class="card-title">📘 Glossar (einfach erklaert)</div>
+    <div class="card-title">{{ __('📘 Glossar (einfach erklaert)') }}</div>
     <div style="display:grid; gap:10px;">
         @foreach($definitions as $term => $text)
         <div style="border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;">

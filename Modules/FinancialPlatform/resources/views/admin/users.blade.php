@@ -9,7 +9,7 @@
     </div>
     <table class="data-table">
         <thead>
-            <tr><th>Name</th><th>E-Mail</th><th>Aktuelle Rolle</th><th>Analysen</th><th>Registriert</th><th>Rolle ändern</th></tr>
+            <tr><th>{{ __('Name') }}</th><th>{{ __('E-Mail') }}</th><th>{{ __('Aktuelle Rolle') }}</th><th>{{ __('Analysen') }}</th><th>{{ __('Registriert') }}</th><th>{{ __('Rolle ändern') }}</th></tr>
         </thead>
         <tbody>
         @foreach($users as $u)
@@ -34,7 +34,7 @@
                     <button type="submit" class="btn btn-primary btn-sm">✓</button>
                 </form>
                 @else
-                    <span style="font-size:11px; color:#475569;">Du selbst</span>
+                    <span style="font-size:11px; color:#475569;">{{ __('Du selbst') }}</span>
                 @endif
             </td>
         </tr>

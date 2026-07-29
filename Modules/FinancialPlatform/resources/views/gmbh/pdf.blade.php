@@ -113,8 +113,8 @@
 {{-- HEADER --}}
 <div class="header">
     <div class="header-left">
-        <div class="logo">⬡ Allocore <span>Financial</span></div>
-        <div class="report-type">GmbH Analyse Report</div>
+        <div class="logo">{{ __('⬡ Allocore') }}<span>{{ __('Financial') }}</span></div>
+        <div class="report-type">{{ __('GmbH Analyse Report') }}</div>
     </div>
     <div class="header-right">
         <strong>{{ $analysis->name }}</strong>
@@ -131,18 +131,18 @@
 <div class="score-box">
     <div class="score-cell">
         <div class="score-num score-{{ $color }}">{{ number_format($score, 1) }}</div>
-        <div class="score-label">/ 100 Punkte</div>
+        <div class="score-label">{{ __('/ 100 Punkte') }}</div>
     </div>
     <div class="score-cell">
-        <div class="meta-label">Unternehmen</div>
+        <div class="meta-label">{{ __('Unternehmen') }}</div>
         <div class="meta-val">{{ $analysis->company->name ?? '—' }}</div>
     </div>
     <div class="score-cell">
-        <div class="meta-label">Branche</div>
+        <div class="meta-label">{{ __('Branche') }}</div>
         <div class="meta-val">{{ $analysis->company->industry ?? '—' }}</div>
     </div>
     <div class="score-cell">
-        <div class="meta-label">Empfehlung</div>
+        <div class="meta-label">{{ __('Empfehlung') }}</div>
         <div class="recommend-text class-{{ $color }}" style="color:{{ $color==='green'?'#059669':($color==='yellow'?'#d97706':'#dc2626') }}">
             {{ $analysis->recommendation }}
         </div>
@@ -151,16 +151,16 @@
 
 {{-- KPI TABLE --}}
 <div class="section">
-    <div class="section-title">KPI-Ergebnisse</div>
+    <div class="section-title">{{ __('KPI-Ergebnisse') }}</div>
     <table>
         <thead>
             <tr>
-                <th>KPI</th>
-                <th>Wert</th>
-                <th>Einheit</th>
-                <th>Gewicht</th>
-                <th>Bewertung</th>
-                <th>Score-Beitrag</th>
+                <th>{{ __('KPI') }}</th>
+                <th>{{ __('Wert') }}</th>
+                <th>{{ __('Einheit') }}</th>
+                <th>{{ __('Gewicht') }}</th>
+                <th>{{ __('Bewertung') }}</th>
+                <th>{{ __('Score-Beitrag') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -193,29 +193,29 @@
 {{-- INPUT VALUES --}}
 @if($input)
 <div class="section">
-    <div class="section-title">Eingabedaten</div>
+    <div class="section-title">{{ __('Eingabedaten') }}</div>
     <div class="two-col">
         <div class="col">
             <table>
                 <tbody>
-                    <tr><td>Umsatz aktuell</td><td><strong>{{ number_format($input->revenue_current ?? 0, 0, ',', '.') }} €</strong></td></tr>
-                    <tr><td>Umsatz Vorjahr</td><td>{{ number_format($input->revenue_prev ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>EBITDA</td><td>{{ number_format($input->ebitda ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Jahresüberschuss</td><td>{{ number_format($input->net_profit ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Eigenkapital</td><td>{{ number_format($input->equity ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Gesamtverbindlichkeiten</td><td>{{ number_format($input->total_debt ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Umsatz aktuell') }}</td><td><strong>{{ number_format($input->revenue_current ?? 0, 0, ',', '.') }} €</strong></td></tr>
+                    <tr><td>{{ __('Umsatz Vorjahr') }}</td><td>{{ number_format($input->revenue_prev ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('EBITDA') }}</td><td>{{ number_format($input->ebitda ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Jahresüberschuss') }}</td><td>{{ number_format($input->net_profit ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Eigenkapital') }}</td><td>{{ number_format($input->equity ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Gesamtverbindlichkeiten') }}</td><td>{{ number_format($input->total_debt ?? 0, 0, ',', '.') }} €</td></tr>
                 </tbody>
             </table>
         </div>
         <div class="col">
             <table>
                 <tbody>
-                    <tr><td>Bilanzsumme</td><td>{{ number_format($input->total_assets ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Umlaufvermögen</td><td>{{ number_format($input->current_assets ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Kurzfr. Verbindlichkeiten</td><td>{{ number_format($input->current_liabilities ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Cash / Kasse</td><td>{{ number_format($input->cash ?? 0, 0, ',', '.') }} €</td></tr>
-                    <tr><td>Management-Score</td><td>{{ ($input->mgmt_score ?? '—') }}/10</td></tr>
-                    <tr><td>Markt-Score</td><td>{{ ($input->market_score ?? '—') }}/10</td></tr>
+                    <tr><td>{{ __('Bilanzsumme') }}</td><td>{{ number_format($input->total_assets ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Umlaufvermögen') }}</td><td>{{ number_format($input->current_assets ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Kurzfr. Verbindlichkeiten') }}</td><td>{{ number_format($input->current_liabilities ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Cash / Kasse') }}</td><td>{{ number_format($input->cash ?? 0, 0, ',', '.') }} €</td></tr>
+                    <tr><td>{{ __('Management-Score') }}</td><td>{{ ($input->mgmt_score ?? '—') }}/10</td></tr>
+                    <tr><td>{{ __('Markt-Score') }}</td><td>{{ ($input->market_score ?? '—') }}/10</td></tr>
                 </tbody>
             </table>
         </div>
@@ -224,7 +224,7 @@
 @endif
 
 <div class="glossary-note">
-    <strong>Kurz-Glossar:</strong>
+    <strong>{{ __('Kurz-Glossar:') }}</strong>
     EBIT = operativer Gewinn vor Zinsen/Steuern,
     EBITDA = EBIT plus Abschreibungen,
     Current Ratio = Umlaufvermoegen / kurzfristige Verbindlichkeiten,
@@ -233,7 +233,7 @@
 
 {{-- DISCLAIMER --}}
 <div class="disclaimer">
-    <strong>Hinweis:</strong> Diese Analyse basiert auf den eingegebenen Daten und wurde automatisch berechnet.
+    <strong>{{ __('Hinweis:') }}</strong> Diese Analyse basiert auf den eingegebenen Daten und wurde automatisch berechnet.
     Sie stellt keine Anlageberatung oder Finanzierungszusage dar. Alle Angaben ohne Gewähr.
     Erstellt via Allocore Financial Platform am {{ now()->format('d.m.Y H:i') }}.
 </div>

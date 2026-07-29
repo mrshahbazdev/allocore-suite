@@ -24,7 +24,7 @@
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('admin.audit_pillars.icon') }}</label>
-                    <input name="icon" value="{{ old('icon') }}" placeholder="e.g. chart-bar" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <input name="icon" value="{{ old('icon') }}" placeholder="{{ __('e.g. chart-bar') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
 
                 <div>

@@ -24,7 +24,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Abilities') }}</label>
-                <input type="text" name="abilities" class="mt-2 w-full rounded-lg border-slate-300 px-3 py-2 text-sm" placeholder="read, write">
+                <input type="text" name="abilities" class="mt-2 w-full rounded-lg border-slate-300 px-3 py-2 text-sm" placeholder="{{ __('read, write') }}">
                 <p class="mt-1 text-xs text-slate-500">{{ __('Leave empty for full access, or enter comma-separated abilities.') }}</p>
             </div>
             <button class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Create token') }}</button>

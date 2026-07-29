@@ -53,7 +53,7 @@
                     @else
                         <select name="payment_method" class="w-full rounded-lg border-slate-300 text-sm">
                             <option value="stripe">{{ __('Credit Card (Stripe)') }}</option>
-                            <option value="paypal">PayPal</option>
+                            <option value="paypal">{{ __('PayPal') }}</option>
                             <option value="bank">{{ __('Bank Transfer') }}</option>
                         </select>
                         <input type="text" name="coupon_code" placeholder="{{ __('Coupon code') }}" class="w-full rounded-lg border-slate-300 text-sm">

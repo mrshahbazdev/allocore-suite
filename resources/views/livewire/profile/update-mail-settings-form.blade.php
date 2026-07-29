@@ -83,7 +83,7 @@ new class extends Component
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('mail.driver') }}</label>
             <select wire:model="driver" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <option value="smtp">SMTP</option>
+                <option value="smtp">{{ __('SMTP') }}</option>
             </select>
             @error('driver')
                 <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
@@ -110,8 +110,8 @@ new class extends Component
             <label class="block text-sm font-medium text-slate-700">{{ __('mail.encryption') }}</label>
             <select wire:model="encryption" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 <option value="none">{{ __('mail.encryption_none') }}</option>
-                <option value="tls">TLS</option>
-                <option value="ssl">SSL</option>
+                <option value="tls">{{ __('TLS') }}</option>
+                <option value="ssl">{{ __('SSL') }}</option>
             </select>
             @error('encryption')
                 <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>

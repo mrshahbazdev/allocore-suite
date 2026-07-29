@@ -60,7 +60,7 @@
 {{-- HEADER --}}
 <div class="header">
     <div class="header-left">
-        <div class="logo">⬡ Allocore <span>Financial</span></div>
+        <div class="logo">{{ __('⬡ Allocore') }}<span>{{ __('Financial') }}</span></div>
         <div class="sub">Immobilienanalyse · {{ $analysis->name }}</div>
     </div>
     <div class="header-right">
@@ -72,49 +72,49 @@
 {{-- SCORE STRIP --}}
 <div class="score-strip">
     <div class="sc">
-        <div class="sc-label">Gesamt-Score</div>
+        <div class="sc-label">{{ __('Gesamt-Score') }}</div>
         <div class="sc-val {{ $color }}">{{ number_format($score, 1) }}<span style="font-size:12px; color:#94a3b8;">/100</span></div>
     </div>
     <div class="sc">
-        <div class="sc-label">Objekttyp</div>
+        <div class="sc-label">{{ __('Objekttyp') }}</div>
         <div class="sc-small">{{ $input->property_type ?? 'Immobilie' }}</div>
     </div>
     <div class="sc">
-        <div class="sc-label">Kaufpreis</div>
+        <div class="sc-label">{{ __('Kaufpreis') }}</div>
         <div class="sc-small">{{ number_format($input->purchase_price ?? 0, 0, ',', '.') }} €</div>
     </div>
     <div class="sc">
-        <div class="sc-label">Eigenkapital</div>
+        <div class="sc-label">{{ __('Eigenkapital') }}</div>
         <div class="sc-small">{{ number_format($input->equity ?? 0, 0, ',', '.') }} €</div>
     </div>
     <div class="sc" colspan="2">
-        <div class="sc-label">Empfehlung</div>
+        <div class="sc-label">{{ __('Empfehlung') }}</div>
         <div class="sc-small" style="color:{{ $colorHex }};">{{ $analysis->recommendation }}</div>
     </div>
 </div>
 
 {{-- CASHFLOW SUMMARY --}}
 <div class="section" style="margin-top:14px;">
-    <div class="section-title">Cashflow-Übersicht (p.a.)</div>
+    <div class="section-title">{{ __('Cashflow-Übersicht (p.a.)') }}</div>
     <div class="cf-box">
         <div class="cf-cell">
-            <div class="cf-label">Gesamtinvestition</div>
+            <div class="cf-label">{{ __('Gesamtinvestition') }}</div>
             <div class="cf-val">{{ number_format($derived['gesamtinvestition'], 0, ',', '.') }} €</div>
         </div>
         <div class="cf-cell">
-            <div class="cf-label">Darlehen</div>
+            <div class="cf-label">{{ __('Darlehen') }}</div>
             <div class="cf-val">{{ number_format($derived['darlehen'], 0, ',', '.') }} €</div>
         </div>
         <div class="cf-cell">
-            <div class="cf-label">NOI p.a.</div>
+            <div class="cf-label">{{ __('NOI p.a.') }}</div>
             <div class="cf-val">{{ number_format($derived['noi'], 0, ',', '.') }} €</div>
         </div>
         <div class="cf-cell">
-            <div class="cf-label">Schuldendienst</div>
+            <div class="cf-label">{{ __('Schuldendienst') }}</div>
             <div class="cf-val" style="color:#dc2626;">{{ number_format($derived['schuldendienst'], 0, ',', '.') }} €</div>
         </div>
         <div class="cf-cell">
-            <div class="cf-label">Cashflow p.a.</div>
+            <div class="cf-label">{{ __('Cashflow p.a.') }}</div>
             @php $cf = $derived['cashflow']; @endphp
             <div class="cf-val" style="color:{{ $cf >= 0 ? '#059669' : '#dc2626' }};">
                 {{ ($cf >= 0 ? '+' : '') . number_format($cf, 0, ',', '.') }} €
@@ -125,15 +125,15 @@
 
 {{-- KPI TABLE --}}
 <div class="section">
-    <div class="section-title">KPI-Ergebnisse</div>
+    <div class="section-title">{{ __('KPI-Ergebnisse') }}</div>
     <table>
         <thead>
             <tr>
-                <th>KPI</th>
-                <th>Wert</th>
-                <th>Einheit</th>
-                <th>Gewicht</th>
-                <th>Bewertung</th>
+                <th>{{ __('KPI') }}</th>
+                <th>{{ __('Wert') }}</th>
+                <th>{{ __('Einheit') }}</th>
+                <th>{{ __('Gewicht') }}</th>
+                <th>{{ __('Bewertung') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -155,26 +155,26 @@
 {{-- OBJECT DETAILS --}}
 @if($input)
 <div class="section">
-    <div class="section-title">Objektdetails & Finanzierung</div>
+    <div class="section-title">{{ __('Objektdetails & Finanzierung') }}</div>
     <table>
         <tbody>
-            <tr><td>Wohnfläche</td><td>{{ ($input->area_sqm ?? '—') }} m²</td>
-                <td>Nettokaltmiete/Monat</td><td>{{ number_format($input->rent_net ?? 0, 0,',','.') }} €</td></tr>
-            <tr><td>Marktmiete/Monat</td><td>{{ number_format($input->market_rent ?? 0, 0,',','.') }} €</td>
-                <td>Leerstandsquote</td><td>{{ $input->vacancy_rate }} %</td></tr>
-            <tr><td>Zinssatz p.a.</td><td>{{ $input->loan_rate }} %</td>
-                <td>Tilgungsrate p.a.</td><td>{{ $input->repayment_rate }} %</td></tr>
-            <tr><td>Lage-Score</td><td>{{ ($input->location_score ?? '—') }}/10</td>
-                <td>Zustand-Score</td><td>{{ ($input->condition_score ?? '—') }}/10</td></tr>
-            <tr><td>Nebenkosten</td><td>{{ number_format($input->closing_costs ?? 0, 0,',','.') }} €</td>
-                <td>Renovierungskosten</td><td>{{ number_format($input->renovation_costs ?? 0, 0,',','.') }} €</td></tr>
+            <tr><td>{{ __('Wohnfläche') }}</td><td>{{ ($input->area_sqm ?? '—') }} m²</td>
+                <td>{{ __('Nettokaltmiete/Monat') }}</td><td>{{ number_format($input->rent_net ?? 0, 0,',','.') }} €</td></tr>
+            <tr><td>{{ __('Marktmiete/Monat') }}</td><td>{{ number_format($input->market_rent ?? 0, 0,',','.') }} €</td>
+                <td>{{ __('Leerstandsquote') }}</td><td>{{ $input->vacancy_rate }} %</td></tr>
+            <tr><td>{{ __('Zinssatz p.a.') }}</td><td>{{ $input->loan_rate }} %</td>
+                <td>{{ __('Tilgungsrate p.a.') }}</td><td>{{ $input->repayment_rate }} %</td></tr>
+            <tr><td>{{ __('Lage-Score') }}</td><td>{{ ($input->location_score ?? '—') }}/10</td>
+                <td>{{ __('Zustand-Score') }}</td><td>{{ ($input->condition_score ?? '—') }}/10</td></tr>
+            <tr><td>{{ __('Nebenkosten') }}</td><td>{{ number_format($input->closing_costs ?? 0, 0,',','.') }} €</td>
+                <td>{{ __('Renovierungskosten') }}</td><td>{{ number_format($input->renovation_costs ?? 0, 0,',','.') }} €</td></tr>
         </tbody>
     </table>
 </div>
 @endif
 
 <div class="disclaimer">
-    <strong>Hinweis:</strong> Diese Immobilienanalyse basiert auf den eingegebenen Daten und stellt keine Anlageberatung dar.
+    <strong>{{ __('Hinweis:') }}</strong> Diese Immobilienanalyse basiert auf den eingegebenen Daten und stellt keine Anlageberatung dar.
     Alle Berechnungen wurden automatisch durchgeführt. Erstellt via Allocore Financial Platform, {{ now()->format('d.m.Y H:i') }}.
 </div>
 
