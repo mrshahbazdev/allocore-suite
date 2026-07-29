@@ -3,7 +3,7 @@
 <section class="{{ $s['padding_class'] }} {{ $s['animation_class'] }}" {!! $s['inline_style'] ? 'style="'.$s['inline_style'].'"' : '' !!}>
     <div class="{{ $s['container_class'] ?: 'mx-auto max-w-4xl px-6 lg:px-8' }} {{ $s['text_align_class'] }}">
         @if ($s['rounded_class'])
-            <div class="{{ $s['rounded_class'] }} border border-white/10 bg-white/5 p-8 backdrop-blur lg:p-12">
+            <div class="{{ $s['rounded_class'] }} {{ $s['border_class'] ? $s['border_class'] : 'border border-white/10' }} bg-white/5 p-8 backdrop-blur lg:p-12">
         @endif
         @if (filled($block['title'] ?? ''))
             <h2 class="text-3xl font-bold tracking-tight">{{ $block['title'] }}</h2>

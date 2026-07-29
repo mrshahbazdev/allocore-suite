@@ -6,7 +6,7 @@
         @endif
         <div class="mt-10 space-y-4 {{ $s['text_align_class'] === 'text-left' ? '' : 'text-left' }}">
             @foreach ($block['items'] ?? [] as $item)
-                <details class="group {{ $s['rounded_class'] ? $s['rounded_class'].' ' : '' }}border border-slate-200 bg-white p-4">
+                <details class="group {{ $s['rounded_class'] ? $s['rounded_class'].' ' : '' }}{{ $s['border_class'] ? $s['border_class'].' ' : '' }}bg-white p-4">
                     <summary class="flex cursor-pointer items-center justify-between text-left font-semibold list-none">
                         {{ $item['question'] ?? '' }}
                         <span class="ml-2 text-slate-400 group-open:hidden">+</span>
