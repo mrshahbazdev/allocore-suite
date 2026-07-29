@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SiteSetting;
+use App\Support\LandingBlockDefaults;
 
 class HomeController extends Controller
 {
@@ -11,7 +12,7 @@ class HomeController extends Controller
         $blocks = SiteSetting::value('landing_blocks', []);
 
         if (empty($blocks)) {
-            return view('welcome');
+            $blocks = LandingBlockDefaults::blocks();
         }
 
         return view('home', compact('blocks'));

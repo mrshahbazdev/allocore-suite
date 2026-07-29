@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
+use App\Support\LandingBlockDefaults;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
@@ -11,6 +12,10 @@ class LandingController extends Controller
     public function index()
     {
         $blocks = SiteSetting::value('landing_blocks', []);
+
+        if (empty($blocks)) {
+            $blocks = LandingBlockDefaults::blocks();
+        }
 
         return view('admin.landing.index', compact('blocks'));
     }

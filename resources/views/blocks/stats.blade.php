@@ -8,8 +8,8 @@
         <div class="mt-10 grid {{ $gridCols }} {{ $s['gap_class'] }} {{ $s['align_class'] }}">
             @foreach ($block['items'] ?? [] as $item)
                 <div class="{{ $s['rounded_class'] ? $s['rounded_class'].' ' : '' }}{{ $s['border_class'] ? $s['border_class'].' ' : '' }}bg-white p-6 shadow-sm">
-                    <div class="text-4xl font-extrabold tracking-tight">{{ $item['value'] ?? '0' }}{{ $item['suffix'] ?? '' }}</div>
-                    <div class="mt-2 text-sm font-medium opacity-70">{{ $item['label'] ?? '' }}</div>
+                    <div class="text-4xl font-extrabold tracking-tight text-slate-900">{{ $item['value'] ?? '0' }}{{ $item['suffix'] ?? '' }}</div>
+                    <div class="mt-2 text-sm font-medium text-slate-600">{{ $item['label'] ?? '' }}</div>
                 </div>
             @endforeach
         </div>
