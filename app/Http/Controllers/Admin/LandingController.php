@@ -22,12 +22,12 @@ class LandingController extends Controller
 
     public function update(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'blocks' => 'nullable|array',
             'blocks.*.type' => 'required|in:hero,features,text,image,cta,faq,stats,testimonials,pricing,steps,logos,divider,spacer',
         ]);
 
-        $blocks = $this->normalizeBlocks($validated['blocks'] ?? []);
+        $blocks = $this->normalizeBlocks($request->input('blocks', []));
         SiteSetting::set('landing_blocks', $blocks);
 
         return back()->with('success', __('Landing page updated.'));
