@@ -13,7 +13,7 @@
                 @foreach (['industry','employee_count_range','budget_min','budget_max','role','location'] as $field)
                     <label class="block">
                         <span class="mb-1 block text-sm font-medium text-slate-700">{{ ucfirst(str_replace('_', ' ', $field)) }}</span>
-                        <input name="{{ $field }}" value="{{ old($field, $profile->{$field}) }}" class="w-full rounded-lg border-slate-300" />
+                        <input name="{{ $field }}" value="{{ old($field, $profile->{$field}) }}" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
                     </label>
                 @endforeach
             </div>
