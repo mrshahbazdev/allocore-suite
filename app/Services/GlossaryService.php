@@ -10,7 +10,7 @@ class GlossaryService
 {
     public function linkTerms(?string $text, int $limit = -1): string
     {
-        if (empty($text)) {
+        if ($text === null || $text === '') {
             return '';
         }
 

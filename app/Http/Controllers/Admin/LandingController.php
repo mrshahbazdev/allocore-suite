@@ -53,7 +53,7 @@ class LandingController extends Controller
             'image' => $this->sanitizeBase($block, ['src', 'alt']),
             'cta' => $this->sanitizeBase($block, ['title', 'text', 'button_text', 'button_url']),
             'faq' => $this->sanitizeItemBlock($block, ['question', 'answer']),
-            'stats' => $this->sanitizeItemBlock($block, ['label', 'value', 'suffix']),
+            'stats' => $this->sanitizeItemBlock($block, ['label', 'value', 'suffix', 'source']),
             'testimonials' => $this->sanitizeItemBlock($block, ['quote', 'author', 'role']),
             'pricing' => $this->sanitizeItemBlock($block, ['name', 'price', 'period', 'features', 'cta_text', 'cta_url', 'highlighted']),
             'steps' => $this->sanitizeItemBlock($block, ['title', 'description']),

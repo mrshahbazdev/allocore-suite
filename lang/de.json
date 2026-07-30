@@ -38,6 +38,8 @@
     "landing.stats.teams": "Erstellte Teams",
     "landing.stats.subscriptions": "Aktive Abonnements",
     "landing.stats.users": "Registrierte Nutzer",
+    "landing.stats.audits": "Audits",
+    "landing.stats.avg_allocore_score": "Durchschn. Allocore Score",
     "landing.testimonials.heading": "Beliebt bei schnell wachsenden Teams",
     "landing.testimonials.quote": "Allocore Suite hat uns ermöglicht, mehrere Produkte unter einer Authentifizierungs- und Abrechnungsschale zu veröffentlichen, ohne das Rad jedes Mal neu zu erfinden.",
     "landing.testimonials.author": "Product Team Lead",

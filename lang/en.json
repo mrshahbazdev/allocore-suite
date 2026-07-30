@@ -38,6 +38,8 @@
     "landing.stats.teams": "Teams created",
     "landing.stats.subscriptions": "Active subscriptions",
     "landing.stats.users": "Registered users",
+    "landing.stats.audits": "Audits",
+    "landing.stats.avg_allocore_score": "Avg Allocore Score",
     "landing.testimonials.heading": "Loved by fast-moving teams",
     "landing.testimonials.quote": "Allocore Suite let us ship multiple products under one auth and billing shell without rebuilding the basics every time.",
     "landing.testimonials.author": "Product Team Lead",

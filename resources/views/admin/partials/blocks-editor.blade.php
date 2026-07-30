@@ -121,10 +121,20 @@
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'stats'">
-                                        <div class="grid gap-2 md:grid-cols-3">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][label]`" x-model="item.label" placeholder="{{ __('Label') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][value]`" x-model="item.value" placeholder="{{ __('Value') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            <input type="text" :name="`{{ $name }}[${index}][items][${i}][suffix]`" x-model="item.suffix" placeholder="{{ __('Suffix (e.g. %, +)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        <div class="grid gap-2">
+                                            <div class="grid gap-2 md:grid-cols-2">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][label]`" x-model="item.label" placeholder="{{ __('Label') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <select :name="`{{ $name }}[${index}][items][${i}][source]`" x-model="item.source" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                    <option value="">{{ __('Custom value') }}</option>
+                                                    @foreach (\App\Support\LandingStatSource::options() as $sourceKey => $sourceLabel)
+                                                        <option value="{{ $sourceKey }}">{{ __($sourceLabel) }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="grid gap-2 md:grid-cols-2">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][value]`" x-model="item.value" placeholder="{{ __('Value (when source is Custom)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                <input type="text" :name="`{{ $name }}[${index}][items][${i}][suffix]`" x-model="item.suffix" placeholder="{{ __('Suffix (e.g. %, +)') }}" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            </div>
                                         </div>
                                     </template>
                                     <template x-if="block.type === 'testimonials'">
