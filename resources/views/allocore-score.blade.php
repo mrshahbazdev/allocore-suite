@@ -23,7 +23,7 @@
                 <p class="text-sm font-medium text-slate-500">{{ __('Current Allocore Score') }}</p>
                 <div class="mt-4 flex items-end gap-3">
                     <span class="text-5xl font-extrabold text-slate-900">{{ $score->score }}</span>
-                    <span class="mb-2 rounded-full px-2.5 py-0.5 text-xs font-semibold {{ match($score->maturity_level) { 'Excellent' => 'bg-emerald-100 text-emerald-700', 'Strong' => 'bg-green-100 text-green-700', 'Solid' => 'bg-blue-100 text-blue-700', 'Weak' => 'bg-amber-100 text-amber-700', default => 'bg-red-100 text-red-700' } }}">{{ $score->maturity_level }}</span>
+                    <span class="mb-2 rounded-full px-2.5 py-0.5 text-xs font-semibold {{ match($score->maturity_level) { 'Excellent' => 'bg-emerald-100 text-emerald-700', 'Strong' => 'bg-green-100 text-green-700', 'Solid' => 'bg-blue-100 text-blue-700', 'Weak' => 'bg-amber-100 text-amber-700', default => 'bg-red-100 text-red-700' } }}">{{ __($score->maturity_level) }}</span>
                 </div>
                 <p class="mt-2 text-sm text-slate-500">{{ __('out of 100') }}</p>
                 <p class="mt-4 text-sm text-slate-600">{{ __('Calculated') }} {{ $score->calculated_at->diffForHumans() }}</p>
@@ -63,13 +63,13 @@
                 @foreach ($score->pillars as $pillar)
                     <div class="rounded-lg border border-slate-200 p-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-slate-700">{{ $pillar['name'] }}</span>
+                            <span class="text-sm font-medium text-slate-700">{{ __($pillar['name']) }}</span>
                             <span class="text-sm font-bold text-slate-900">{{ $pillar['score'] }}</span>
                         </div>
                         <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
                             <div class="h-full rounded-full bg-indigo-600" style="width: {{ min(100, max(0, $pillar['score'])) }}%"></div>
                         </div>
-                        <p class="mt-1 text-xs text-slate-500">{{ $pillar['maturity'] }}</p>
+                        <p class="mt-1 text-xs text-slate-500">{{ __($pillar['maturity']) }}</p>
                     </div>
                 @endforeach
             </div>
@@ -128,7 +128,7 @@
                             <tr>
                                 <td class="px-4 py-2 text-slate-700">{{ $entry['date'] }}</td>
                                 <td class="px-4 py-2 font-semibold text-slate-900">{{ $entry['score'] }}</td>
-                                <td class="px-4 py-2 text-slate-600">{{ $entry['maturity'] }}</td>
+                                <td class="px-4 py-2 text-slate-600">{{ __($entry['maturity']) }}</td>
                                 <td class="px-4 py-2">
                                     @if ($change === null)
                                         —
