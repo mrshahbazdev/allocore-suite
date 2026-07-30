@@ -2,10 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Module;
-use App\Models\Team;
-use App\Models\ToolSubscription;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 class LandingBlockDefaults
@@ -53,10 +49,12 @@ class LandingBlockDefaults
             'enabled' => true,
             'title' => '',
             'items' => [
-                ['label' => __('landing.stats.modules'), 'value' => (string) Module::where('is_active', true)->count(), 'suffix' => ''],
-                ['label' => __('landing.stats.teams'), 'value' => (string) Team::count(), 'suffix' => ''],
-                ['label' => __('landing.stats.users'), 'value' => (string) User::count(), 'suffix' => ''],
-                ['label' => __('landing.stats.subscriptions'), 'value' => (string) ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(), 'suffix' => ''],
+                ['label' => __('landing.stats.modules'), 'value' => '', 'suffix' => '', 'source' => 'module_count'],
+                ['label' => __('landing.stats.teams'), 'value' => '', 'suffix' => '', 'source' => 'team_count'],
+                ['label' => __('landing.stats.users'), 'value' => '', 'suffix' => '', 'source' => 'user_count'],
+                ['label' => __('landing.stats.subscriptions'), 'value' => '', 'suffix' => '', 'source' => 'active_subscription_count'],
+                ['label' => __('landing.stats.audits'), 'value' => '', 'suffix' => '', 'source' => 'audit_count'],
+                ['label' => __('landing.stats.avg_allocore_score'), 'value' => '', 'suffix' => '', 'source' => 'avg_allocore_score'],
             ],
             'style' => [
                 'bg' => '#0f172a',
@@ -67,7 +65,7 @@ class LandingBlockDefaults
                 'rounded' => false,
                 'border' => false,
             ],
-            'layout' => ['columns' => 4, 'gap' => 'medium', 'align' => 'stretch'],
+            'layout' => ['columns' => 3, 'gap' => 'medium', 'align' => 'stretch'],
             'animation' => 'fade-in',
         ];
     }
