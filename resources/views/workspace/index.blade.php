@@ -27,18 +27,18 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach ($modules as $module)
                             <div class="rounded-lg border border-slate-200 p-4 hover:border-indigo-300 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div>
-                                        <h3 class="font-semibold text-slate-900">{{ $module['name'] }}</h3>
-                                        <p class="text-xs text-slate-500">{{ $module['count'] }} {{ mb_strtolower($module['label'] ?? 'records') }}</p>
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <h3 class="font-semibold text-slate-900 break-words">{{ $module['name'] }}</h3>
+                                        <p class="text-xs text-slate-500 break-words">{{ $module['count'] }} {{ mb_strtolower($module['label'] ?? 'records') }}</p>
                                     </div>
-                                    <a href="{{ $module['setup_link'] }}" class="text-xs font-medium text-indigo-600 hover:text-indigo-500">{{ __('Open') }}</a>
+                                    <a href="{{ $module['setup_link'] }}" class="shrink-0 text-xs font-medium text-indigo-600 hover:text-indigo-500">{{ __('Open') }}</a>
                                 </div>
                                 @if (! empty($module['recent']))
                                     <ul class="mt-3 divide-y divide-slate-100">
                                         @foreach ($module['recent'] as $record)
-                                            <li class="py-2 flex items-center justify-between text-sm">
-                                                <a href="{{ $record['url'] ?? $module['setup_link'] }}" class="truncate text-slate-700 hover:text-indigo-600 max-w-[75%]">{{ $record['title'] }}</a>
+                                            <li class="py-2 flex items-center justify-between gap-2 text-sm">
+                                                <a href="{{ $record['url'] ?? $module['setup_link'] }}" class="truncate text-slate-700 hover:text-indigo-600 max-w-[60%] sm:max-w-[75%]">{{ $record['title'] }}</a>
                                                 <span class="text-xs text-slate-400 whitespace-nowrap">{{ $record['created_at'] }}</span>
                                             </li>
                                         @endforeach
@@ -56,13 +56,13 @@
                 <h2 class="text-lg font-semibold text-slate-900 mb-4">{{ __('Onboarding checklist') }}</h2>
                 <div class="space-y-2">
                     @foreach ($onboarding as $step)
-                        <div class="flex items-center gap-3 rounded-lg px-3 py-2 {{ $step['complete'] ? 'bg-emerald-50' : 'bg-slate-50' }}">
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full {{ $step['complete'] ? 'bg-emerald-500 text-white' : 'bg-slate-300 text-white' }} text-xs">
+                        <div class="flex flex-wrap items-center gap-3 rounded-lg px-3 py-2 {{ $step['complete'] ? 'bg-emerald-50' : 'bg-slate-50' }}">
+                            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full {{ $step['complete'] ? 'bg-emerald-500 text-white' : 'bg-slate-300 text-white' }} text-xs">
                                 @if ($step['complete']) &check; @else &bull; @endif
                             </span>
-                            <span class="flex-1 text-sm {{ $step['complete'] ? 'text-slate-500 line-through' : 'text-slate-700' }}">{{ $step['label'] }}</span>
+                            <span class="flex-1 min-w-0 text-sm {{ $step['complete'] ? 'text-slate-500 line-through' : 'text-slate-700' }}">{{ $step['label'] }}</span>
                             @if (! $step['complete'])
-                                <a href="{{ $step['link'] }}" class="text-xs font-medium text-indigo-600 hover:text-indigo-500">{{ __('Start') }}</a>
+                                <a href="{{ $step['link'] }}" class="shrink-0 text-xs font-medium text-indigo-600 hover:text-indigo-500">{{ __('Start') }}</a>
                             @endif
                         </div>
                     @endforeach
@@ -76,8 +76,8 @@
                 <div class="space-y-3">
                     @forelse ($insights as $insight)
                         <div class="rounded-lg border {{ $insight['unlocked'] ? 'border-indigo-200 bg-indigo-50' : 'border-slate-200 bg-slate-50' }} p-3">
-                            <h3 class="text-sm font-semibold {{ $insight['unlocked'] ? 'text-indigo-900' : 'text-slate-600' }}">{{ $insight['title'] }}</h3>
-                            <p class="mt-1 text-xs text-slate-600">{{ $insight['description'] }}</p>
+                            <h3 class="text-sm font-semibold break-words {{ $insight['unlocked'] ? 'text-indigo-900' : 'text-slate-600' }}">{{ $insight['title'] }}</h3>
+                            <p class="mt-1 text-xs text-slate-600 break-words">{{ $insight['description'] }}</p>
                             @if (! $insight['accessible'])
                                 <p class="mt-2 text-xs text-amber-600">{{ __('Subscribe to :module to unlock.', ['module' => ucfirst(str_replace(['-','_'],' ',$insight['missing_module']))]) }}</p>
                             @elseif (! $insight['unlocked'])
