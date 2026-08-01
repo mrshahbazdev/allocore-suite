@@ -43,18 +43,19 @@
 
     <div class="flex-1 flex flex-col min-w-0 lg:ml-0">
         {{-- Topbar --}}
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
-            <div class="flex items-center gap-3">
+        <header class="min-h-16 h-auto bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-2">
+            <div class="flex flex-1 min-w-0 items-center gap-2 sm:gap-3">
                 <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                 </button>
-                <div class="text-sm text-slate-500">
+                <div class="text-xs sm:text-sm text-slate-500 truncate">
                     @if (auth()->user()?->currentTeam)
-                        {{ __('Team') }}: <span class="font-medium text-slate-800">{{ auth()->user()->currentTeam->name }}</span>
+                        <span class="hidden sm:inline">{{ __('Team') }}:</span>
+                        <span class="truncate font-medium text-slate-800 max-w-[7rem] sm:max-w-full">{{ auth()->user()->currentTeam->name }}</span>
                     @endif
                 </div>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
                 @if (session('impersonated_by'))
                     <a href="{{ route('impersonation.stop') }}" class="rounded-lg bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-200">{{ __('admin.impersonation.stop') }}</a>
                 @endif
@@ -68,11 +69,11 @@
                     </a>
                 @endauth
                 @include('partials.locale-switcher')
-                <span class="text-sm font-medium text-slate-700">{{ auth()->user()?->name }}</span>
-                <a href="{{ route('profile') }}" class="text-sm text-indigo-600 hover:underline">{{ __('Profile') }}</a>
+                <span class="hidden sm:inline text-sm font-medium text-slate-700">{{ auth()->user()?->name }}</span>
+                <a href="{{ route('profile') }}" class="text-xs sm:text-sm text-indigo-600 hover:underline">{{ __('Profile') }}</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="text-sm text-slate-500 hover:text-slate-800">{{ __('Log out') }}</button>
+                    <button class="text-xs sm:text-sm text-slate-500 hover:text-slate-800">{{ __('Log out') }}</button>
                 </form>
             </div>
         </header>
