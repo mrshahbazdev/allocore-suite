@@ -95,6 +95,10 @@ class WorkspaceAnalyzer
                 continue;
             }
 
+            if ($this->moduleStats->modelFor($module->key) === null) {
+                continue;
+            }
+
             $stat = $this->moduleStats->forModule($user, $module);
 
             $moduleItems[] = [

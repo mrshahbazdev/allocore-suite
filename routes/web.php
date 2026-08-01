@@ -175,6 +175,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('tools', ToolsController::class)->name('tools.index');
     Route::get('recommendations', RecommendationController::class)->name('recommendations.index');
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
+    Route::redirect('app/auditpro', '/app/audit', 301);
+    Route::redirect('app/clusterforge', '/app/clusters', 301);
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
     Route::get('search', SearchController::class)->name('search.index');
     Route::get('imports', [ImportController::class, 'index'])->name('imports.index');

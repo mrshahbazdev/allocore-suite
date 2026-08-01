@@ -11,6 +11,16 @@ class Module extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
+    public function getNameAttribute(?string $value): ?string
+    {
+        return $value ? __($value) : null;
+    }
+
+    public function getDescriptionAttribute(?string $value): ?string
+    {
+        return $value ? __($value) : null;
+    }
+
     public function getRouteKeyName(): string
     {
         return 'key';
