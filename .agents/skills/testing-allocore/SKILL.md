@@ -35,6 +35,7 @@ Service workers (`public/sw.js`) and locale cookies can cache the wrong module p
   --user-data-dir=/tmp/chrome_allocore_profile \
   --no-first-run --no-default-browser-check --enable-automation \
   --lang=en-US --accept-lang=en-US,en \
+  --disable-notifications \
   http://127.0.0.1:8000
 ```
 
@@ -44,3 +45,4 @@ Service workers (`public/sw.js`) and locale cookies can cache the wrong module p
 - The locale switcher (`partials/locale-switcher`) is a `<select onchange="window.location.href = this.value">`. Automated clicks may not open the dropdown; verify language switches with `curl -e <referer> http://127.0.0.1:8000/language/<locale>` and then reload the target page. `LanguageController` uses `redirect()->back()`, so the `Referer` header must be present for it to return to the correct page.
 - If a fresh Chrome profile still loads in German, reset the admin user's `locale` column to `en` before logging in (`User::find(1)->update(['locale' => 'en'])`).
 - Module nav is conditionally included in `resources/views/layouts/shell.blade.php` based on `request()->is('app/<module>*')`.
+- The `/admin/landing` builder uses Alpine.js `x-model` inputs. `Ctrl+A` selects the whole page rather than the focused input, and the `Save landing page` button click does not submit the form; pressing `Enter` in an input does submit. If UI input automation is unreliable, use `App\Support\LandingBlocks::save()` via `php artisan tinker` to apply changes and then verify the saved state in the browser.
