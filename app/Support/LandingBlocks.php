@@ -153,13 +153,21 @@ class LandingBlocks
 
     private static function mergeBlock(array $map, array $submitted, string $locale, string $base): array
     {
-        foreach (['type', 'enabled', 'style', 'layout', 'animation'] as $key) {
-            if (array_key_exists($key, $submitted)) {
-                $map[$key] = $submitted[$key];
+        $translatable = self::translatableFields();
+
+        foreach ($submitted as $key => $value) {
+            if (in_array($key, $translatable, true)) {
+                continue;
+            }
+
+            if (is_array($value) || is_bool($value) || filled($value) || $key === 'enabled' || $key === 'animation') {
+                $map[$key] = $value;
+            } elseif (array_key_exists($key, $map) && ! is_array($map[$key] ?? '')) {
+                $map[$key] = is_string($value) ? $value : '';
             }
         }
 
-        foreach (self::translatableFields() as $field) {
+        foreach ($translatable as $field) {
             if (! array_key_exists($field, $submitted)) {
                 continue;
             }
@@ -171,18 +179,14 @@ class LandingBlocks
             $submittedValue = is_string($submitted[$field]) ? $submitted[$field] : '';
 
             if ($locale === $base) {
-                // Editing the baseline language.
                 $map[$field][$base] = $submittedValue;
 
-                // If no other locale has an explicit override, keep them in sync
-                // so the baseline change is visible everywhere until translated.
                 foreach ($map[$field] as $l => $v) {
                     if ($l !== $base && blank($v)) {
                         $map[$field][$l] = $submittedValue;
                     }
                 }
             } else {
-                // Editing an override. Store empty string to fall back to baseline.
                 $baseValue = $map[$field][$base] ?? '';
 
                 if (blank($submittedValue) || $submittedValue === $baseValue) {
@@ -191,7 +195,6 @@ class LandingBlocks
                     $map[$field][$locale] = $submittedValue;
                 }
 
-                // Ensure a baseline exists for fallback if none was set.
                 if (! array_key_exists($base, $map[$field]) || blank($map[$field][$base])) {
                     $map[$field][$base] = $submittedValue;
                 }
@@ -199,45 +202,52 @@ class LandingBlocks
         }
 
         if (isset($submitted['items']) && is_array($submitted['items'])) {
-            $map['items'] = [];
+            $items = [];
             foreach ($submitted['items'] as $i => $item) {
                 if (! is_array($item)) {
                     continue;
                 }
+
                 $mapItem = $map['items'][$i] ?? [];
-                foreach (self::translatableFields() as $field) {
-                    if (! array_key_exists($field, $item)) {
-                        continue;
-                    }
-                    if (! is_array($mapItem[$field] ?? '')) {
-                        $mapItem[$field] = [];
-                    }
 
-                    $submittedValue = is_string($item[$field]) ? $item[$field] : '';
+                foreach ($item as $key => $value) {
+                    if (in_array($key, $translatable, true)) {
+                        if (! is_array($mapItem[$key] ?? '')) {
+                            $mapItem[$key] = [];
+                        }
 
-                    if ($locale === $base) {
-                        $mapItem[$field][$base] = $submittedValue;
-                        foreach ($mapItem[$field] as $l => $v) {
-                            if ($l !== $base && blank($v)) {
-                                $mapItem[$field][$l] = $submittedValue;
+                        $submittedValue = is_string($value) ? $value : '';
+
+                        if ($locale === $base) {
+                            $mapItem[$key][$base] = $submittedValue;
+
+                            foreach ($mapItem[$key] as $l => $v) {
+                                if ($l !== $base && blank($v)) {
+                                    $mapItem[$key][$l] = $submittedValue;
+                                }
+                            }
+                        } else {
+                            $baseValue = $mapItem[$key][$base] ?? '';
+
+                            if (blank($submittedValue) || $submittedValue === $baseValue) {
+                                $mapItem[$key][$locale] = '';
+                            } else {
+                                $mapItem[$key][$locale] = $submittedValue;
+                            }
+
+                            if (! array_key_exists($base, $mapItem[$key]) || blank($mapItem[$key][$base])) {
+                                $mapItem[$key][$base] = $submittedValue;
                             }
                         }
                     } else {
-                        $baseValue = $mapItem[$field][$base] ?? '';
-
-                        if (blank($submittedValue) || $submittedValue === $baseValue) {
-                            $mapItem[$field][$locale] = '';
-                        } else {
-                            $mapItem[$field][$locale] = $submittedValue;
-                        }
-
-                        if (! array_key_exists($base, $mapItem[$field]) || blank($mapItem[$field][$base])) {
-                            $mapItem[$field][$base] = $submittedValue;
-                        }
+                        $mapItem[$key] = $value;
                     }
                 }
-                $map['items'][$i] = $mapItem;
+
+                $items[$i] = $mapItem;
             }
+
+            $map['items'] = array_values($items);
         }
 
         return $map;
