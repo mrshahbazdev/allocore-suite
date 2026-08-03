@@ -26,8 +26,8 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <a href="{{ route('planhive.calendar.index', ['month' => $today]) }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Today') }}</a>
-                <a href="{{ route('planhive.calendar.index', ['month' => $prevMonth]) }}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50" aria-label="{{ __('Previous month') }}">{{ __('&larr;') }}</a>
-                <a href="{{ route('planhive.calendar.index', ['month' => $nextMonth]) }}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50" aria-label="{{ __('Next month') }}">{{ __('&rarr;') }}</a>
+                <a href="{{ route('planhive.calendar.index', ['month' => $prevMonth]) }}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50" aria-label="{{ __('Previous month') }}">&larr;</a>
+                <a href="{{ route('planhive.calendar.index', ['month' => $nextMonth]) }}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50" aria-label="{{ __('Next month') }}">&rarr;</a>
             </div>
         </div>
 

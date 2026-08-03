@@ -21,9 +21,9 @@
             <div>
                 <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
                 <select name="status" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
-                    <option value="active" {{ old('status', $goal->status) === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
-                    <option value="achieved" {{ old('status', $goal->status) === 'achieved' ? 'selected' : '' }}>{{ __('Achieved') }}</option>
-                    <option value="dropped" {{ old('status', $goal->status) === 'dropped' ? 'selected' : '' }}>{{ __('Dropped') }}</option>
+                    <option value="active" {{ old('status', $goal->status ?? 'active') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                    <option value="achieved" {{ old('status', $goal->status ?? 'active') === 'achieved' ? 'selected' : '' }}>{{ __('Achieved') }}</option>
+                    <option value="dropped" {{ old('status', $goal->status ?? 'active') === 'dropped' ? 'selected' : '' }}>{{ __('Dropped') }}</option>
                 </select>
             </div>
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>

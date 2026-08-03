@@ -11,6 +11,18 @@ use Modules\PlanHive\Models\Project;
 
 class GoalController extends Controller
 {
+    public function index(Project $project): View
+    {
+        $goals = $project->goals()->with('project')->latest()->paginate(25);
+
+        return view('planhive::goals.index', compact('project', 'goals'));
+    }
+
+    public function show(Goal $goal): View
+    {
+        return view('planhive::goals.show', compact('goal'));
+    }
+
     public function create(Project $project): View
     {
         return view('planhive::goals.form', ['project' => $project, 'goal' => new Goal]);
@@ -25,6 +37,9 @@ class GoalController extends Controller
             'progress' => 'nullable|integer|min:0|max:100',
             'status' => 'nullable|string|in:active,achieved,dropped',
         ]);
+
+        $validated['status'] ??= 'active';
+        $validated['progress'] ??= 0;
 
         $project->goals()->create($validated + ['team_id' => $project->team_id, 'user_id' => auth()->id()]);
 
@@ -46,9 +61,12 @@ class GoalController extends Controller
             'status' => 'nullable|string|in:active,achieved,dropped',
         ]);
 
+        $validated['status'] ??= $goal->status ?? 'active';
+        $validated['progress'] ??= $goal->progress ?? 0;
+
         $goal->update($validated);
 
-        return redirect()->route('planhive.projects.show', $goal->project)->with('success', __('Goal updated.'));
+        return redirect()->route('planhive.goals.show', $goal)->with('success', __('Goal updated.'));
     }
 
     public function destroy(Goal $goal): RedirectResponse

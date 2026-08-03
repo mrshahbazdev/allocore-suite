@@ -11,16 +11,28 @@ use Modules\PlanHive\Models\Project;
 
 class ContactController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, Project $project): View
     {
-        $query = Contact::query()->with('project')->latest();
+        $query = Contact::query()->where('project_id', $project->id)->with('project')->latest();
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%'.$request->search.'%')
-                ->orWhere('company', 'like', '%'.$request->search.'%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search): void {
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('company', 'like', '%'.$search.'%');
+            });
         }
 
-        return view('planhive::contacts.index', ['contacts' => $query->paginate(25)->withQueryString()]);
+        return view('planhive::contacts.index', [
+            'project' => $project,
+            'contacts' => $query->paginate(25)->withQueryString(),
+            'search' => $request->get('search', ''),
+        ]);
+    }
+
+    public function show(Contact $contact): View
+    {
+        return view('planhive::contacts.show', compact('contact'));
     }
 
     public function create(Project $project): View
@@ -66,7 +78,7 @@ class ContactController extends Controller
 
         $contact->update($validated);
 
-        return redirect()->route('planhive.projects.show', $contact->project)->with('success', __('Contact updated.'));
+        return redirect()->route('planhive.contacts.show', $contact)->with('success', __('Contact updated.'));
     }
 
     public function destroy(Contact $contact): RedirectResponse

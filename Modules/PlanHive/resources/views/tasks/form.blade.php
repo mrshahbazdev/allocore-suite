@@ -21,19 +21,19 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
                     <select name="status" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="todo" {{ old('status', $task->status) === 'todo' ? 'selected' : '' }}>{{ __('To Do') }}</option>
-                        <option value="in_progress" {{ old('status', $task->status) === 'in_progress' ? 'selected' : '' }}>{{ __('In Progress') }}</option>
-                        <option value="done" {{ old('status', $task->status) === 'done' ? 'selected' : '' }}>{{ __('Done') }}</option>
-                        <option value="cancelled" {{ old('status', $task->status) === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
+                        <option value="todo" {{ old('status', $task->status ?? 'todo') === 'todo' ? 'selected' : '' }}>{{ __('To Do') }}</option>
+                        <option value="in_progress" {{ old('status', $task->status ?? 'todo') === 'in_progress' ? 'selected' : '' }}>{{ __('In Progress') }}</option>
+                        <option value="done" {{ old('status', $task->status ?? 'todo') === 'done' ? 'selected' : '' }}>{{ __('Done') }}</option>
+                        <option value="cancelled" {{ old('status', $task->status ?? 'todo') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Priority') }}</label>
                     <select name="priority" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="low" {{ old('priority', $task->priority) === 'low' ? 'selected' : '' }}>{{ __('Low') }}</option>
-                        <option value="medium" {{ old('priority', $task->priority) === 'medium' ? 'selected' : '' }}>{{ __('Medium') }}</option>
-                        <option value="high" {{ old('priority', $task->priority) === 'high' ? 'selected' : '' }}>{{ __('High') }}</option>
-                        <option value="urgent" {{ old('priority', $task->priority) === 'urgent' ? 'selected' : '' }}>{{ __('Urgent') }}</option>
+                        <option value="low" {{ old('priority', $task->priority ?? 'medium') === 'low' ? 'selected' : '' }}>{{ __('Low') }}</option>
+                        <option value="medium" {{ old('priority', $task->priority ?? 'medium') === 'medium' ? 'selected' : '' }}>{{ __('Medium') }}</option>
+                        <option value="high" {{ old('priority', $task->priority ?? 'medium') === 'high' ? 'selected' : '' }}>{{ __('High') }}</option>
+                        <option value="urgent" {{ old('priority', $task->priority ?? 'medium') === 'urgent' ? 'selected' : '' }}>{{ __('Urgent') }}</option>
                     </select>
                 </div>
             </div>

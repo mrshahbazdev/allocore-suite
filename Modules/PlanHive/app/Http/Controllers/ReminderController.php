@@ -16,18 +16,27 @@ class ReminderController extends Controller
 {
     public function index(): View
     {
+        $userId = auth()->id();
+
         $reminders = Reminder::query()
-            ->where('user_id', auth()->id())
-            ->orWhereIn('project_id', function ($query): void {
-                $query->select('project_id')
-                    ->from('planhive_project_members')
-                    ->where('user_id', auth()->id());
+            ->where(function ($query) use ($userId): void {
+                $query->where('user_id', $userId)
+                    ->orWhereIn('project_id', function ($sub) use ($userId): void {
+                        $sub->select('project_id')
+                            ->from('planhive_project_members')
+                            ->where('user_id', $userId);
+                    });
             })
             ->with('remindable')
             ->orderBy('remind_at')
             ->paginate(25);
 
         return view('planhive::reminders.index', compact('reminders'));
+    }
+
+    public function show(Reminder $reminder): View
+    {
+        return view('planhive::reminders.show', compact('reminder'));
     }
 
     public function create(Project $project): View

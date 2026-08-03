@@ -11,6 +11,18 @@ use Modules\PlanHive\Models\Project;
 
 class NoteController extends Controller
 {
+    public function index(Project $project): View
+    {
+        $notes = $project->notes()->latest()->paginate(25);
+
+        return view('planhive::notes.index', compact('project', 'notes'));
+    }
+
+    public function show(Note $note): View
+    {
+        return view('planhive::notes.show', compact('note'));
+    }
+
     public function create(Project $project): View
     {
         return view('planhive::notes.form', ['project' => $project, 'note' => new Note]);
@@ -42,7 +54,7 @@ class NoteController extends Controller
 
         $note->update($validated);
 
-        return redirect()->route('planhive.projects.show', $note->project)->with('success', __('Note updated.'));
+        return redirect()->route('planhive.notes.show', $note)->with('success', __('Note updated.'));
     }
 
     public function destroy(Note $note): RedirectResponse

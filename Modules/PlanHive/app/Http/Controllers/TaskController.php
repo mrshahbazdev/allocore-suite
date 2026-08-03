@@ -35,6 +35,10 @@ class TaskController extends Controller
             'position' => 'nullable|integer',
         ]);
 
+        $validated['status'] ??= 'todo';
+        $validated['priority'] ??= 'medium';
+        $validated['position'] ??= 0;
+
         $task = $project->tasks()->create($validated + ['team_id' => $project->team_id, 'user_id' => auth()->id()]);
 
         return redirect()->route('planhive.projects.show', $project)->with('success', __('Task created.'));
@@ -61,6 +65,10 @@ class TaskController extends Controller
             'due_date' => 'nullable|date',
             'position' => 'nullable|integer',
         ]);
+
+        $validated['status'] ??= $task->status ?? 'todo';
+        $validated['priority'] ??= $task->priority ?? 'medium';
+        $validated['position'] ??= $task->position ?? 0;
 
         $task->update($validated);
 
