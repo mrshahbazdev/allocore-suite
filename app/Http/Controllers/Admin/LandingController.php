@@ -3,34 +3,41 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SiteSetting;
-use App\Support\LandingBlockDefaults;
+use App\Support\LandingBlocks;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $blocks = SiteSetting::value('landing_blocks', []);
+        $locale = $this->locale($request);
+        $blocks = LandingBlocks::forAdmin($locale);
 
-        if (empty($blocks)) {
-            $blocks = LandingBlockDefaults::blocks();
-        }
-
-        return view('admin.landing.index', compact('blocks'));
+        return view('admin.landing.index', compact('blocks', 'locale'));
     }
 
     public function update(Request $request)
     {
+        $locale = $this->locale($request);
+
         $request->validate([
             'blocks' => 'nullable|array',
             'blocks.*.type' => 'required|in:hero,features,text,image,cta,faq,stats,testimonials,pricing,steps,logos,divider,spacer',
         ]);
 
         $blocks = $this->normalizeBlocks($request->input('blocks', []));
-        SiteSetting::set('landing_blocks', $blocks);
+        LandingBlocks::save($blocks, $locale);
 
-        return back()->with('success', __('Landing page updated.'));
+        return redirect()->route('admin.landing.index', ['locale' => $locale])
+            ->with('success', __('Landing page updated.'));
+    }
+
+    private function locale(Request $request): string
+    {
+        $locale = $request->input('locale', app()->getLocale());
+        $available = config('app.available_locales', ['en', 'de']);
+
+        return in_array($locale, $available, true) ? $locale : LandingBlocks::BASE_LOCALE;
     }
 
     private function normalizeBlocks(array $blocks): array

@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SiteSetting;
-use App\Support\LandingBlockDefaults;
+use App\Support\LandingBlocks;
 
 class HomeController extends Controller
 {
     public function __invoke()
     {
-        $blocks = SiteSetting::value('landing_blocks', []);
-
-        if (empty($blocks)) {
-            $blocks = LandingBlockDefaults::blocks();
-        }
+        $blocks = LandingBlocks::forPublic();
 
         return view('home', compact('blocks'));
     }
