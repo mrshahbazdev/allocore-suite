@@ -11,6 +11,10 @@ class LanguageController extends Controller
         if (in_array($locale, $locales, true)) {
             session(['locale' => $locale]);
             app()->setLocale($locale);
+
+            if (auth()->check()) {
+                auth()->user()->update(['locale' => $locale]);
+            }
         }
 
         return redirect()->back();

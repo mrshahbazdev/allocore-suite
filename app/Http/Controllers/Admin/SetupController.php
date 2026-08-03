@@ -74,7 +74,7 @@ class SetupController extends Controller
 
     public function complete()
     {
-        SiteSetting::set('setup_wizard_completed', true);
+        SiteSetting::setGlobal('setup_wizard_completed', true);
 
         return redirect()->route('onboarding.index')->with('success', __('Setup completed. Continue creating your team.'));
     }
