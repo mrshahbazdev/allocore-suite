@@ -12,6 +12,18 @@ use Modules\PlanHive\Models\Project;
 
 class DocumentController extends Controller
 {
+    public function index(Project $project): View
+    {
+        $documents = $project->documents()->latest()->paginate(25);
+
+        return view('planhive::documents.index', compact('project', 'documents'));
+    }
+
+    public function show(Document $document): View
+    {
+        return view('planhive::documents.show', compact('document'));
+    }
+
     public function create(Project $project): View
     {
         return view('planhive::documents.form', ['project' => $project, 'document' => new Document]);
@@ -37,6 +49,36 @@ class DocumentController extends Controller
         ]);
 
         return redirect()->route('planhive.projects.show', $project)->with('success', __('Document uploaded.'));
+    }
+
+    public function edit(Document $document): View
+    {
+        return view('planhive::documents.form', ['project' => $document->project, 'document' => $document]);
+    }
+
+    public function update(Request $request, Document $document): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'file' => 'nullable|file|max:10240',
+        ]);
+
+        $document->title = $validated['title'];
+
+        if ($request->hasFile('file')) {
+            if (Storage::disk('public')->exists($document->path)) {
+                Storage::disk('public')->delete($document->path);
+            }
+
+            $file = $request->file('file');
+            $document->path = $file->store('planhive/documents/'.$document->team_id, 'public');
+            $document->mime_type = $file->getMimeType();
+            $document->size = $file->getSize();
+        }
+
+        $document->save();
+
+        return redirect()->route('planhive.documents.index', $document->project)->with('success', __('Document updated.'));
     }
 
     public function download(Document $document)

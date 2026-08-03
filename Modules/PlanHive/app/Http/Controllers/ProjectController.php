@@ -45,6 +45,9 @@ class ProjectController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
+        $validated['color'] ??= '#6366f1';
+        $validated['status'] ??= 'active';
+
         $project = Project::create($validated);
         $project->members()->attach(auth()->id(), ['role' => 'owner']);
 
@@ -73,6 +76,9 @@ class ProjectController extends Controller
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
+
+        $validated['color'] ??= $project->color ?? '#6366f1';
+        $validated['status'] ??= $project->status ?? 'active';
 
         $project->update($validated);
 

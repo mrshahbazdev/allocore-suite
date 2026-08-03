@@ -34,6 +34,11 @@ class CalendarEventController extends Controller
         return view('planhive::calendar.index', compact('events', 'start', 'end', 'month', 'project', 'projects'));
     }
 
+    public function show(CalendarEvent $calendarEvent): View
+    {
+        return view('planhive::calendar.show', compact('calendarEvent'));
+    }
+
     public function create(Project $project): View
     {
         return view('planhive::calendar.form', ['project' => $project, 'event' => new CalendarEvent]);

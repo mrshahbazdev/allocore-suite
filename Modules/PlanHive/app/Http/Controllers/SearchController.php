@@ -13,27 +13,39 @@ class SearchController extends Controller
 {
     public function index(Request $request): View
     {
-        $term = $request->get('q');
+        $term = $request->get('q', '');
 
-        $projects = Project::query()
-            ->where('name', 'like', "%{$term}%")
-            ->orWhere('description', 'like', "%{$term}%")
-            ->limit(10)
-            ->get();
+        $projects = collect();
+        $tasks = collect();
+        $contacts = collect();
 
-        $tasks = Task::query()
-            ->where('title', 'like', "%{$term}%")
-            ->orWhere('description', 'like', "%{$term}%")
-            ->with('project')
-            ->limit(10)
-            ->get();
+        if ($term !== '') {
+            $projects = Project::query()
+                ->where(function ($query) use ($term): void {
+                    $query->where('name', 'like', "%{$term}%")
+                        ->orWhere('description', 'like', "%{$term}%");
+                })
+                ->limit(10)
+                ->get();
 
-        $contacts = Contact::query()
-            ->where('name', 'like', "%{$term}%")
-            ->orWhere('company', 'like', "%{$term}%")
-            ->with('project')
-            ->limit(10)
-            ->get();
+            $tasks = Task::query()
+                ->where(function ($query) use ($term): void {
+                    $query->where('title', 'like', "%{$term}%")
+                        ->orWhere('description', 'like', "%{$term}%");
+                })
+                ->with('project')
+                ->limit(10)
+                ->get();
+
+            $contacts = Contact::query()
+                ->where(function ($query) use ($term): void {
+                    $query->where('name', 'like', "%{$term}%")
+                        ->orWhere('company', 'like', "%{$term}%");
+                })
+                ->with('project')
+                ->limit(10)
+                ->get();
+        }
 
         return view('planhive::search.index', compact('projects', 'tasks', 'contacts', 'term'));
     }

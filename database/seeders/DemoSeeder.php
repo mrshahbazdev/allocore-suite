@@ -9,12 +9,18 @@ use App\Models\ToolSubscription;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Modules\InvoiceMaker\Models\Client;
 use Modules\InvoiceMaker\Models\Invoice;
 use Modules\InvoiceMaker\Models\InvoiceItem;
 use Modules\LeadQuality\Models\Contact as LeadContact;
+use Modules\PlanHive\Models\CalendarEvent;
 use Modules\PlanHive\Models\Contact as PlanHiveContact;
+use Modules\PlanHive\Models\Document;
+use Modules\PlanHive\Models\Goal;
+use Modules\PlanHive\Models\Note;
 use Modules\PlanHive\Models\Project;
+use Modules\PlanHive\Models\Reminder;
 use Modules\PlanHive\Models\Task;
 
 class DemoSeeder extends Seeder
@@ -77,7 +83,7 @@ class DemoSeeder extends Seeder
 
     protected function seedInvoiceMaker(Team $team, User $user): void
     {
-        $client = Client::firstOrCreate(
+        $client = Client::withoutGlobalScope('current_team')->firstOrCreate(
             ['team_id' => $team->id, 'company_name' => 'Acme GmbH'],
             [
                 'name' => 'Alice Müller',
@@ -87,34 +93,36 @@ class DemoSeeder extends Seeder
             ]
         );
 
-        $invoice = Invoice::create([
-            'team_id' => $team->id,
-            'client_id' => $client->id,
-            'invoice_number' => 'INV-DEMO-001',
-            'type' => 'invoice',
-            'status' => 'sent',
-            'invoice_date' => now()->subDays(7),
-            'due_date' => now()->addDays(23),
-            'currency' => 'EUR',
-            'subtotal' => 1000,
-            'tax_total' => 190,
-            'grand_total' => 1190,
-            'amount_due' => 1190,
-        ]);
+        $invoice = Invoice::withoutGlobalScope('current_team')->firstOrCreate(
+            ['team_id' => $team->id, 'invoice_number' => 'INV-DEMO-001'],
+            [
+                'client_id' => $client->id,
+                'type' => 'invoice',
+                'status' => 'sent',
+                'invoice_date' => now()->subDays(7),
+                'due_date' => now()->addDays(23),
+                'currency' => 'EUR',
+                'subtotal' => 1000,
+                'tax_total' => 190,
+                'grand_total' => 1190,
+                'amount_due' => 1190,
+            ]
+        );
 
-        InvoiceItem::create([
-            'team_id' => $team->id,
-            'invoice_id' => $invoice->id,
-            'description' => 'Premium consulting',
-            'quantity' => 10,
-            'unit_price' => 100,
-            'total' => 1000,
-        ]);
+        InvoiceItem::withoutGlobalScope('current_team')->firstOrCreate(
+            ['invoice_id' => $invoice->id, 'description' => 'Premium consulting'],
+            [
+                'team_id' => $team->id,
+                'quantity' => 10,
+                'unit_price' => 100,
+                'total' => 1000,
+            ]
+        );
     }
 
     protected function seedPlanHive(Team $team, User $user): void
     {
-        $project = Project::firstOrCreate(
+        $project = Project::withoutGlobalScope('current_team')->firstOrCreate(
             ['team_id' => $team->id, 'name' => 'Demo Product Launch'],
             [
                 'user_id' => $user->id,
@@ -126,19 +134,46 @@ class DemoSeeder extends Seeder
             ]
         );
 
-        Task::firstOrCreate(
-            ['project_id' => $project->id, 'title' => 'Prepare landing page'],
+        if ($project->wasRecentlyCreated) {
+            $project->members()->attach($user->id, ['role' => 'owner']);
+        }
+
+        $tasks = [
+            ['title' => 'Prepare landing page', 'description' => 'Draft copy and hero section for the launch page.', 'status' => 'in_progress', 'priority' => 'high', 'due_date' => now()->addWeek()],
+            ['title' => 'Design mockups', 'description' => 'Create high-fidelity UI mockups.', 'status' => 'todo', 'priority' => 'medium', 'due_date' => now()->addDays(10)],
+            ['title' => 'Set up analytics', 'description' => 'Connect tracking and reporting tools.', 'status' => 'todo', 'priority' => 'low', 'due_date' => now()->addDays(14)],
+            ['title' => 'Launch campaign', 'description' => 'Press send on the announcement email.', 'status' => 'done', 'priority' => 'high', 'due_date' => now()->subDay()],
+        ];
+
+        foreach ($tasks as $task) {
+            Task::withoutGlobalScope('current_team')->firstOrCreate(
+                ['project_id' => $project->id, 'title' => $task['title']],
+                $task + ['team_id' => $team->id, 'user_id' => $user->id]
+            );
+        }
+
+        Goal::withoutGlobalScope('current_team')->firstOrCreate(
+            ['project_id' => $project->id, 'title' => 'Hit 1,000 signups'],
             [
                 'team_id' => $team->id,
                 'user_id' => $user->id,
-                'description' => 'Draft copy and hero section for the launch page.',
-                'status' => 'in_progress',
-                'priority' => 'high',
-                'due_date' => now()->addWeek(),
+                'description' => 'Reach 1,000 beta signups by launch day.',
+                'target_date' => now()->addMonth(),
+                'progress' => 35,
+                'status' => 'active',
             ]
         );
 
-        PlanHiveContact::firstOrCreate(
+        Note::withoutGlobalScope('current_team')->firstOrCreate(
+            ['project_id' => $project->id, 'title' => 'Kickoff notes'],
+            [
+                'team_id' => $team->id,
+                'user_id' => $user->id,
+                'content' => 'Target audience: SMBs in DACH. Key message: simplify project management with Allocore.',
+            ]
+        );
+
+        PlanHiveContact::withoutGlobalScope('current_team')->firstOrCreate(
             ['team_id' => $team->id, 'email' => 'partner@example.com'],
             [
                 'user_id' => $user->id,
@@ -148,11 +183,51 @@ class DemoSeeder extends Seeder
                 'phone' => '+1 555 1234',
             ]
         );
+
+        CalendarEvent::withoutGlobalScope('current_team')->firstOrCreate(
+            ['project_id' => $project->id, 'title' => 'Launch review'],
+            [
+                'team_id' => $team->id,
+                'user_id' => $user->id,
+                'description' => 'Review launch results with the team.',
+                'start_at' => now()->addDays(3)->setTime(10, 0),
+                'end_at' => now()->addDays(3)->setTime(11, 0),
+                'all_day' => false,
+            ]
+        );
+
+        Reminder::withoutGlobalScope('current_team')->firstOrCreate(
+            ['project_id' => $project->id, 'title' => 'Follow up with partner'],
+            [
+                'team_id' => $team->id,
+                'user_id' => $user->id,
+                'remindable_type' => Project::class,
+                'remindable_id' => $project->id,
+                'remind_at' => now()->addDays(2)->setTime(9, 0),
+                'is_done' => false,
+            ]
+        );
+
+        $path = 'planhive/documents/'.$team->id.'/demo-project-brief.txt';
+        if (! Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->put($path, "Project Brief\n\nThis is a demo document for PlanHive.");
+        }
+
+        Document::withoutGlobalScope('current_team')->firstOrCreate(
+            ['project_id' => $project->id, 'title' => 'Demo project brief'],
+            [
+                'team_id' => $team->id,
+                'user_id' => $user->id,
+                'path' => $path,
+                'mime_type' => 'text/plain',
+                'size' => (int) Storage::disk('public')->size($path),
+            ]
+        );
     }
 
     protected function seedLeadOs(Team $team, User $user): void
     {
-        LeadContact::firstOrCreate(
+        LeadContact::withoutGlobalScope('current_team')->firstOrCreate(
             ['team_id' => $team->id, 'email' => 'lead@example.com'],
             [
                 'user_id' => $user->id,

@@ -27,7 +27,7 @@
                     <h2 class="text-lg font-semibold text-slate-900">{{ __('Tasks') }}</h2>
                     <ul class="mt-3 space-y-2 text-sm">
                         @forelse ($tasks as $task)
-                            <li><a href="{{ route('planhive.projects.show', $task->project) }}" class="text-indigo-600">{{ $task->title }}</a> <span class="text-slate-500">({{ $task->project->name }})</span></li>
+                            <li><a href="{{ route('planhive.tasks.show', $task) }}" class="text-indigo-600">{{ $task->title }}</a> <span class="text-slate-500">({{ $task->project->name }})</span></li>
                         @empty
                             <li class="text-slate-500">{{ __('No results.') }}</li>
                         @endforelse
@@ -37,7 +37,7 @@
                     <h2 class="text-lg font-semibold text-slate-900">{{ __('Contacts') }}</h2>
                     <ul class="mt-3 space-y-2 text-sm">
                         @forelse ($contacts as $contact)
-                            <li><a href="{{ route('planhive.contacts.edit', $contact) }}" class="text-indigo-600">{{ $contact->name }}</a> <span class="text-slate-500">({{ $contact->company ?? '-' }})</span></li>
+                            <li><a href="{{ route('planhive.contacts.show', $contact) }}" class="text-indigo-600">{{ $contact->name }}</a> <span class="text-slate-500">({{ $contact->company ?? '-' }})</span></li>
                         @empty
                             <li class="text-slate-500">{{ __('No results.') }}</li>
                         @endforelse
