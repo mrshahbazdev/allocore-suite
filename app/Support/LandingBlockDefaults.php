@@ -18,15 +18,27 @@ class LandingBlockDefaults
         ];
     }
 
+    private static function t(string $key): array
+    {
+        $locales = config('app.available_locales', ['en', 'de']);
+        $values = [];
+
+        foreach ($locales as $locale) {
+            $values[$locale] = __($key, [], $locale);
+        }
+
+        return $values;
+    }
+
     private static function hero(): array
     {
         return [
             'type' => 'hero',
             'enabled' => true,
-            'heading' => __('landing.hero.heading'),
-            'subheading' => __('landing.hero.subheading'),
+            'heading' => self::t('landing.hero.heading'),
+            'subheading' => self::t('landing.hero.subheading'),
             'image' => '',
-            'cta_text' => __('landing.hero.cta_primary'),
+            'cta_text' => self::t('landing.hero.cta_primary'),
             'cta_url' => Route::has('register') ? route('register') : url('/register'),
             'style' => [
                 'bg' => '#0f172a',
@@ -49,12 +61,12 @@ class LandingBlockDefaults
             'enabled' => true,
             'title' => '',
             'items' => [
-                ['label' => __('landing.stats.modules'), 'value' => '', 'suffix' => '', 'source' => 'module_count'],
-                ['label' => __('landing.stats.teams'), 'value' => '', 'suffix' => '', 'source' => 'team_count'],
-                ['label' => __('landing.stats.users'), 'value' => '', 'suffix' => '', 'source' => 'user_count'],
-                ['label' => __('landing.stats.subscriptions'), 'value' => '', 'suffix' => '', 'source' => 'active_subscription_count'],
-                ['label' => __('landing.stats.audits'), 'value' => '', 'suffix' => '', 'source' => 'audit_count'],
-                ['label' => __('landing.stats.avg_allocore_score'), 'value' => '', 'suffix' => '', 'source' => 'avg_allocore_score'],
+                ['label' => self::t('landing.stats.modules'), 'value' => '', 'suffix' => '', 'source' => 'module_count'],
+                ['label' => self::t('landing.stats.teams'), 'value' => '', 'suffix' => '', 'source' => 'team_count'],
+                ['label' => self::t('landing.stats.users'), 'value' => '', 'suffix' => '', 'source' => 'user_count'],
+                ['label' => self::t('landing.stats.subscriptions'), 'value' => '', 'suffix' => '', 'source' => 'active_subscription_count'],
+                ['label' => self::t('landing.stats.audits'), 'value' => '', 'suffix' => '', 'source' => 'audit_count'],
+                ['label' => self::t('landing.stats.avg_allocore_score'), 'value' => '', 'suffix' => '', 'source' => 'avg_allocore_score'],
             ],
             'style' => [
                 'bg' => '#0f172a',
@@ -75,12 +87,12 @@ class LandingBlockDefaults
         return [
             'type' => 'features',
             'enabled' => true,
-            'title' => __('landing.features.heading'),
+            'title' => self::t('landing.features.heading'),
             'items' => [
-                ['title' => __('landing.features.auth.title'), 'description' => __('landing.features.auth.desc')],
-                ['title' => __('landing.features.teams.title'), 'description' => __('landing.features.teams.desc')],
-                ['title' => __('landing.features.billing.title'), 'description' => __('landing.features.billing.desc')],
-                ['title' => __('landing.features.analytics.title'), 'description' => __('landing.features.analytics.desc')],
+                ['title' => self::t('landing.features.auth.title'), 'description' => self::t('landing.features.auth.desc')],
+                ['title' => self::t('landing.features.teams.title'), 'description' => self::t('landing.features.teams.desc')],
+                ['title' => self::t('landing.features.billing.title'), 'description' => self::t('landing.features.billing.desc')],
+                ['title' => self::t('landing.features.analytics.title'), 'description' => self::t('landing.features.analytics.desc')],
             ],
             'style' => [
                 'bg' => '',
@@ -101,11 +113,11 @@ class LandingBlockDefaults
         return [
             'type' => 'steps',
             'enabled' => true,
-            'title' => __('landing.how.heading'),
+            'title' => self::t('landing.how.heading'),
             'items' => [
-                ['title' => __('landing.how.step1.title'), 'description' => __('landing.how.step1.desc')],
-                ['title' => __('landing.how.step2.title'), 'description' => __('landing.how.step2.desc')],
-                ['title' => __('landing.how.step3.title'), 'description' => __('landing.how.step3.desc')],
+                ['title' => self::t('landing.how.step1.title'), 'description' => self::t('landing.how.step1.desc')],
+                ['title' => self::t('landing.how.step2.title'), 'description' => self::t('landing.how.step2.desc')],
+                ['title' => self::t('landing.how.step3.title'), 'description' => self::t('landing.how.step3.desc')],
             ],
             'style' => [
                 'bg' => '',
@@ -126,9 +138,9 @@ class LandingBlockDefaults
         return [
             'type' => 'testimonials',
             'enabled' => true,
-            'title' => __('landing.testimonials.heading'),
+            'title' => self::t('landing.testimonials.heading'),
             'items' => [
-                ['quote' => __('landing.testimonials.quote'), 'author' => __('landing.testimonials.author'), 'role' => ''],
+                ['quote' => self::t('landing.testimonials.quote'), 'author' => self::t('landing.testimonials.author'), 'role' => ''],
             ],
             'style' => [
                 'bg' => '',
@@ -149,9 +161,9 @@ class LandingBlockDefaults
         return [
             'type' => 'cta',
             'enabled' => true,
-            'title' => __('landing.cta.heading'),
-            'text' => __('landing.cta.subheading'),
-            'button_text' => __('landing.cta.primary'),
+            'title' => self::t('landing.cta.heading'),
+            'text' => self::t('landing.cta.subheading'),
+            'button_text' => self::t('landing.cta.primary'),
             'button_url' => Route::has('register') ? route('register') : url('/register'),
             'style' => [
                 'bg' => '#4f46e5',
