@@ -43,6 +43,14 @@ class SiteSetting extends Model
             $value = $base?->value;
         }
 
+        if ($value === null) {
+            $fallback = config('app.fallback_locale', 'en');
+            if ($fallback !== $locale) {
+                $fallbackSetting = static::where('key', $key.'_'.$fallback)->first();
+                $value = $fallbackSetting?->value;
+            }
+        }
+
         if ($value !== null) {
             Cache::forever($cacheKey, $value);
 
@@ -60,5 +68,19 @@ class SiteSetting extends Model
         Cache::forget('site_setting_'.$key.'_'.config('app.fallback_locale', 'en'));
 
         return static::updateOrCreate(['key' => $key.'_'.$locale], ['value' => $value]);
+    }
+
+    public static function setGlobal(string $key, mixed $value): self
+    {
+        $locales = array_merge(config('app.available_locales', ['en']), [config('app.fallback_locale', 'en')]);
+
+        foreach ($locales as $locale) {
+            Cache::forget('site_setting_'.$key.'_'.$locale);
+        }
+        Cache::forget('site_setting_'.$key);
+
+        static::where('key', 'like', $key.'_%')->delete();
+
+        return static::updateOrCreate(['key' => $key], ['value' => $value]);
     }
 }
