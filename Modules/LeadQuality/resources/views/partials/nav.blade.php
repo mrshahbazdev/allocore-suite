@@ -9,17 +9,13 @@
     ['route' => 'leadquality.email-accounts.index', 'label' => __('Email Accounts'), 'icon' => 'M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.917V6.75'],
 ])
 
-<div class="border-b border-slate-200 bg-white">
-    <div class="max-w-full overflow-x-auto">
-        <nav class="flex items-center gap-1 whitespace-nowrap px-4 py-2 sm:px-6 lg:px-8">
+<div class="mb-6 border-b border-slate-200">
+    <nav class="flex flex-wrap gap-6">
             @foreach ($links as $link)
                 @php($routeName = $link['route'])
                 @php($active = request()->routeIs($routeName) || request()->routeIs($routeName . '.*'))
-                <a href="{{ route($routeName, $link['params'] ?? []) }}" class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ $active ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $link['icon'] }}"/></svg>
-                    {{ $link['label'] }}
+                <a href="{{ route($routeName, $link['params'] ?? []) }}" class="-mb-px border-b-2 pb-3 text-sm font-medium transition {{ $active ? 'border-[#ff9200] text-[#ff9200]' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800' }}">{{ $link['label'] }}
                 </a>
             @endforeach
         </nav>
-    </div>
 </div>
