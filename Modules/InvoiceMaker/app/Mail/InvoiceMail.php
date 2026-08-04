@@ -41,13 +41,10 @@ class InvoiceMail extends Mailable
             ->markdown('invoicemaker::emails.invoice')
             ->with([
                 'invoice' => $this->invoice,
-                'businessName' => $this->invoice->profile?->name ?? config('app.name'),
-                'clientName' => $this->invoice->client?->name ?? '',
-                'amountDue' => $this->invoice->amount_due,
-                'dueDate' => $this->invoice->due_date?->format('M d, Y'),
-                'publicLink' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
-                'downloadLink' => URL::signedRoute('invoicemaker.public.download', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
-                'customBody' => $this->customBody,
+                'subjectLine' => $this->customSubject,
+                'message' => $this->customBody,
+                'url' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
+                'downloadUrl' => URL::signedRoute('invoicemaker.public.download', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
             ]);
 
         if ($this->pdfContent !== null && $this->pdfContent !== '') {
