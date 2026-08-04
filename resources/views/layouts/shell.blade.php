@@ -24,12 +24,12 @@
 @php($isModulePage = request()->is('app/*'))
 @php($currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null)
 @php($pageTitle = $currentModule?->name ?? ($isModulePage ? __('Tools') : __('Dashboard')))
-<body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false }">
+<body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 <div class="min-h-full flex">
     {{-- Sidebar --}}
     @if (! $isModulePage)
-        <aside class="fixed inset-y-0 left-0 z-40 w-64 transform bg-slate-900 text-slate-200 transition-transform duration-200 lg:static lg:translate-x-0"
-               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+        <aside class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform overflow-hidden bg-slate-900 text-slate-200 transition-all duration-300 ease-in-out lg:static lg:translate-x-0"
+               :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-0' : 'lg:w-64']"
                x-cloak>
             <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
                 @if ($brand['logo'])
@@ -55,6 +55,9 @@
                     @if (! $isModulePage)
                         <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                        </button>
+                        <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:flex" aria-label="{{ __('Toggle sidebar') }}">
+                            <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
                         </button>
                     @else
                         <a href="{{ route('dashboard') }}" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="{{ __('Back to dashboard') }}">
