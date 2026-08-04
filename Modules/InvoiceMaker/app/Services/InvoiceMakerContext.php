@@ -42,8 +42,10 @@ class InvoiceMakerContext
                     'name' => 'Allocore Professional',
                     'is_default' => true,
                     'primary_color' => '#4f46e5',
-                    'font_family' => 'DejaVu Sans',
-                    'header_style' => 'simple',
+                    'font_family' => 'sans',
+                    'header_style' => 'default',
+                    'logo_position' => 'left',
+                    'enable_qr' => false,
                     'payment_terms' => 'Please pay by the due date.',
                     'footer_message' => 'Thank you for your business.',
                 ]);

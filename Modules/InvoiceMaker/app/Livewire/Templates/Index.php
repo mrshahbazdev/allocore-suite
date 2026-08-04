@@ -16,7 +16,11 @@ class Index extends Component
 
     public string $primary_color = '#4f46e5';
 
-    public string $header_style = 'simple';
+    public string $font_family = 'sans';
+
+    public string $logo_position = 'left';
+
+    public string $header_style = 'default';
 
     public ?string $payment_terms = null;
 
@@ -25,6 +29,8 @@ class Index extends Component
     public bool $show_tax = true;
 
     public bool $show_discount = true;
+
+    public bool $enable_qr = false;
 
     public function mount(InvoiceMakerContext $context): void
     {
@@ -37,11 +43,14 @@ class Index extends Component
         $this->fill($template->only([
             'name',
             'primary_color',
+            'font_family',
+            'logo_position',
             'header_style',
             'payment_terms',
             'footer_message',
             'show_tax',
             'show_discount',
+            'enable_qr',
         ]));
     }
 
@@ -50,11 +59,14 @@ class Index extends Component
         $data = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'primary_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'header_style' => ['required', 'in:simple,bold,center'],
+            'font_family' => ['required', 'in:sans,serif,mono'],
+            'logo_position' => ['required', 'in:left,center,right'],
+            'header_style' => ['required', 'in:default,bold,minimal'],
             'payment_terms' => ['nullable', 'string'],
             'footer_message' => ['nullable', 'string'],
             'show_tax' => ['boolean'],
             'show_discount' => ['boolean'],
+            'enable_qr' => ['boolean'],
         ]);
 
         $template = $this->selectedId ? Template::findOrFail($this->selectedId) : new Template;

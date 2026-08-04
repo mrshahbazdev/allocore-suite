@@ -16,6 +16,7 @@ use Modules\InvoiceMaker\Livewire\Expenses\Index as ExpensesIndex;
 use Modules\InvoiceMaker\Livewire\Products\Form as ProductForm;
 use Modules\InvoiceMaker\Livewire\Products\Index as ProductsIndex;
 use Modules\InvoiceMaker\Livewire\Settings\Profile as SettingsProfile;
+use Modules\InvoiceMaker\Livewire\Templates\Builder as TemplatesBuilder;
 use Modules\InvoiceMaker\Livewire\Templates\Index as TemplatesIndex;
 
 Route::prefix('app/invoices')
@@ -59,6 +60,7 @@ Route::prefix('app/invoices')
         Route::get('/expenses', ExpensesIndex::class)->name('expenses.index');
         Route::get('/cash-book', CashBook::class)->name('cash-book.index');
         Route::get('/templates', TemplatesIndex::class)->name('templates.index');
+        Route::get('/templates/{template}/edit', TemplatesBuilder::class)->name('templates.edit');
         Route::get('/settings', SettingsProfile::class)->name('settings.profile');
     });
 

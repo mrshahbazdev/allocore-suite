@@ -17,5 +17,6 @@ class Template extends Model
         'is_default' => 'boolean',
         'show_tax' => 'boolean',
         'show_discount' => 'boolean',
+        'enable_qr' => 'boolean',
     ];
 }
