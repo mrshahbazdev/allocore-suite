@@ -9,13 +9,4 @@
     ['route' => 'leadquality.email-accounts.index', 'label' => __('Email Accounts'), 'icon' => 'M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.917V6.75'],
 ])
 
-<div class="mb-6 border-b border-slate-200">
-    <nav class="flex flex-wrap gap-6">
-            @foreach ($links as $link)
-                @php($routeName = $link['route'])
-                @php($active = request()->routeIs($routeName) || request()->routeIs($routeName . '.*'))
-                <a href="{{ route($routeName, $link['params'] ?? []) }}" class="-mb-px border-b-2 pb-3 text-sm font-medium transition {{ $active ? 'border-[#ff9200] text-[#ff9200]' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800' }}">{{ $link['label'] }}
-                </a>
-            @endforeach
-        </nav>
-</div>
+@include('partials.module-nav')
