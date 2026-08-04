@@ -55,7 +55,7 @@ class OrderController extends Controller
         $labs = Lab::where('is_active', true)->get();
         $productTypes = ProductType::where('is_active', true)->get();
 
-        return view('dentaltrack::admin.orders.form', compact('companies', 'labs', 'productTypes'));
+        return view('dentaltrack::admin.orders.form', ['order' => new Order, 'companies' => $companies, 'labs' => $labs, 'productTypes' => $productTypes]);
     }
 
     public function store(Request $request): RedirectResponse

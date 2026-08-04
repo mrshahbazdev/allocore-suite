@@ -7,6 +7,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Modules\TimeButler\Models\AbsenceRequest;
 use Modules\TimeButler\Models\TimeEntry;
@@ -62,7 +63,8 @@ class ReportController extends Controller
 
         $items = $request->get('format') === 'pdf' ? $query->get() : $query->paginate(25)->withQueryString();
 
-        $totalMinutes = collect($items->items ?? $items)->sum(fn ($entry) => $entry->durationMinutes() ?? 0);
+        $entries = $items instanceof Collection ? $items : $items->getCollection();
+        $totalMinutes = $entries->sum(fn ($entry) => $entry->durationMinutes() ?? 0);
 
         if ($request->get('format') === 'pdf') {
             return Pdf::loadView('timebutler::reports.time-pdf', compact('items', 'totalMinutes', 'start', 'end'))

@@ -53,7 +53,7 @@
 @php
     $score = $analysis->total_score ?? 0;
     $color = $analysis->scoreColor();
-    $input = $analysis->immobilienInput;
+    $input = $analysis->immobilienInput ?? new \Modules\FinancialPlatform\Models\ImmobilienInput();
     $colorHex = ['green'=>'#059669','yellow'=>'#d97706','red'=>'#dc2626','gray'=>'#64748b'][$color];
 @endphp
 

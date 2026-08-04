@@ -6,7 +6,7 @@
         <p class="text-sm text-slate-500">{{ __('kpi_schedules.description') }}</p>
     </div>
 
-    <form method="POST" action="{{ route('financial.kpi-schedules.store') }}" class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+    <form method="POST" action="{{ route('kpi-schedules.store') }}" class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
         @csrf
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('kpi_schedules.frequency') }}</label>
@@ -44,11 +44,11 @@
                         <td class="px-4 py-3 text-slate-600">{{ $schedule->last_run_at?->format('d.m.Y H:i') ?? '—' }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-3">
-                                <form method="POST" action="{{ route('financial.kpi-schedules.run', $schedule) }}">
+                                <form method="POST" action="{{ route('kpi-schedules.run', $schedule) }}">
                                     @csrf
                                     <button class="text-sm font-medium text-indigo-600 hover:underline">{{ __('kpi_schedules.run_now') }}</button>
                                 </form>
-                                <form method="POST" action="{{ route('financial.kpi-schedules.destroy', $schedule) }}" onsubmit="return confirm('{{ __('kpi_schedules.confirm_delete') }}')">
+                                <form method="POST" action="{{ route('kpi-schedules.destroy', $schedule) }}" onsubmit="return confirm('{{ __('kpi_schedules.confirm_delete') }}')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="text-sm font-medium text-rose-600 hover:underline">{{ __('Delete') }}</button>

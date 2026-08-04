@@ -26,7 +26,7 @@ class TeamController extends Controller
 
     public function show(Team $team)
     {
-        $team->load(['owner', 'members', 'toolSubscriptions.plan.modules', 'ownedTeams']);
+        $team->load(['owner', 'members', 'toolSubscriptions.plan.modules']);
 
         return view('admin.teams.show', compact('team'));
     }

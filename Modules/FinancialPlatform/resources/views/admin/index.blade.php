@@ -52,7 +52,7 @@
             </tbody>
         </table>
         <div style="margin-top:12px;">
-            <a href="{{ route('admin.users') }}" class="btn btn-secondary btn-sm">{{ __('Alle Benutzer →') }}</a>
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm">{{ __('Alle Benutzer →') }}</a>
         </div>
     </div>
 

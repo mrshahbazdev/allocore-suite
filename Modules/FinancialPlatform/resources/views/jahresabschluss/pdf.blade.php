@@ -54,7 +54,7 @@
 </div>
 
 @php
-    $years = $analysis->jahresabschlussInputs->sortBy('year_order')->values();
+    $years = ($analysis->jahresabschlussInputs ?? collect())->sortBy('year_order')->values();
     $kpiResults = $analysis->kpiResults;
     $kpiCodes = $kpiResults->pluck('kpi_code')->unique()->values();
 @endphp

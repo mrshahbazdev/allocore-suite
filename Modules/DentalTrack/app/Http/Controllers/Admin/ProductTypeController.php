@@ -18,11 +18,16 @@ class ProductTypeController extends Controller
         return view('dentaltrack::admin.product-types.index', compact('productTypes'));
     }
 
+    public function show(ProductType $productType): RedirectResponse
+    {
+        return redirect()->route('dentaltrack.admin.product-types.edit', $productType);
+    }
+
     public function create(): View
     {
         $companies = Company::where('is_active', true)->get();
 
-        return view('dentaltrack::admin.product-types.form', compact('companies'));
+        return view('dentaltrack::admin.product-types.form', ['productType' => new ProductType, 'companies' => $companies]);
     }
 
     public function store(Request $request): RedirectResponse

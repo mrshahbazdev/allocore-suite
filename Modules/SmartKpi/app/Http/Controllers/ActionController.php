@@ -12,6 +12,16 @@ use Modules\SmartKpi\Models\Problem;
 
 class ActionController extends Controller
 {
+    public function index(): RedirectResponse
+    {
+        return redirect()->route('smartkpi.problems.index');
+    }
+
+    public function show(Action $action): RedirectResponse
+    {
+        return redirect()->route('smartkpi.problems.show', $action->problem);
+    }
+
     public function create(Problem $problem): View
     {
         $users = User::whereHas('teams', fn ($q) => $q->where('teams.id', auth()->user()->current_team_id))->get();

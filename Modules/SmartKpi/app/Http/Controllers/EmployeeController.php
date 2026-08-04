@@ -19,6 +19,11 @@ class EmployeeController extends Controller
         return view('smartkpi::employees.index', compact('employees'));
     }
 
+    public function show(Employee $employee): RedirectResponse
+    {
+        return redirect()->route('smartkpi.employees.edit', $employee);
+    }
+
     public function create(Department $department): View
     {
         $users = User::whereHas('teams', fn ($q) => $q->where('teams.id', auth()->user()->current_team_id))->get();

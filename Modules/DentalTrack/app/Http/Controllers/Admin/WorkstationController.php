@@ -32,11 +32,16 @@ class WorkstationController extends Controller
         return view('dentaltrack::admin.workstations.index', compact('workstations', 'labs'));
     }
 
+    public function show(Workstation $workstation): RedirectResponse
+    {
+        return redirect()->route('dentaltrack.admin.workstations.edit', $workstation);
+    }
+
     public function create(): View
     {
         $labs = Lab::where('is_active', true)->get();
 
-        return view('dentaltrack::admin.workstations.form', compact('labs'));
+        return view('dentaltrack::admin.workstations.form', ['workstation' => new Workstation, 'labs' => $labs]);
     }
 
     public function store(Request $request): RedirectResponse

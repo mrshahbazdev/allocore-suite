@@ -37,20 +37,20 @@ class KpiScheduleController
             'next_run_at' => now()->addDay(),
         ]);
 
-        return redirect()->route('financial.kpi-schedules.index')->with('success', __('KPI report schedule created.'));
+        return redirect()->route('kpi-schedules.index')->with('success', __('KPI report schedule created.'));
     }
 
     public function runNow(KpiSchedule $schedule): RedirectResponse
     {
         SendKpiReportJob::dispatch($schedule);
 
-        return redirect()->route('financial.kpi-schedules.index')->with('success', __('KPI report dispatched.'));
+        return redirect()->route('kpi-schedules.index')->with('success', __('KPI report dispatched.'));
     }
 
     public function destroy(KpiSchedule $schedule): RedirectResponse
     {
         $schedule->delete();
 
-        return redirect()->route('financial.kpi-schedules.index')->with('success', __('KPI report schedule deleted.'));
+        return redirect()->route('kpi-schedules.index')->with('success', __('KPI report schedule deleted.'));
     }
 }

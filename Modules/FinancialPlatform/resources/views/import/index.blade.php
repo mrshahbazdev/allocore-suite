@@ -63,7 +63,7 @@
 
     {{-- Drop Zone --}}
     <div class="form-group">
-      <label class="form-label">{{ __('Excel-Datei (.xlsx / .xls) *') }}</label>
+      <label class="form-label">{{ __('CSV-Datei (.csv / .txt) *') }}</label>
       <div id="drop-zone" style="border:2px dashed rgba(99,102,241,0.3); border-radius:12px; padding:40px 20px; text-align:center; cursor:pointer; transition:all .2s; position:relative;"
            ondragover="this.style.borderColor='#6366f1'; this.style.background='rgba(99,102,241,0.08)'; event.preventDefault();"
            ondragleave="this.style.borderColor='rgba(99,102,241,0.3)'; this.style.background='';"
@@ -74,7 +74,7 @@
         <div style="font-size:12px; color:#475569;">{{ __('oder klicken zum Auswählen') }}</div>
         <div id="file-name" style="margin-top:12px; font-size:12px; color:#818cf8; font-weight:500;"></div>
       </div>
-      <input type="file" id="file-input" name="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="showFileName(this)">
+      <input type="file" id="file-input" name="file" accept=".csv,.txt" style="display:none" onchange="showFileName(this)">
     </div>
 
     <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:13px; font-size:14px;">{{ __('📥 Importieren & Berechnen') }}</button>
@@ -87,11 +87,11 @@
     {{-- Templates Download --}}
     <div class="card">
       <div class="card-title">{{ __('📄 Vorlagen herunterladen') }}</div>
-      <div style="font-size:12px; color:#64748b; margin-bottom:14px; line-height:1.6;">{{ __('Laden Sie die passende Excel-Vorlage herunter, füllen Sie die Felder aus und laden Sie sie hoch.') }}</div>
+      <div style="font-size:12px; color:#64748b; margin-bottom:14px; line-height:1.6;">{{ __('Laden Sie die passende CSV-Vorlage herunter, füllen Sie die Felder aus und laden Sie sie hoch.') }}</div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <a href="{{ route('import.template', 'gmbh') }}" class="btn btn-secondary" style="justify-content:center; font-size:12px;">{{ __('⬇ GmbH Vorlage (.xlsx)') }}</a>
-        <a href="{{ route('import.template', 'jahresabschluss') }}" class="btn btn-secondary" style="justify-content:center; font-size:12px;">{{ __('⬇ Jahresabschluss Vorlage (.xlsx)') }}</a>
-        <a href="{{ route('import.template', 'immobilien') }}" class="btn btn-secondary" style="justify-content:center; font-size:12px;">{{ __('⬇ Immobilien Vorlage (.xlsx)') }}</a>
+        <a href="{{ route('import.template', 'gmbh') }}" class="btn btn-secondary" style="justify-content:center; font-size:12px;">{{ __('⬇ GmbH Vorlage (.csv)') }}</a>
+        <a href="{{ route('import.template', 'jahresabschluss') }}" class="btn btn-secondary" style="justify-content:center; font-size:12px;">{{ __('⬇ Jahresabschluss Vorlage (.csv)') }}</a>
+        <a href="{{ route('import.template', 'immobilien') }}" class="btn btn-secondary" style="justify-content:center; font-size:12px;">{{ __('⬇ Immobilien Vorlage (.csv)') }}</a>
       </div>
     </div>
 

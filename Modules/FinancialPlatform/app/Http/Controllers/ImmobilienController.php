@@ -88,7 +88,8 @@ class ImmobilienController extends Controller
     {
         $immobilien->load(['company', 'immobilienInput', 'kpiResults']);
 
-        $service = new ImmobilienScoringService($immobilien->immobilienInput);
+        $input = $immobilien->immobilienInput ?? new ImmobilienInput;
+        $service = new ImmobilienScoringService($input);
         $derived = [
             'gesamtinvestition' => $service->gesamtinvestition(),
             'darlehen' => $service->darlehen(),
@@ -99,6 +100,7 @@ class ImmobilienController extends Controller
 
         return view('financialplatform::immobilien.show', [
             'analysis' => $immobilien,
+            'input' => $input,
             'derived' => $derived,
         ]);
     }
@@ -121,14 +123,15 @@ class ImmobilienController extends Controller
             ->whereIn('id', $ids)
             ->get();
 
-        return view('immobilien.compare', compact('analyses'));
+        return view('financialplatform::immobilien.compare', compact('analyses'));
     }
 
     public function exportPdf(Analysis $immobilien)
     {
         $immobilien->load(['company', 'immobilienInput', 'kpiResults']);
 
-        $service = new ImmobilienScoringService($immobilien->immobilienInput);
+        $input = $immobilien->immobilienInput ?? new ImmobilienInput;
+        $service = new ImmobilienScoringService($input);
         $derived = [
             'gesamtinvestition' => $service->gesamtinvestition(),
             'darlehen' => $service->darlehen(),
@@ -137,7 +140,7 @@ class ImmobilienController extends Controller
             'schuldendienst' => $service->schuldendienst(),
         ];
 
-        $pdf = Pdf::loadView('immobilien.pdf', [
+        $pdf = Pdf::loadView('financialplatform::immobilien.pdf', [
             'analysis' => $immobilien,
             'derived' => $derived,
         ])->setPaper('a4', 'portrait');

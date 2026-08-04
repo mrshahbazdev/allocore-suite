@@ -13,9 +13,9 @@ class ImmobilienScoringService
     /** @var array<string, float> */
     private array $customWeights = [];
 
-    public function __construct(ImmobilienInput $input)
+    public function __construct(?ImmobilienInput $input)
     {
-        $this->input = $input;
+        $this->input = $input ?? new ImmobilienInput;
         $this->customWeights = collect($this->input->custom_weights ?? [])
             ->mapWithKeys(fn ($value, $code) => [(string) $code => (float) $value])
             ->all();

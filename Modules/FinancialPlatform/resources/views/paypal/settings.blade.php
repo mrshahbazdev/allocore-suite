@@ -11,7 +11,7 @@
 <style>
     .settings-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
     .info-card { font-size: 13px; color: #94a3b8; line-height: 1.6; }
-    .info-card h4 { color: #c7d2fe; font-size: 14px; margin-bottom: 8px; }
+    .info-card h4 { color: #0f172a; font-size: 14px; margin-bottom: 8px; }
     .info-card ul { padding-left: 16px; margin-top: 8px; }
     .info-card li { margin-bottom: 6px; }
     .info-card a { color: #818cf8; text-decoration: none; }

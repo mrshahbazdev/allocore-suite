@@ -18,6 +18,11 @@ class NotificationTemplateController extends Controller
         return view('admin.notification-templates.index', compact('templates'));
     }
 
+    public function show(NotificationTemplate $notificationTemplate)
+    {
+        return redirect()->route('admin.notification-templates.edit', $notificationTemplate);
+    }
+
     public function create()
     {
         return view('admin.notification-templates.create');

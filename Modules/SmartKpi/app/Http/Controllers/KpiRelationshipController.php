@@ -18,6 +18,11 @@ class KpiRelationshipController extends Controller
         return view('smartkpi::relationships.index', compact('relationships'));
     }
 
+    public function show(KpiRelationship $relationship): RedirectResponse
+    {
+        return redirect()->route('smartkpi.relationships.edit', $relationship);
+    }
+
     public function create(): View
     {
         return view('smartkpi::relationships.form', [

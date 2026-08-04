@@ -25,6 +25,11 @@ class GoalController extends Controller
         return view('smartkpi::goals.index', compact('goals'));
     }
 
+    public function show(Goal $goal): RedirectResponse
+    {
+        return redirect()->route('smartkpi.goals.edit', $goal);
+    }
+
     public function create(): View
     {
         return view('smartkpi::goals.form', [

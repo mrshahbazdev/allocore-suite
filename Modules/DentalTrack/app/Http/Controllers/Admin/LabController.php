@@ -18,11 +18,16 @@ class LabController extends Controller
         return view('dentaltrack::admin.labs.index', compact('labs'));
     }
 
+    public function show(Lab $lab): RedirectResponse
+    {
+        return redirect()->route('dentaltrack.admin.labs.edit', $lab);
+    }
+
     public function create(): View
     {
         $companies = Company::where('is_active', true)->get();
 
-        return view('dentaltrack::admin.labs.form', compact('companies'));
+        return view('dentaltrack::admin.labs.form', ['lab' => new Lab, 'companies' => $companies]);
     }
 
     public function store(Request $request): RedirectResponse

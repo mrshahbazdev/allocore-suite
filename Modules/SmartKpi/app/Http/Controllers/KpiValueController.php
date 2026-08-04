@@ -14,6 +14,21 @@ class KpiValueController extends Controller
 {
     public function __construct(protected ProblemDetectionService $detector) {}
 
+    public function index(): RedirectResponse
+    {
+        return redirect()->route('smartkpi.kpi-definitions.index');
+    }
+
+    public function show(KpiValue $kpiValue): RedirectResponse
+    {
+        return redirect()->route('smartkpi.kpi-definitions.show', $kpiValue->kpiDefinition);
+    }
+
+    public function edit(KpiValue $kpiValue): RedirectResponse
+    {
+        return redirect()->route('smartkpi.kpi-definitions.show', $kpiValue->kpiDefinition);
+    }
+
     public function create(KpiDefinition $kpiDefinition): View
     {
         return view('smartkpi::kpi-values.form', ['value' => new KpiValue, 'kpi' => $kpiDefinition]);
