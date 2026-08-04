@@ -43,8 +43,8 @@ class Edit extends Component
 
     protected $rules = [
         'source' => 'required|in:cash,bank',
-        'category_id' => 'required|exists:accounting_categories,id',
-        'invoice_id' => 'nullable|exists:invoices,id',
+        'category_id' => 'required|exists:invoicemaker_accounting_categories,id',
+        'invoice_id' => 'nullable|exists:invoicemaker_invoices,id',
         'amount' => 'required|numeric|min:0',
         'date' => 'required|date',
         'description' => 'required|string|max:255',

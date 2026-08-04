@@ -224,7 +224,7 @@ class Profile extends Component
             // Create new business and link to user
             $data['user_id'] = Auth::id();
             $this->business = ProfileModel::create($data);
-            Auth::user()->update(['team_id' => $this->business->team_id]);
+            Auth::user()->update(['current_team_id' => $this->business->team_id]);
         }
 
         Auth::user()->update(['language' => $this->language]);

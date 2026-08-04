@@ -118,7 +118,7 @@ class Show extends Component
             'emailBody' => 'required|string',
         ]);
 
-        $pdfContent = $pdfService->generate($this->invoice);
+        $pdfContent = $pdfService->output($this->invoice);
 
         try {
             MailConfigurationService::getMailer($this->invoice->business)

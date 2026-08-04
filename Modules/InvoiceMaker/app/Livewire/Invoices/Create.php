@@ -61,7 +61,7 @@ class Create extends Component
     protected InvoiceCalculationService $calculationService;
 
     protected array $rules = [
-        'client_id' => 'required|exists:clients,id',
+        'client_id' => 'required|exists:invoicemaker_clients,id',
         'invoice_date' => 'required|date',
         'due_date' => 'required|date|after_or_equal:invoice_date',
         'items.*.description' => 'required|string',
@@ -206,7 +206,7 @@ class Create extends Component
     public function nextStep(): void
     {
         if ($this->step === 1) {
-            $this->validate(['client_id' => 'required|exists:clients,id']);
+            $this->validate(['client_id' => 'required|exists:invoicemaker_clients,id']);
         } elseif ($this->step === 2) {
             $this->validate([
                 'items' => 'required|array|min:1',

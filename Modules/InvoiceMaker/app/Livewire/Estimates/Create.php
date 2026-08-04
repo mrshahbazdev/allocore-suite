@@ -42,14 +42,14 @@ class Create extends Component
     protected InvoiceCalculationService $calculationService;
 
     protected array $rules = [
-        'client_id' => 'required|exists:clients,id',
+        'client_id' => 'required|exists:invoicemaker_clients,id',
         'invoice_date' => 'required|date',
         'due_date' => 'required|date|after_or_equal:invoice_date',
         'items.*.description' => 'required|string',
         'items.*.quantity' => 'required|numeric|min:0',
         'items.*.unit_price' => 'required|numeric|min:0',
         'items.*.tax_rate' => 'required|numeric|min:0',
-        'template_id' => 'required|exists:templates,id',
+        'template_id' => 'required|exists:invoicemaker_templates,id',
         'discount' => 'nullable|numeric|min:0',
         'currency' => 'required|string|max:3',
     ];
@@ -176,7 +176,7 @@ class Create extends Component
     public function nextStep(): void
     {
         if ($this->step === 1) {
-            $this->validate(['client_id' => 'required|exists:clients,id']);
+            $this->validate(['client_id' => 'required|exists:invoicemaker_clients,id']);
         } elseif ($this->step === 2) {
             if (count($this->items) === 0) {
                 $this->addError('items', 'Please add at least one item.');
@@ -192,7 +192,7 @@ class Create extends Component
             $this->validate([
                 'invoice_date' => 'required|date',
                 'due_date' => 'required|date|after_or_equal:invoice_date',
-                'template_id' => 'required|exists:templates,id',
+                'template_id' => 'required|exists:invoicemaker_templates,id',
             ]);
         }
 

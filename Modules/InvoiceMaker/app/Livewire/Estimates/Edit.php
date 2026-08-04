@@ -36,7 +36,7 @@ class Edit extends Component
     protected InvoiceCalculationService $calculationService;
 
     protected array $rules = [
-        'client_id' => 'required|exists:clients,id',
+        'client_id' => 'required|exists:invoicemaker_clients,id',
         'invoice_date' => 'required|date',
         'due_date' => 'required|date|after_or_equal:invoice_date',
         'items.*.description' => 'required|string',

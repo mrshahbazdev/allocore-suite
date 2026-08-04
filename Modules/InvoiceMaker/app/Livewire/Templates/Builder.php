@@ -72,10 +72,10 @@ class Builder extends Component
             $this->authorize('update', $this->template);
         }
 
-        $this->name = $this->template->name;
-        $this->primary_color = $this->template->primary_color;
-        $this->font_family = $this->template->font_family;
-        $this->logo_position = $this->template->logo_position;
+        $this->name = $this->template->name ?? '';
+        $this->primary_color = $this->template->primary_color ?? '#4f46e5';
+        $this->font_family = $this->template->font_family ?? 'sans';
+        $this->logo_position = $this->template->logo_position ?? 'left';
         $this->header_style = $this->template->header_style ?? 'default';
         $this->footer_message = $this->template->footer_message ?? '';
         $this->signature_path = $this->template->signature_path ?? '';
