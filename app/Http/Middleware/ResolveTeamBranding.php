@@ -29,8 +29,8 @@ class ResolveTeamBranding
                 'name' => SiteSetting::value('site_name', config('app.name', 'Allocore Suite')),
                 'logo' => SiteSetting::value('site_logo'),
                 'favicon' => SiteSetting::value('site_favicon'),
-                'primary_color' => SiteSetting::value('primary_color', '#4f46e5'),
-                'accent_color' => SiteSetting::value('accent_color'),
+                'primary_color' => SiteSetting::value('primary_color', '#ff9200'),
+                'accent_color' => SiteSetting::value('accent_color', '#0094af'),
             ],
         ]);
 

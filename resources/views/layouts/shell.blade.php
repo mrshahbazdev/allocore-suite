@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="{{ $brand['primary_color'] ?? '#4f46e5' }}">
+    <meta name="theme-color" content="{{ $brand['primary_color'] ?? '#ff9200' }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
@@ -77,6 +77,8 @@
                 </form>
             </div>
         </header>
+
+        @include('partials.module-header')
 
         @if (request()->is('app/dentaltrack*'))
             @include('dentaltrack::partials.nav')

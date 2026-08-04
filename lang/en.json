@@ -3703,5 +3703,9 @@
     "manager": "Manager",
     "member": "Member",
     "all": "All",
-    "Uploaded": "Uploaded"
+    "Uploaded": "Uploaded",
+    "Welcome back": "Welcome back",
+    "Your Allocore workspace is ready.": "Your Allocore workspace is ready.",
+    "Allocore history": "Allocore history",
+    "No score history yet.": "No score history yet."
 }

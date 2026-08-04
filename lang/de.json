@@ -3725,5 +3725,9 @@
     "manager": "Manager",
     "member": "Mitglied",
     "all": "Alle",
-    "Uploaded": "Hochgeladen"
+    "Uploaded": "Hochgeladen",
+    "Welcome back": "Willkommen zurück",
+    "Your Allocore workspace is ready.": "Ihr Allocore-Arbeitsbereich ist bereit.",
+    "Allocore history": "Allocore-Verlauf",
+    "No score history yet.": "Noch kein Score-Verlauf vorhanden."
 }

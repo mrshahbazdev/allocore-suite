@@ -72,7 +72,8 @@ class AppearanceController extends Controller
     private function defaultFor(string $field): mixed
     {
         return match ($field) {
-            'primary_color' => '#4f46e5',
+            'primary_color' => '#ff9200',
+            'accent_color' => '#0094af',
             'font_family' => 'figtree',
             'public_nav_menu' => [],
             'social_links' => [],
