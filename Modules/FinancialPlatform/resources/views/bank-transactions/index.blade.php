@@ -25,7 +25,7 @@
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <form method="POST" action="{{ route('financialplatform.bank-transactions.import') }}" enctype="multipart/form-data" class="flex items-end gap-4">
+            <form method="POST" action="{{ route('bank-transactions.import') }}" enctype="multipart/form-data" class="flex items-end gap-4">
                 @csrf
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-slate-700">{{ __('Import file') }}</label>
@@ -60,7 +60,7 @@
                                 <td class="py-2 pr-4 text-right">{{ number_format($transaction->amount, 2) }}</td>
                                 <td class="py-2 pr-4">{{ $transaction->currency }}</td>
                                 <td class="py-2">
-                                    <form method="POST" action="{{ route('financialplatform.bank-transactions.destroy', $transaction) }}" class="inline">
+                                    <form method="POST" action="{{ route('bank-transactions.destroy', $transaction) }}" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button class="text-sm text-rose-600">{{ __('Delete') }}</button>

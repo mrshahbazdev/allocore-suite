@@ -57,7 +57,7 @@
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">{{ __('Add Budget') }}</h2>
-            <form method="POST" action="{{ route('financialplatform.budgets.store') }}" class="mt-4 space-y-4">
+            <form method="POST" action="{{ route('budgets.store') }}" class="mt-4 space-y-4">
                 @csrf
                 <input type="hidden" name="year" value="{{ $year }}">
                 <input type="hidden" name="month" value="{{ $month }}">

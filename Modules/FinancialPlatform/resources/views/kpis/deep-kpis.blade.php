@@ -153,12 +153,12 @@ $settings = $settings ?? [];
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">{{ __('Configure Deep KPIs') }}</h2>
 
-            <form method="POST" action="{{ route('financialplatform.deep-kpis.sync') }}" class="mb-4">
+            <form method="POST" action="{{ route('deep-kpis.sync') }}" class="mb-4">
                 @csrf
                 <button class="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">{{ __('Sync metrics from APIs') }}</button>
             </form>
 
-            <form method="POST" action="{{ route('financialplatform.deep-kpis.update') }}" class="mt-4 space-y-4">
+            <form method="POST" action="{{ route('deep-kpis.update') }}" class="mt-4 space-y-4">
                 @csrf
 
                 <div>
