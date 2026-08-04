@@ -46,7 +46,7 @@
             @foreach($kpiCodes as $code)
             @php $kpiName = $kpis->where('kpi_code',$code)->first()?->kpi_name; @endphp
             <tr>
-                <td style="font-weight:500; color:#c7d2fe; width:180px;">{{ $kpiName }}</td>
+                <td style="font-weight:500; color:#4f46e5; width:180px;">{{ $kpiName }}</td>
                 @foreach($years as $y)
                 @php $k = $kpis->where('kpi_code',$code)->where('year_label',$y->year_label)->first(); @endphp
                 <td style="text-align:center;">
@@ -74,7 +74,7 @@
 @if($bericht)
 <div class="card" style="margin-bottom:20px; border-color:rgba(99,102,241,0.25); background:rgba(99,102,241,0.05);">
     <div class="card-title">{{ __('📝 Automatischer Bericht') }}</div>
-    <p style="font-size:14px; color:#cbd5e1; line-height:1.7;">{{ $bericht }}</p>
+    <p style="font-size:14px; color:#334155; line-height:1.7;">{{ $bericht }}</p>
 </div>
 @endif
 

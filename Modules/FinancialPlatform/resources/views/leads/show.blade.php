@@ -11,7 +11,7 @@
 @push('styles')
 <style>
     .lead-detail-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
-    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(15,23,42,0.04); font-size: 13px; }
     .detail-label { color: #64748b; font-weight: 500; }
     .detail-value { color: #e2e8f0; text-align: right; }
     @media (max-width: 900px) { .lead-detail-grid { grid-template-columns: 1fr; } }
@@ -72,7 +72,7 @@
         @if($lead->notes)
         <div style="margin-top:16px;">
             <div class="detail-label" style="margin-bottom:6px;">{{ __('Notizen') }}</div>
-            <div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:8px; font-size:13px; color:#cbd5e1; white-space:pre-wrap;">{{ $lead->notes }}</div>
+            <div style="background:rgba(15,23,42,0.04); padding:12px; border-radius:8px; font-size:13px; color:#334155; white-space:pre-wrap;">{{ $lead->notes }}</div>
         </div>
         @endif
     </div>

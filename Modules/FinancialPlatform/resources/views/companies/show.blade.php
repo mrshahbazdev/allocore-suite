@@ -14,7 +14,7 @@
     }
     .company-info-row {
         padding: 8px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(15,23,42,0.05);
         display: flex;
         gap: 8px;
     }
@@ -58,7 +58,7 @@
         ] as [$k,$v])
         <div class="company-info-row">
             <div style="font-size:12px; color:#64748b; width:90px;">{{ $k }}</div>
-            <div style="font-size:13px; color:#cbd5e1;">{{ $v }}</div>
+            <div style="font-size:13px; color:#334155;">{{ $v }}</div>
         </div>
         @endforeach
         @if($company->description)
@@ -79,7 +79,7 @@
             <tbody>
             @foreach($analyses as $a)
             <tr>
-                <td style="font-weight:500; color:#c7d2fe;">{{ $a->name }}</td>
+                <td style="font-weight:500; color:#4f46e5;">{{ $a->name }}</td>
                 <td><span style="font-size:11px; color:#818cf8;">{{ $a->typeLabel() }}</span></td>
                 <td>
                     @if($a->total_score !== null)

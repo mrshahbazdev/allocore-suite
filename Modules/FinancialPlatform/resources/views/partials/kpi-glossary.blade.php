@@ -20,8 +20,8 @@
     <div class="card-title">{{ __('📘 Glossar (einfach erklaert)') }}</div>
     <div style="display:grid; gap:10px;">
         @foreach($definitions as $term => $text)
-        <div style="border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;">
-            <div style="font-size:13px; color:#c7d2fe; font-weight:600;">{{ $term }}</div>
+        <div style="border-bottom:1px solid rgba(15,23,42,0.06); padding-bottom:8px;">
+            <div style="font-size:13px; color:#4f46e5; font-weight:600;">{{ $term }}</div>
             <div style="font-size:12px; color:#94a3b8; margin-top:3px; line-height:1.6;">{{ $text }}</div>
         </div>
         @endforeach

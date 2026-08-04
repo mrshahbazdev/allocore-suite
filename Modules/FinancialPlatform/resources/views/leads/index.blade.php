@@ -119,7 +119,7 @@
                                 <input type="checkbox" name="lead_ids[]" value="{{ $lead->id }}" class="lead-check">
                             @endunless
                         </td>
-                        <td style="font-weight:500; color:#e2e8f0;">{{ $lead->name }}</td>
+                        <td style="font-weight:500; color:#0f172a;">{{ $lead->name }}</td>
                         <td>{{ $lead->email ?? '—' }}</td>
                         <td>{{ $lead->company_name ?? $lead->company?->name ?? '—' }}</td>
                         <td>

@@ -10,7 +10,7 @@
 @push('styles')
 <style>
     .txn-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
-    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(15,23,42,0.04); font-size: 13px; }
     .detail-label { color: #64748b; font-weight: 500; }
     .detail-value { color: #e2e8f0; text-align: right; }
     .json-block { background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; font-family: monospace; font-size: 11px; color: #94a3b8; overflow-x: auto; max-height: 400px; white-space: pre-wrap; word-break: break-all; }

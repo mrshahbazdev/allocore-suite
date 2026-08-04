@@ -22,7 +22,7 @@
 @if($analyses->isEmpty())
 <div class="card" style="text-align:center; padding:60px 20px;">
     <div style="font-size:48px; margin-bottom:16px;">📊</div>
-    <div style="font-size:18px; font-weight:600; color:#c7d2fe; margin-bottom:8px;">{{ __('Noch keine GmbH-Analysen') }}</div>
+    <div style="font-size:18px; font-weight:600; color:#4f46e5; margin-bottom:8px;">{{ __('Noch keine GmbH-Analysen') }}</div>
     <div style="font-size:13px; color:#475569; margin-bottom:24px;">{{ __('Erstellen Sie Ihre erste GmbH-Analyse und erhalten Sie einen Finanz-Score von 0–100.') }}</div>
     <a href="{{ route('gmbh.create') }}" class="btn btn-primary">{{ __('📊 Erste Analyse erstellen') }}</a>
 </div>
@@ -44,7 +44,7 @@
             @foreach($analyses as $a)
             <tr>
                 <td>
-                    <a href="{{ route('gmbh.show', $a) }}" style="font-weight:500; color:#c7d2fe; text-decoration:none;">
+                    <a href="{{ route('gmbh.show', $a) }}" style="font-weight:500; color:#4f46e5; text-decoration:none;">
                         {{ $a->name }}
                     </a>
                 </td>
@@ -56,7 +56,7 @@
                             <div style="font-size:20px; font-weight:700;" class="score-{{ $sc }}">
                                 {{ number_format($a->total_score, 1) }}
                             </div>
-                            <div style="width:60px; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                            <div style="width:60px; height:6px; background:rgba(15,23,42,0.06); border-radius:3px; overflow:hidden;">
                                 @php $hex = ['green'=>'#10b981','yellow'=>'#f59e0b','red'=>'#ef4444','gray'=>'#64748b'][$sc]; @endphp
                                 <div style="height:100%; width:{{ $a->total_score }}%; background:{{ $hex }};"></div>
                             </div>

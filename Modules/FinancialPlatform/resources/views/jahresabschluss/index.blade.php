@@ -21,7 +21,7 @@
         <tbody>
             @forelse($analyses as $a)
             <tr>
-                <td style="font-weight:500; color:#c7d2fe;">{{ $a->name }}</td>
+                <td style="font-weight:500; color:#4f46e5;">{{ $a->name }}</td>
                 <td style="color:#94a3b8;">{{ $a->company->name ?? '—' }}</td>
                 <td><span class="badge badge-{{ $a->status==='complete'?'green':'gray' }}">{{ $a->status }}</span></td>
                 <td style="font-size:12px; color:#475569;">{{ $a->created_at->format('d.m.Y') }}</td>

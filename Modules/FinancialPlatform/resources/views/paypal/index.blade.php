@@ -64,7 +64,7 @@
             <label class="form-label">{{ __('Lead (optional)') }}</label>
             <select name="lead_id" class="form-control" style="min-width:160px;">
                 <option value="">{{ __('— Kein Lead —') }}</option>
-                @php $userLeads = \App\Models\Lead::where('user_id', auth()->id())->orderBy('name')->get(); @endphp
+                @php $userLeads = \Modules\FinancialPlatform\Models\Lead::where('user_id', auth()->id())->orderBy('name')->get(); @endphp
                 @foreach($userLeads as $l)
                     <option value="{{ $l->id }}">{{ $l->name }}</option>
                 @endforeach
@@ -115,7 +115,7 @@
                 @foreach($transactions as $txn)
                 <tr>
                     <td style="font-family:monospace; font-size:11px; color:#818cf8;">{{ Str::limit($txn->paypal_order_id, 20) }}</td>
-                    <td style="font-weight:600; color:#e2e8f0;">{{ number_format($txn->amount, 2, ',', '.') }} {{ $txn->currency }}</td>
+                    <td style="font-weight:600; color:#0f172a;">{{ number_format($txn->amount, 2, ',', '.') }} {{ $txn->currency }}</td>
                     <td>{{ $txn->payer_name ?? $txn->payer_email ?? '—' }}</td>
                     <td>
                         @if($txn->lead)

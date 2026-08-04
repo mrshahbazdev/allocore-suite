@@ -52,7 +52,7 @@
         <div style="margin-top:12px;"><span class="badge badge-{{ $color }}">
             @if($color==='green') ✅ Empfohlen @elseif($color==='yellow') ⚠ Prüfen @else ❌ Nicht empfohlen @endif
         </span></div>
-        <div style="margin-top:14px; height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+        <div style="margin-top:14px; height:6px; background:rgba(15,23,42,0.08); border-radius:3px; overflow:hidden;">
             <div style="height:100%; width:{{ $score }}%; background:{{ $colorHex }};"></div>
         </div>
     </div>
@@ -71,9 +71,9 @@
                 ['Darlehen', number_format($derived['darlehen'], 0, ',', '.') . ' €'],
                 ['Gesamtinvest.', number_format($derived['gesamtinvestition'], 0, ',', '.') . ' €'],
             ] as [$l,$v])
-            <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
+            <div style="background:rgba(15,23,42,0.04); padding:10px; border-radius:8px;">
                 <div style="font-size:11px; color:#64748b;">{{ $l }}</div>
-                <div style="font-size:14px; font-weight:600; color:#e2e8f0; margin-top:2px;">{{ $v }}</div>
+                <div style="font-size:14px; font-weight:600; color:#0f172a; margin-top:2px;">{{ $v }}</div>
             </div>
             @endforeach
         </div>
@@ -90,7 +90,7 @@
                 ['Schuldendienst', -$derived['schuldendienst'], '#ef4444'],
                 ['Cashflow', $derived['cashflow'], $derived['cashflow'] >= 0 ? '#10b981' : '#ef4444'],
             ] as [$label, $val, $c])
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(15,23,42,0.05);">
                 <span style="font-size:13px; color:#94a3b8;">{{ $label }}</span>
                 <span style="font-size:15px; font-weight:600; color:{{ $c }};">
                     {{ ($val >= 0 ? '+' : '') . number_format($val, 0, ',', '.') }} €
@@ -111,7 +111,7 @@
         <tbody>
             @foreach($analysis->kpiResults->unique('kpi_code') as $kpi)
             <tr>
-                <td style="font-weight:500; color:#c7d2fe;">{{ $kpi->kpi_name }}</td>
+                <td style="font-weight:500; color:#4f46e5;">{{ $kpi->kpi_name }}</td>
                 <td style="font-weight:600;">
                     {{ number_format((float)$kpi->value, 2) }}
                     <span style="font-size:11px; color:#475569;">{{ $kpi->unit }}</span>

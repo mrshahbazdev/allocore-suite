@@ -62,7 +62,7 @@
             </span>
         </div>
         {{-- Progress Bar --}}
-        <div style="margin-top:16px; height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+        <div style="margin-top:16px; height:6px; background:rgba(15,23,42,0.08); border-radius:3px; overflow:hidden;">
             <div style="height:100%; width:{{ $score }}%; background:{{ $colorHex }}; border-radius:3px; transition:width .5s;"></div>
         </div>
     </div>
@@ -70,7 +70,7 @@
     {{-- Company Info --}}
     <div class="card">
         <div class="card-title">{{ __('🏢 Unternehmen') }}</div>
-        <div style="font-size:20px; font-weight:600; color:#e2e8f0; margin-bottom:8px;">{{ $analysis->company->name }}</div>
+        <div style="font-size:20px; font-weight:600; color:#0f172a; margin-bottom:8px;">{{ $analysis->company->name }}</div>
         <div style="display:flex; flex-direction:column; gap:6px;">
             <div style="font-size:13px; color:#94a3b8;">
                 <span style="color:#64748b;">{{ __('Branche:') }}</span> {{ $analysis->company->industry ?? '—' }}
@@ -96,15 +96,15 @@
         </div>
         @if($input)
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-            <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
+            <div style="background:rgba(15,23,42,0.04); padding:10px; border-radius:8px;">
                 <div style="font-size:11px; color:#64748b;">{{ __('Umsatz') }}</div>
-                <div style="font-size:15px; font-weight:600; color:#e2e8f0; margin-top:2px;">
+                <div style="font-size:15px; font-weight:600; color:#0f172a; margin-top:2px;">
                     {{ number_format($input->revenue_current / 1000, 0) }}k €
                 </div>
             </div>
-            <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
+            <div style="background:rgba(15,23,42,0.04); padding:10px; border-radius:8px;">
                 <div style="font-size:11px; color:#64748b;">{{ __('Eigenkapital') }}</div>
-                <div style="font-size:15px; font-weight:600; color:#e2e8f0; margin-top:2px;">
+                <div style="font-size:15px; font-weight:600; color:#0f172a; margin-top:2px;">
                     {{ number_format($input->equity / 1000, 0) }}k €
                 </div>
             </div>
@@ -132,8 +132,8 @@
             <tbody>
                 @foreach($analysis->kpiResults->unique('kpi_code') as $kpi)
                 <tr>
-                    <td style="font-weight:500; color:#c7d2fe;">{{ $kpi->kpi_name }}</td>
-                    <td style="font-weight:600; color:#e2e8f0;">
+                    <td style="font-weight:500; color:#4f46e5;">{{ $kpi->kpi_name }}</td>
+                    <td style="font-weight:600; color:#0f172a;">
                         {{ $kpi->value !== null ? number_format((float)$kpi->value, 2) : '—' }}
                         <span style="font-size:11px; color:#475569;"> {{ $kpi->unit }}</span>
                     </td>

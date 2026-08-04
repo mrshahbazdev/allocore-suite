@@ -31,7 +31,7 @@
         @foreach($thresholds as $t)
         <tr>
             <td>
-                <div style="font-weight:500; color:#e2e8f0; font-size:11px;">{{ $t->kpi_name }}</div>
+                <div style="font-weight:500; color:#0f172a; font-size:11px;">{{ $t->kpi_name }}</div>
                 <div style="font-size:10px; color:#475569;">{{ $t->kpi_code }}</div>
             </td>
             <td style="color:#64748b; font-size:11px;">{{ $t->unit }}</td>
