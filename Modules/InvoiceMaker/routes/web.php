@@ -60,7 +60,7 @@ Route::prefix('app/invoices')
         Route::get('/expenses', ExpensesIndex::class)->name('expenses.index');
         Route::get('/cash-book', CashBook::class)->name('cash-book.index');
         Route::get('/templates', TemplatesIndex::class)->name('templates.index');
-        Route::get('/templates/{template}/edit', TemplatesBuilder::class)->name('templates.edit');
+        Route::get('/templates/{invoice_template}/edit', TemplatesBuilder::class)->name('templates.edit');
         Route::get('/settings', SettingsProfile::class)->name('settings.profile');
     });
 
