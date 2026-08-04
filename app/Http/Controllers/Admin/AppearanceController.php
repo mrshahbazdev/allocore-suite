@@ -19,6 +19,7 @@ class AppearanceController extends Controller
         'footer_text',
         'public_nav_menu',
         'social_links',
+        'dashboard_template',
     ];
 
     public function index()
@@ -77,6 +78,7 @@ class AppearanceController extends Controller
             'font_family' => 'figtree',
             'public_nav_menu' => [],
             'social_links' => [],
+            'dashboard_template' => 'default',
             default => '',
         };
     }
