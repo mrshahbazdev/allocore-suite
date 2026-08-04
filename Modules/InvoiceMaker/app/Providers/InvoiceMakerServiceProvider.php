@@ -4,7 +4,9 @@ namespace Modules\InvoiceMaker\Providers;
 
 use App\Support\DashboardWidgetRegistry;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Livewire\Livewire;
 use Modules\InvoiceMaker\Console\Commands\ProcessRecurringInvoices;
@@ -122,6 +124,24 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        Gate::before(function ($user, string $ability, array $arguments): ?bool {
+            $model = $arguments[0] ?? null;
+
+            if (! $model instanceof Model) {
+                return null;
+            }
+
+            if (! str_starts_with(get_class($model), 'Modules\\InvoiceMaker\\Models\\')) {
+                return null;
+            }
+
+            if (! $user?->current_team_id) {
+                return null;
+            }
+
+            return $user->current_team_id === $model->getAttribute('team_id') ? true : null;
+        });
 
         Blade::anonymousComponentNamespace('invoicemaker::components', 'invoicemaker');
 

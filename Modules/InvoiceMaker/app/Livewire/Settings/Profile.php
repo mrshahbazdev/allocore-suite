@@ -132,12 +132,12 @@ class Profile extends Component
         $this->business = app(InvoiceMakerContext::class)->profile();
 
         if ($this->business) {
-            $this->name = $this->business->name;
-            $this->email = $this->business->email ?? '';
+            $this->name = $this->business->name ?? Auth::user()?->name ?? '';
+            $this->email = $this->business->email ?? Auth::user()?->email ?? '';
             $this->phone = $this->business->phone ?? '';
             $this->address = $this->business->address ?? '';
-            $this->currency = $this->business->currency;
-            $this->timezone = $this->business->timezone;
+            $this->currency = $this->business->currency ?? 'EUR';
+            $this->timezone = $this->business->timezone ?? 'Europe/Berlin';
             $this->tax_number = $this->business->tax_number ?? '';
             $this->bank_details = $this->business->bank_details ?? '';
             $this->iban = $this->business->iban ?? '';
@@ -159,17 +159,17 @@ class Profile extends Component
             $this->smtp_from_address = $this->business->smtp_from_address ?? '';
             $this->smtp_from_name = $this->business->smtp_from_name ?? '';
             $this->smtp_verify_ssl = $this->business->smtp_verify_ssl ?? true;
-            $this->stripe_onboarding_complete = $this->business->stripe_onboarding_complete;
+            $this->stripe_onboarding_complete = $this->business->stripe_onboarding_complete ?? false;
             $this->enable_automated_reminders = $this->business->enable_automated_reminders ?? true;
             $this->reminder_days_interval = $this->business->reminder_days_interval ?? 7;
             $this->accept_network_invoices = $this->business->accept_network_invoices ?? false;
             $this->late_fee_percentage = $this->business->late_fee_percentage ?? 0;
         } else {
             // Defaults for new business
-            $this->name = Auth::user()->name;
-            $this->email = Auth::user()->email;
-            $this->currency = 'USD';
-            $this->timezone = 'UTC';
+            $this->name = Auth::user()?->name ?? '';
+            $this->email = Auth::user()?->email ?? '';
+            $this->currency = 'EUR';
+            $this->timezone = 'Europe/Berlin';
         }
 
         $this->language = Auth::user()->language ?? 'en';
@@ -319,6 +319,6 @@ class Profile extends Component
 
     public function render()
     {
-        return view('invoicemaker::livewire.business.profile');
+        return view('invoicemaker::livewire.settings.profile');
     }
 }

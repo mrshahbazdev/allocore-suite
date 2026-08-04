@@ -77,7 +77,7 @@ Route::prefix('app/invoices')
 
         Route::get('/templates', TemplatesIndex::class)->name('templates.index');
         Route::get('/templates/builder', TemplatesBuilder::class)->name('templates.builder');
-        Route::get('/templates/{template}/builder', TemplatesBuilder::class)->name('templates.builder.edit');
+        Route::get('/templates/{invoice_template}/builder', TemplatesBuilder::class)->name('templates.builder.edit');
 
         Route::get('/cash-book/export/csv', [CashBookExportController::class, 'exportCsv'])->name('cash-book.export.csv');
         Route::get('/cash-book/export/excel', [CashBookExportController::class, 'exportExcel'])->name('cash-book.export.excel');
