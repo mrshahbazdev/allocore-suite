@@ -21,33 +21,38 @@
     @livewireStyles
     <style>[x-cloak] { display: none !important; }</style>
 </head>
+@php($isModulePage = request()->is('app/*'))
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false }">
 <div class="min-h-full flex">
     {{-- Sidebar --}}
-    <aside class="fixed inset-y-0 left-0 z-40 w-64 transform bg-slate-900 text-slate-200 transition-transform duration-200 lg:static lg:translate-x-0"
-           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-           x-cloak>
-        <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
-            @if ($brand['logo'])
-                <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
-            @else
-                <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
-            @endif
-            <span class="text-lg font-semibold text-white">{{ $brand['name'] ?? 'Allocore Suite' }}</span>
-        </div>
+    @if (! $isModulePage)
+        <aside class="fixed inset-y-0 left-0 z-40 w-64 transform bg-slate-900 text-slate-200 transition-transform duration-200 lg:static lg:translate-x-0"
+               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+               x-cloak>
+            <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
+                @if ($brand['logo'])
+                    <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
+                @else
+                    <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
+                @endif
+                <span class="text-lg font-semibold text-white">{{ $brand['name'] ?? 'Allocore Suite' }}</span>
+            </div>
 
-        @include('partials.sidebar')
-    </aside>
+            @include('partials.sidebar')
+        </aside>
 
-    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"></div>
+        <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"></div>
+    @endif
 
     <div class="flex-1 flex flex-col min-w-0 lg:ml-0">
         {{-- Topbar --}}
         <header class="min-h-16 h-auto bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-2">
             <div class="flex flex-1 min-w-0 items-center gap-2 sm:gap-3">
-                <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
-                </button>
+                @if (! $isModulePage)
+                    <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                    </button>
+                @endif
                 <div class="text-xs sm:text-sm text-slate-500 truncate">
                     @if (auth()->user()?->currentTeam)
                         <span class="hidden sm:inline">{{ __('Team') }}:</span>
