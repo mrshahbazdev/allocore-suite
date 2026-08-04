@@ -14,7 +14,7 @@
         <tbody>
         @foreach($users as $u)
         <tr>
-            <td style="font-weight:500; color:#e2e8f0;">{{ $u->name }}</td>
+            <td style="font-weight:500; color:#0f172a;">{{ $u->name }}</td>
             <td style="color:#64748b; font-size:11px;">{{ $u->email }}</td>
             <td>
                 @php $role = $u->getRoleNames()->first() ?? 'none'; @endphp
