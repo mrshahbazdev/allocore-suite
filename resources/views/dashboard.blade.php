@@ -14,7 +14,7 @@
     @endif
 
     {{-- Welcome header --}}
-    <div class="mb-6 rounded-2xl bg-gradient-to-r from-[#ff9200] to-[#0094af] p-6 text-white shadow-lg lg:p-8">
+    <div class="mb-6 rounded-2xl bg-[#ff9200] p-6 text-white shadow-lg lg:p-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="text-sm font-medium opacity-90">{{ __('Welcome back') }}</p>
@@ -155,6 +155,7 @@
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
             <h3 class="text-base font-semibold text-slate-900">{{ __('Allocore history') }}</h3>
             @if ($allocoreHistory && count($allocoreHistory))
+                @php($history = collect($allocoreHistory))
                 <div class="mt-4 h-48">
                     <canvas id="allocoreHistoryChart"></canvas>
                 </div>
@@ -165,10 +166,10 @@
                         new window.Chart(ctx, {
                             type: 'line',
                             data: {
-                                labels: {!! json_encode($allocoreHistory->pluck('calculated_at')->map(fn($d) => $d->format('M d'))) !!},
+                                labels: {!! json_encode($history->pluck('date')->map(fn($d) => \Illuminate\Support\Carbon::parse($d)->format('M d'))) !!},
                                 datasets: [{
                                     label: "{{ __('Score') }}",
-                                    data: {!! json_encode($allocoreHistory->pluck('score')) !!},
+                                    data: {!! json_encode($history->pluck('score')) !!},
                                     borderColor: '#0094af',
                                     backgroundColor: 'rgba(0,148,175,0.1)',
                                     fill: true,
@@ -206,7 +207,7 @@
             @foreach ($activeModules as $module)
                 <a href="{{ url('app/'.$module->route_prefix) }}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#ff9200] hover:shadow-md">
                     <div class="flex items-start justify-between">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#ff9200] to-[#0094af] text-sm font-bold text-white">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#ff9200] text-sm font-bold text-white">
                             {{ strtoupper(substr($module->name, 0, 1)) }}
                         </div>
                         <span class="text-[10px] rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 font-medium">{{ __('Active') }}</span>
