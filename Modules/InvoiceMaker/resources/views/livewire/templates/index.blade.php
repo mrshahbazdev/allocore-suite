@@ -30,7 +30,7 @@
  <p>{{ __('Logo') }}: {{ __(ucfirst($template->logo_position)) }}</p>
  </div>
  <div class="flex justify-between">
- <a href="{{ route('invoicemaker.templates.edit', $template) }}"
+ <a href="{{ route('invoicemaker.templates.builder.edit', $template) }}"
  class="text-brand-600 hover:text-brand-700 text-sm font-medium">{{ __('Edit') }}</a>
  @if(!$template->is_default)
  <button wire:click="setDefault({{ $template->id }})"

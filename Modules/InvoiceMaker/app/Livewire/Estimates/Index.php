@@ -34,7 +34,7 @@ class Index extends Component
 
     public function delete(int $id): void
     {
-        $estimate = app(InvoiceMakerContext::class)->profile()->invoices()->where('type', Invoice::TYPE_ESTIMATE)->findOrFail($id);
+        $estimate = app(InvoiceMakerContext::class)->profile()->estimates()->findOrFail($id);
         $estimate->delete();
         session()->flash('message', 'Estimate deleted successfully.');
     }
@@ -42,7 +42,7 @@ class Index extends Component
     public function convertToInvoice(int $id, InvoiceNumberService $invoiceNumberService): void
     {
         $business = app(InvoiceMakerContext::class)->profile();
-        $estimate = $business->invoices()->where('type', Invoice::TYPE_ESTIMATE)->findOrFail($id);
+        $estimate = $business->estimates()->findOrFail($id);
 
         $estimate->update([
             'type' => Invoice::TYPE_INVOICE,
@@ -56,7 +56,7 @@ class Index extends Component
 
     public function render()
     {
-        $query = app(InvoiceMakerContext::class)->profile()->invoices()->where('type', Invoice::TYPE_ESTIMATE)->with('client');
+        $query = app(InvoiceMakerContext::class)->profile()->estimates()->with('client');
 
         if ($this->search) {
             $query->where(function ($q) {

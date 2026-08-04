@@ -45,10 +45,10 @@ class Create extends Component
 
     protected $rules = [
         'source' => 'required|in:cash,bank',
-        'category_id' => 'required|exists:accounting_categories,id',
-        'invoice_id' => 'nullable|exists:invoices,id',
-        'client_id' => 'nullable|exists:clients,id',
-        'product_id' => 'nullable|exists:products,id',
+        'category_id' => 'required|exists:invoicemaker_accounting_categories,id',
+        'invoice_id' => 'nullable|exists:invoicemaker_invoices,id',
+        'client_id' => 'nullable|exists:invoicemaker_clients,id',
+        'product_id' => 'nullable|exists:invoicemaker_products,id',
         'amount' => 'required|numeric|min:0',
         'date' => 'required|date',
         'description' => 'required|string|max:255',

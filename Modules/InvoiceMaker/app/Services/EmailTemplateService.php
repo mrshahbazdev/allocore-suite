@@ -59,7 +59,7 @@ class EmailTemplateService
             '[amount_due]' => $invoice->currency_symbol.number_format($invoice->amount_due, 2),
             '[total_amount]' => $invoice->currency_symbol.number_format($invoice->grand_total, 2),
             '[due_date]' => $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '',
-            '[invoice_link]' => URL::signedRoute('invoices.public.show', ['invoice' => $invoice->id]),
+            '[invoice_link]' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $invoice->uuid]),
             // For backwards compatibility with old `{variable}` format in manual sending
             '{client_name}' => $client->name,
             '{business_name}' => $business->name,
@@ -67,7 +67,7 @@ class EmailTemplateService
             '{amount_due}' => $invoice->currency_symbol.number_format($invoice->amount_due, 2),
             '{total_amount}' => $invoice->currency_symbol.number_format($invoice->grand_total, 2),
             '{due_date}' => $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '',
-            '{public_link}' => URL::signedRoute('invoices.public.show', ['invoice' => $invoice->id]),
+            '{public_link}' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $invoice->uuid]),
         ];
     }
 

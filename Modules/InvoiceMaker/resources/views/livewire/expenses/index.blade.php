@@ -7,14 +7,6 @@
  <p class="text-txmain">{{ __('Track and manage your business expenditures') }}</p>
  </div>
  <div class="flex gap-2">
- <a href="{{ route('invoicemaker.expenses.export') }}"
- class="bg-card border border-gray-300 text-txmain py-2 px-4 rounded-lg hover:bg-page shadow-sm transition duration-200 text-center font-medium flex items-center gap-2">
- <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
- d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
- </svg>
- {{ __('Export CSV') }}
- </a>
  <a href="{{ route('invoicemaker.expenses.create') }}"
  class="bg-brand-600 text-white py-2 px-4 rounded-lg hover:bg-brand-700 shadow-sm transition duration-200 text-center font-medium">
  + {{ __('Record Expense') }}

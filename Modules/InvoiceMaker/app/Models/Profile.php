@@ -223,7 +223,12 @@ class Profile extends Model
 
     public function invoices(): HasMany
     {
-        return $this->hasMany(Invoice::class, 'team_id', 'team_id');
+        return $this->hasMany(Invoice::class, 'team_id', 'team_id')->where('type', Invoice::TYPE_INVOICE);
+    }
+
+    public function estimates(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'team_id', 'team_id')->where('type', Invoice::TYPE_ESTIMATE);
     }
 
     public function expenses(): HasMany

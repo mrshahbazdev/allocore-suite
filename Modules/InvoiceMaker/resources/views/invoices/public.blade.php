@@ -122,7 +122,7 @@
     <!-- Main Content Area -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
 
-        @if(request()->has('success'))
+        @if(session('success'))
             <div class="max-w-2xl mx-auto mb-8 bg-green-50 border-l-4 border-green-400 p-4 no-print">
                 <div class="flex">
                     <div class="flex-shrink-0">
