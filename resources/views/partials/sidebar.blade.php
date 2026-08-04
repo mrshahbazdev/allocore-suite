@@ -14,7 +14,7 @@
     'einfluss' => __('Einfluss & Kunden'),
 ])
 
-<nav class="flex h-full flex-col px-3 py-4 space-y-6 overflow-y-auto" x-data="{ groups: { main: true, allocore: true, tools: true, insights: true, account: true, admin: false } }">
+<nav class="flex h-full flex-col px-3 py-4 space-y-6 overflow-y-auto" x-data='{ groups: (() => { try { const s = localStorage.getItem("sidebarGroups"); return s ? JSON.parse(s) : {main:true,allocore:true,tools:true,insights:true,account:true,admin:false}; } catch (e) { return {main:true,allocore:true,tools:true,insights:true,account:true,admin:false}; } })() }' x-effect="localStorage.setItem('sidebarGroups', JSON.stringify(groups))">
     {{-- Main --}}
     <div>
         <button type="button" @click="groups.main = !groups.main" class="flex w-full items-center justify-between px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-slate-300">
