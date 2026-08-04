@@ -59,6 +59,7 @@ Route::prefix('app/invoices')
         Route::get('/estimates', EstimatesIndex::class)->name('estimates.index');
         Route::get('/estimates/create', EstimatesCreate::class)->name('estimates.create');
         Route::get('/estimates/{invoice}/edit', EstimatesEdit::class)->name('estimates.edit');
+        Route::get('/estimates/{invoice}', InvoicesShow::class)->name('estimates.show');
 
         Route::get('/expenses', ExpensesIndex::class)->name('expenses.index');
         Route::get('/expenses/create', ExpensesCreate::class)->name('expenses.create');

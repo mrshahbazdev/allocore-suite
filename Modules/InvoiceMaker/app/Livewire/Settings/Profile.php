@@ -274,7 +274,7 @@ class Profile extends Component
         $accountLink = $stripe->accountLinks->create([
             'account' => $this->business->stripe_account_id,
             'refresh_url' => route('invoicemaker.settings.profile'),
-            'return_url' => route('stripe.return'),
+            'return_url' => route('invoicemaker.settings.profile'),
             'type' => 'account_onboarding',
         ]);
 
