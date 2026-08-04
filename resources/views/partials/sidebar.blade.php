@@ -31,6 +31,7 @@
         @endif
     @endif
 
+    @if (! request()->is('app/*'))
     {{-- Main --}}
     <div>
         <button type="button" @click="groups.main = !groups.main" class="flex w-full items-center justify-between px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-slate-300">
@@ -193,5 +194,6 @@
                 </div>
             </div>
         </div>
+    @endif
     @endif
 </nav>
