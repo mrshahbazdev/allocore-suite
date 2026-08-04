@@ -1,11 +1,48 @@
+@php $title = __('Templates'); @endphp
+
 <div>
-    <div class="mb-6"><h1 class="text-2xl font-bold text-slate-900">{{ __('Invoice templates') }}</h1><p class="text-sm text-slate-500">{{ __('Control PDF colors, headings, terms, and footer content.') }}</p></div>
-    <div class="grid gap-6 lg:grid-cols-3">
-        <div class="space-y-3">@foreach($templates as $template)<button wire:click="edit({{ $template->id }})" class="w-full rounded-xl border p-4 text-left shadow-sm {{ $selectedId === $template->id ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 bg-white' }}"><div class="flex items-center justify-between"><span class="font-medium text-slate-900">{{ $template->name }}</span>@if($template->is_default)<span class="rounded-full bg-emerald-100 px-2 py-1 text-xs text-emerald-700">{{ __('Default') }}</span>@endif</div><div class="mt-3 h-2 rounded-full" style="background: {{ $template->primary_color }}"></div></button>@endforeach<button wire:click="$set('selectedId', null)" class="w-full rounded-xl border border-dashed border-slate-300 p-4 text-sm font-medium text-indigo-600">{{ __('Create template') }}</button></div>
-        <form wire:submit="save" class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-            <div class="grid gap-4 sm:grid-cols-2"><label><span class="text-sm text-slate-600">{{ __('Name') }}</span><input wire:model="name" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></label><label><span class="text-sm text-slate-600">{{ __('Primary color') }}</span><input wire:model="primary_color" type="color" class="mt-1 h-10 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></label><label><span class="text-sm text-slate-600">{{ __('Header style') }}</span><select wire:model="header_style" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"><option value="simple">{{ __('Simple') }}</option><option value="bold">{{ __('Bold') }}</option><option value="center">{{ __('Centered') }}</option></select></label><div class="flex items-end gap-5"><label class="flex items-center gap-2 text-sm"><input wire:model="show_tax" type="checkbox" class="rounded border-slate-300 text-indigo-600"> {{ __('Show tax') }}</label><label class="flex items-center gap-2 text-sm"><input wire:model="show_discount" type="checkbox" class="rounded border-slate-300 text-indigo-600"> {{ __('Show discount') }}</label></div></div>
-            <label class="block"><span class="text-sm text-slate-600">{{ __('Payment terms') }}</span><textarea wire:model="payment_terms" rows="3" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea></label><label class="block"><span class="text-sm text-slate-600">{{ __('Footer message') }}</span><textarea wire:model="footer_message" rows="3" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea></label>
-            <div class="flex justify-end gap-3">@if($selectedId)<button type="button" wire:click="makeDefault({{ $selectedId }})" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-500">{{ __('Make default') }}</button>@endif<button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">{{ __('Save template') }}</button></div>
-        </form>
-    </div>
+ <div class="mb-8">
+ <h2 class="text-2xl font-bold text-txmain">{{ __('Invoice Templates') }}</h2>
+ <p class="text-txmain">{{ __('Customize your invoice templates') }}</p>
+ </div>
+
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+ @forelse($templates as $template)
+ <div
+ class="bg-card rounded-lg shadow overflow-hidden {{ $template->is_default ? 'ring-2 ring-brand-500' : '' }}">
+ <div class="h-32 flex items-center justify-center" style="background: {{ $template->primary_color }}20;">
+ <div class="text-center">
+ <div class="text-3xl mb-2">📄</div>
+ <span class="text-sm font-medium"
+ style="color: {{ $template->primary_color }};">{{ $template->name }}</span>
+ @if($template->is_default)
+ <span
+ class="ml-2 text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">{{ __('Default') }}</span>
+ @endif
+ </div>
+ </div>
+ <div class="p-4">
+ <div class="text-sm text-txmain mb-4">
+ <p>{{ __('Color') }}: <span class="inline-block w-4 h-4 rounded"
+ style="background: {{ $template->primary_color }};"></span> {{ $template->primary_color }}
+ </p>
+ <p>{{ __('Font') }}: {{ __(ucfirst($template->font_family)) }}</p>
+ <p>{{ __('Logo') }}: {{ __(ucfirst($template->logo_position)) }}</p>
+ </div>
+ <div class="flex justify-between">
+ <a href="{{ route('invoicemaker.templates.edit', $template) }}"
+ class="text-brand-600 hover:text-brand-700 text-sm font-medium">{{ __('Edit') }}</a>
+ @if(!$template->is_default)
+ <button wire:click="setDefault({{ $template->id }})"
+ class="text-green-600 hover:text-green-700 text-sm font-medium">{{ __('Set Default') }}</button>
+ @endif
+ </div>
+ </div>
+ </div>
+ @empty
+ <div class="col-span-3 text-center py-12 text-gray-500">
+ {{ __('No templates found.') }}
+ </div>
+ @endforelse
+ </div>
 </div>

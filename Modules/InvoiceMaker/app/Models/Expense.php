@@ -33,4 +33,29 @@ class Expense extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function networkInvoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class, 'network_invoice_id');
+    }
+
+    public function accountingCategory(): BelongsTo
+    {
+        return $this->category();
+    }
+
+    public function accounting_category(): BelongsTo
+    {
+        return $this->category();
+    }
+
+    public function business(): BelongsTo
+    {
+        return $this->profile();
+    }
 }

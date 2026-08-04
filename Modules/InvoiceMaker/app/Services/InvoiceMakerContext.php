@@ -11,6 +11,8 @@ use Modules\InvoiceMaker\Models\Template;
 
 class InvoiceMakerContext
 {
+    private ?Profile $cachedProfile = null;
+
     public function team(): Team
     {
         return auth()->user()?->currentTeam
@@ -19,6 +21,10 @@ class InvoiceMakerContext
 
     public function profile(): Profile
     {
+        if ($this->cachedProfile !== null) {
+            return $this->cachedProfile;
+        }
+
         $team = $this->team();
 
         $profile = Profile::withoutGlobalScopes()->firstOrCreate([
@@ -29,6 +35,8 @@ class InvoiceMakerContext
         ]);
 
         $this->provisionDefaults($profile);
+
+        $this->cachedProfile = $profile;
 
         return $profile;
     }

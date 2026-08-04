@@ -3,6 +3,8 @@
 namespace Modules\InvoiceMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\InvoiceMaker\Models\Concerns\BelongsToCurrentTeam;
 
 class Template extends Model
@@ -17,5 +19,16 @@ class Template extends Model
         'is_default' => 'boolean',
         'show_tax' => 'boolean',
         'show_discount' => 'boolean',
+        'enable_qr' => 'boolean',
     ];
+
+    public function business(): BelongsTo
+    {
+        return $this->profile();
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }
