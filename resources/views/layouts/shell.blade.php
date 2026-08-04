@@ -27,24 +27,22 @@
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 <div class="min-h-full flex">
     {{-- Sidebar --}}
-    @if (! $isModulePage)
-        <aside class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform overflow-hidden bg-slate-900 text-slate-200 transition-all duration-300 ease-in-out lg:static lg:translate-x-0"
-               :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-0' : 'lg:w-64']"
-               x-cloak>
-            <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
-                @if ($brand['logo'])
-                    <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
-                @else
-                    <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
-                @endif
-                <span class="text-lg font-semibold text-white">{{ $brand['name'] ?? 'Allocore Suite' }}</span>
-            </div>
+    <aside class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform overflow-hidden bg-slate-900 text-slate-200 transition-all duration-300 ease-in-out lg:static lg:translate-x-0"
+           :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-0' : 'lg:w-64']"
+           x-cloak>
+        <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
+            @if ($brand['logo'])
+                <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
+            @else
+                <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
+            @endif
+            <span class="text-lg font-semibold text-white">{{ $brand['name'] ?? 'Allocore Suite' }}</span>
+        </div>
 
-            @include('partials.sidebar')
-        </aside>
+        @include('partials.sidebar')
+    </aside>
 
-        <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"></div>
-    @endif
+    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"></div>
 
     <div class="flex-1 flex flex-col min-w-0 lg:ml-0">
         {{-- Topbar --}}
@@ -52,18 +50,12 @@
             <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                 {{-- Left: brand + page title --}}
                 <div class="flex min-w-0 flex-1 items-center gap-3">
-                    @if (! $isModulePage)
-                        <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
-                        </button>
-                        <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:flex" aria-label="{{ __('Toggle sidebar') }}">
-                            <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-                        </button>
-                    @else
-                        <a href="{{ route('dashboard') }}" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="{{ __('Back to dashboard') }}">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
-                        </a>
-                    @endif
+                    <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                    </button>
+                    <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:flex" aria-label="{{ __('Toggle sidebar') }}">
+                        <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                    </button>
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 shrink-0">
                         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ff9200] text-sm font-bold text-white">A</div>
                         <span class="hidden text-lg font-semibold text-slate-900 sm:inline">{{ $brand['name'] ?? 'Allocore' }}</span>
@@ -112,36 +104,6 @@
         </header>
 
         @include('partials.module-header')
-
-        @if (request()->is('app/dentaltrack*'))
-            @include('dentaltrack::partials.nav')
-        @elseif (request()->is('app/orgmatrix*'))
-            @include('orgmatrix::partials.nav')
-        @elseif (request()->is('app/visionflow*'))
-            @include('visionflow::partials.nav')
-        @elseif (request()->is('app/nurdu*'))
-            @include('nurdu::partials.nav')
-        @elseif (request()->is('app/cashcore*'))
-            @include('cashcore::partials.nav')
-        @elseif (request()->is('app/invoices*'))
-            @include('invoicemaker::partials.nav')
-        @elseif (request()->is('app/finance*'))
-            @include('financialplatform::partials.nav')
-        @elseif (request()->is('app/sweetspot*'))
-            @include('sweetspot::partials.nav')
-        @elseif (request()->is('app/timebutler*'))
-            @include('timebutler::partials.nav')
-        @elseif (request()->is('app/planhive*'))
-            @include('planhive::partials.nav')
-        @elseif (request()->is('app/loopengine*'))
-            @include('loopengine::partials.nav')
-        @elseif (request()->is('app/focusmatrix*'))
-            @include('focusmatrix::partials.nav')
-        @elseif (request()->is('app/clusters*'))
-            @include('clusterforge::partials.nav')
-        @elseif (request()->is('app/leads*'))
-            @include('leadquality::partials.nav')
-        @endif
 
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
             @if (session('success'))

@@ -15,4 +15,4 @@
     ]))
 @endif
 
-@include('partials.module-nav')
+@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])
