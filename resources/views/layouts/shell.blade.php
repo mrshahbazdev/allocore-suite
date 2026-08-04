@@ -27,8 +27,8 @@
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 <div class="min-h-full flex">
     {{-- Sidebar --}}
-    <aside class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform overflow-hidden bg-slate-900 text-slate-200 transition-all duration-300 ease-in-out lg:static lg:translate-x-0"
-           :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-0' : 'lg:w-64']"
+    <aside class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform overflow-hidden bg-slate-900 text-slate-200 transition-all duration-300 ease-in-out md:static md:translate-x-0"
+           :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'md:w-0' : 'md:w-64']"
            x-cloak>
         <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
             @if ($brand['logo'])
@@ -42,7 +42,7 @@
         @include('partials.sidebar')
     </aside>
 
-    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"></div>
+    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 md:hidden"></div>
 
     <div class="flex-1 flex flex-col min-w-0 lg:ml-0">
         {{-- Topbar --}}
@@ -50,10 +50,10 @@
             <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                 {{-- Left: brand + page title --}}
                 <div class="flex min-w-0 flex-1 items-center gap-3">
-                    <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="{{ __('Toggle menu') }}">
+                    <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:hidden" aria-label="{{ __('Toggle menu') }}">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
-                    <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:flex" aria-label="{{ __('Toggle sidebar') }}">
+                    <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:flex" aria-label="{{ __('Toggle sidebar') }}">
                         <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
                     </button>
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 shrink-0">
