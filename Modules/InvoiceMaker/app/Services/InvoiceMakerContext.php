@@ -52,6 +52,40 @@ class InvoiceMakerContext
             'late_fee_percentage' => 0,
         ]);
 
+        $defaults = [
+            'name' => $team->name,
+            'currency' => 'EUR',
+            'timezone' => 'Europe/Berlin',
+            'invoice_number_prefix' => 'INV',
+            'invoice_number_next' => 1,
+            'estimate_number_prefix' => 'EST',
+            'estimate_number_next' => 1,
+            'booking_number_prefix' => 'EXP',
+            'booking_number_next' => 1,
+            'bank_booking_account' => '1000',
+            'cash_booking_account' => '1200',
+            'smtp_port' => 587,
+            'smtp_encryption' => 'tls',
+            'smtp_verify_ssl' => true,
+            'stripe_onboarding_complete' => false,
+            'enable_automated_reminders' => true,
+            'reminder_days_interval' => 7,
+            'accept_network_invoices' => false,
+            'late_fee_percentage' => 0,
+        ];
+
+        $dirty = false;
+        foreach ($defaults as $key => $value) {
+            if ($profile->{$key} === null) {
+                $profile->{$key} = $value;
+                $dirty = true;
+            }
+        }
+
+        if ($dirty) {
+            $profile->save();
+        }
+
         $this->provisionDefaults($profile);
 
         $this->cachedProfile = $profile;
@@ -68,8 +102,8 @@ class InvoiceMakerContext
                     'name' => 'Allocore Professional',
                     'is_default' => true,
                     'primary_color' => '#4f46e5',
-                    'font_family' => 'DejaVu Sans',
-                    'header_style' => 'simple',
+                    'font_family' => 'sans',
+                    'header_style' => 'default',
                     'payment_terms' => 'Please pay by the due date.',
                     'footer_message' => 'Thank you for your business.',
                 ]);
