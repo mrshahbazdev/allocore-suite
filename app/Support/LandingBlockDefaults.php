@@ -166,7 +166,7 @@ class LandingBlockDefaults
             'button_text' => self::t('landing.cta.primary'),
             'button_url' => Route::has('register') ? route('register') : url('/register'),
             'style' => [
-                'bg' => '#4f46e5',
+                'bg' => '#ff9200',
                 'text_color' => '#ffffff',
                 'text_align' => 'center',
                 'padding' => 'large',

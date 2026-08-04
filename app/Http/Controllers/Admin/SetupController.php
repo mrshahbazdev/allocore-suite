@@ -83,7 +83,8 @@ class SetupController extends Controller
     {
         return match ($field) {
             'default_locale' => config('app.locale', 'en'),
-            'primary_color' => '#4f46e5',
+            'primary_color' => '#ff9200',
+            'accent_color' => '#0094af',
             default => '',
         };
     }
