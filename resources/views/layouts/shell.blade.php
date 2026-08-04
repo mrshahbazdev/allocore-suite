@@ -234,6 +234,34 @@
             table.parentNode.insertBefore(wrapper, table);
             wrapper.appendChild(table);
         });
+
+        // SPA-style navigation for internal links and GET forms without page refresh
+        if (window.Alpine && window.Alpine.navigate) {
+            document.addEventListener('click', (e) => {
+                const a = e.target.closest('a');
+                if (! a || e.defaultPrevented) return;
+                const href = a.getAttribute('href');
+                if (! href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+                if (a.target === '_blank' || a.hasAttribute('download') || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+                const url = new URL(href, window.location.href);
+                if (url.hostname !== window.location.hostname) return;
+                e.preventDefault();
+                window.Alpine.navigate(url.pathname + url.search + url.hash);
+            });
+
+            document.addEventListener('submit', (e) => {
+                if (e.defaultPrevented) return;
+                const form = e.target;
+                if (form.method?.toLowerCase() !== 'get' || form.dataset.noNavigate !== undefined) return;
+                const action = form.getAttribute('action') || window.location.pathname;
+                const actionUrl = new URL(action, window.location.href);
+                if (actionUrl.hostname !== window.location.hostname) return;
+                e.preventDefault();
+                const params = new URLSearchParams(new FormData(form));
+                const url = actionUrl.pathname + (params.toString() ? '?' + params.toString() : '') + actionUrl.hash;
+                window.Alpine.navigate(url);
+            });
+        }
     });
 </script>
 </body>
