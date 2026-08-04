@@ -65,8 +65,10 @@
                     <span class="truncate text-base font-semibold text-slate-700">{{ $pageTitle }}</span>
                 </div>
 
-                {{-- Right: notifications, language, user --}}
+                {{-- Right: page actions, notifications, language, user --}}
                 <div class="flex items-center gap-2 sm:gap-4">
+                    @yield('topbar-actions')
+
                     @if (session('impersonated_by'))
                         <a href="{{ route('impersonation.stop') }}" class="rounded-lg bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-200">{{ __('admin.impersonation.stop') }}</a>
                     @endif
