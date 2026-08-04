@@ -53,6 +53,31 @@
         </div>
     </div>
 
+    {{-- Quick search + next steps --}}
+    <div class="mb-6 grid gap-4 lg:grid-cols-3 opacity-0 animate-fade-up" style="animation-delay: 40ms">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+            <form action="{{ route('search.index') }}" method="get" class="flex items-center gap-2">
+                <div class="relative flex-1">
+                    <input type="search" name="q" value="{{ request('q') }}" placeholder="{{ __('Search') }}..." class="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#ff9200] focus:outline-none focus:ring-2 focus:ring-[#ff9200]/20">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                </div>
+                <button type="submit" class="rounded-lg bg-[#ff9200] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">{{ __('Search') }}</button>
+            </form>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-semibold text-slate-900">{{ __('Next steps') }}</p>
+            <ul class="mt-3 space-y-2 text-sm">
+                @if (! $allocoreScore)
+                    <li><a href="{{ route('audit.index') }}" class="font-medium text-[#ff9200] hover:underline">{{ __('Start audit') }}</a></li>
+                @endif
+                @if ($activeModules->isEmpty())
+                    <li><a href="{{ route('billing.plans') }}" class="font-medium text-[#0094af] hover:underline">{{ __('Browse plans') }}</a></li>
+                @endif
+                <li><a href="{{ route('teams.index') }}" class="font-medium text-[#0094af] hover:underline">{{ __('Invite a team member') }}</a></li>
+            </ul>
+        </div>
+    </div>
+
     {{-- Allocore score --}}
     @if ($allocoreScore)
         <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:p-8 opacity-0 animate-fade-up" style="animation-delay: 80ms">
