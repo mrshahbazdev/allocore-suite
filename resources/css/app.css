@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    /* Smooth transitions on interactive elements */
+    a, button, [type='button'], [type='submit'], [role='button'] {
+        transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    /* Subtle scale on buttons */
+    button:hover, [type='button']:hover, [type='submit']:hover, [role='button']:hover {
+        transform: scale(1.02);
+    }
+
+    button:active, [type='button']:active, [type='submit']:active, [role='button']:active {
+        transform: scale(0.98);
+    }
+}
+
+@layer components {
+    /* Generic hover lift for white card-like containers across the app */
+    :where([class~='bg-white'][class~='rounded-xl']:not([class~='shadow-lg']):not([class~='shadow-xl']):not([class~='shadow-2xl'])):hover,
+    :where([class~='bg-white'][class~='rounded-2xl']:not([class~='shadow-lg']):not([class~='shadow-xl']):not([class~='shadow-2xl'])):hover {
+        transform: translateY(-0.25rem);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+}
+
 @layer utilities {
     .reveal {
         opacity: 0;
