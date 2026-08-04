@@ -20,11 +20,11 @@ class LandingBlockDefaults
 
     private static function t(string $key): array
     {
-        $locales = config('app.available_locales', ['en', 'de']);
         $values = [];
+        $base = LandingBlocks::BASE_LOCALE;
 
-        foreach ($locales as $locale) {
-            $values[$locale] = __($key, [], $locale);
+        foreach (config('app.available_locales', ['en', 'de']) as $locale) {
+            $values[$locale] = $locale === $base ? __($key, [], $locale) : '';
         }
 
         return $values;
