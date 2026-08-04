@@ -41,7 +41,7 @@
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">{{ __('Configure KPI') }}</h2>
 
-            <form method="POST" action="{{ route('financialplatform.revenue-development.update') }}" class="mt-4 space-y-4">
+            <form method="POST" action="{{ route('revenue-development.update') }}" class="mt-4 space-y-4">
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Target sales') }}</label>

@@ -30,7 +30,7 @@
                                 <td class="py-2 pr-4 text-right">{{ number_format($rate->rate, 8) }}</td>
                                 <td class="py-2 pr-4">{{ $rate->date->format('Y-m-d') }}</td>
                                 <td class="py-2">
-                                    <form method="POST" action="{{ route('financialplatform.exchange-rates.destroy', $rate) }}" class="inline">
+                                    <form method="POST" action="{{ route('exchange-rates.destroy', $rate) }}" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button class="text-sm text-rose-600">{{ __('Delete') }}</button>
@@ -46,7 +46,7 @@
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">{{ __('Add Rate') }}</h2>
-            <form method="POST" action="{{ route('financialplatform.exchange-rates.store') }}" class="mt-4 space-y-4">
+            <form method="POST" action="{{ route('exchange-rates.store') }}" class="mt-4 space-y-4">
                 @csrf
                 <div class="grid grid-cols-2 gap-3">
                     <div>

@@ -93,7 +93,7 @@
                     </div>
                 </div>
 
-                <a href="{{ route('financialplatform.deep-kpis.index') }}"
+                <a href="{{ route('deep-kpis.index') }}"
                    class="mt-4 inline-flex rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500">
                     {{ __('Configure Deep KPIs') }}
                 </a>
