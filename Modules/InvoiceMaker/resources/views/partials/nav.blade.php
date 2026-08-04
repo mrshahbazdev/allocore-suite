@@ -10,4 +10,4 @@
     ['route' => 'invoicemaker.settings.profile', 'active' => 'invoicemaker.settings.*', 'label' => __('Settings')],
 ])
 
-@include('partials.module-nav')
+@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])

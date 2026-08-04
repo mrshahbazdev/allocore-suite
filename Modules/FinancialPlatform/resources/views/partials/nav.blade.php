@@ -16,4 +16,4 @@
     ['route' => 'import.index', 'active' => 'import.*', 'label' => __('Import')],
 ])
 
-@include('partials.module-nav')
+@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])

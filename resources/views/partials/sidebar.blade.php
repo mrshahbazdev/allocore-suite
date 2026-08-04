@@ -14,7 +14,23 @@
     'einfluss' => __('Einfluss & Kunden'),
 ])
 
-<nav class="flex h-full flex-col px-3 py-4 space-y-6 overflow-y-auto" x-data='{ groups: (() => { try { const s = localStorage.getItem("sidebarGroups"); return s ? JSON.parse(s) : {main:true,allocore:true,tools:true,insights:true,account:true,admin:false}; } catch (e) { return {main:true,allocore:true,tools:true,insights:true,account:true,admin:false}; } })() }' x-effect="localStorage.setItem('sidebarGroups', JSON.stringify(groups))">
+<nav class="flex h-full flex-col px-3 py-4 space-y-6 overflow-y-auto" x-data='{ groups: (() => { try { const s = localStorage.getItem("sidebarGroups"); return s ? JSON.parse(s) : {main:true,module:true,allocore:true,tools:true,insights:true,account:true,admin:false}; } catch (e) { return {main:true,module:true,allocore:true,tools:true,insights:true,account:true,admin:false}; } })() }' x-effect="localStorage.setItem('sidebarGroups', JSON.stringify(groups))">
+    @if (request()->is('app/*'))
+        @php($moduleSegment = request()->segment(2))
+        @php($moduleSidebar = $moduleSegment ? \App\Models\Module::where('route_prefix', $moduleSegment)->where('is_active', true)->first() : null)
+        @if ($moduleSidebar)
+            <div>
+                <button type="button" @click="groups.module = !groups.module" class="flex w-full items-center justify-between px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-slate-300">
+                    <span>{{ $moduleSidebar->name }}</span>
+                    <svg class="h-4 w-4" :class="groups.module ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                </button>
+                <div x-show="groups.module" class="mt-2 space-y-1">
+                    @include('partials.active-module-nav', ['layout' => 'vertical'])
+                </div>
+            </div>
+        @endif
+    @endif
+
     {{-- Main --}}
     <div>
         <button type="button" @click="groups.main = !groups.main" class="flex w-full items-center justify-between px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-slate-300">

@@ -7,4 +7,4 @@
     ['route' => 'planhive.search', 'active' => 'planhive.search', 'label' => __('Search')],
 ])
 
-@include('partials.module-nav')
+@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])
