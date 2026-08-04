@@ -126,7 +126,7 @@
 @php
     $score = $analysis->total_score ?? 0;
     $color = $analysis->scoreColor();
-    $input = $analysis->gmbhInput;
+    $input = $analysis->gmbhInput ?? new \Modules\FinancialPlatform\Models\GmbhInput();
 @endphp
 <div class="score-box">
     <div class="score-cell">

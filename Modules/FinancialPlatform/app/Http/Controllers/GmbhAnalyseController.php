@@ -154,7 +154,7 @@ class GmbhAnalyseController extends Controller
     {
         $gmbh->load(['company', 'gmbhInput', 'kpiResults']);
 
-        $pdf = Pdf::loadView('gmbh.pdf', ['analysis' => $gmbh])
+        $pdf = Pdf::loadView('financialplatform::gmbh.pdf', ['analysis' => $gmbh])
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('gmbh-analyse-'.$gmbh->id.'.pdf');

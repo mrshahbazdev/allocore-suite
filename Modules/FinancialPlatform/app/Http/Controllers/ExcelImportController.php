@@ -12,8 +12,6 @@ use Modules\FinancialPlatform\Models\JahresabschlussInput;
 use Modules\FinancialPlatform\Services\GmbhScoringService;
 use Modules\FinancialPlatform\Services\ImmobilienScoringService;
 use Modules\FinancialPlatform\Services\KennzahlenEngine;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ExcelImportController extends Controller
 {
@@ -28,42 +26,38 @@ class ExcelImportController extends Controller
     }
 
     /**
-     * Download blank template for a given type
+     * Download blank CSV template for a given type
      */
     public function downloadTemplate(string $type)
     {
-        $spreadsheet = new Spreadsheet;
-        $sheet = $spreadsheet->getActiveSheet();
-
-        match ($type) {
-            'gmbh' => $this->buildGmbhTemplate($sheet),
-            'jahresabschluss' => $this->buildJahresabschlussTemplate($sheet),
-            'immobilien' => $this->buildImmobilienTemplate($sheet),
+        [$headers, $exampleRows] = match ($type) {
+            'gmbh' => $this->buildGmbhTemplate(),
+            'jahresabschluss' => $this->buildJahresabschlussTemplate(),
+            'immobilien' => $this->buildImmobilienTemplate(),
             default => abort(404),
         };
 
-        // Style header row
-        $sheet->getStyle('A1:Z1')->applyFromArray([
-            'fill' => ['fillType' => 'solid', 'color' => ['rgb' => '312E81']],
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-        ]);
+        $filename = "allocore-template-{$type}.csv";
 
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = "allocore-template-{$type}.xlsx";
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Type: text/csv; charset=utf-8');
         header("Content-Disposition: attachment; filename=\"{$filename}\"");
-        $writer->save('php://output');
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, $headers);
+        foreach ($exampleRows as $row) {
+            fputcsv($output, $row);
+        }
+        fclose($output);
         exit;
     }
 
     /**
-     * Process uploaded Excel file
+     * Process uploaded CSV file
      */
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+            'file' => 'required|file|mimes:csv,txt|max:5120',
             'type' => 'required|in:gmbh,jahresabschluss,immobilien',
             'company_id' => 'required|exists:financial_companies,id',
             'name' => 'required|string|max:255',
@@ -71,12 +65,13 @@ class ExcelImportController extends Controller
 
         try {
             $path = $request->file('file')->getRealPath();
-            $spreadsheet = IOFactory::load($path);
-            $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray(null, true, true, true);
+            $csv = array_map('str_getcsv', file($path));
+            $csv = array_filter($csv, fn ($row) => $row !== [''] && ! empty(array_filter($row)));
 
-            // Remove header row
-            $headers = array_shift($rows);
+            $headers = array_shift($csv);
+            if (! $headers) {
+                throw new \Exception('Keine Header gefunden.');
+            }
 
             $analysis = Analysis::create([
                 'company_id' => $request->company_id,
@@ -88,18 +83,18 @@ class ExcelImportController extends Controller
 
             switch ($request->type) {
                 case 'gmbh':
-                    $this->importGmbh($rows, $headers, $analysis);
+                    $this->importGmbh($csv, $headers, $analysis);
                     break;
                 case 'jahresabschluss':
-                    $this->importJahresabschluss($rows, $headers, $analysis);
+                    $this->importJahresabschluss($csv, $headers, $analysis);
                     break;
                 case 'immobilien':
-                    $this->importImmobilien($rows, $headers, $analysis);
+                    $this->importImmobilien($csv, $headers, $analysis);
                     break;
             }
 
             return redirect()->route($request->type.'.show', $analysis)
-                ->with('success', 'Excel-Datei erfolgreich importiert und Analyse berechnet.');
+                ->with('success', 'CSV-Datei erfolgreich importiert und Analyse berechnet.');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Import fehlgeschlagen: '.$e->getMessage());
@@ -110,26 +105,24 @@ class ExcelImportController extends Controller
     //  GmbH Import
     // ─────────────────────────────────────────────────────────────
 
-    private function buildGmbhTemplate($sheet): void
+    private function buildGmbhTemplate(): array
     {
         $headers = [
-            'A' => 'revenue_current', 'B' => 'revenue_prev', 'C' => 'ebitda',
-            'D' => 'net_profit', 'E' => 'equity', 'F' => 'total_debt',
-            'G' => 'total_assets', 'H' => 'current_assets', 'I' => 'current_liabilities',
-            'J' => 'cash', 'K' => 'monthly_burn', 'L' => 'depreciation',
-            'M' => 'interest', 'N' => 'cac', 'O' => 'ltv',
-            'P' => 'mgmt_score', 'Q' => 'market_score',
+            'revenue_current', 'revenue_prev', 'ebitda',
+            'net_profit', 'equity', 'total_debt',
+            'total_assets', 'current_assets', 'current_liabilities',
+            'cash', 'monthly_burn', 'depreciation',
+            'interest', 'cac', 'ltv',
+            'mgmt_score', 'market_score',
         ];
-        foreach ($headers as $col => $label) {
-            $sheet->setCellValue($col.'1', $label);
-            $sheet->getColumnDimension($col)->setWidth(18);
-        }
-        // Example row
-        $sheet->fromArray([
+
+        $example = [
             1500000, 1200000, 220000, 120000, 500000, 800000,
             1300000, 600000, 300000, 180000, 30000, 50000,
             20000, 500, 2000, 8, 7,
-        ], null, 'A2');
+        ];
+
+        return [$headers, [$example]];
     }
 
     private function importGmbh(array $rows, array $headers, Analysis $analysis): void
@@ -138,9 +131,6 @@ class ExcelImportController extends Controller
         if (! $firstRow) {
             throw new \Exception('Keine Daten gefunden.');
         }
-
-        // Map: header letter → field name
-        $headerMap = array_flip($headers);
 
         $data = [];
         foreach ($firstRow as $col => $value) {
@@ -161,24 +151,24 @@ class ExcelImportController extends Controller
     //  Jahresabschluss Import
     // ─────────────────────────────────────────────────────────────
 
-    private function buildJahresabschlussTemplate($sheet): void
+    private function buildJahresabschlussTemplate(): array
     {
         $headers = [
-            'A' => 'year_label', 'B' => 'revenue', 'C' => 'ebit', 'D' => 'net_profit',
-            'E' => 'equity', 'F' => 'total_assets', 'G' => 'current_assets',
-            'H' => 'cash', 'I' => 'receivables', 'J' => 'inventory',
-            'K' => 'current_liabilities', 'L' => 'total_liabilities',
-            'M' => 'interest_exp', 'N' => 'material_costs',
-            'O' => 'personnel_costs', 'P' => 'payables',
+            'year_label', 'revenue', 'ebit', 'net_profit',
+            'equity', 'total_assets', 'current_assets',
+            'cash', 'receivables', 'inventory',
+            'current_liabilities', 'total_liabilities',
+            'interest_exp', 'material_costs',
+            'personnel_costs', 'payables',
         ];
-        foreach ($headers as $col => $label) {
-            $sheet->setCellValue($col.'1', $label);
-            $sheet->getColumnDimension($col)->setWidth(16);
-        }
-        // 3 example years
-        $sheet->fromArray(['2022', 1200000, 80000, 50000, 450000, 1100000, 500000, 120000, 220000, 80000, 280000, 650000, 18000, 400000, 320000, 110000], null, 'A2');
-        $sheet->fromArray(['2023', 1350000, 95000, 65000, 510000, 1200000, 560000, 150000, 250000, 90000, 300000, 690000, 19000, 440000, 340000, 120000], null, 'A3');
-        $sheet->fromArray(['2024', 1520000, 115000, 80000, 590000, 1350000, 650000, 190000, 290000, 100000, 320000, 760000, 21000, 480000, 370000, 130000], null, 'A4');
+
+        $examples = [
+            ['2022', 1200000, 80000, 50000, 450000, 1100000, 500000, 120000, 220000, 80000, 280000, 650000, 18000, 400000, 320000, 110000],
+            ['2023', 1350000, 95000, 65000, 510000, 1200000, 560000, 150000, 250000, 90000, 300000, 690000, 19000, 440000, 340000, 120000],
+            ['2024', 1520000, 115000, 80000, 590000, 1350000, 650000, 190000, 290000, 100000, 320000, 760000, 21000, 480000, 370000, 130000],
+        ];
+
+        return [$headers, $examples];
     }
 
     private function importJahresabschluss(array $rows, array $headers, Analysis $analysis): void
@@ -207,21 +197,20 @@ class ExcelImportController extends Controller
     //  Immobilien Import
     // ─────────────────────────────────────────────────────────────
 
-    private function buildImmobilienTemplate($sheet): void
+    private function buildImmobilienTemplate(): array
     {
         $headers = [
-            'A' => 'purchase_price', 'B' => 'closing_costs', 'C' => 'renovation_costs',
-            'D' => 'equity', 'E' => 'rent_net', 'F' => 'market_rent',
-            'G' => 'vacancy_rate', 'H' => 'management_costs_pct',
-            'I' => 'loan_rate', 'J' => 'repayment_rate', 'K' => 'loan_term_years',
-            'L' => 'area_sqm', 'M' => 'location_score', 'N' => 'condition_score',
-            'O' => 'property_type',
+            'purchase_price', 'closing_costs', 'renovation_costs',
+            'equity', 'rent_net', 'market_rent',
+            'vacancy_rate', 'management_costs_pct',
+            'loan_rate', 'repayment_rate', 'loan_term_years',
+            'area_sqm', 'location_score', 'condition_score',
+            'property_type',
         ];
-        foreach ($headers as $col => $label) {
-            $sheet->setCellValue($col.'1', $label);
-            $sheet->getColumnDimension($col)->setWidth(18);
-        }
-        $sheet->fromArray([500000, 40000, 0, 150000, 2500, 3000, 5, 10, 3.5, 2.0, 25, 200, 7, 8, 'Mehrfamilienhaus'], null, 'A2');
+
+        $example = [500000, 40000, 0, 150000, 2500, 3000, 5, 10, 3.5, 2.0, 25, 200, 7, 8, 'Mehrfamilienhaus'];
+
+        return [$headers, [$example]];
     }
 
     private function importImmobilien(array $rows, array $headers, Analysis $analysis): void

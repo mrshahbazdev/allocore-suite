@@ -17,6 +17,11 @@ class CategoryController extends Controller
         return view('cashcore::categories.index', compact('categories'));
     }
 
+    public function show(CashCategory $category): RedirectResponse
+    {
+        return redirect()->route('cashcore.categories.edit', $category);
+    }
+
     public function create(): View
     {
         return view('cashcore::categories.form', ['category' => new CashCategory]);

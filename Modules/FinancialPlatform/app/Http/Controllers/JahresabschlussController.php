@@ -98,7 +98,7 @@ class JahresabschlussController extends Controller
         $engine = new KennzahlenEngine($years);
         $bericht = $engine->generateBericht();
 
-        $pdf = Pdf::loadView('jahresabschluss.pdf', [
+        $pdf = Pdf::loadView('financialplatform::jahresabschluss.pdf', [
             'analysis' => $jahresabschluss,
             'bericht' => $bericht,
         ])->setPaper('a4', 'portrait');

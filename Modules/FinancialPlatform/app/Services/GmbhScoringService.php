@@ -17,9 +17,9 @@ class GmbhScoringService
     /** @var array<string, float> */
     private array $customWeights = [];
 
-    public function __construct(GmbhInput $input)
+    public function __construct(?GmbhInput $input)
     {
-        $this->input = $input;
+        $this->input = $input ?? new GmbhInput;
         $this->thresholds = KpiThreshold::query()
             ->where('tool', 'gmbh')
             ->where('is_active', true)

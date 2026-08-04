@@ -29,17 +29,17 @@ class Form extends Component
 
     public string $due_date = '';
 
-    public string $currency = 'EUR';
+    public ?string $currency = 'EUR';
 
-    public string $discount = '0';
+    public ?string $discount = '0';
 
     public ?string $notes = null;
 
     public ?string $payment_terms = null;
 
-    public bool $is_recurring = false;
+    public ?bool $is_recurring = false;
 
-    public string $recurring_frequency = 'monthly';
+    public ?string $recurring_frequency = 'monthly';
 
     public ?string $scheduled_send_at = null;
 
@@ -67,6 +67,10 @@ class Form extends Component
             $this->invoice_date = $invoice->invoice_date->toDateString();
             $this->due_date = $invoice->due_date->toDateString();
             $this->scheduled_send_at = $invoice->scheduled_send_at?->format('Y-m-d\TH:i');
+            $this->currency ??= 'EUR';
+            $this->discount ??= '0';
+            $this->is_recurring ??= false;
+            $this->recurring_frequency ??= 'monthly';
             $this->items = $invoice->items->map->only([
                 'product_id',
                 'description',

@@ -24,9 +24,9 @@ class Form extends Component
 
     public ?string $tax_number = null;
 
-    public string $currency = 'EUR';
+    public ?string $currency = 'EUR';
 
-    public string $language = 'en';
+    public ?string $language = 'en';
 
     public ?string $notes = null;
 
@@ -47,6 +47,7 @@ class Form extends Component
                 'notes',
             ]));
             $this->currency = $client->currency ?? $context->profile()->currency;
+            $this->language ??= 'en';
         } else {
             $this->currency = $context->profile()->currency;
         }

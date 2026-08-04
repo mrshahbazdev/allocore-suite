@@ -17,6 +17,11 @@ class CompanyController extends Controller
         return view('dentaltrack::admin.companies.index', compact('companies'));
     }
 
+    public function show(Company $company): RedirectResponse
+    {
+        return redirect()->route('dentaltrack.admin.companies.edit', $company);
+    }
+
     public function create(): View
     {
         return view('dentaltrack::admin.companies.form', ['company' => new Company]);

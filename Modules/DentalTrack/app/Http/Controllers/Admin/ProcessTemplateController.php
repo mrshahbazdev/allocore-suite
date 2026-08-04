@@ -25,11 +25,16 @@ class ProcessTemplateController extends Controller
         return view('dentaltrack::admin.process-templates.index', compact('templates', 'productTypes'));
     }
 
+    public function show(ProcessTemplate $processTemplate): RedirectResponse
+    {
+        return redirect()->route('dentaltrack.admin.process-templates.edit', $processTemplate);
+    }
+
     public function create(): View
     {
         $productTypes = ProductType::where('is_active', true)->get();
 
-        return view('dentaltrack::admin.process-templates.form', compact('productTypes'));
+        return view('dentaltrack::admin.process-templates.form', ['processTemplate' => new ProcessTemplate, 'productTypes' => $productTypes]);
     }
 
     public function store(Request $request): RedirectResponse

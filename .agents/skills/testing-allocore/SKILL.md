@@ -48,3 +48,6 @@ Service workers (`public/sw.js`) and locale cookies can cache the wrong module p
 - The PHP dev server can stop responding after heavy UI use; kill all `php` processes and restart with `PHP_CLI_SERVER_WORKERS=4` if requests begin to timeout.
 - Chrome address-bar navigation can become unreliable with the `--user-data-dir` profile; for a static public page screenshot, use `chrome --headless --screenshot=<path> <url>` as a fallback.
 - Module nested routes may render a stale cached page until a hard refresh (`Ctrl+F5`) due to `public/sw.js`.
+- The cookie-consent banner at the bottom of the page may not respond to `computer` tool clicks; it can usually be ignored or accepted manually if it overlaps content.
+- For large module route regression passes, an authenticated `curl` sweep is much faster and more reliable than clicking through every route in Chrome. Save the session cookie once with `/test-login`, then run requests with `-b /tmp/cookies.txt` and check for `RouteNotFoundException`/500 text.
+- The CDP-managed Chrome tab can become unresponsive after many navigations or a 500 page; if clicks/Return stop working, verify the route with `curl` or restart Chrome.

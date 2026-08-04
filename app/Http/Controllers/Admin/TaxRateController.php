@@ -18,6 +18,11 @@ class TaxRateController extends Controller
         return view('admin.tax-rates.index', compact('taxRates'));
     }
 
+    public function show(TaxRate $taxRate)
+    {
+        return redirect()->route('admin.tax-rates.edit', $taxRate);
+    }
+
     public function create()
     {
         return view('admin.tax-rates.create');

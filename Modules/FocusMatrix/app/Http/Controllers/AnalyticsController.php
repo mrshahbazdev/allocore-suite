@@ -113,6 +113,7 @@ class AnalyticsController extends Controller
         }
 
         return view('focusmatrix::analytics.index', [
+            'team' => $team,
             'team_name' => $team->name,
             'team_size' => count($memberIds),
             'team_focus_score' => $teamFocusScore,

@@ -40,7 +40,7 @@
     $score = $analysis->total_score ?? 0;
     $color = $analysis->scoreColor();
     $colorHex = ['green'=>'#10b981','yellow'=>'#f59e0b','red'=>'#ef4444','gray'=>'#64748b'][$color];
-    $input = $analysis->immobilienInput;
+    $input = $input ?? $analysis->immobilienInput ?? new \Modules\FinancialPlatform\Models\ImmobilienInput();
 @endphp
 
 <div class="immobilien-score-grid">

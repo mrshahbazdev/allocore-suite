@@ -17,6 +17,11 @@ class WebhookController extends Controller
         return view('loopengine::webhooks.index', compact('webhooks'));
     }
 
+    public function show(Webhook $webhook): RedirectResponse
+    {
+        return redirect()->route('loopengine.webhooks.edit', $webhook);
+    }
+
     public function create(): View
     {
         return view('loopengine::webhooks.form', ['webhook' => new Webhook, 'events' => self::events()]);

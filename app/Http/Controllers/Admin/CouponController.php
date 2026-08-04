@@ -18,6 +18,11 @@ class CouponController extends Controller
         return view('admin.coupons.index', compact('coupons'));
     }
 
+    public function show(Coupon $coupon)
+    {
+        return redirect()->route('admin.coupons.edit', $coupon);
+    }
+
     public function create()
     {
         return view('admin.coupons.create');
