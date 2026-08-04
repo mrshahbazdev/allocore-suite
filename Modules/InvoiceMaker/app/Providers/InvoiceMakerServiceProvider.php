@@ -4,6 +4,7 @@ namespace Modules\InvoiceMaker\Providers;
 
 use App\Support\DashboardWidgetRegistry;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -39,13 +40,6 @@ use Modules\InvoiceMaker\Livewire\Settings\Profile as SettingsProfile;
 use Modules\InvoiceMaker\Livewire\Settings\Team;
 use Modules\InvoiceMaker\Livewire\Templates\Builder as TemplatesBuilder;
 use Modules\InvoiceMaker\Livewire\Templates\Index as TemplatesIndex;
-use Modules\InvoiceMaker\Models\Client;
-use Modules\InvoiceMaker\Models\Expense;
-use Modules\InvoiceMaker\Models\Invoice;
-use Modules\InvoiceMaker\Models\Product;
-use Modules\InvoiceMaker\Models\Profile;
-use Modules\InvoiceMaker\Models\Template;
-use Modules\InvoiceMaker\Policies\InvoiceMakerPolicy;
 use Modules\InvoiceMaker\Services\DashboardSnapshot;
 use Modules\InvoiceMaker\Services\InvoiceMakerContext;
 use Nwidart\Modules\Support\ModuleServiceProvider;
@@ -131,13 +125,23 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        Gate::policy(Invoice::class, InvoiceMakerPolicy::class);
-        Gate::policy(Client::class, InvoiceMakerPolicy::class);
-        Gate::policy(Product::class, InvoiceMakerPolicy::class);
-        Gate::policy(Expense::class, InvoiceMakerPolicy::class);
-        Gate::policy(Template::class, InvoiceMakerPolicy::class);
-        Gate::policy(Profile::class, InvoiceMakerPolicy::class);
+        Gate::before(function ($user, string $ability, array $arguments): ?bool {
+            $model = $arguments[0] ?? null;
 
+            if (! $model instanceof Model) {
+                return null;
+            }
+
+            if (! str_starts_with(get_class($model), 'Modules\\InvoiceMaker\\Models\\')) {
+                return null;
+            }
+
+            if (! $user?->current_team_id) {
+                return null;
+            }
+
+            return $user->current_team_id === $model->getAttribute('team_id') ? true : null;
+        });
         Blade::anonymousComponentNamespace('invoicemaker::components', 'invoicemaker');
 
         app(DashboardWidgetRegistry::class)->register(

@@ -59,6 +59,7 @@ Route::prefix('app/invoices')
         Route::get('/estimates', EstimatesIndex::class)->name('estimates.index');
         Route::get('/estimates/create', EstimatesCreate::class)->name('estimates.create');
         Route::get('/estimates/{invoice}/edit', EstimatesEdit::class)->name('estimates.edit');
+        Route::get('/estimates/{invoice}', InvoicesShow::class)->name('estimates.show');
 
         Route::get('/expenses', ExpensesIndex::class)->name('expenses.index');
         Route::get('/expenses/create', ExpensesCreate::class)->name('expenses.create');
@@ -77,7 +78,7 @@ Route::prefix('app/invoices')
 
         Route::get('/templates', TemplatesIndex::class)->name('templates.index');
         Route::get('/templates/builder', TemplatesBuilder::class)->name('templates.builder');
-        Route::get('/templates/{template}/builder', TemplatesBuilder::class)->name('templates.builder.edit');
+        Route::get('/templates/{invoice_template}/builder', TemplatesBuilder::class)->name('templates.builder.edit');
 
         Route::get('/cash-book/export/csv', [CashBookExportController::class, 'exportCsv'])->name('cash-book.export.csv');
         Route::get('/cash-book/export/excel', [CashBookExportController::class, 'exportExcel'])->name('cash-book.export.excel');

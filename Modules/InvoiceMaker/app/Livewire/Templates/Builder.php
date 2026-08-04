@@ -52,21 +52,37 @@ class Builder extends Component
         'enable_qr' => 'boolean',
     ];
 
-    public function mount(Template $template): void
+    public function mount(?Template $invoice_template = null): void
     {
-        $this->authorize('update', $template);
-        $this->template = $template;
-        $this->name = $template->name;
-        $this->primary_color = $template->primary_color;
-        $this->font_family = $template->font_family;
-        $this->logo_position = $template->logo_position;
-        $this->header_style = $template->header_style ?? 'default';
-        $this->footer_message = $template->footer_message ?? '';
-        $this->signature_path = $template->signature_path ?? '';
-        $this->payment_terms = $template->payment_terms ?? '';
-        $this->show_tax = $template->show_tax ?? true;
-        $this->show_discount = $template->show_discount ?? true;
-        $this->enable_qr = $template->enable_qr ?? false;
+        $this->template = $invoice_template ?? new Template([
+            'name' => '',
+            'primary_color' => '#4f46e5',
+            'font_family' => 'sans',
+            'logo_position' => 'left',
+            'header_style' => 'default',
+            'footer_message' => '',
+            'signature_path' => '',
+            'payment_terms' => '',
+            'show_tax' => true,
+            'show_discount' => true,
+            'enable_qr' => false,
+        ]);
+
+        if ($this->template->exists) {
+            $this->authorize('update', $this->template);
+        }
+
+        $this->name = $this->template->name;
+        $this->primary_color = $this->template->primary_color;
+        $this->font_family = $this->template->font_family;
+        $this->logo_position = $this->template->logo_position;
+        $this->header_style = $this->template->header_style ?? 'default';
+        $this->footer_message = $this->template->footer_message ?? '';
+        $this->signature_path = $this->template->signature_path ?? '';
+        $this->payment_terms = $this->template->payment_terms ?? '';
+        $this->show_tax = $this->template->show_tax ?? true;
+        $this->show_discount = $this->template->show_discount ?? true;
+        $this->enable_qr = $this->template->enable_qr ?? false;
     }
 
     public function save(): void
@@ -90,9 +106,10 @@ class Builder extends Component
             $data['signature_path'] = $this->signature->store('signatures', 'public');
         }
 
-        $this->template->update($data);
+        $this->template->fill($data);
+        $this->template->save();
 
-        session()->flash('message', 'Template updated successfully.');
+        session()->flash('message', 'Template saved successfully.');
     }
 
     public function render()
