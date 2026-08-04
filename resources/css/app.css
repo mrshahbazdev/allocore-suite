@@ -86,6 +86,12 @@
     .btn-danger:hover {
         @apply bg-rose-700;
     }
+    .btn-success {
+        @apply bg-emerald-600 text-white;
+    }
+    .btn-success:hover {
+        @apply bg-emerald-700;
+    }
     .badge {
         @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
     }
