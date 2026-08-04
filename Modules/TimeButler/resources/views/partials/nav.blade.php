@@ -8,4 +8,4 @@
     ['route' => 'timebutler.reports.absences', 'active' => 'timebutler.reports.*', 'label' => __('Reports')],
 ])
 
-@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])
+@include('partials.module-nav', ['layout' => $layout ?? 'horizontal'])

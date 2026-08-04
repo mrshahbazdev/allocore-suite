@@ -10,4 +10,4 @@
     ['route' => 'cashcore.behavior.index', 'label' => __('Behavior')],
 ])
 
-@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])
+@include('partials.module-nav', ['layout' => $layout ?? 'horizontal'])

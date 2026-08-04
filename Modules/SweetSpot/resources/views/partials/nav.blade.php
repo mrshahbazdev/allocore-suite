@@ -4,4 +4,4 @@
     ['route' => 'sweetspot.settings.index', 'active' => 'sweetspot.settings.*', 'label' => __('Settings')],
 ])
 
-@include('partials.module-nav', ['layout' => \$layout ?? 'horizontal'])
+@include('partials.module-nav', ['layout' => $layout ?? 'horizontal'])
