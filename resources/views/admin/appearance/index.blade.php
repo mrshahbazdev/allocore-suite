@@ -31,6 +31,15 @@
                         </select>
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-slate-700">{{ __('Dashboard template') }}</label>
+                        <select name="dashboard_template" class="mt-1 block w-full rounded-lg border-slate-300 text-sm">
+                            <option value="default" {{ old('dashboard_template', $settings['dashboard_template']) === 'default' ? 'selected' : '' }}>{{ __('Default') }}</option>
+                            <option value="executive" {{ old('dashboard_template', $settings['dashboard_template']) === 'executive' ? 'selected' : '' }}>{{ __('Executive') }}</option>
+                            <option value="operations" {{ old('dashboard_template', $settings['dashboard_template']) === 'operations' ? 'selected' : '' }}>{{ __('Operations') }}</option>
+                            <option value="minimal" {{ old('dashboard_template', $settings['dashboard_template']) === 'minimal' ? 'selected' : '' }}>{{ __('Minimal') }}</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-slate-700">{{ __('Logo URL') }}</label>
                         <input name="site_logo" value="{{ old('site_logo', $settings['site_logo']) }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm">
                     </div>

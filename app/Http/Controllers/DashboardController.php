@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\Announcement;
 use App\Models\Module;
+use App\Models\SiteSetting;
 use App\Models\ToolSubscription;
 use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
@@ -55,6 +56,11 @@ class DashboardController extends Controller
         $allocoreHistory = AllocoreScoreService::historyForTeam($user->current_team_id, 12);
         $allocoreRecommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, $user);
 
-        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory', 'allocoreRecommendations'));
+        $template = in_array(SiteSetting::value('dashboard_template', 'default'), ['default', 'executive', 'operations', 'minimal'], true)
+            ? SiteSetting::value('dashboard_template', 'default')
+            : 'default';
+
+        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory', 'allocoreRecommendations', 'template'));
+
     }
 }
