@@ -104,14 +104,14 @@ class Profitability extends Component
             ->get()
             ->map(function ($product) {
                 // Sum sales for this product in range
-                $salesData = DB::table('invoice_items')
-                    ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
-                    ->where('invoice_items.product_id', $product->id)
-                    ->whereNotIn('invoices.status', ['draft', 'cancelled'])
-                    ->whereBetween('invoices.invoice_date', [$this->startDate, $this->endDate])
+                $salesData = DB::table('invoicemaker_invoice_items')
+                    ->join('invoicemaker_invoices', 'invoicemaker_invoice_items.invoice_id', '=', 'invoicemaker_invoices.id')
+                    ->where('invoicemaker_invoice_items.product_id', $product->id)
+                    ->whereNotIn('invoicemaker_invoices.status', ['draft', 'cancelled'])
+                    ->whereBetween('invoicemaker_invoices.invoice_date', [$this->startDate, $this->endDate])
                     ->select(
-                        DB::raw('SUM(invoice_items.quantity) as total_sold'),
-                        DB::raw('SUM(invoice_items.total) as total_revenue')
+                        DB::raw('SUM(invoicemaker_invoice_items.quantity) as total_sold'),
+                        DB::raw('SUM(invoicemaker_invoice_items.total) as total_revenue')
                     )
                     ->first();
 
@@ -138,13 +138,13 @@ class Profitability extends Component
             ->filter(fn ($item) => $item['sales'] > 0 || $item['costs'] > 0);
 
         // Capture revenue from items with NO product_id (Uncategorized/One-off items)
-        $uncategorizedSales = DB::table('invoice_items')
-            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
-            ->where('invoices.team_id', $business->team_id)
-            ->whereNull('invoice_items.product_id')
-            ->whereNotIn('invoices.status', ['draft', 'cancelled'])
-            ->whereBetween('invoices.invoice_date', [$this->startDate, $this->endDate])
-            ->sum('invoice_items.total');
+        $uncategorizedSales = DB::table('invoicemaker_invoice_items')
+            ->join('invoicemaker_invoices', 'invoicemaker_invoice_items.invoice_id', '=', 'invoicemaker_invoices.id')
+            ->where('invoicemaker_invoices.team_id', $business->team_id)
+            ->whereNull('invoicemaker_invoice_items.product_id')
+            ->whereNotIn('invoicemaker_invoices.status', ['draft', 'cancelled'])
+            ->whereBetween('invoicemaker_invoices.invoice_date', [$this->startDate, $this->endDate])
+            ->sum('invoicemaker_invoice_items.total');
 
         if ($uncategorizedSales > 0) {
             $productProfitability->push([

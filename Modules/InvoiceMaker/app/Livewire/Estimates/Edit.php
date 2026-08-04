@@ -47,23 +47,23 @@ class Edit extends Component
         'currency' => 'required|string|max:3',
     ];
 
-    public function mount(Invoice $estimate): void
+    public function mount(Invoice $invoice): void
     {
-        $this->estimate = $estimate;
+        $this->estimate = $invoice;
 
-        if ($estimate->type !== Invoice::TYPE_ESTIMATE) {
+        if ($invoice->type !== Invoice::TYPE_ESTIMATE) {
             abort(404);
         }
 
-        $this->client_id = $estimate->client_id;
-        $this->invoice_date = $estimate->invoice_date->toDateString();
-        $this->due_date = $estimate->due_date->toDateString();
-        $this->notes = $estimate->notes ?? '';
-        $this->discount = $estimate->discount;
-        $this->currency = $estimate->currency ?? app(InvoiceMakerContext::class)->profile()->currency;
-        $this->template_id = $estimate->template_id;
+        $this->client_id = $invoice->client_id;
+        $this->invoice_date = $invoice->invoice_date->toDateString();
+        $this->due_date = $invoice->due_date->toDateString();
+        $this->notes = $invoice->notes ?? '';
+        $this->discount = $invoice->discount;
+        $this->currency = $invoice->currency ?? app(InvoiceMakerContext::class)->profile()->currency;
+        $this->template_id = $invoice->template_id;
 
-        foreach ($estimate->items as $item) {
+        foreach ($invoice->items as $item) {
             $this->items[] = [
                 'id' => $item->id,
                 'product_id' => $item->product_id,

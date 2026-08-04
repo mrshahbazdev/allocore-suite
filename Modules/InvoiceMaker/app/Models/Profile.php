@@ -2,6 +2,7 @@
 
 namespace Modules\InvoiceMaker\Models;
 
+use App\Models\TeamInvitation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -204,6 +205,16 @@ class Profile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'current_team_id', 'team_id');
+    }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(TeamInvitation::class, 'team_id', 'team_id');
     }
 
     public function clients(): HasMany

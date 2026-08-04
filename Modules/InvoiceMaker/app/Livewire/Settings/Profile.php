@@ -172,7 +172,7 @@ class Profile extends Component
             $this->timezone = 'Europe/Berlin';
         }
 
-        $this->language = Auth::user()->language ?? 'en';
+        $this->language = Auth::user()->locale ?? 'en';
     }
 
     public function save(): void
@@ -227,7 +227,7 @@ class Profile extends Component
             Auth::user()->update(['current_team_id' => $this->business->team_id]);
         }
 
-        Auth::user()->update(['language' => $this->language]);
+        Auth::user()->update(['locale' => $this->language]);
         App::setLocale($this->language);
 
         session()->flash('message', 'Profile profile and language updated successfully.');

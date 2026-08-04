@@ -172,7 +172,7 @@ class CashBookExportController
         $incomeTotal = $entries->where('type', 'income')->sum('amount');
         $expenseTotal = $entries->where('type', 'expense')->sum('amount');
 
-        $pdf = Pdf::loadView('exports.cash-book', [
+        $pdf = Pdf::loadView('invoicemaker::exports.cash-book', [
             'business' => $business,
             'entries' => $entries,
             'incomeTotal' => $incomeTotal,

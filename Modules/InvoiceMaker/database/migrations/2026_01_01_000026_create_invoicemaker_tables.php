@@ -49,6 +49,8 @@ return new class extends Migration
             $table->string('tax_number')->nullable();
             $table->string('currency', 3)->nullable();
             $table->string('language', 5)->default('en');
+            $table->string('email_subject')->nullable();
+            $table->text('email_template')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->index(['team_id', 'name']);

@@ -19,6 +19,7 @@ use Modules\InvoiceMaker\Livewire\Accounting\Reconciliation;
 use Modules\InvoiceMaker\Livewire\Clients\Create as ClientsCreate;
 use Modules\InvoiceMaker\Livewire\Clients\Edit as ClientsEdit;
 use Modules\InvoiceMaker\Livewire\Clients\Index as ClientsIndex;
+use Modules\InvoiceMaker\Livewire\Clients\Show as ClientsShow;
 use Modules\InvoiceMaker\Livewire\Dashboard;
 use Modules\InvoiceMaker\Livewire\Estimates\Create as EstimatesCreate;
 use Modules\InvoiceMaker\Livewire\Estimates\Edit as EstimatesEdit;
@@ -88,6 +89,7 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
         Livewire::component('invoicemaker.clients.index', ClientsIndex::class);
         Livewire::component('invoicemaker.clients.create', ClientsCreate::class);
         Livewire::component('invoicemaker.clients.edit', ClientsEdit::class);
+        Livewire::component('invoicemaker.clients.show', ClientsShow::class);
 
         Livewire::component('invoicemaker.products.index', ProductsIndex::class);
         Livewire::component('invoicemaker.products.create', ProductsCreate::class);

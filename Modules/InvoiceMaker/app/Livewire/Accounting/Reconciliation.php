@@ -312,7 +312,7 @@ class Reconciliation extends Component
 
             session()->flash('message', "Successfully reconciled {$processedCount} transactions.");
 
-            return redirect()->route('accounting.cash-book');
+            return redirect()->route('invoicemaker.cash-book.index');
 
         } catch (Exception $e) {
             DB::rollBack();

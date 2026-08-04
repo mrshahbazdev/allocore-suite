@@ -109,14 +109,14 @@ class ProfitabilityExportController
                 ->get()
                 ->map(function ($product) use ($startDate, $endDate) {
                     // Replicate logic from Livewire component
-                    $salesData = DB::table('invoice_items')
-                        ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
-                        ->where('invoice_items.product_id', $product->id)
-                        ->where('invoices.status', 'paid')
-                        ->whereBetween('invoices.invoice_date', [$startDate, $endDate])
+                    $salesData = DB::table('invoicemaker_invoice_items')
+                        ->join('invoicemaker_invoices', 'invoicemaker_invoice_items.invoice_id', '=', 'invoicemaker_invoices.id')
+                        ->where('invoicemaker_invoice_items.product_id', $product->id)
+                        ->where('invoicemaker_invoices.status', 'paid')
+                        ->whereBetween('invoicemaker_invoices.invoice_date', [$startDate, $endDate])
                         ->select(
-                            DB::raw('SUM(invoice_items.quantity) as total_sold'),
-                            DB::raw('SUM(invoice_items.total) as total_revenue')
+                            DB::raw('SUM(invoicemaker_invoice_items.quantity) as total_sold'),
+                            DB::raw('SUM(invoicemaker_invoice_items.total) as total_revenue')
                         )
                         ->first();
 

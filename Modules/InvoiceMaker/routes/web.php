@@ -13,6 +13,7 @@ use Modules\InvoiceMaker\Livewire\Accounting\Reconciliation;
 use Modules\InvoiceMaker\Livewire\Clients\Create as ClientsCreate;
 use Modules\InvoiceMaker\Livewire\Clients\Edit as ClientsEdit;
 use Modules\InvoiceMaker\Livewire\Clients\Index as ClientsIndex;
+use Modules\InvoiceMaker\Livewire\Clients\Show as ClientsShow;
 use Modules\InvoiceMaker\Livewire\Dashboard;
 use Modules\InvoiceMaker\Livewire\Estimates\Create as EstimatesCreate;
 use Modules\InvoiceMaker\Livewire\Estimates\Edit as EstimatesEdit;
@@ -43,6 +44,7 @@ Route::prefix('app/invoices')
 
         Route::get('/clients', ClientsIndex::class)->name('clients.index');
         Route::get('/clients/create', ClientsCreate::class)->name('clients.create');
+        Route::get('/clients/{client}', ClientsShow::class)->name('clients.show');
         Route::get('/clients/{client}/edit', ClientsEdit::class)->name('clients.edit');
 
         Route::get('/products', ProductsIndex::class)->name('products.index');
