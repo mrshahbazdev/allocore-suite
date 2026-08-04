@@ -25,6 +25,7 @@
 @php($currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null)
 @php($pageTitle = $currentModule?->name ?? ($isModulePage ? __('Tools') : __('Dashboard')))
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
+<div id="nav-progress" class="fixed left-0 top-0 z-[60] h-1 w-0 bg-[#ff9200] shadow-[0_0_8px_rgba(255,146,0,0.7)] transition-[width] duration-300 ease-out" aria-hidden="true"></div>
 <div class="min-h-full flex">
     {{-- Sidebar --}}
     <aside class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform overflow-hidden bg-slate-900 text-slate-200 transition-all duration-300 ease-in-out md:static md:translate-x-0"
@@ -196,6 +197,23 @@
             table.parentNode.insertBefore(wrapper, table);
             wrapper.appendChild(table);
         });
+
+        // Top navigation progress bar for Livewire/Alpine navigations
+        const navProgress = document.getElementById('nav-progress');
+        if (navProgress) {
+            document.addEventListener('livewire:navigating', () => {
+                navProgress.classList.remove('w-0');
+                navProgress.classList.add('w-3/4');
+            });
+            document.addEventListener('livewire:navigated', () => {
+                navProgress.classList.remove('w-3/4');
+                navProgress.classList.add('w-full');
+                setTimeout(() => {
+                    navProgress.classList.remove('w-full');
+                    navProgress.classList.add('w-0');
+                }, 150);
+            });
+        }
 
         // SPA-style navigation for internal links and GET forms without page refresh
         if (window.Alpine && window.Alpine.navigate) {
