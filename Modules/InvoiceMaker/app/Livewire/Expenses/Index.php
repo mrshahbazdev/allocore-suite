@@ -5,66 +5,72 @@ namespace Modules\InvoiceMaker\Livewire\Expenses;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Modules\InvoiceMaker\Models\AccountingCategory;
-use Modules\InvoiceMaker\Models\CashBookEntry;
 use Modules\InvoiceMaker\Models\Expense;
-use Modules\InvoiceMaker\Services\AccountingService;
+use Modules\InvoiceMaker\Services\InvoiceMakerContext;
 
 #[Layout('layouts.shell')]
 class Index extends Component
 {
     use WithPagination;
 
-    public bool $showForm = false;
+    public $search = '';
 
-    public ?int $category_id = null;
+    public $category = '';
 
-    public string $amount = '';
+    public $sortBy = 'date';
 
-    public string $date = '';
+    public $sortDirection = 'desc';
 
-    public ?string $partner_name = null;
-
-    public ?string $reference_number = null;
-
-    public ?string $description = null;
-
-    public function mount(): void
+    public function updatingSearch()
     {
-        $this->date = today()->toDateString();
+        $this->resetPage();
     }
 
-    public function save(AccountingService $accounting): void
+    public function sortBy($field)
     {
-        $data = $this->validate([
-            'category_id' => ['nullable', 'integer'],
-            'amount' => ['required', 'numeric', 'gt:0'],
-            'date' => ['required', 'date'],
-            'partner_name' => ['nullable', 'string', 'max:255'],
-            'reference_number' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ]);
-        if ($this->category_id) {
-            AccountingCategory::findOrFail($this->category_id);
+        if ($this->sortBy === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $field;
+            $this->sortDirection = 'asc';
         }
-        $accounting->createExpense($data);
-        $this->reset(['showForm', 'category_id', 'amount', 'partner_name', 'reference_number', 'description']);
-        $this->date = today()->toDateString();
-        session()->flash('success', __('Expense recorded.'));
     }
 
-    public function delete(Expense $expense): void
+    public function delete(Expense $expense)
     {
-        CashBookEntry::where('expense_id', $expense->id)->delete();
+        $this->authorize('delete', $expense);
+
+        // Also delete the associated Cash Book Entry explicitly if it exists
+        // (the DB constraints are just set null, but we want it fully removed to clean up)
+        if ($expense->cash_book_entry) {
+            $expense->cash_book_entry->delete();
+        }
+
         $expense->delete();
-        session()->flash('success', __('Expense deleted.'));
+        session()->flash('message', 'Expense and its accounting entry deleted successfully.');
     }
 
     public function render()
     {
-        $expenses = Expense::with('category')->latest('date')->paginate(15);
-        $categories = AccountingCategory::where('type', 'expense')->orderBy('name')->get();
+        $expenses = app(InvoiceMakerContext::class)->profile()->expenses()
+            ->when($this->search, function ($query) {
+                $query->where('description', 'like', '%'.$this->search.'%')
+                    ->orWhere('category', 'like', '%'.$this->search.'%');
+            })
+            ->when($this->category, function ($query) {
+                $query->where('category', $this->category);
+            })
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate(10);
 
-        return view('invoicemaker::livewire.expenses.index', compact('expenses', 'categories'));
+        $categories = app(InvoiceMakerContext::class)->profile()->expenses()
+            ->select('category')
+            ->distinct()
+            ->pluck('category');
+
+        return view('invoicemaker::livewire.expenses.index', [
+            'expenses' => $expenses,
+            'categories' => $categories,
+        ]);
     }
 }

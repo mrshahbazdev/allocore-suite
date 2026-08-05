@@ -3,6 +3,7 @@
 namespace Modules\InvoiceMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\InvoiceMaker\Models\Concerns\BelongsToCurrentTeam;
 
 class EmailTemplate extends Model
@@ -16,4 +17,9 @@ class EmailTemplate extends Model
     protected $casts = [
         'is_default' => 'boolean',
     ];
+
+    public function business(): BelongsTo
+    {
+        return $this->profile();
+    }
 }

@@ -32,7 +32,7 @@ class SendInvoiceJob implements ShouldQueue
                 'company' => $this->invoice->profile?->company_name ?? config('app.name'),
             ]);
 
-        Mail::to($client->email)->send(new InvoiceMail($this->invoice, $subject));
+        Mail::to($client->email)->send(new InvoiceMail($this->invoice, null, $subject));
 
         if ($this->isReminder) {
             $this->invoice->update(['last_reminder_sent_at' => now()]);

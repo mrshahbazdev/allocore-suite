@@ -12,19 +12,49 @@ class InvoiceMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public Invoice $invoice;
+
+    public ?string $pdfContent;
+
+    public string $customSubject;
+
+    public string $customBody;
+
     public function __construct(
-        public Invoice $invoice,
-        public string $subjectLine,
-        public ?string $message = null,
-    ) {}
+        Invoice $invoice,
+        ?string $pdfContent = null,
+        string $customSubject = '',
+        string $customBody = '',
+    ) {
+        $this->invoice = $invoice;
+        $this->pdfContent = $pdfContent;
+        $this->customSubject = $customSubject ?: __('Invoice :number from :company', [
+            'number' => $invoice->invoice_number,
+            'company' => $invoice->profile?->name ?? config('app.name'),
+        ]);
+        $this->customBody = $customBody;
+    }
 
     public function build(): self
     {
-        return $this->subject($this->subjectLine)
+        $mailable = $this->subject($this->customSubject)
             ->markdown('invoicemaker::emails.invoice')
             ->with([
-                'url' => URL::signedRoute('invoicemaker.public.show', $this->invoice->uuid, now()->addDays(30)),
-                'downloadUrl' => URL::signedRoute('invoicemaker.public.download', $this->invoice->uuid, now()->addDays(30)),
+                'invoice' => $this->invoice,
+                'subjectLine' => $this->customSubject,
+                'message' => $this->customBody,
+                'url' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
+                'downloadUrl' => URL::signedRoute('invoicemaker.public.download', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
             ]);
+
+        if ($this->pdfContent !== null && $this->pdfContent !== '') {
+            $mailable->attachData(
+                $this->pdfContent,
+                $this->invoice->invoice_number.'.pdf',
+                ['mime' => 'application/pdf'],
+            );
+        }
+
+        return $mailable;
     }
 }

@@ -147,4 +147,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('admin');
     }
+
+    public function isOwner(): bool
+    {
+        return $this->hasRole('owner') || $this->role === 'owner';
+    }
 }

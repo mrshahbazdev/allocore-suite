@@ -5,6 +5,7 @@ namespace Modules\InvoiceMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Modules\InvoiceMaker\Models\Concerns\BelongsToCurrentTeam;
 
@@ -25,6 +26,14 @@ class Invoice extends Model
     public const TYPE_INVOICE = 'invoice';
 
     public const TYPE_ESTIMATE = 'estimate';
+
+    public const FREQUENCY_WEEKLY = 'weekly';
+
+    public const FREQUENCY_MONTHLY = 'monthly';
+
+    public const FREQUENCY_QUARTERLY = 'quarterly';
+
+    public const FREQUENCY_YEARLY = 'yearly';
 
     protected $table = 'invoicemaker_invoices';
 
@@ -75,6 +84,21 @@ class Invoice extends Model
         return $this->belongsTo(Profile::class, 'team_id', 'team_id');
     }
 
+    public function business(): BelongsTo
+    {
+        return $this->profile();
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function emailLogs(): HasMany
+    {
+        return $this->hasMany(EmailLog::class);
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
@@ -93,6 +117,35 @@ class Invoice extends Model
     public function isEstimate(): bool
     {
         return $this->type === self::TYPE_ESTIMATE;
+    }
+
+    public function calculateNextRunDate(): ?Carbon
+    {
+        if (! $this->is_recurring || ! $this->recurring_frequency) {
+            return null;
+        }
+
+        $baseDate = $this->next_run_date ?: $this->invoice_date;
+
+        return match ($this->recurring_frequency) {
+            self::FREQUENCY_WEEKLY => $baseDate->copy()->addWeek(),
+            self::FREQUENCY_MONTHLY => $baseDate->copy()->addMonth(),
+            self::FREQUENCY_QUARTERLY => $baseDate->copy()->addMonths(3),
+            self::FREQUENCY_YEARLY => $baseDate->copy()->addYear(),
+            default => null,
+        };
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+            self::STATUS_DRAFT => 'gray',
+            self::STATUS_SENT => 'blue',
+            self::STATUS_PAID => 'green',
+            self::STATUS_OVERDUE => 'red',
+            self::STATUS_CANCELLED => 'red',
+            default => 'gray',
+        };
     }
 
     public function getCurrencySymbolAttribute(): string

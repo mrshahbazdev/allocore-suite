@@ -32,4 +32,9 @@ class InvoiceItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function business(): BelongsTo
+    {
+        return $this->profile();
+    }
 }
