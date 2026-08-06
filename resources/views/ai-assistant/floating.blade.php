@@ -13,7 +13,7 @@
         <div class="h-80 flex flex-col">
             <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
                 <div class="rounded-lg bg-slate-100 p-3 text-slate-700">
-                    {{ __('Hi! Ask me about your tools, workflows, or what to do next.') }}
+                    {{ __('Hi! Ask me about your tools, SOPs, knowledge docs, or wiki pages.') }}
                 </div>
             </div>
             <form method="POST" action="{{ route('assistant.store') }}" class="border-t border-slate-200 p-3" @submit.prevent="
@@ -27,8 +27,13 @@
                 }).then(r => r.json()).then(data => {
                     const box = document.getElementById('ai-messages');
                     const bubble = (text, cls) => `<div class='rounded-lg p-3 ${cls}'>${text}</div>`;
-                    box.innerHTML += bubble(input.value.replace(/</g, '&lt;'), 'bg-indigo-600 text-white ml-8');
-                    box.innerHTML += bubble(data.reply, 'bg-slate-100 text-slate-700 mr-8');
+                    box.innerHTML += bubble(input.value.replace(/</g, '&lt;').replace(/\n/g, '<br>'), 'bg-indigo-600 text-white ml-8');
+                    let reply = bubble(data.reply.replace(/</g, '&lt;').replace(/\n/g, '<br>'), 'bg-slate-100 text-slate-700 mr-8');
+                    if (data.sources && data.sources.length) {
+                        let chips = data.sources.map(s => `<a href='${s.url}' target='_blank' class='inline-flex items-center rounded-full border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 hover:text-[#ff9200]'>${s.source}: ${s.title}</a>`).join(' ');
+                        reply += `<div class='mr-8 flex flex-wrap gap-2 mt-1'>${chips}</div>`;
+                    }
+                    box.innerHTML += reply;
                     input.value = '';
                     box.scrollTop = box.scrollHeight;
                     loading = false;

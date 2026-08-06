@@ -42,7 +42,7 @@ class AiAssistantController extends Controller
             'page_url' => $validated['page_url'] ?? null,
         ]);
 
-        $reply = $this->assistant->ask(
+        $result = $this->assistant->ask(
             $user,
             $validated['message'],
             $validated['module_key'] ?? null,
@@ -53,13 +53,17 @@ class AiAssistantController extends Controller
             'user_id' => $user->id,
             'team_id' => $user->current_team_id,
             'role' => 'assistant',
-            'content' => $reply,
+            'content' => $result['reply'],
+            'sources' => $result['sources'],
             'module_key' => $validated['module_key'] ?? null,
             'page_url' => $validated['page_url'] ?? null,
         ]);
 
         if ($request->wantsJson()) {
-            return response()->json(['reply' => $reply]);
+            return response()->json([
+                'reply' => $result['reply'],
+                'sources' => $result['sources'],
+            ]);
         }
 
         return back();

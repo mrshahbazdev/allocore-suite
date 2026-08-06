@@ -10,9 +10,10 @@ class AiChatMessage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'team_id', 'role', 'content', 'module_key', 'page_url'];
+    protected $fillable = ['user_id', 'team_id', 'role', 'content', 'sources', 'module_key', 'page_url'];
 
     protected $casts = [
+        'sources' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

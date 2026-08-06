@@ -5,7 +5,7 @@
     <div class="mb-6 flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-slate-900">{{ __('AI Assistant') }}</h1>
-            <p class="text-sm text-slate-500">{{ __('Ask about your modules, get next-step recommendations, and navigate the platform.') }}</p>
+            <p class="text-sm text-slate-500">{{ __('Ask about your modules, SOPs, knowledge docs, and wiki pages.') }}</p>
         </div>
         <form method="POST" action="{{ route('assistant.destroy') }}" onsubmit="return confirm('{{ __("Clear chat history?") }}')">
             @csrf
@@ -18,8 +18,19 @@
         <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
             @forelse ($messages as $msg)
                 <div class="flex {{ $msg->role === 'user' ? 'justify-end' : 'justify-start' }}">
-                    <div class="max-w-[80%] rounded-2xl px-4 py-2 text-sm {{ $msg->role === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-800' }}">
-                        {{ $msg->content }}
+                    <div class="max-w-[80%]">
+                        <div class="rounded-2xl px-4 py-2 text-sm {{ $msg->role === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-800' }}">
+                            {!! nl2br(e($msg->content)) !!}
+                        </div>
+                        @if ($msg->role === 'assistant' && ! empty($msg->sources))
+                            <div class="mt-1 flex flex-wrap gap-2">
+                                @foreach ($msg->sources as $source)
+                                    <a href="{{ $source['url'] ?? '#' }}" target="_blank" class="inline-flex items-center rounded-full border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 hover:border-[#ff9200] hover:text-[#ff9200]">
+                                        {{ $source['source'] ?? __('Source') }}: {{ $source['title'] ?? '' }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             @empty
