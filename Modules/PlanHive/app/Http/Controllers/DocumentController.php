@@ -5,12 +5,12 @@ namespace Modules\PlanHive\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Modules\PlanHive\Models\Document;
 use Modules\PlanHive\Models\Project;
+use Symfony\Component\HttpFoundation\Response;
 
 class DocumentController extends Controller
 {
