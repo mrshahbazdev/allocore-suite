@@ -12,19 +12,26 @@ use Illuminate\Support\Str;
 
 class AiAssistant
 {
-    public function ask(User $user, string $message, ?string $moduleKey = null, ?string $pageUrl = null): string
+    public function ask(User $user, string $message, ?string $moduleKey = null, ?string $pageUrl = null): array
     {
-        $messages = $this->buildMessages($user, $message, $moduleKey, $pageUrl);
+        $sources = app(AiKnowledgeRetrieval::class)->search($user, $message);
+        $messages = $this->buildMessages($user, $message, $moduleKey, $pageUrl, $sources);
 
         if ($apiKey = config('services.openai.key')) {
             try {
-                return $this->callOpenAi($apiKey, $messages);
+                return [
+                    'reply' => $this->callOpenAi($apiKey, $messages),
+                    'sources' => $sources->all(),
+                ];
             } catch (HttpClientException $e) {
                 report($e);
             }
         }
 
-        return $this->localReply($user, $message, $moduleKey);
+        return [
+            'reply' => $this->localReply($user, $message, $moduleKey, $sources),
+            'sources' => $sources->all(),
+        ];
     }
 
     protected function callOpenAi(string $apiKey, array $messages): string
@@ -41,7 +48,7 @@ class AiAssistant
             ?? 'I could not generate a response right now. Please try again.';
     }
 
-    protected function buildMessages(User $user, string $message, ?string $moduleKey, ?string $pageUrl): array
+    protected function buildMessages(User $user, string $message, ?string $moduleKey, ?string $pageUrl, Collection $sources): array
     {
         $moduleNames = $this->userModules($user)->pluck('name')->implode(', ');
         $allModules = Module::where('is_active', true)->pluck('name', 'key')->map(
@@ -50,6 +57,7 @@ class AiAssistant
 
         $context = app(AiAssistantContext::class)->forModule($user, $moduleKey);
         $glossaryContext = app(GlossaryService::class)->contextPrompt();
+        $knowledgeContext = app(AiKnowledgeRetrieval::class)->contextFor($user, $message);
 
         $system = <<<PROMPT
 You are a helpful assistant inside Allocore Suite, a multi-tenant SaaS platform.
@@ -58,6 +66,7 @@ All available modules:
 {$allModules}
 {$context}
 {$glossaryContext}
+{$knowledgeContext}
 Current page module key: {$moduleKey}.
 Current page URL: {$pageUrl}.
 Answer concisely. Use the glossary definitions above when explaining business terms. If the user asks about a module they do not subscribe to, suggest they visit the Tools page to subscribe.
@@ -83,8 +92,21 @@ PROMPT;
         );
     }
 
-    protected function localReply(User $user, string $message, ?string $moduleKey): string
+    protected function localReply(User $user, string $message, ?string $moduleKey, Collection $sources): string
     {
+        if ($sources->isNotEmpty()) {
+            $top = $sources->first();
+            $more = $sources->count() - 1;
+            $extra = $more > 0 ? ' '.sprintf(__('+%d more sources found.'), $more) : '';
+
+            return sprintf(
+                __('%s%s\n\nSource: %s'),
+                $top['excerpt'],
+                $extra,
+                $top['url']
+            );
+        }
+
         $modules = $this->userModules($user);
         $lower = strtolower($message);
 
