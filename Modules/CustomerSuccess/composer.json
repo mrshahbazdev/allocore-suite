@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/customersuccess",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CustomerSuccess\\": "app/",
+            "Modules\\CustomerSuccess\\Database\\Factories\\": "database/factories/",
+            "Modules\\CustomerSuccess\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\CustomerSuccess\\Tests\\": "tests/"
+        }
+    }
+}

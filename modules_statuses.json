@@ -19,5 +19,6 @@
     "SopBuilder": true,
     "KnowledgeManager": true,
     "DevManager": true,
-    "AuditIntelligence": true
+    "AuditIntelligence": true,
+    "CustomerSuccess": true
 }

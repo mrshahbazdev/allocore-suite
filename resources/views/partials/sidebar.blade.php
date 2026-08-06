@@ -4,7 +4,7 @@
 @php($moduleGroups = [
     'strategie' => ['north-star', 'vision-flow', 'nur-du', 'org-matrix'],
     'umsatz' => ['financial-platform', 'invoice-maker', 'cash-core', 'sweet-spot'],
-    'ordnung' => ['plan-hive', 'time-butler', 'loop-engine', 'focus-matrix', 'sop-builder', 'knowledge-manager', 'dev-manager', 'audit-intelligence'],
+    'ordnung' => ['plan-hive', 'time-butler', 'loop-engine', 'focus-matrix', 'sop-builder', 'knowledge-manager', 'dev-manager', 'audit-intelligence', 'customer-success'],
     'einfluss' => ['keyword-cluster', 'lead-quality'],
 ])
 @php($groupNames = [

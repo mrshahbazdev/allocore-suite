@@ -38,5 +38,7 @@
         @include('leadquality::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/audit-intelligence*'))
         @include('auditintelligence::partials.nav', ['layout' => $layout ?? 'horizontal'])
+    @elseif (request()->is('app/customer-success*'))
+        @include('customersuccess::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @endif
 @endif
