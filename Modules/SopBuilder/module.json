@@ -1,0 +1,11 @@
+{
+    "name": "SopBuilder",
+    "alias": "sopbuilder",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SopBuilder\\Providers\\SopBuilderServiceProvider"
+    ],
+    "files": []
+}
