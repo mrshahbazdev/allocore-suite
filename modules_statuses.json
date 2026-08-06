@@ -18,5 +18,6 @@
     "SweetSpot": true,
     "SopBuilder": true,
     "KnowledgeManager": true,
-    "DevManager": true
+    "DevManager": true,
+    "AuditIntelligence": true
 }

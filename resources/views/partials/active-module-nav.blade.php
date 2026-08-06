@@ -36,5 +36,7 @@
         @include('clusterforge::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/leads*'))
         @include('leadquality::partials.nav', ['layout' => $layout ?? 'horizontal'])
+    @elseif (request()->is('app/audit-intelligence*'))
+        @include('auditintelligence::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @endif
 @endif
