@@ -1,0 +1,11 @@
+{
+    "name": "AuditIntelligence",
+    "alias": "auditintelligence",
+    "description": "Analyse audit findings, generate solution recommendations and upsell opportunities.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditIntelligence\\Providers\\AuditIntelligenceServiceProvider"
+    ],
+    "files": []
+}

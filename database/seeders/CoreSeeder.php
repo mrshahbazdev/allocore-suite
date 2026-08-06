@@ -37,6 +37,7 @@ class CoreSeeder extends Seeder
             ['key' => 'knowledge-manager', 'name' => 'Knowledge Manager', 'description' => 'Capture business, technology, infrastructure and code knowledge to generate architecture manuals, handbooks and onboarding guides.', 'icon' => 'book-open', 'route_prefix' => 'knowledge'],
             ['key' => 'sop-builder', 'name' => 'SopBuilder', 'description' => 'Automatically generate processes, checklists, training material, quizzes and audit evidence from documented knowledge.', 'icon' => 'clipboard-document-check', 'route_prefix' => 'sopbuilder'],
             ['key' => 'dev-manager', 'name' => 'SaaS Development Manager', 'description' => 'Capture ideas, requirements, user stories, milestones and releases for standardized SaaS development.', 'icon' => 'code-bracket', 'route_prefix' => 'dev'],
+            ['key' => 'audit-intelligence', 'name' => 'Audit Intelligence Assistant', 'description' => 'Analyse audit findings, generate solution recommendations and upsell opportunities.', 'icon' => 'shield-check', 'route_prefix' => 'audit-intelligence'],
         ];
 
         foreach ($modules as $data) {
@@ -44,7 +45,7 @@ class CoreSeeder extends Seeder
         }
 
         $plans = [
-            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du', 'financial-platform', 'sweet-spot', 'sop-builder', 'knowledge-manager', 'dev-manager']],
+            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du', 'financial-platform', 'sweet-spot', 'sop-builder', 'knowledge-manager', 'dev-manager', 'audit-intelligence']],
             ['name' => 'Time Check Solo', 'slug' => 'time-butler-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['time-butler']],
             ['name' => 'PlanHive Solo', 'slug' => 'plan-hive-solo', 'price_monthly' => 12.99, 'price_yearly' => 129, 'modules' => ['plan-hive']],
             ['name' => 'KpiTool Solo', 'slug' => 'kpi-tool-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['kpi-tool']],
