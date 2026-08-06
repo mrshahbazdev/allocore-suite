@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/knowledgemanager",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\KnowledgeManager\\": "app/",
+            "Modules\\KnowledgeManager\\Database\\Factories\\": "database/factories/",
+            "Modules\\KnowledgeManager\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\KnowledgeManager\\Tests\\": "tests/"
+        }
+    }
+}

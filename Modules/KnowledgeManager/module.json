@@ -1,0 +1,11 @@
+{
+    "name": "KnowledgeManager",
+    "alias": "knowledgemanager",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KnowledgeManager\\Providers\\KnowledgeManagerServiceProvider"
+    ],
+    "files": []
+}
