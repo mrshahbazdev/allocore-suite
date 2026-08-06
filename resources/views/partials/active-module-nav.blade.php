@@ -24,6 +24,8 @@
         @include('planhive::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/sopbuilder*'))
         @include('sopbuilder::partials.nav', ['layout' => $layout ?? 'horizontal'])
+    @elseif (request()->is('app/dev*'))
+        @include('devmanager::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/knowledge*'))
         @include('knowledgemanager::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/loopengine*'))
