@@ -34,6 +34,7 @@ class CoreSeeder extends Seeder
             ['key' => 'nur-du', 'name' => 'Nur-Du', 'description' => 'Vision alignment tool: vision statement, guiding principles, quarterly priorities, decisions and vision checks.', 'icon' => 'star', 'route_prefix' => 'nurdu'],
             ['key' => 'financial-platform', 'name' => 'FinancialPlatform', 'description' => 'Deep financial KPIs, revenue development, GSC/SeoStory sync, bank import, budgets and exchange rates.', 'icon' => 'banknotes', 'route_prefix' => 'finance'],
             ['key' => 'sweet-spot', 'name' => 'SweetSpot', 'description' => 'Customer sweet-spot scoring: identify the most profitable, low-effort and high-growth customers.', 'icon' => 'star', 'route_prefix' => 'sweetspot'],
+            ['key' => 'knowledge-manager', 'name' => 'Knowledge Manager', 'description' => 'Capture business, technology, infrastructure and code knowledge to generate architecture manuals, handbooks and onboarding guides.', 'icon' => 'book-open', 'route_prefix' => 'knowledge'],
         ];
 
         foreach ($modules as $module) {
@@ -45,7 +46,7 @@ class CoreSeeder extends Seeder
             ['name' => 'AuditPro Solo', 'slug' => 'audit-solo', 'price_monthly' => 19.99, 'price_yearly' => 199, 'modules' => ['audit']],
             ['name' => 'ClusterForge Solo', 'slug' => 'keyword-cluster-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['keyword-cluster']],
             ['name' => 'LeadOS Solo', 'slug' => 'lead-quality-solo', 'price_monthly' => 24.99, 'price_yearly' => 249, 'modules' => ['lead-quality']],
-            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du', 'financial-platform', 'sweet-spot']],
+            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du', 'financial-platform', 'sweet-spot', 'knowledge-manager']],
             ['name' => 'Time Check Solo', 'slug' => 'time-butler-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['time-butler']],
             ['name' => 'PlanHive Solo', 'slug' => 'plan-hive-solo', 'price_monthly' => 12.99, 'price_yearly' => 129, 'modules' => ['plan-hive']],
             ['name' => 'KpiTool Solo', 'slug' => 'kpi-tool-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['kpi-tool']],

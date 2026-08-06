@@ -22,6 +22,8 @@
         @include('timebutler::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/planhive*'))
         @include('planhive::partials.nav', ['layout' => $layout ?? 'horizontal'])
+    @elseif (request()->is('app/knowledge*'))
+        @include('knowledgemanager::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/loopengine*'))
         @include('loopengine::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/focusmatrix*'))
