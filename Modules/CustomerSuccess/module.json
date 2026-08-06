@@ -1,0 +1,11 @@
+{
+    "name": "CustomerSuccess",
+    "alias": "customersuccess",
+    "description": "AI customer success assistant with structured problem, root cause and recommended actions.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CustomerSuccess\\Providers\\CustomerSuccessServiceProvider"
+    ],
+    "files": []
+}
