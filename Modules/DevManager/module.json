@@ -1,0 +1,11 @@
+{
+    "name": "DevManager",
+    "alias": "devmanager",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DevManager\\Providers\\DevManagerServiceProvider"
+    ],
+    "files": []
+}
