@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Modules\PlanHive\Models\Concerns\BelongsToCurrentTeam;
 
 class Document extends Model
@@ -22,12 +23,14 @@ class Document extends Model
         'path',
         'mime_type',
         'size',
+        'position',
     ];
 
     protected function casts(): array
     {
         return [
             'size' => 'integer',
+            'position' => 'integer',
         ];
     }
 
@@ -53,5 +56,15 @@ class Document extends Model
         }
 
         return round($size, 2).' '.$units[$i];
+    }
+
+    public function isImage(): bool
+    {
+        return $this->mime_type && str_starts_with($this->mime_type, 'image/');
+    }
+
+    public function fileUrl(): string
+    {
+        return Storage::disk('public')->url($this->path);
     }
 }

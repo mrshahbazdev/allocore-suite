@@ -5,6 +5,7 @@ namespace Modules\PlanHive\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Modules\PlanHive\Models\Project;
 use Modules\PlanHive\Models\Task;
@@ -13,7 +14,7 @@ class TaskController extends Controller
 {
     public function index(Project $project): View
     {
-        $tasks = $project->tasks()->with('assignee')->orderBy('position')->paginate(25);
+        $tasks = $project->tasks()->with(['assignee', 'goal'])->orderBy('position')->paginate(25);
 
         return view('planhive::tasks.index', compact('project', 'tasks'));
     }
@@ -28,6 +29,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'goal_id' => ['nullable', Rule::exists('planhive_goals', 'id')->where('project_id', $project->id)],
             'assigned_to' => 'nullable|exists:users,id',
             'status' => 'nullable|string|in:todo,in_progress,done,cancelled',
             'priority' => 'nullable|string|in:low,medium,high,urgent',
@@ -59,6 +61,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'goal_id' => ['nullable', Rule::exists('planhive_goals', 'id')->where('project_id', $task->project->id)],
             'assigned_to' => 'nullable|exists:users,id',
             'status' => 'nullable|string|in:todo,in_progress,done,cancelled',
             'priority' => 'nullable|string|in:low,medium,high,urgent',

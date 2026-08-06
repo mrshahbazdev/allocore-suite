@@ -16,14 +16,25 @@
         <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
             @forelse ($documents as $document)
                 <div class="flex flex-col gap-2 border-b border-slate-100 p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <a href="{{ route('planhive.documents.show', $document) }}" class="font-semibold text-slate-900 hover:text-indigo-600 hover:underline">{{ $document->title }}</a>
-                        <div class="mt-1 text-xs text-slate-500">{{ $document->mime_type ?? '-' }} — {{ $document->readable_size }}</div>
-                    </div>
                     <div class="flex items-center gap-3">
-                        <a href="{{ route('planhive.documents.download', $document) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Download') }}</a>
+                        <a href="{{ route('planhive.documents.show', $document) }}" class="font-semibold text-slate-900 hover:text-indigo-600">{{ $document->title }}</a>
+                        <span class="text-xs text-slate-500">{{ $document->mime_type ?? '-' }} — {{ $document->readable_size }}</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        @if ($document->isImage())
+                            <a href="{{ route('planhive.documents.preview', $document) }}" target="_blank" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
+                        @endif
+                        <a href="{{ route('planhive.documents.download', $document) }}" class="text-sm text-slate-600 hover:underline">{{ __('Download') }}</a>
                         <a href="{{ route('planhive.documents.edit', $document) }}" class="text-sm text-slate-600 hover:underline">{{ __('Edit') }}</a>
-                        <form method="POST" action="{{ route('planhive.documents.destroy', $document) }}" class="inline">
+                        <form method="POST" action="{{ route('planhive.documents.move', [$document, 'up']) }}" class="inline">
+                            @csrf
+                            <button class="text-sm text-slate-600 hover:text-indigo-600" title="{{ __('Move up') }}">↑</button>
+                        </form>
+                        <form method="POST" action="{{ route('planhive.documents.move', [$document, 'down']) }}" class="inline">
+                            @csrf
+                            <button class="text-sm text-slate-600 hover:text-indigo-600" title="{{ __('Move down') }}">↓</button>
+                        </form>
+                        <form method="POST" action="{{ route('planhive.documents.destroy', $document) }}" class="inline" onsubmit="return confirm('{{ __("Delete this document?") }}')">
                             @csrf
                             @method('DELETE')
                             <button class="text-sm text-rose-600 hover:underline">{{ __('Delete') }}</button>

@@ -99,7 +99,10 @@
                 <div class="flex items-center justify-between"><h2 class="text-lg font-semibold text-slate-900">{{ __('Documents') }}</h2><div class="flex items-center gap-3"><a href="{{ route('planhive.documents.index', $project) }}" class="text-xs text-slate-500 hover:text-indigo-600">{{ __('View all') }}</a><a href="{{ route('planhive.documents.create', $project) }}" class="text-sm text-indigo-600">{{ __('Upload') }}</a></div></div>
                 <ul class="mt-3 space-y-2 text-sm">
                     @forelse ($project->documents as $document)
-                        <li class="flex items-center justify-between"><a href="{{ route('planhive.documents.download', $document) }}" class="text-indigo-600 hover:underline">{{ $document->title }}</a><span class="text-xs text-slate-500">{{ $document->readable_size }}</span></li>
+                        <li class="flex items-center justify-between">
+                            <a href="{{ route('planhive.documents.show', $document) }}" class="text-indigo-600 hover:underline">{{ $document->title }}</a>
+                            <span class="text-xs text-slate-500">{{ $document->readable_size }}</span>
+                        </li>
                     @empty
                         <li class="text-slate-500">{{ __('No documents.') }}</li>
                     @endforelse

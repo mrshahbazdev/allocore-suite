@@ -1971,7 +1971,6 @@
     "Accept all": "Accept all",
     "Select language": "Select language",
     "Glossary": "Glossary",
-    "Next steps": "Next steps",
     "Recommended tool:": "Recommended tool:",
     "Add": "Add",
     "Target": "Target",
@@ -3718,5 +3717,11 @@
     "Welcome back": "Welcome back",
     "Your Allocore workspace is ready.": "Your Allocore workspace is ready.",
     "Allocore history": "Allocore history",
-    "No score history yet.": "No score history yet."
+    "No score history yet.": "No score history yet.",
+    "Linked Tasks": "Linked Tasks",
+    "No linked tasks.": "No linked tasks.",
+    "Move up": "Move up",
+    "Move down": "Move down",
+    "No goal": "No goal",
+    "Move": "Move"
 }

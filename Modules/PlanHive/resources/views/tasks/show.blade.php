@@ -34,6 +34,12 @@
                     <div class="text-sm text-slate-500">{{ __('Priority') }}</div>
                     <div class="font-medium text-slate-900">{{ __($task->priority) }}</div>
                 </div>
+                @if ($task->goal)
+                    <div>
+                        <div class="text-sm text-slate-500">{{ __('Goal') }}</div>
+                        <a href="{{ route('planhive.goals.show', $task->goal) }}" class="font-medium text-indigo-600 hover:underline">{{ $task->goal->title }}</a>
+                    </div>
+                @endif
                 @if ($task->due_date)
                     <div>
                         <div class="text-sm text-slate-500">{{ __('Due Date') }}</div>

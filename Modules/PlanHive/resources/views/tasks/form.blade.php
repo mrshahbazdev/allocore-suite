@@ -17,6 +17,16 @@
             <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $task->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
             <div><label class="block text-sm font-medium text-slate-700">{{ __('Description') }}</label><textarea name="description" rows="3" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $task->description) }}</textarea></div>
 
+            <div>
+                <label class="block text-sm font-medium text-slate-700">{{ __('Goal') }}</label>
+                <select name="goal_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">{{ __('No goal') }}</option>
+                    @foreach ($project->goals as $goal)
+                        <option value="{{ $goal->id }}" {{ old('goal_id', $task->goal_id) == $goal->id ? 'selected' : '' }}>{{ $goal->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">{{ __('Status') }}</label>
