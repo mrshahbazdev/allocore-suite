@@ -49,7 +49,9 @@ Route::middleware(['auth', 'verified', 'module:plan-hive', EnsureCurrentTeam::cl
         Route::resource('projects.reminders', ReminderController::class)->shallow()->names([
             'index' => 'reminders.index', 'create' => 'reminders.create', 'store' => 'reminders.store',
         ]);
+        Route::get('/documents/{document}/preview', [DocumentController::class, 'preview'])->name('documents.preview');
         Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+        Route::post('/documents/{document}/move/{direction}', [DocumentController::class, 'move'])->name('documents.move')->whereIn('direction', ['up', 'down']);
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });

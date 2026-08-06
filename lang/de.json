@@ -2009,7 +2009,6 @@
     "Accept all": "Alle akzeptieren",
     "Select language": "Sprache auswählen",
     "Glossary": "Glossar",
-    "Next steps": "Nächste Schritte",
     "Recommended tool:": "Empfohlenes Tool:",
     "Add": "Hinzufügen",
     "Target": "Zielwert",
@@ -3746,5 +3745,11 @@
     "Welcome back": "Willkommen zurück",
     "Your Allocore workspace is ready.": "Ihr Allocore-Arbeitsbereich ist bereit.",
     "Allocore history": "Allocore-Verlauf",
-    "No score history yet.": "Noch kein Score-Verlauf vorhanden."
+    "No score history yet.": "Noch kein Score-Verlauf vorhanden.",
+    "Linked Tasks": "Verknüpfte Aufgaben",
+    "No linked tasks.": "Keine verknüpften Aufgaben.",
+    "Move up": "Nach oben",
+    "Move down": "Nach unten",
+    "No goal": "Kein Ziel",
+    "Move": "Verschieben"
 }

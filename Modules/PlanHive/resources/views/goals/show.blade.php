@@ -36,5 +36,24 @@
                 <p class="mt-4 whitespace-pre-line text-slate-700">{{ $goal->description }}</p>
             @endif
         </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">{{ __('Linked Tasks') }}</h2>
+            @php($goal->load('tasks.assignee'))
+            <ul class="mt-3 space-y-2 text-sm">
+                @forelse ($goal->tasks as $task)
+                    @php($statusClass = match($task->status) { 'done' => 'bg-emerald-100 text-emerald-700', 'in_progress' => 'bg-indigo-100 text-indigo-700', 'cancelled' => 'bg-rose-100 text-rose-700', default => 'bg-slate-100 text-slate-600' })
+                    <li class="flex items-center justify-between rounded-lg border border-slate-200 p-2">
+                        <a href="{{ route('planhive.tasks.show', $task) }}" class="text-indigo-600 hover:underline">{{ $task->title }}</a>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold capitalize {{ $statusClass }}">{{ __($task->status) }}</span>
+                            <span class="text-xs text-slate-500">{{ $task->assignee?->name ?? '-' }}</span>
+                        </div>
+                    </li>
+                @empty
+                    <li class="text-slate-500">{{ __('No linked tasks.') }}</li>
+                @endforelse
+            </ul>
+        </div>
     </div>
 @endsection

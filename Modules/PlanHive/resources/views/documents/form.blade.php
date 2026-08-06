@@ -13,9 +13,22 @@
             @endif
 
             <div><label class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label><input type="text" name="title" value="{{ old('title', $document->title) }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
+
+            @if ($document->exists && isset($projects) && $projects->isNotEmpty())
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">{{ __('Project') }}</label>
+                    <select name="project_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        @foreach ($projects as $p)
+                            <option value="{{ $p->id }}" {{ old('project_id', $document->project_id) == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+
             @if (! $document->exists)
                 <div><label class="block text-sm font-medium text-slate-700">{{ __('File') }}</label><input type="file" name="file" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" required></div>
             @endif
+
             <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Save') }}</button>
         </form>
     </div>

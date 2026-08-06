@@ -11,9 +11,12 @@
                 <h1 class="mt-1 text-2xl font-bold text-slate-900">{{ $document->title }}</h1>
             </div>
             <div class="flex gap-2">
+                @if ($document->isImage())
+                    <a href="{{ route('planhive.documents.preview', $document) }}" target="_blank" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('View') }}</a>
+                @endif
                 <a href="{{ route('planhive.documents.download', $document) }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Download') }}</a>
                 <a href="{{ route('planhive.documents.edit', $document) }}" class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-300">{{ __('Edit') }}</a>
-                <form method="POST" action="{{ route('planhive.documents.destroy', $document) }}" class="inline">
+                <form method="POST" action="{{ route('planhive.documents.destroy', $document) }}" class="inline" onsubmit="return confirm('{{ __("Delete this document?") }}')">
                     @csrf
                     @method('DELETE')
                     <button class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500">{{ __('Delete') }}</button>
@@ -40,6 +43,12 @@
                     <div class="font-medium text-slate-900">{{ $document->created_at->format('M d, Y H:i') }}</div>
                 </div>
             </div>
+
+            @if ($document->isImage())
+                <div class="mt-6">
+                    <img src="{{ route('planhive.documents.preview', $document) }}" alt="{{ $document->title }}" class="max-h-[60vh] rounded-lg border border-slate-200 object-contain">
+                </div>
+            @endif
         </div>
     </div>
 @endsection

@@ -18,6 +18,7 @@ class Task extends Model
     protected $fillable = [
         'team_id',
         'project_id',
+        'goal_id',
         'user_id',
         'assigned_to',
         'title',
@@ -35,9 +36,44 @@ class Task extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saved(function (self $task): void {
+            $task->recalculateGoalProgress($task->goal_id);
+
+            if ($task->wasChanged('goal_id') && ($previous = $task->getOriginal('goal_id'))) {
+                $task->recalculateGoalProgress($previous);
+            }
+        });
+
+        static::deleted(function (self $task): void {
+            $task->recalculateGoalProgress($task->goal_id);
+        });
+    }
+
+    protected function recalculateGoalProgress(?int $goalId): void
+    {
+        if (! $goalId) {
+            return;
+        }
+
+        $goal = Goal::find($goalId);
+
+        if (! $goal) {
+            return;
+        }
+
+        $goal->recalculateProgress();
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function goal(): BelongsTo
+    {
+        return $this->belongsTo(Goal::class);
     }
 
     public function creator(): BelongsTo
