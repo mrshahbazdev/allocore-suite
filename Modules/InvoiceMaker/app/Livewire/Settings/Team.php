@@ -2,10 +2,13 @@
 
 namespace Modules\InvoiceMaker\Livewire\Settings;
 
+use App\Mail\TeamInvitationMail;
+use App\Models\TeamInvitation;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\InvoiceMaker\Services\InvoiceMakerContext;
@@ -17,10 +20,19 @@ class Team extends Component
 
     public string $role = 'viewer';
 
-    protected $rules = [
-        'email' => 'required|email|unique:invitations,email',
-        'role' => 'required|in:admin,viewer',
-    ];
+    protected function rules(): array
+    {
+        $teamId = app(InvoiceMakerContext::class)->profile()->team_id;
+
+        return [
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('team_invitations')->where(fn ($query) => $query->where('team_id', $teamId)),
+            ],
+            'role' => 'required|in:admin,viewer',
+        ];
+    }
 
     public function invite(): void
     {
@@ -35,12 +47,19 @@ class Team extends Component
             return;
         }
 
-        app(InvoiceMakerContext::class)->profile()->invitations()->create([
+        $invitation = app(InvoiceMakerContext::class)->profile()->invitations()->create([
+            'invited_by' => Auth::id(),
             'email' => $this->email,
             'role' => $this->role,
-            'token' => Str::random(40),
+            'token' => TeamInvitation::generateToken(),
             'expires_at' => Carbon::now()->addDays(7),
         ]);
+
+        try {
+            Mail::to($invitation->email)->send(new TeamInvitationMail($invitation));
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         $this->email = '';
         $this->role = 'viewer';
