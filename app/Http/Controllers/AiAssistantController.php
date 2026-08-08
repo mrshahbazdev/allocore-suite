@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AiChatMessage;
+use App\Models\User;
 use App\Services\AiAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,6 +14,8 @@ class AiAssistantController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorizeAssistant($request->user());
+
         $messages = AiChatMessage::where('user_id', $request->user()->id)
             ->where('team_id', $request->user()->current_team_id)
             ->latest()
@@ -25,6 +28,8 @@ class AiAssistantController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeAssistant($request->user());
+
         $validated = $request->validate([
             'message' => 'required|string|max:2000',
             'module_key' => 'nullable|string|max:50',
@@ -76,5 +81,14 @@ class AiAssistantController extends Controller
             ->delete();
 
         return redirect()->route('assistant.index');
+    }
+
+    protected function authorizeAssistant(User $user): void
+    {
+        if ($user->isAdmin() || $user->isOwner() || $user->hasAnyRole(['employee', 'saas-developer', 'senior-management', 'quality'])) {
+            return;
+        }
+
+        abort(403, __('You do not have access to the AI assistant.'));
     }
 }

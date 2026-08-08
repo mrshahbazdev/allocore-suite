@@ -27,24 +27,27 @@
                 <p class="mt-1 text-xs text-slate-500">{{ __('admin.users.password_blank') }}</p>
             </div>
 
-            <div class="grid gap-5 md:grid-cols-2">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700">{{ __('admin.users.role') }}</label>
-                    <select name="role" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="user" @selected(! $user->hasRole('admin'))>{{ __('User') }}</option>
-                        <option value="admin" @selected($user->hasRole('admin'))>{{ __('Admin') }}</option>
-                    </select>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">{{ __('Roles') }}</label>
+                @php($userRoles = $user->roles->pluck('name')->toArray())
+                <div class="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($roles as $role)
+                        <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-2 hover:bg-slate-50">
+                            <input type="checkbox" name="roles[]" value="{{ $role->name }}" {{ in_array($role->name, old('roles', $userRoles), true) ? 'checked' : '' }} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm text-slate-700">{{ $role->name }}</span>
+                        </label>
+                    @endforeach
                 </div>
+            </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-700">{{ __('admin.users.current_team') }}</label>
-                    <select name="current_team_id" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">{{ __('admin.users.no_team') }}</option>
-                        @foreach ($teams as $team)
-                            <option value="{{ $team->id }}" @selected(old('current_team_id', $user->current_team_id) == $team->id)>{{ $team->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">{{ __('admin.users.current_team') }}</label>
+                <select name="current_team_id" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">{{ __('admin.users.no_team') }}</option>
+                    @foreach ($teams as $team)
+                        <option value="{{ $team->id }}" @selected(old('current_team_id', $user->current_team_id) == $team->id)>{{ $team->name }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="grid gap-5 md:grid-cols-2">

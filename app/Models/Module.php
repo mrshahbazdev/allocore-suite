@@ -7,9 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Module extends Model
 {
-    protected $fillable = ['key', 'name', 'description', 'icon', 'route_prefix', 'is_active'];
+    protected $fillable = ['key', 'name', 'description', 'icon', 'route_prefix', 'is_active', 'allowed_roles'];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'allowed_roles' => 'array',
+    ];
+
+    public static function byKey(string $key): ?self
+    {
+        return self::where('key', $key)->first();
+    }
 
     public function getNameAttribute(?string $value): ?string
     {

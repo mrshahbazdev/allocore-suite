@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -29,8 +30,9 @@ class UserController extends Controller
     public function create()
     {
         $teams = Team::orderBy('name')->get();
+        $roles = Role::orderBy('name')->get();
 
-        return view('admin.users.create', compact('teams'));
+        return view('admin.users.create', compact('teams', 'roles'));
     }
 
     public function store(Request $request)
@@ -39,7 +41,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => ['required', Password::defaults()],
-            'role' => 'required|in:admin,user',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,name',
             'current_team_id' => 'nullable|exists:teams,id',
             'email_verified' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
@@ -49,8 +52,11 @@ class UserController extends Controller
         $verified = $validated['email_verified'] ?? false;
         unset($validated['email_verified']);
 
+        $roles = $validated['roles'] ?? [];
+        unset($validated['roles']);
+
         $user = User::create($validated);
-        $user->assignRole($validated['role']);
+        $user->syncRoles($roles);
 
         if ($verified) {
             $user->markEmailAsVerified();
@@ -70,8 +76,9 @@ class UserController extends Controller
     {
         $user->load('roles');
         $teams = Team::orderBy('name')->get();
+        $roles = Role::orderBy('name')->get();
 
-        return view('admin.users.edit', compact('user', 'teams'));
+        return view('admin.users.edit', compact('user', 'teams', 'roles'));
     }
 
     public function update(Request $request, User $user)
@@ -80,7 +87,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'password' => ['nullable', Password::defaults()],
-            'role' => 'required|in:admin,user',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,name',
             'current_team_id' => 'nullable|exists:teams,id',
             'email_verified' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
@@ -94,8 +102,11 @@ class UserController extends Controller
             unset($validated['password']);
         }
 
+        $roles = $validated['roles'] ?? [];
+        unset($validated['roles']);
+
         $user->update($validated);
-        $user->syncRoles($validated['role']);
+        $user->syncRoles($roles);
 
         if ($verified && ! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
@@ -107,7 +118,7 @@ class UserController extends Controller
     public function role(Request $request, User $user)
     {
         $validated = $request->validate([
-            'role' => 'required|in:admin,user',
+            'role' => 'required|exists:roles,name',
         ]);
 
         $user->syncRoles($validated['role']);

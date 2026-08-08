@@ -99,40 +99,57 @@ class User extends Authenticatable
 
     public function hasModule(string $moduleKey): bool
     {
+        $module = Module::byKey($moduleKey);
+
+        if (! $module) {
+            return false;
+        }
+
         $ownAccess = $this->activeSubscriptions()
             ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
             ->exists();
 
-        if ($ownAccess && ! $this->currentTeam) {
-            return true;
+        $teamAccess = $this->currentTeam?->hasModule($moduleKey) ?? false;
+
+        if (! $ownAccess && ! $teamAccess) {
+            return false;
         }
 
-        if ($this->currentTeam?->hasModule($moduleKey) && $this->isAllowedModule($moduleKey)) {
-            return true;
-        }
-
-        return $ownAccess && $this->isAllowedModule($moduleKey);
+        return $this->isAllowedModule($module);
     }
 
-    protected function isAllowedModule(string $moduleKey): bool
+    protected function isAllowedModule(Module $module): bool
     {
-        if (! $this->current_team_id) {
+        if ($this->isAdmin() || $this->isOwner()) {
             return true;
         }
 
-        $membership = $this->teams()->where('teams.id', $this->current_team_id)->first();
+        if ($this->current_team_id) {
+            $membership = $this->teams()->where('teams.id', $this->current_team_id)->first();
 
-        if (! $membership || $membership->pivot->role === 'owner') {
+            if ($membership?->pivot->role === 'owner') {
+                return true;
+            }
+
+            $allowed = $membership?->pivot->allowed_modules;
+
+            if ($allowed !== null) {
+                return in_array($module->key, json_decode($allowed, true) ?: [], true);
+            }
+        }
+
+        return $this->canAccessModuleByRole($module);
+    }
+
+    protected function canAccessModuleByRole(Module $module): bool
+    {
+        $allowedRoles = $module->allowed_roles;
+
+        if (empty($allowedRoles)) {
             return true;
         }
 
-        $allowed = $membership->pivot->allowed_modules;
-
-        if ($allowed === null) {
-            return true;
-        }
-
-        return in_array($moduleKey, json_decode($allowed, true) ?: [], true);
+        return $this->hasAnyRole($allowedRoles);
     }
 
     public function accessibleModules()
@@ -150,6 +167,6 @@ class User extends Authenticatable
 
     public function isOwner(): bool
     {
-        return $this->hasRole('owner') || $this->role === 'owner';
+        return $this->hasRole('owner') || ($this->current_team_id && $this->ownedTeams()->where('id', $this->current_team_id)->exists());
     }
 }
