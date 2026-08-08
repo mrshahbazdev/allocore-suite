@@ -9,6 +9,10 @@
             </div>
 
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <form id="mail-test-form" method="POST" action="{{ route('admin.mail-settings.test') }}" class="hidden">
+                    @csrf
+                </form>
+
                 <form method="POST" action="{{ route('admin.mail-settings.update') }}">
                     @csrf
                     @method('PUT')
@@ -65,12 +69,9 @@
                     </div>
 
                     <div class="mt-8 flex items-center justify-between">
-                        <form method="POST" action="{{ route('admin.mail-settings.test') }}">
-                            @csrf
-                            <button type="submit" class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-indigo-600 hover:bg-indigo-50">
-                                {{ __('Send test email') }}
-                            </button>
-                        </form>
+                        <button type="submit" form="mail-test-form" class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-indigo-600 hover:bg-indigo-50">
+                            {{ __('Send test email') }}
+                        </button>
                         <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700">
                             {{ __('mail.save') }}
                         </button>
