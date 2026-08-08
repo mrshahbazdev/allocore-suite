@@ -5,8 +5,13 @@
 </head>
 <body style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #f1f5f9; padding: 24px;">
     <div style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e2e8f0;">
-        <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">{{ __('You are invited to join :team', ['team' => $teamName]) }}</h1>
-        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">{{ __(':name has invited you to join the team.', ['name' => $inviterName]) }}</p>
+        @if ($projectName ?? null)
+            <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">{{ __('You are invited to join :team on project :project', ['team' => $teamName, 'project' => $projectName]) }}</h1>
+            <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">{{ __(':name has invited you to join the team and project.', ['name' => $inviterName]) }}</p>
+        @else
+            <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">{{ __('You are invited to join :team', ['team' => $teamName]) }}</h1>
+            <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">{{ __(':name has invited you to join the team.', ['name' => $inviterName]) }}</p>
+        @endif
 
         <a href="{{ $acceptUrl }}" style="display: inline-block; background-color: #4f46e5; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 14px; padding: 12px 24px; border-radius: 8px;">{{ __('Accept Invitation') }}</a>
 

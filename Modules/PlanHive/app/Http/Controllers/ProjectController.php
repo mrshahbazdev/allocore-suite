@@ -3,10 +3,15 @@
 namespace Modules\PlanHive\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\TeamInvitationMail;
+use App\Models\TeamInvitation;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Modules\PlanHive\Mail\ProjectMemberAdded;
 use Modules\PlanHive\Models\Project;
 use Modules\PlanHive\Models\ProjectMember;
 
@@ -95,18 +100,51 @@ class ProjectController extends Controller
     public function addMember(Request $request, Project $project): RedirectResponse
     {
         $validated = $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'role' => 'required|string|in:member,manager,boss',
         ]);
 
-        $user = User::query()->where('email', $validated['email'])->firstOrFail();
+        $email = $validated['email'];
+        $user = User::query()->where('email', $email)->first();
 
-        ProjectMember::updateOrCreate(
-            ['project_id' => $project->id, 'user_id' => $user->id],
-            ['role' => $validated['role']]
+        if ($user && $user->teams()->where('teams.id', $project->team_id)->exists()) {
+            ProjectMember::updateOrCreate(
+                ['project_id' => $project->id, 'user_id' => $user->id],
+                ['role' => $validated['role']]
+            );
+
+            try {
+                Mail::to($email)->send(new ProjectMemberAdded($project, $validated['role']));
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            return back()->with('success', __('Member added and notified.'));
+        }
+
+        $invitation = TeamInvitation::updateOrCreate(
+            [
+                'team_id' => $project->team_id,
+                'project_id' => $project->id,
+                'email' => $email,
+                'accepted_at' => null,
+            ],
+            [
+                'invited_by' => $request->user()->id,
+                'role' => 'member',
+                'project_role' => $validated['role'],
+                'token' => TeamInvitation::generateToken(),
+                'expires_at' => Carbon::now()->addDays(7),
+            ]
         );
 
-        return back()->with('success', __('Member added.'));
+        try {
+            Mail::to($email)->send(new TeamInvitationMail($invitation));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return back()->with('success', __('Invitation sent to :email', ['email' => $email]));
     }
 
     public function removeMember(Project $project, User $user): RedirectResponse
