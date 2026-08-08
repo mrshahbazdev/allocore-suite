@@ -442,6 +442,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('mail-settings', [MailSettingController::class, 'index'])->name('mail-settings.index');
     Route::put('mail-settings', [MailSettingController::class, 'update'])->name('mail-settings.update');
+    Route::post('mail-settings/test', [MailSettingController::class, 'sendTest'])->name('mail-settings.test');
 
     Route::get('env', [AdminEnvController::class, 'index'])->name('env.index');
     Route::put('env', [AdminEnvController::class, 'update'])->name('env.update');

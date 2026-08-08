@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\TestMail;
 use App\Models\MailSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class MailSettingController extends Controller
 {
@@ -46,5 +48,26 @@ class MailSettingController extends Controller
         }
 
         return back()->with('success', __('mail.admin_updated'));
+    }
+
+    public function sendTest(Request $request)
+    {
+        $setting = MailSetting::query()->global()->first();
+
+        if (! $setting?->isUsable()) {
+            return back()->with('error', __('Please save a valid SMTP configuration before sending a test email.'));
+        }
+
+        $user = $request->user();
+
+        try {
+            Mail::to($user->email)->send(new TestMail($user));
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', __('Test email failed: :message', ['message' => $e->getMessage()]));
+        }
+
+        return back()->with('success', __('Test email sent to :email', ['email' => $user->email]));
     }
 }
