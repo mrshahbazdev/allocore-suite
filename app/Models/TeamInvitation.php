@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class TeamInvitation extends Model
 {
@@ -60,6 +61,10 @@ class TeamInvitation extends Model
     public function accept(User $user): void
     {
         $this->team->members()->syncWithoutDetaching([$user->id => ['role' => $this->role]]);
+
+        Role::findOrCreate('regular-user');
+        Role::findOrCreate('employee');
+        $user->assignRole(['regular-user', 'employee']);
 
         if ($this->project_id) {
             DB::table('planhive_project_members')->updateOrInsert(

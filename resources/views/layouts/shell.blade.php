@@ -126,7 +126,11 @@
     </div>
 </div>
 @include('partials.cookie-consent')
-@include('ai-assistant.floating')
+@auth
+    @if (Auth::user()->isAdmin() || Auth::user()->isOwner() || Auth::user()->hasAnyRole(['employee', 'saas-developer', 'senior-management', 'quality']))
+        @include('ai-assistant.floating')
+    @endif
+@endauth
 @livewireScripts
 @stack('scripts')
 <script>

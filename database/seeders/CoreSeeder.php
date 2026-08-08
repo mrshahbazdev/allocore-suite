@@ -13,8 +13,9 @@ class CoreSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::findOrCreate('admin');
-        Role::findOrCreate('user');
+        foreach (['admin', 'user', 'owner', 'regular-user', 'employee', 'saas-developer', 'senior-management', 'quality'] as $role) {
+            Role::findOrCreate($role);
+        }
 
         $modules = [
             ['key' => 'invoice-maker', 'name' => 'InvoiceMaker', 'description' => 'Invoices, estimates, expenses, clients & payments.', 'icon' => 'document-text', 'route_prefix' => 'invoices'],
@@ -43,6 +44,18 @@ class CoreSeeder extends Seeder
 
         foreach ($modules as $data) {
             Module::updateOrCreate(['key' => $data['key']], $data);
+        }
+
+        $moduleRoles = [
+            'dev-manager' => ['saas-developer', 'senior-management'],
+            'knowledge-manager' => ['saas-developer', 'senior-management'],
+            'sop-builder' => ['quality', 'senior-management'],
+            'audit-intelligence' => ['regular-user', 'employee'],
+            'customer-success' => ['regular-user', 'employee'],
+        ];
+
+        foreach ($moduleRoles as $key => $roles) {
+            Module::where('key', $key)->update(['allowed_roles' => $roles]);
         }
 
         $plans = [

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Facades\Module as ModuleFacade;
+use Spatie\Permission\Models\Role;
 
 class ModuleController extends Controller
 {
@@ -28,7 +29,9 @@ class ModuleController extends Controller
             ];
         });
 
-        return view('admin.modules', compact('diskModules'));
+        $roles = Role::orderBy('name')->get();
+
+        return view('admin.modules', compact('diskModules', 'roles'));
     }
 
     public function install(string $name)
@@ -72,11 +75,16 @@ class ModuleController extends Controller
 
     public function update(Request $request, Module $module)
     {
-        $module->update([
-            'is_active' => $request->boolean('is_active'),
+        $validated = $request->validate([
+            'allowed_roles' => 'nullable|array',
+            'allowed_roles.*' => 'exists:roles,name',
         ]);
 
-        return back()->with('success', __('Module updated.'));
+        $module->update([
+            'allowed_roles' => $validated['allowed_roles'] ?? null,
+        ]);
+
+        return back()->with('success', __('Module access roles updated.'));
     }
 
     public function toggle(Module $module)

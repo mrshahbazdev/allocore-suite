@@ -103,7 +103,9 @@
         </button>
         <div x-show="groups.insights"  class="mt-2 space-y-1">
             <x-sidebar-link route="advisor.index" icon="M9.879 7.519c1.171-1.026 2.999-1.026 4.17 0 1.172 1.026 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z">{{ __('AI Advisor') }}</x-sidebar-link>
-            <x-sidebar-link route="assistant.index" icon="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z">{{ __('AI Assistant') }}</x-sidebar-link>
+            @if (Auth::user()->isAdmin() || Auth::user()->isOwner() || Auth::user()->hasAnyRole(['employee', 'saas-developer', 'senior-management', 'quality']))
+                <x-sidebar-link route="assistant.index" icon="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z">{{ __('AI Assistant') }}</x-sidebar-link>
+            @endif
             <x-sidebar-link route="search.index" icon="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z">{{ __('Search') }}</x-sidebar-link>
             <x-sidebar-link route="usage.index" icon="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z">{{ __('Usage Analytics') }}</x-sidebar-link>
             <x-sidebar-link route="timeline.index" icon="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z">{{ __('Activity Timeline') }}</x-sidebar-link>

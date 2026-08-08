@@ -41,6 +41,22 @@
                                 {{ $module['record']->is_active ? __('Deactivate') : __('Activate') }}
                             </button>
                         </form>
+
+                        @php($moduleRoles = $module['record']->allowed_roles ?? [])
+                        <form method="POST" action="{{ route('admin.modules.update', $module['record']) }}" class="mt-3 w-full">
+                            @csrf
+                            @method('PUT')
+                            <div class="text-xs font-medium uppercase tracking-wide text-slate-500">{{ __('Allowed roles') }}</div>
+                            <div class="mt-2 flex flex-wrap gap-3">
+                                @foreach ($roles as $role)
+                                    <label class="flex items-center gap-1.5">
+                                        <input type="checkbox" name="allowed_roles[]" value="{{ $role->name }}" {{ in_array($role->name, $moduleRoles, true) ? 'checked' : '' }} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="text-sm text-slate-700">{{ $role->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <button type="submit" class="mt-3 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">{{ __('Update roles') }}</button>
+                        </form>
                     @endif
                 </div>
             </div>
