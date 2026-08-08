@@ -6,12 +6,16 @@ use App\Models\Module;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Modules\AuditIntelligence\Models\Finding;
 use Modules\AuditPro\Models\Audit;
 use Modules\CashCore\Models\CashTransaction;
 use Modules\ClusterForge\Models\KeywordCluster;
+use Modules\CustomerSuccess\Models\Inquiry;
 use Modules\DentalTrack\Models\Order;
+use Modules\DevManager\Models\Idea;
 use Modules\FocusMatrix\Models\Task;
 use Modules\InvoiceMaker\Models\Invoice;
+use Modules\KnowledgeManager\Models\Project as KnowledgeProject;
 use Modules\KpiTool\Models\KpiDefinition;
 use Modules\LeadQuality\Models\Contact;
 use Modules\LoopEngine\Models\Process;
@@ -19,6 +23,7 @@ use Modules\NurDu\Models\Vision;
 use Modules\OrgMatrix\Models\Organization;
 use Modules\PlanHive\Models\Project;
 use Modules\SmartKpi\Models\Company;
+use Modules\SopBuilder\Models\Sop;
 use Modules\SweetSpot\Models\Customer;
 use Modules\TimeButler\Models\AbsenceRequest;
 
@@ -28,6 +33,11 @@ class ModuleStats
      * Primary resource model for each active module.
      */
     protected array $resourceMap = [
+        'audit-intelligence' => ['model' => Finding::class, 'label' => 'Findings'],
+        'customer-success' => ['model' => Inquiry::class, 'label' => 'Inquiries'],
+        'dev-manager' => ['model' => Idea::class, 'label' => 'Ideas'],
+        'knowledge-manager' => ['model' => KnowledgeProject::class, 'label' => 'Knowledge projects'],
+        'sop-builder' => ['model' => Sop::class, 'label' => 'SOPs'],
         'invoice-maker' => ['model' => Invoice::class, 'label' => 'Invoices'],
         'audit' => ['model' => Audit::class, 'label' => 'Audits'],
         'keyword-cluster' => ['model' => KeywordCluster::class, 'label' => 'Keyword clusters'],
