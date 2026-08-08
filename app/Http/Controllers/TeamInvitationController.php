@@ -70,6 +70,11 @@ class TeamInvitationController extends Controller
         $invitation->accept($user);
         $user->update(['current_team_id' => $invitation->team_id]);
 
+        if ($invitation->project_id) {
+            return redirect()->route('planhive.projects.show', $invitation->project_id)
+                ->with('success', __('You have joined :team and project :project', ['team' => $invitation->team->name, 'project' => $invitation->projectName() ?? '']));
+        }
+
         return redirect()->route('teams.index')->with('success', __('You have joined :team', ['team' => $invitation->team->name]));
     }
 
