@@ -64,7 +64,13 @@
                         </div>
                     </div>
 
-                    <div class="mt-8 flex items-center justify-end">
+                    <div class="mt-8 flex items-center justify-between">
+                        <form method="POST" action="{{ route('admin.mail-settings.test') }}">
+                            @csrf
+                            <button type="submit" class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-indigo-600 hover:bg-indigo-50">
+                                {{ __('Send test email') }}
+                            </button>
+                        </form>
                         <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700">
                             {{ __('mail.save') }}
                         </button>
