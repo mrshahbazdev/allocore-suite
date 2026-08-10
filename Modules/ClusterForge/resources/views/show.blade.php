@@ -119,12 +119,13 @@
         @endif
     </div>
 
-    @if ($project->isInProgress())
+    @if ($project->isInProgress() || $project->status === 'failed')
         @push('scripts')
             <script>
                 (function () {
                     const statusUrl = '{{ route('clusterforge.status', $project) }}';
                     const projectUrl = '{{ route('clusterforge.show', $project) }}';
+                    let wasInProgress = {{ $project->isInProgress() ? 'true' : 'false' }};
 
                     function poll() {
                         fetch(statusUrl, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
@@ -137,6 +138,11 @@
                                 if (badge) badge.textContent = data.status_label;
                                 if (bar) bar.style.width = data.progress_percent + '%';
                                 if (text) text.textContent = data.progress_percent + '%';
+
+                                if (data.is_in_progress && ! wasInProgress) {
+                                    window.location.href = projectUrl;
+                                    return;
+                                }
 
                                 if (! data.is_in_progress) {
                                     window.location.href = projectUrl;

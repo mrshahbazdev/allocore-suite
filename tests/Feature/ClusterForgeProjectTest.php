@@ -201,6 +201,67 @@ class ClusterForgeProjectTest extends TestCase
         }
     }
 
+    public function test_user_can_delete_project(): void
+    {
+        $user = User::factory()->create();
+        $team = $this->createTeam($user);
+        $this->subscribe($team);
+
+        $project = Project::create([
+            'team_id' => $team->id,
+            'user_id' => $user->id,
+            'topic' => 'delete me',
+            'website' => 'example.com',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('clusterforge.destroy', $project))
+            ->assertRedirect(route('clusterforge.index'))
+            ->assertSessionHas('success', 'Project deleted.');
+
+        $this->assertDatabaseMissing('clusterforge_projects', ['id' => $project->id]);
+    }
+
+    public function test_browser_delete_form_redirects_to_index(): void
+    {
+        $user = User::factory()->create();
+        $team = $this->createTeam($user);
+        $this->subscribe($team);
+
+        $project = Project::create([
+            'team_id' => $team->id,
+            'user_id' => $user->id,
+            'topic' => 'delete me',
+            'website' => 'example.com',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('clusterforge.destroy', $project), ['_method' => 'DELETE'])
+            ->assertRedirect(route('clusterforge.index'));
+
+        $this->assertDatabaseMissing('clusterforge_projects', ['id' => $project->id]);
+    }
+
+    public function test_delete_without_method_override_is_not_allowed(): void
+    {
+        $user = User::factory()->create();
+        $team = $this->createTeam($user);
+        $this->subscribe($team);
+
+        $project = Project::create([
+            'team_id' => $team->id,
+            'user_id' => $user->id,
+            'topic' => 'delete me',
+            'website' => 'example.com',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('clusterforge.destroy', $project))
+            ->assertStatus(405);
+
+        $this->assertDatabaseHas('clusterforge_projects', ['id' => $project->id]);
+    }
+
     public function test_generator_prompts_include_project_language(): void
     {
         $user = User::factory()->create();

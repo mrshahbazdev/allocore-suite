@@ -62,7 +62,7 @@ class ClusterForgeController extends Controller
             'status' => Project::STATUS_PENDING,
         ]);
 
-        GenerateProjectJob::dispatch($project->id);
+        GenerateProjectJob::dispatch($project->id)->afterResponse();
 
         return redirect()->route('clusterforge.show', $project)->with('success', __('Cluster generation queued.'));
     }
@@ -96,7 +96,7 @@ class ClusterForgeController extends Controller
             'error' => null,
         ]);
 
-        GenerateProjectJob::dispatch($project->id);
+        GenerateProjectJob::dispatch($project->id)->afterResponse();
 
         return redirect()->route('clusterforge.show', $project);
     }
