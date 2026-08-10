@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use Modules\AuditIntelligence\Models\Finding;
 use Modules\AuditPro\Models\Audit;
 use Modules\CashCore\Models\CashTransaction;
-use Modules\ClusterForge\Models\KeywordCluster;
+use Modules\ClusterForge\Models\Project as ClusterProject;
 use Modules\CustomerSuccess\Models\Inquiry;
 use Modules\DentalTrack\Models\Order;
 use Modules\DevManager\Models\Idea;
@@ -40,7 +40,7 @@ class ModuleStats
         'sop-builder' => ['model' => Sop::class, 'label' => 'SOPs'],
         'invoice-maker' => ['model' => Invoice::class, 'label' => 'Invoices'],
         'audit' => ['model' => Audit::class, 'label' => 'Audits'],
-        'keyword-cluster' => ['model' => KeywordCluster::class, 'label' => 'Keyword clusters'],
+        'keyword-cluster' => ['model' => ClusterProject::class, 'label' => 'Topic clusters'],
         'lead-quality' => ['model' => Contact::class, 'label' => 'Contacts'],
         'time-butler' => ['model' => AbsenceRequest::class, 'label' => 'Absence requests'],
         'plan-hive' => ['model' => Project::class, 'label' => 'Projects'],

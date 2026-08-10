@@ -9,13 +9,12 @@ Route::prefix('app/clusters')
     ->middleware(['auth', 'verified', 'module:keyword-cluster', EnsureCurrentTeam::class])
     ->group(function () {
         Route::get('/', [ClusterForgeController::class, 'index'])->name('index');
+        Route::get('/create', [ClusterForgeController::class, 'create'])->name('create');
         Route::post('/', [ClusterForgeController::class, 'store'])->name('store');
-        Route::get('/{cluster}', [ClusterForgeController::class, 'show'])->name('show');
-        Route::get('/{cluster}/edit', [ClusterForgeController::class, 'edit'])->name('edit');
-        Route::put('/{cluster}', [ClusterForgeController::class, 'update'])->name('update');
-        Route::delete('/{cluster}', [ClusterForgeController::class, 'destroy'])->name('destroy');
-        Route::get('/{cluster}/export', [ClusterForgeController::class, 'export'])->name('export');
+        Route::get('/{project}', [ClusterForgeController::class, 'show'])->name('show');
+        Route::get('/{project}/status', [ClusterForgeController::class, 'status'])->name('status');
+        Route::post('/{project}/retry', [ClusterForgeController::class, 'retry'])->name('retry');
+        Route::delete('/{project}', [ClusterForgeController::class, 'destroy'])->name('destroy');
+        Route::get('/{project}/export/pillar', [ClusterForgeController::class, 'exportPillar'])->name('export.pillar');
+        Route::get('/{project}/export/cluster/{subtopic}', [ClusterForgeController::class, 'exportCluster'])->name('export.cluster');
     });
-
-Route::get('clusters/public/{publicSlug}', [ClusterForgeController::class, 'publicShow'])
-    ->name('clusterforge.public.show');
