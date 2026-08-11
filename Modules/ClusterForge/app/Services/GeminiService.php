@@ -2,7 +2,9 @@
 
 namespace Modules\ClusterForge\Services;
 
+use App\Models\SiteSetting;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -18,18 +20,55 @@ class GeminiService
         protected ?string $baseUrl = null,
         protected ?int $timeout = null,
     ) {
-        $this->apiKey ??= (string) config('services.gemini.api_key');
-        $this->baseUrl ??= rtrim((string) config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta'), '/');
-        $this->timeout ??= (int) config('services.gemini.timeout', 120);
+        $this->apiKey ??= $this->decryptApiKey((string) $this->setting('api_key', config('services.gemini.api_key', '')));
+        $this->baseUrl ??= rtrim((string) $this->setting('base_url', config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta')), '/');
+        $this->timeout ??= (int) $this->setting('timeout', config('services.gemini.timeout', 120));
 
-        $primary = $model ?: (string) config('services.gemini.model', 'gemini-flash-latest');
-        $fallbacks = (array) config('services.gemini.fallback_models', [
+        $primary = $model ?: (string) $this->setting('model', config('services.gemini.model', 'gemini-flash-latest'));
+        $fallbacks = $this->fallbackModels();
+
+        $this->models = array_values(array_unique(array_filter(array_merge([$primary], $fallbacks))));
+    }
+
+    private function setting(string $key, mixed $default): mixed
+    {
+        $siteValue = SiteSetting::value('gemini_'.$key);
+
+        return $siteValue !== null ? $siteValue : $default;
+    }
+
+    private function decryptApiKey(string $apiKey): string
+    {
+        if ($apiKey === '') {
+            return '';
+        }
+
+        try {
+            $decrypted = Crypt::decryptString($apiKey);
+
+            return $decrypted;
+        } catch (\Throwable) {
+            return $apiKey;
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function fallbackModels(): array
+    {
+        $siteValue = SiteSetting::value('gemini_fallback_models');
+        $value = $siteValue !== null ? $siteValue : config('services.gemini.fallback_models', [
             'gemini-2.5-flash',
             'gemini-2.0-flash',
             'gemini-flash-latest',
         ]);
 
-        $this->models = array_values(array_unique(array_filter(array_merge([$primary], $fallbacks))));
+        if (is_array($value)) {
+            return array_values(array_filter($value));
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', (string) $value))));
     }
 
     public function generateText(string $prompt, float $temperature = 0.7): string
@@ -67,8 +106,8 @@ class GeminiService
             );
         }
 
-        $maxRetriesPerModel = (int) config('services.gemini.max_retries', 3);
-        $baseDelayMs = (int) config('services.gemini.retry_base_delay_ms', 1500);
+        $maxRetriesPerModel = (int) $this->setting('max_retries', config('services.gemini.max_retries', 3));
+        $baseDelayMs = (int) $this->setting('retry_base_delay_ms', config('services.gemini.retry_base_delay_ms', 1500));
 
         $lastStatus = 0;
         $lastBody = '';
@@ -134,7 +173,7 @@ class GeminiService
             ]],
             'generationConfig' => [
                 'temperature' => $temperature,
-                'maxOutputTokens' => (int) config('services.gemini.max_output_tokens', 32768),
+                'maxOutputTokens' => (int) $this->setting('max_output_tokens', config('services.gemini.max_output_tokens', 32768)),
                 'thinkingConfig' => [
                     'thinkingBudget' => 0,
                 ],

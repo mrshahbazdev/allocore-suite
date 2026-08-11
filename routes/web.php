@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\DataForSeoSettingController;
 use App\Http\Controllers\Admin\EnvController as AdminEnvController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
+use App\Http\Controllers\Admin\GeminiSettingController;
 use App\Http\Controllers\Admin\GlossaryTermController as AdminGlossaryTermController;
 use App\Http\Controllers\Admin\ImpersonationController as AdminImpersonationController;
 use App\Http\Controllers\Admin\IndustryController as AdminIndustryController;
@@ -447,6 +448,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('dataforseo', [DataForSeoSettingController::class, 'index'])->name('dataforseo.index');
     Route::put('dataforseo', [DataForSeoSettingController::class, 'update'])->name('dataforseo.update');
+
+    Route::get('gemini', [GeminiSettingController::class, 'index'])->name('gemini.index');
+    Route::put('gemini', [GeminiSettingController::class, 'update'])->name('gemini.update');
 
     Route::get('env', [AdminEnvController::class, 'index'])->name('env.index');
     Route::put('env', [AdminEnvController::class, 'update'])->name('env.update');
