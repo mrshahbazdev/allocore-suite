@@ -14,9 +14,9 @@
             <a href="{{ route('clusterforge.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Back') }}</a>
         </div>
 
-        @if (! $geminiConfigured)
+        @if (! $aiConfigured)
             <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                {{ __('Gemini API key is not configured. Add it in Settings > Gemini (admin) or set GEMINI_API_KEY in your .env file to generate clusters.') }}
+                {{ __('AI provider is not configured. Add an API key in Settings > AI (admin) or set GEMINI_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY in your .env file to generate clusters.') }}
             </div>
         @endif
 
@@ -34,7 +34,7 @@
             </div>
             <div class="flex items-center gap-3 pt-2">
                 <a href="{{ route('clusterforge.index') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('Cancel') }}</a>
-                <button class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" {{ $geminiConfigured ? '' : 'disabled' }}>{{ __('Generate cluster') }}</button>
+                <button class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" {{ $aiConfigured ? '' : 'disabled' }}>{{ __('Generate cluster') }}</button>
             </div>
         </form>
     </div>

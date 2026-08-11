@@ -1,4 +1,4 @@
-@php($title = __('Gemini Settings'))
+@php($title = __('AI Settings'))
 
 @extends('layouts.shell')
 
@@ -6,8 +6,8 @@
     <div class="py-8">
         <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
             <div class="mb-6">
-                <h2 class="text-2xl font-bold text-slate-900">{{ __('Gemini Settings') }}</h2>
-                <p class="mt-1 text-sm text-slate-500">{{ __('Configure the Gemini API key and generation parameters used by ClusterForge AI content generation.') }}</p>
+                <h2 class="text-2xl font-bold text-slate-900">{{ __('AI Settings') }}</h2>
+                <p class="mt-1 text-sm text-slate-500">{{ __('Configure the AI provider and API keys used by ClusterForge content generation. Choose a single provider, or select Auto to fall back across configured providers.') }}</p>
             </div>
 
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -17,7 +17,20 @@
 
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700">{{ __('API key') }}</label>
+                            <label class="block text-sm font-medium text-slate-700">{{ __('AI provider') }}</label>
+                            <select name="provider" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                @foreach (['auto' => __('Auto (try all configured providers)'), 'gemini' => __('Google Gemini'), 'openai' => __('OpenAI'), 'anthropic' => __('Anthropic')] as $key => $label)
+                                    <option value="{{ $key }}" @selected(old('provider', $provider) === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <h3 class="mt-2 border-b border-slate-200 pb-2 text-base font-semibold text-slate-900">{{ __('Google Gemini') }}</h3>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">{{ __('Gemini API key') }}</label>
                             <input name="api_key" type="password" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ $hasApiKey ? '••••••••' : '' }}">
                             @if ($hasApiKey)
                                 <p class="mt-1 text-xs text-slate-500">{{ __('Leave blank to keep the current API key.') }}</p>
@@ -25,7 +38,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">{{ __('Model') }}</label>
+                            <label class="block text-sm font-medium text-slate-700">{{ __('Gemini model') }}</label>
                             <input name="model" type="text" value="{{ old('model', $model) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="gemini-flash-latest">
                         </div>
 
@@ -57,6 +70,40 @@
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">{{ __('Fallback models (comma-separated)') }}</label>
                             <input name="fallback_models" type="text" value="{{ old('fallback_models', $fallbackModels) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="gemini-2.5-flash,gemini-2.0-flash,gemini-flash-latest">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <h3 class="mt-2 border-b border-slate-200 pb-2 text-base font-semibold text-slate-900">{{ __('OpenAI') }}</h3>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">{{ __('OpenAI API key') }}</label>
+                            <input name="openai_api_key" type="password" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ $hasOpenaiApiKey ? '••••••••' : '' }}">
+                            @if ($hasOpenaiApiKey)
+                                <p class="mt-1 text-xs text-slate-500">{{ __('Leave blank to keep the current API key.') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">{{ __('OpenAI model') }}</label>
+                            <input name="openai_model" type="text" value="{{ old('openai_model', $openaiModel) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="gpt-4o-mini">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <h3 class="mt-2 border-b border-slate-200 pb-2 text-base font-semibold text-slate-900">{{ __('Anthropic') }}</h3>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">{{ __('Anthropic API key') }}</label>
+                            <input name="anthropic_api_key" type="password" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ $hasAnthropicApiKey ? '••••••••' : '' }}">
+                            @if ($hasAnthropicApiKey)
+                                <p class="mt-1 text-xs text-slate-500">{{ __('Leave blank to keep the current API key.') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">{{ __('Anthropic model') }}</label>
+                            <input name="anthropic_model" type="text" value="{{ old('anthropic_model', $anthropicModel) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="claude-3-5-sonnet-latest">
                         </div>
                     </div>
 

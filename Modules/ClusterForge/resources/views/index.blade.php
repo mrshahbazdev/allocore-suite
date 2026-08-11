@@ -18,9 +18,9 @@
             <a href="{{ route('clusterforge.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">{{ __('New cluster') }}</a>
         </div>
 
-        @if (! $geminiConfigured)
+        @if (! $aiConfigured)
             <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                {{ __('Gemini API key is not configured. Add it in Settings > Gemini (admin) or set GEMINI_API_KEY in your .env file to generate clusters.') }}
+                {{ __('AI provider is not configured. Add an API key in Settings > AI (admin) or set GEMINI_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY in your .env file to generate clusters.') }}
             </div>
         @endif
 

@@ -7,9 +7,10 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Modules\ClusterForge\Services\Contracts\AiProvider;
 use RuntimeException;
 
-class GeminiService
+class GeminiService implements AiProvider
 {
     /** @var array<int, string> */
     protected array $models;
@@ -69,6 +70,11 @@ class GeminiService
         }
 
         return array_values(array_filter(array_map('trim', explode(',', (string) $value))));
+    }
+
+    public function name(): string
+    {
+        return 'Google Gemini';
     }
 
     public function isConfigured(): bool
@@ -137,8 +143,8 @@ class GeminiService
 
                 $retryable = in_array($lastStatus, [429, 500, 502, 503, 504], true);
                 if (! $retryable) {
-                    if ($lastStatus === 400) {
-                        Log::info('Gemini 400 on model — trying next fallback', ['model' => $model]);
+                    if (in_array($lastStatus, [400, 404], true)) {
+                        Log::info('Gemini {} on model — trying next fallback', ['status' => $lastStatus, 'model' => $model]);
 
                         continue 2;
                     }
