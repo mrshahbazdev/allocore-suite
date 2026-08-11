@@ -23,7 +23,7 @@ class GeminiSettingController extends Controller
             'model' => SiteSetting::value('gemini_model', config('services.gemini.model', 'gemini-flash-latest')),
             'baseUrl' => SiteSetting::value('gemini_base_url', config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta')),
             'timeout' => SiteSetting::value('gemini_timeout', config('services.gemini.timeout', 120)),
-            'maxOutputTokens' => SiteSetting::value('gemini_max_output_tokens', config('services.gemini.max_output_tokens', 32768)),
+            'maxOutputTokens' => SiteSetting::value('gemini_max_output_tokens', config('services.gemini.max_output_tokens', 8192)),
             'maxRetries' => SiteSetting::value('gemini_max_retries', config('services.gemini.max_retries', 3)),
             'retryBaseDelayMs' => SiteSetting::value('gemini_retry_base_delay_ms', config('services.gemini.retry_base_delay_ms', 1500)),
             'fallbackModels' => $fallbacks ?: $fallbacksString,
@@ -50,7 +50,7 @@ class GeminiSettingController extends Controller
         SiteSetting::setGlobal('gemini_model', $validated['model'] ?: config('services.gemini.model', 'gemini-flash-latest'));
         SiteSetting::setGlobal('gemini_base_url', rtrim((string) ($validated['base_url'] ?? ''), '/') ?: config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta'));
         SiteSetting::setGlobal('gemini_timeout', (string) ($validated['timeout'] ?? 120));
-        SiteSetting::setGlobal('gemini_max_output_tokens', (string) ($validated['max_output_tokens'] ?? 32768));
+        SiteSetting::setGlobal('gemini_max_output_tokens', (string) ($validated['max_output_tokens'] ?? 8192));
         SiteSetting::setGlobal('gemini_max_retries', (string) ($validated['max_retries'] ?? 3));
         SiteSetting::setGlobal('gemini_retry_base_delay_ms', (string) ($validated['retry_base_delay_ms'] ?? 1500));
         SiteSetting::setGlobal('gemini_fallback_models', $validated['fallback_models'] ?? config('services.gemini.fallback_models', 'gemini-2.5-flash,gemini-2.0-flash,gemini-flash-latest'));
