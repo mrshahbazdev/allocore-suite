@@ -14,7 +14,7 @@
                 <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ __('ClusterForge') }}</p>
                 <h1 class="text-3xl font-bold text-slate-900">{{ $project->topic }}</h1>
 
-                <livewire:clusterforge.project-status :project-id="$project->id" />
+                <livewire:cluster-forge.project-status :project-id="$project->id" />
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 @if ($project->status === 'completed')

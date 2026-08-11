@@ -21,7 +21,7 @@ class ProjectStatus extends Component
     {
         $this->refreshProject();
 
-        return view('livewire.clusterforge.project-status');
+        return view('clusterforge::livewire.project-status');
     }
 
     private function refreshProject(): void
