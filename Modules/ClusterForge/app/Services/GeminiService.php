@@ -71,6 +71,11 @@ class GeminiService
         return array_values(array_filter(array_map('trim', explode(',', (string) $value))));
     }
 
+    public function isConfigured(): bool
+    {
+        return $this->apiKey !== '' && $this->apiKey !== '0';
+    }
+
     public function generateText(string $prompt, float $temperature = 0.7): string
     {
         $response = $this->callApi($prompt, $temperature, jsonMode: false);
@@ -102,7 +107,7 @@ class GeminiService
     {
         if (empty($this->apiKey)) {
             throw new RuntimeException(
-                'GEMINI_API_KEY is not configured. Set it in your .env file to enable AI generation.'
+                'Gemini API key is not configured. Add it in Settings > Gemini or set GEMINI_API_KEY in your .env file.'
             );
         }
 

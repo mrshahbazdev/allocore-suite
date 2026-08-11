@@ -16,7 +16,7 @@
 
         @if (! $geminiConfigured)
             <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                {{ __('Gemini API key is not configured. Set GEMINI_API_KEY in your .env file to generate clusters.') }}
+                {{ __('Gemini API key is not configured. Add it in Settings > Gemini (admin) or set GEMINI_API_KEY in your .env file to generate clusters.') }}
             </div>
         @endif
 
