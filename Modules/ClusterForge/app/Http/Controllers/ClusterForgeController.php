@@ -12,7 +12,7 @@ use Illuminate\View\View;
 use Modules\ClusterForge\Http\Requests\StoreProjectRequest;
 use Modules\ClusterForge\Jobs\GenerateProjectJob;
 use Modules\ClusterForge\Models\Project;
-use Modules\ClusterForge\Services\GeminiService;
+use Modules\ClusterForge\Services\AiService;
 
 class ClusterForgeController extends Controller
 {
@@ -36,14 +36,14 @@ class ClusterForgeController extends Controller
         return view('clusterforge::index', [
             'projects' => $projects,
             'stats' => $stats,
-            'geminiConfigured' => (new GeminiService)->isConfigured(),
+            'aiConfigured' => (new AiService)->isConfigured(),
         ]);
     }
 
     public function create(): View
     {
         return view('clusterforge::create', [
-            'geminiConfigured' => (new GeminiService)->isConfigured(),
+            'aiConfigured' => (new AiService)->isConfigured(),
         ]);
     }
 
@@ -74,7 +74,7 @@ class ClusterForgeController extends Controller
 
         return view('clusterforge::show', [
             'project' => $project,
-            'geminiConfigured' => (new GeminiService)->isConfigured(),
+            'aiConfigured' => (new AiService)->isConfigured(),
         ]);
     }
 

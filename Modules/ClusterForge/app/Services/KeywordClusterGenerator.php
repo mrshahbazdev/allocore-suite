@@ -5,12 +5,13 @@ namespace Modules\ClusterForge\Services;
 use Illuminate\Support\Facades\DB;
 use Modules\ClusterForge\Models\Project;
 use Modules\ClusterForge\Models\Subtopic;
+use Modules\ClusterForge\Services\Contracts\AiProvider;
 use RuntimeException;
 
 class KeywordClusterGenerator
 {
     public function __construct(
-        protected GeminiService $gemini,
+        protected AiProvider $ai,
         protected DataForSeoService $dataForSeo,
     ) {}
 
@@ -48,10 +49,10 @@ Respond with ONLY a JSON array of 5 objects in this exact shape (no prose, no ma
 ]
 PROMPT;
 
-        $data = $this->gemini->generateJson($prompt, temperature: 0.7);
+        $data = $this->ai->generateJson($prompt, temperature: 0.7);
 
         if (! is_array($data) || count($data) < 1) {
-            throw new RuntimeException('Gemini returned no subtopics.');
+            throw new RuntimeException('AI provider returned no subtopics.');
         }
 
         $subtopics = array_slice(array_values($data), 0, 5);
@@ -119,10 +120,10 @@ Respond with ONLY a JSON array of 10 strings (no prose, no markdown fences):
 ["question 1", "question 2", "...", "question 10"]
 PROMPT;
 
-        $data = $this->gemini->generateJson($prompt, temperature: 0.7);
+        $data = $this->ai->generateJson($prompt, temperature: 0.7);
 
         if (! is_array($data) || count($data) < 1) {
-            throw new RuntimeException('Gemini returned no questions for subtopic '.$subtopic->id);
+            throw new RuntimeException('AI provider returned no questions for subtopic '.$subtopic->id);
         }
 
         $questions = array_slice(array_values($data), 0, 10);
@@ -180,12 +181,12 @@ Second answer text goes here.
 Produce answers for all {$questions->count()} questions. Output ONLY the markers and answers — no preamble, no closing remarks, no JSON, no code fences.
 PROMPT;
 
-        $text = $this->gemini->generateText($prompt, temperature: 0.6);
+        $text = $this->ai->generateText($prompt, temperature: 0.6);
 
         $answers = $this->parseNumberedAnswers($text, $questions->count());
 
         if (empty($answers)) {
-            throw new RuntimeException('Gemini returned no parseable answers for subtopic '.$subtopic->id);
+            throw new RuntimeException('AI provider returned no parseable answers for subtopic '.$subtopic->id);
         }
 
         DB::transaction(function () use ($questions, $answers) {
@@ -248,7 +249,7 @@ For context, the page will then list the following {$questions->count()} questio
 {$qaList}
 PROMPT;
 
-        $data = $this->gemini->generateJson($prompt, temperature: 0.7);
+        $data = $this->ai->generateJson($prompt, temperature: 0.7);
 
         $title = (string) ($data['title'] ?? $subtopic->title);
         $meta = (string) ($data['meta_description'] ?? '');
@@ -296,7 +297,7 @@ Output JSON ONLY in this exact shape (no prose, no markdown fences):
 }
 PROMPT;
 
-        $meta = $this->gemini->generateJson($metaPrompt, temperature: 0.5);
+        $meta = $this->ai->generateJson($metaPrompt, temperature: 0.5);
         $title = (string) ($meta['title'] ?? $project->topic);
         $metaDesc = (string) ($meta['meta_description'] ?? '');
 
@@ -323,7 +324,7 @@ Write the full pillar page in Markdown (~700-1100 words). Requirements:
 Return ONLY the raw Markdown — no JSON, no code fences, no commentary before or after.
 PROMPT;
 
-        $body = trim($this->gemini->generateText($bodyPrompt, temperature: 0.7));
+        $body = trim($this->ai->generateText($bodyPrompt, temperature: 0.7));
         $body = preg_replace('/^```(?:markdown|md)?\s*\n?|\n?```\s*$/i', '', $body) ?? $body;
 
         $project->update([

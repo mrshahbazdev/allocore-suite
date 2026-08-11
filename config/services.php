@@ -54,9 +54,23 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'auto'),
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'timeout' => (int) env('OPENAI_TIMEOUT', 120),
+    ],
+
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-3-5-sonnet-latest'),
+        'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com/v1'),
+        'timeout' => (int) env('ANTHROPIC_TIMEOUT', 120),
+        'max_tokens' => (int) env('ANTHROPIC_MAX_TOKENS', 8192),
     ],
 
     'gemini' => [
