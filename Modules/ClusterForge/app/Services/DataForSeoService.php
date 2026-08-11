@@ -2,7 +2,9 @@
 
 namespace Modules\ClusterForge\Services;
 
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -20,11 +22,33 @@ class DataForSeoService
 
     public function __construct()
     {
-        $this->baseUrl = rtrim((string) config('services.dataforseo.base_url', 'https://api.dataforseo.com'), '/');
-        $this->login = (string) config('services.dataforseo.login', '');
-        $this->password = (string) config('services.dataforseo.password', '');
-        $this->timeout = (int) config('services.dataforseo.timeout', 30);
-        $this->cacheTtl = (int) config('services.dataforseo.cache_ttl', 86400);
+        $this->baseUrl = rtrim((string) $this->setting('base_url', 'https://api.dataforseo.com'), '/');
+        $this->login = (string) $this->setting('login', '');
+        $this->password = (string) $this->decryptPassword($this->setting('password', ''));
+        $this->timeout = (int) $this->setting('timeout', 30);
+        $this->cacheTtl = (int) $this->setting('cache_ttl', 86400);
+    }
+
+    private function setting(string $key, mixed $default): mixed
+    {
+        $siteValue = SiteSetting::value('dataforseo_'.$key);
+
+        return $siteValue !== null ? $siteValue : (config('services.dataforseo.'.$key) ?? $default);
+    }
+
+    private function decryptPassword(string $password): string
+    {
+        if ($password === '') {
+            return '';
+        }
+
+        try {
+            $decrypted = Crypt::decryptString($password);
+
+            return $decrypted;
+        } catch (\Throwable) {
+            return $password;
+        }
     }
 
     public function isConfigured(): bool
