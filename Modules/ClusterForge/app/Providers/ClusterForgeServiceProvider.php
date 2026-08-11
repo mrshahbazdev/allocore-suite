@@ -3,6 +3,8 @@
 namespace Modules\ClusterForge\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Modules\ClusterForge\Services\AiService;
+use Modules\ClusterForge\Services\Contracts\AiProvider;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class ClusterForgeServiceProvider extends ModuleServiceProvider
@@ -43,4 +45,11 @@ class ClusterForgeServiceProvider extends ModuleServiceProvider
     // {
     //     $schedule->command('inspire')->hourly();
     // }
+
+    public function register(): void
+    {
+        parent::register();
+
+        $this->app->bind(AiProvider::class, AiService::class);
+    }
 }
