@@ -137,6 +137,12 @@ class GeminiService
 
                 $retryable = in_array($lastStatus, [429, 500, 502, 503, 504], true);
                 if (! $retryable) {
+                    if ($lastStatus === 400) {
+                        Log::info('Gemini 400 on model — trying next fallback', ['model' => $model]);
+
+                        continue 2;
+                    }
+
                     throw new RuntimeException(
                         sprintf('Gemini API error %d: %s', $lastStatus, substr($lastBody, 0, 500))
                     );
@@ -178,10 +184,7 @@ class GeminiService
             ]],
             'generationConfig' => [
                 'temperature' => $temperature,
-                'maxOutputTokens' => (int) $this->setting('max_output_tokens', config('services.gemini.max_output_tokens', 32768)),
-                'thinkingConfig' => [
-                    'thinkingBudget' => 0,
-                ],
+                'maxOutputTokens' => (int) $this->setting('max_output_tokens', config('services.gemini.max_output_tokens', 8192)),
             ],
         ];
 
