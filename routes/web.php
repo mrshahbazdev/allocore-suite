@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\BulkUserController as AdminBulkUserController;
 use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DataForSeoSettingController;
 use App\Http\Controllers\Admin\EnvController as AdminEnvController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
@@ -443,6 +444,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('mail-settings', [MailSettingController::class, 'index'])->name('mail-settings.index');
     Route::put('mail-settings', [MailSettingController::class, 'update'])->name('mail-settings.update');
     Route::post('mail-settings/test', [MailSettingController::class, 'sendTest'])->name('mail-settings.test');
+
+    Route::get('dataforseo', [DataForSeoSettingController::class, 'index'])->name('dataforseo.index');
+    Route::put('dataforseo', [DataForSeoSettingController::class, 'update'])->name('dataforseo.update');
 
     Route::get('env', [AdminEnvController::class, 'index'])->name('env.index');
     Route::put('env', [AdminEnvController::class, 'update'])->name('env.update');
