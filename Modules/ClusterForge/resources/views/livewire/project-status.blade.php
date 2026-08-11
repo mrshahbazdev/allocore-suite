@@ -6,7 +6,7 @@
     };
 @endphp
 
-<div wire:poll.3s="render" x-data="{ status: '{{ $project?->status ?? '' }}' }" x-init="$watch('status', value => { if (value === 'completed' || value === 'failed') window.location.reload(); })">
+<div @if ($project?->isInProgress()) wire:poll.3s @endif>
     <p class="text-sm text-slate-500">
         {{ $project?->website }}
         · <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $statusClass }}">{{ $project?->statusLabel() }}</span>
