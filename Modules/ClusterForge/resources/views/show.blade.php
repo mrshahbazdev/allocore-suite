@@ -8,26 +8,13 @@
 @endsection
 
 @section('content')
-    @php($statusClass = match($project->status) {
-        'completed' => 'bg-emerald-100 text-emerald-700',
-        'failed' => 'bg-rose-100 text-rose-700',
-        default => 'bg-amber-100 text-amber-700',
-    })
-
     <div class="max-w-7xl mx-auto space-y-6" x-data="{ tab: 'pillar' }">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ __('ClusterForge') }}</p>
                 <h1 class="text-3xl font-bold text-slate-900">{{ $project->topic }}</h1>
-                <p class="text-sm text-slate-500">{{ $project->website }} · <span id="status-badge" class="rounded-full px-2 py-0.5 text-xs font-medium {{ $statusClass }}">{{ $project->statusLabel() }}</span> · <span id="progress-text">{{ $project->progressPercent() }}%</span></p>
-                @if ($project->isInProgress())
-                    <div class="mt-3 h-2 w-full max-w-md overflow-hidden rounded-full bg-slate-100">
-                        <div id="progress-bar" class="h-2 rounded-full bg-indigo-600 transition-all" style="width: {{ $project->progressPercent() }}%"></div>
-                    </div>
-                @endif
-                @if ($project->status === 'failed' && $project->error)
-                    <div id="error-box" class="mt-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{{ $project->error }}</div>
-                @endif
+
+                <livewire:clusterforge.project-status :project-id="$project->id" />
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 @if ($project->status === 'completed')
@@ -46,12 +33,6 @@
                 </form>
             </div>
         </div>
-
-        @if ($project->isInProgress())
-            <div id="processing-message" class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
-                {{ __('Your cluster is being generated. This page will update automatically.') }}
-            </div>
-        @endif
 
         @if ($project->status === 'completed')
             <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
@@ -119,44 +100,4 @@
         @endif
     </div>
 
-    @if ($project->isInProgress() || $project->status === 'failed')
-        @push('scripts')
-            <script>
-                (function () {
-                    const statusUrl = '{{ route('clusterforge.status', $project) }}';
-                    const projectUrl = '{{ route('clusterforge.show', $project) }}';
-                    let wasInProgress = {{ $project->isInProgress() ? 'true' : 'false' }};
-
-                    function poll() {
-                        fetch(statusUrl, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
-                            .then(r => r.json())
-                            .then(data => {
-                                const badge = document.getElementById('status-badge');
-                                const bar = document.getElementById('progress-bar');
-                                const text = document.getElementById('progress-text');
-
-                                if (badge) badge.textContent = data.status_label;
-                                if (bar) bar.style.width = data.progress_percent + '%';
-                                if (text) text.textContent = data.progress_percent + '%';
-
-                                if (data.is_in_progress && ! wasInProgress) {
-                                    window.location.href = projectUrl;
-                                    return;
-                                }
-
-                                if (! data.is_in_progress) {
-                                    window.location.href = projectUrl;
-                                    return;
-                                }
-
-                                setTimeout(poll, 3000);
-                            })
-                            .catch(() => setTimeout(poll, 5000));
-                    }
-
-                    poll();
-                })();
-            </script>
-        @endpush
-    @endif
 @endsection
