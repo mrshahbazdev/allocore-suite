@@ -16,12 +16,22 @@ class NotificationStreamController extends Controller
         $response = new StreamedResponse(function () use ($user, $lastId) {
             $lastId = (int) $lastId;
             $start = time();
-            $maxLifetime = 60 * 5; // 5 minutes
+
+            // Shared-hosting PHP often has a hard 120 s execution limit.
+            // Try to disable it, but always stop a few seconds before the
+            // configured limit to avoid a FatalError.
+            @set_time_limit(0);
+            $maxExecution = (int) ini_get('max_execution_time');
+            $maxLifetime = $maxExecution > 0 ? $maxExecution - 10 : 300;
 
             echo "event: connected\ndata: ".json_encode(['user_id' => $user->id])."\n\n";
             flush();
 
             while (true) {
+                if (connection_aborted()) {
+                    break;
+                }
+
                 if (time() - $start > $maxLifetime) {
                     echo "event: close\ndata: ".json_encode(['reason' => 'timeout'])."\n\n";
                     flush();
