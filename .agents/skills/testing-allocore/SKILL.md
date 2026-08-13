@@ -58,3 +58,9 @@ Service workers (`public/sw.js`) and locale cookies can cache the wrong module p
 - Forms that use Alpine `x-bind:name` for nested array fields (e.g. `steps[0][checklist][0][text]`) cannot be reliably replayed from static HTML with `curl`; use Laravel `TestCase` or parse the database IDs and reconstruct the payload.
 - Temporary `/test-login` or `/debug-session` routes added to `routes/web.php` may not persist across commands in this environment. Prefer a committed test-login command/Seeded API token, or authenticate via `actingAs()` in feature tests instead of relying on browser cookies.
 - If `computer` tool mouse/keyboard events fail to interact with Chrome content or session cookies built manually are rejected, fall back to `TestCase`/`Livewire::test` assertions and `curl` checks rather than full browser recordings.
+
+## AuditPro / locale testing
+- `SetLocale` precedence is `?lang=` query parameter → session `locale` → `User::locale` → default (`de` for non-testing).
+- `SiteSetting::value($key)` reads locale-specific keys (`{$key}_{$locale}`) and falls back to the base key and then the fallback-locale key. For AuditPro admin pages, ensure `SiteSetting::setGlobal('setup_wizard_completed', true)` is set (or a per-locale `setup_wizard_completed_{locale}` row) so `EnsureSetup` does not redirect to `/admin/setup`.
+- To verify German/English pages end-to-end when GUI cookie auth fails, save the authenticated HTML with `curl -b <cookies>` and render it with `chrome --headless --screenshot=<out> file:///tmp/page.html`.
+- When stopping processes, avoid `pkill -f` patterns that match the command line of the shell running the command. Use `pkill -9 chrome` to kill Chrome and `fuser -k 8000/tcp` to free the PHP dev-server port.
