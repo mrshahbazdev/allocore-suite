@@ -100,7 +100,7 @@ class DynamicSmtpTransport extends AbstractTransport
             $fromAddress = $this->resolveFromAddress($setting);
 
             if (filled($fromAddress)) {
-                $fromName = $setting->from_name ?: MailSetting::query()->global()->first()?->from_name ?: config('mail.from.name');
+                $fromName = $this->resolveFromName($setting);
                 $from = new Address($fromAddress, $fromName ?? '');
                 $email->from($from);
 
@@ -113,15 +113,43 @@ class DynamicSmtpTransport extends AbstractTransport
 
     private function resolveFromAddress(MailSetting $setting): ?string
     {
-        if (filled($setting->from_address)) {
-            return $setting->from_address;
+        $candidates = array_filter([
+            filled($setting->from_address) && ! $this->isPlaceholderAddress($setting->from_address) ? $setting->from_address : null,
+            $setting->user_id ? MailSetting::query()->global()->first()?->from_address : null,
+            config('mail.from.address'),
+        ]);
+
+        foreach ($candidates as $candidate) {
+            if (! $this->isPlaceholderAddress($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private function resolveFromName(MailSetting $setting): ?string
+    {
+        if (filled($setting->from_name)) {
+            return $setting->from_name;
         }
 
         if ($setting->user_id) {
-            return MailSetting::query()->global()->first()?->from_address;
+            return MailSetting::query()->global()->first()?->from_name ?: config('mail.from.name');
         }
 
-        return config('mail.from.address');
+        return config('mail.from.name');
+    }
+
+    private function isPlaceholderAddress(?string $address): bool
+    {
+        if (empty($address)) {
+            return true;
+        }
+
+        $address = strtolower($address);
+
+        return str_ends_with($address, '@example.com') || str_contains($address, 'example.com');
     }
 
     private function sendWithFallback(SentMessage $message): void
