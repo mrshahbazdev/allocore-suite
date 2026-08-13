@@ -18,7 +18,9 @@ class GenerateProjectJob implements ShouldQueue
 
     public int $timeout = 1200;
 
-    public int $tries = 1;
+    public int $tries = 3;
+
+    public array $backoff = [30, 60, 120];
 
     public function __construct(public int $projectId) {}
 
@@ -60,6 +62,8 @@ class GenerateProjectJob implements ShouldQueue
                 'status' => Project::STATUS_FAILED,
                 'error' => $e->getMessage(),
             ]);
+
+            throw $e;
         }
     }
 
