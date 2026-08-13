@@ -15,6 +15,24 @@ class GeminiService implements AiProvider
     /** @var array<int, string> */
     protected array $models;
 
+    /** @var array<int, string> */
+    protected array $validDefaults = [
+        'gemini-2.5-flash',
+        'gemini-1.5-flash',
+        'gemini-1.5-pro',
+        'gemini-3.5-flash',
+        'gemini-3.6-flash',
+    ];
+
+    /** @var array<int, string> */
+    protected array $deprecatedModels = [
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-001',
+        'gemini-2.0-flash-lite',
+        'gemini-2.0-flash-lite-001',
+        'gemini-flash-latest',
+    ];
+
     public function __construct(
         protected ?string $apiKey = null,
         ?string $model = null,
@@ -25,10 +43,11 @@ class GeminiService implements AiProvider
         $this->baseUrl ??= rtrim((string) $this->setting('base_url', config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta')), '/');
         $this->timeout ??= (int) $this->setting('timeout', config('services.gemini.timeout', 120));
 
-        $primary = $model ?: (string) $this->setting('model', config('services.gemini.model', 'gemini-flash-latest'));
+        $primary = $model ?: (string) $this->setting('model', config('services.gemini.model', 'gemini-2.5-flash'));
         $fallbacks = $this->fallbackModels();
 
-        $this->models = array_values(array_unique(array_filter(array_merge([$primary], $fallbacks))));
+        $candidates = array_merge([$primary], $fallbacks, $this->validDefaults);
+        $this->models = array_values(array_unique(array_filter(array_diff($candidates, $this->deprecatedModels))));
     }
 
     private function setting(string $key, mixed $default): mixed
@@ -60,9 +79,10 @@ class GeminiService implements AiProvider
     {
         $siteValue = SiteSetting::value('gemini_fallback_models');
         $value = $siteValue !== null ? $siteValue : config('services.gemini.fallback_models', [
-            'gemini-2.5-flash',
-            'gemini-2.0-flash',
-            'gemini-flash-latest',
+            'gemini-1.5-flash',
+            'gemini-1.5-pro',
+            'gemini-3.5-flash',
+            'gemini-3.6-flash',
         ]);
 
         if (is_array($value)) {

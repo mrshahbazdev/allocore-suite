@@ -75,15 +75,15 @@ return [
 
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL', 'gemini-flash-latest'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
         'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
         'timeout' => (int) env('GEMINI_TIMEOUT', 120),
-        'max_retries' => (int) env('GEMINI_MAX_RETRIES', 3),
+        'max_retries' => (int) env('GEMINI_MAX_RETRIES', 2),
         'retry_base_delay_ms' => (int) env('GEMINI_RETRY_BASE_DELAY_MS', 1500),
         'max_output_tokens' => (int) env('GEMINI_MAX_OUTPUT_TOKENS', 8192),
         'fallback_models' => array_values(array_filter(array_map('trim', explode(',', (string) env(
             'GEMINI_FALLBACK_MODELS',
-            'gemini-2.5-flash,gemini-2.0-flash,gemini-flash-latest'
+            'gemini-1.5-flash,gemini-1.5-pro,gemini-3.5-flash,gemini-3.6-flash'
         ))))),
     ],
 
