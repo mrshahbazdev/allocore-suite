@@ -97,7 +97,7 @@ class DynamicSmtpTransport extends AbstractTransport
         $email = $message->getMessage();
         $envelope = $message->getEnvelope();
 
-        Log::debug('DynamicSmtpTransport forward', [
+        Log::error('DynamicSmtpTransport forward', [
             'setting_id' => $setting->id,
             'setting_user_id' => $setting->user_id,
             'setting_from_address' => $setting->from_address,
@@ -109,7 +109,7 @@ class DynamicSmtpTransport extends AbstractTransport
         if ($email instanceof Email) {
             $fromAddress = $this->resolveFromAddress($setting);
 
-            Log::debug('DynamicSmtpTransport resolved from', ['from_address' => $fromAddress]);
+            Log::error('DynamicSmtpTransport resolved from', ['from_address' => $fromAddress]);
 
             if (filled($fromAddress)) {
                 $fromName = $this->resolveFromName($setting);
@@ -118,7 +118,7 @@ class DynamicSmtpTransport extends AbstractTransport
 
                 $envelope = new Envelope($from, $envelope->getRecipients());
 
-                Log::debug('DynamicSmtpTransport envelope updated', [
+                Log::error('DynamicSmtpTransport envelope updated', [
                     'new_envelope_class' => get_class($envelope),
                     'new_sender' => $envelope->getSender()?->getAddress(),
                 ]);
@@ -139,7 +139,7 @@ class DynamicSmtpTransport extends AbstractTransport
             config('mail.from.address'),
         ]);
 
-        Log::debug('DynamicSmtpTransport from candidates', [
+        Log::error('DynamicSmtpTransport from candidates', [
             'setting_from' => $setting->from_address,
             'global_from' => $global?->from_address,
             'config_from' => config('mail.from.address'),
