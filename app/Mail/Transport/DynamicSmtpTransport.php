@@ -4,6 +4,7 @@ namespace App\Mail\Transport;
 
 use App\Models\MailSetting;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
@@ -96,8 +97,19 @@ class DynamicSmtpTransport extends AbstractTransport
         $email = $message->getMessage();
         $envelope = $message->getEnvelope();
 
+        Log::debug('DynamicSmtpTransport forward', [
+            'setting_id' => $setting->id,
+            'setting_user_id' => $setting->user_id,
+            'setting_from_address' => $setting->from_address,
+            'message_class' => get_class($email),
+            'envelope_class' => get_class($envelope),
+            'envelope_sender' => $envelope->getSender()?->getAddress(),
+        ]);
+
         if ($email instanceof Email) {
             $fromAddress = $this->resolveFromAddress($setting);
+
+            Log::debug('DynamicSmtpTransport resolved from', ['from_address' => $fromAddress]);
 
             if (filled($fromAddress)) {
                 $fromName = $this->resolveFromName($setting);
@@ -105,6 +117,11 @@ class DynamicSmtpTransport extends AbstractTransport
                 $email->from($from);
 
                 $envelope = new Envelope($from, $envelope->getRecipients());
+
+                Log::debug('DynamicSmtpTransport envelope updated', [
+                    'new_envelope_class' => get_class($envelope),
+                    'new_sender' => $envelope->getSender()?->getAddress(),
+                ]);
             }
         }
 
@@ -113,10 +130,20 @@ class DynamicSmtpTransport extends AbstractTransport
 
     private function resolveFromAddress(MailSetting $setting): ?string
     {
+        $global = MailSetting::query()->global()->first();
+
         $candidates = array_filter([
             filled($setting->from_address) && ! $this->isPlaceholderAddress($setting->from_address) ? $setting->from_address : null,
-            $setting->user_id ? MailSetting::query()->global()->first()?->from_address : null,
+            $setting->user_id ? $global?->from_address : null,
+            $global?->from_address,
             config('mail.from.address'),
+        ]);
+
+        Log::debug('DynamicSmtpTransport from candidates', [
+            'setting_from' => $setting->from_address,
+            'global_from' => $global?->from_address,
+            'config_from' => config('mail.from.address'),
+            'candidates' => $candidates,
         ]);
 
         foreach ($candidates as $candidate) {
