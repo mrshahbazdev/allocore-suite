@@ -18,7 +18,7 @@ class SitemapController extends Controller
             'priority' => '1.0',
         ];
 
-        $pages = Page::where('is_active', true)->with('translations')->get();
+        $pages = Page::published()->with('translations')->get();
         foreach ($pages as $page) {
             foreach ($page->translations as $translation) {
                 $urls[] = [
