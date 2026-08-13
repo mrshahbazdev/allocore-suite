@@ -93,15 +93,16 @@ class DynamicSmtpTransport extends AbstractTransport
 
     private function forward(TransportInterface $transport, SentMessage $message, MailSetting $setting): void
     {
-        $email = $message->getMessage();
+        $email = $message->getOriginalMessage();
         $envelope = $message->getEnvelope();
+        $fromAddress = $this->resolveFromAddress($setting);
 
-        if ($email instanceof Email) {
-            $fromAddress = $this->resolveFromAddress($setting);
+        if (filled($fromAddress)) {
+            $fromName = $this->resolveFromName($setting);
+            $from = new Address($fromAddress, $fromName ?? '');
+            $envelope->setSender($from);
 
-            if (filled($fromAddress)) {
-                $fromName = $this->resolveFromName($setting);
-                $from = new Address($fromAddress, $fromName ?? '');
+            if ($email instanceof Email) {
                 $email->from($from);
             }
         }
