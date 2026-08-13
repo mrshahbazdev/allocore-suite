@@ -96,6 +96,12 @@ PROMPT;
 
     public function generateQuestionsForSubtopic(Subtopic $subtopic): void
     {
+        $subtopic = Subtopic::find($subtopic->id);
+
+        if (! $subtopic) {
+            return;
+        }
+
         $project = $subtopic->project;
         $lang = $this->languageInstruction($project);
 
@@ -142,6 +148,12 @@ PROMPT;
 
     public function generateAnswersForSubtopic(Subtopic $subtopic): void
     {
+        $subtopic = Subtopic::find($subtopic->id);
+
+        if (! $subtopic) {
+            return;
+        }
+
         $project = $subtopic->project;
         $questions = $subtopic->questions()->orderBy('sort_order')->get();
 
@@ -220,6 +232,12 @@ PROMPT;
 
     public function generateClusterPage(Subtopic $subtopic): void
     {
+        $subtopic = Subtopic::find($subtopic->id);
+
+        if (! $subtopic) {
+            return;
+        }
+
         $project = $subtopic->project;
         $questions = $subtopic->questions()->orderBy('sort_order')->get();
 

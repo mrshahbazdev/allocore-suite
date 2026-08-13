@@ -3,6 +3,7 @@
 namespace Modules\ClusterForge\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,7 +13,7 @@ use Modules\ClusterForge\Models\Project;
 use Modules\ClusterForge\Services\KeywordClusterGenerator;
 use Throwable;
 
-class GenerateProjectJob implements ShouldQueue
+class GenerateProjectJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,7 +23,14 @@ class GenerateProjectJob implements ShouldQueue
 
     public array $backoff = [30, 60, 120];
 
+    public int $uniqueFor = 1200;
+
     public function __construct(public int $projectId) {}
+
+    public function uniqueId(): string
+    {
+        return 'generate-project-'.$this->projectId;
+    }
 
     public function handle(KeywordClusterGenerator $generator): void
     {
