@@ -61,7 +61,8 @@ class MailSettingController extends Controller
         $user = $request->user();
 
         try {
-            Mail::to($user->email)->send(new TestMail($user));
+            Mail::to($user->email)
+                ->send((new TestMail($user))->from($setting->from_address, $setting->from_name));
         } catch (\Throwable $e) {
             report($e);
 

@@ -5,7 +5,6 @@ namespace App\Mail\Transport;
 use App\Models\MailSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mailer\Transport\Dsn;
@@ -97,31 +96,13 @@ class DynamicSmtpTransport extends AbstractTransport
         $email = $message->getMessage();
         $envelope = $message->getEnvelope();
 
-        Log::error('DynamicSmtpTransport forward', [
-            'setting_id' => $setting->id,
-            'setting_user_id' => $setting->user_id,
-            'setting_from_address' => $setting->from_address,
-            'message_class' => get_class($email),
-            'envelope_class' => get_class($envelope),
-            'envelope_sender' => $envelope->getSender()?->getAddress(),
-        ]);
-
         if ($email instanceof Email) {
             $fromAddress = $this->resolveFromAddress($setting);
-
-            Log::error('DynamicSmtpTransport resolved from', ['from_address' => $fromAddress]);
 
             if (filled($fromAddress)) {
                 $fromName = $this->resolveFromName($setting);
                 $from = new Address($fromAddress, $fromName ?? '');
                 $email->from($from);
-
-                $envelope = new Envelope($from, $envelope->getRecipients());
-
-                Log::error('DynamicSmtpTransport envelope updated', [
-                    'new_envelope_class' => get_class($envelope),
-                    'new_sender' => $envelope->getSender()?->getAddress(),
-                ]);
             }
         }
 
