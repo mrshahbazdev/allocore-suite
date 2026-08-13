@@ -104,6 +104,19 @@ class TemplateBuilder extends Component
         AuditPillar::where('template_id', $this->template->id)->findOrFail($id)->delete();
     }
 
+    public function questionTypeLabels(): array
+    {
+        return [
+            'scale_1_to_5' => __('Scale 0 to 4'),
+            'yes_no' => __('Yes / No'),
+            'text_input' => __('Text input'),
+            'select' => __('Select'),
+            'radio' => __('Radio'),
+            'checkbox' => __('Checkbox'),
+            'file_upload' => __('File upload'),
+        ];
+    }
+
     public function createQuestion(int $pillarId): void
     {
         AuditPillar::where('template_id', $this->template->id)->findOrFail($pillarId);

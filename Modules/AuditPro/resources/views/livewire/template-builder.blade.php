@@ -36,7 +36,7 @@
                                     <p class="font-medium text-slate-800">{{ __($question->question) }}</p>
                                     <p class="mt-1 text-sm text-slate-500">{{ __($question->description) }}</p>
                                     <div class="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
-                                        <span class="rounded bg-slate-100 px-2 py-1">{{ str_replace('_', ' ', $question->question_type) }}</span>
+                                        <span class="rounded bg-slate-100 px-2 py-1">{{ $this->questionTypeLabels()[$question->question_type] ?? str_replace('_', ' ', $question->question_type) }}</span>
                                         <span class="rounded bg-slate-100 px-2 py-1">{{ __('Weight :weight', ['weight' => $question->weight]) }}</span>
                                         @if ($question->is_required)<span class="rounded bg-amber-50 px-2 py-1 text-amber-700">{{ __('Required') }}</span>@endif
                                     </div>
@@ -111,7 +111,7 @@
                     <div>
                         <label class="text-sm font-medium text-slate-700">{{ __('Answer type') }}</label>
                         <select wire:model.live="questionType" class="mt-1 w-full rounded-lg border-slate-300">
-                            @foreach (['scale_1_to_5' => __('Scale 0 to 4'), 'yes_no' => __('Yes / No'), 'text_input' => __('Text input'), 'select' => __('Select'), 'radio' => __('Radio'), 'checkbox' => __('Checkbox'), 'file_upload' => __('File upload')] as $value => $label)
+                            @foreach ($this->questionTypeLabels() as $value => $label)
                                 <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
                         </select>
