@@ -4,7 +4,7 @@ namespace Modules\AuditPro\Services;
 
 use App\Models\Team;
 use Modules\AuditPro\Models\Audit;
-use Modules\AuditPro\Models\AuditAnswer;
+use Modules\AuditPro\Models\AuditQuestion;
 
 class BusinessReadinessSnapshot
 {
@@ -53,7 +53,9 @@ class BusinessReadinessSnapshot
                 'score' => $score,
                 'contribution' => $this->contribution($score, 20),
                 'questions' => $pillar->questions->map(function ($question) use ($answers, $questionTarget): array {
-                    $score = $this->answerScore($answers->get($question->id));
+                    $answer = $answers->get($question->id);
+                    $value = $answer?->value['answer'] ?? null;
+                    $score = $this->answerScore($question, $value);
 
                     return [
                         'position' => $question->position,
@@ -76,15 +78,24 @@ class BusinessReadinessSnapshot
         ];
     }
 
-    private function answerScore(?AuditAnswer $answer): ?float
+    private function answerScore(AuditQuestion $question, mixed $value): ?float
     {
-        $value = $answer?->value['answer'] ?? null;
+        if ($value === null || $value === '') {
+            return null;
+        }
 
-        return is_numeric($value) ? max(0, min(5, (float) $value)) : null;
+        return match ($question->question_type) {
+            'scale_1_to_5', 'radio', 'select' => is_numeric($value) ? max(0, min(4, (float) $value)) : null,
+            'yes_no' => in_array($value, [true, 1, '1', 'yes'], true) ? 4 : 0,
+            'checkbox' => is_array($value) && count($question->options ?? []) > 0
+                ? min(4, (count($value) / count($question->options)) * 4)
+                : null,
+            default => null,
+        };
     }
 
     private function contribution(?float $score, float $target): ?float
     {
-        return $score === null ? null : round(($score / 5) * $target, 1);
+        return $score === null ? null : round(($score / 4) * $target, 1);
     }
 }

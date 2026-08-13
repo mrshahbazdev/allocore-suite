@@ -176,10 +176,10 @@ class Assessment extends Component
 
                 $weight = (float) $question->weight;
                 $achieved += $score * $weight;
-                $possible += 5 * $weight;
+                $possible += 4 * $weight;
             }
 
-            $average = $possible > 0 ? ($achieved / $possible) * 5 : 0;
+            $average = $possible > 0 ? ($achieved / $possible) * 4 : 0;
 
             AuditResult::updateOrCreate(
                 ['audit_id' => $this->audit->id, 'level' => $pillar->name],
@@ -212,11 +212,11 @@ class Assessment extends Component
     private function score(string $type, mixed $value, ?array $options): ?float
     {
         return match ($type) {
-            'scale_1_to_5' => is_numeric($value) ? min(5, max(1, (float) $value)) : null,
-            'yes_no' => in_array($value, [true, 1, '1', 'yes'], true) ? 5 : 1,
-            'radio', 'select' => is_numeric($value) ? min(5, max(0, (float) $value)) : null,
+            'scale_1_to_5' => is_numeric($value) ? min(4, max(0, (float) $value)) : null,
+            'yes_no' => in_array($value, [true, 1, '1', 'yes'], true) ? 4 : 0,
+            'radio', 'select' => is_numeric($value) ? min(4, max(0, (float) $value)) : null,
             'checkbox' => is_array($value) && count($options ?? []) > 0
-                ? min(5, (count($value) / count($options)) * 5)
+                ? min(4, (count($value) / count($options)) * 4)
                 : null,
             default => null,
         };

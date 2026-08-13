@@ -157,11 +157,11 @@ class AuditController extends Controller
                 'industry_sub' => $audit->industry_sub ?: $audit->team->industry_sub,
                 'size' => $audit->size ?: $audit->team->size,
                 'company_age' => $audit->company_age ?? $audit->team->company_age,
-                'score' => round(($overallScore / 5) * 100, 2),
+                'score' => round(($overallScore / 4) * 100, 2),
                 'maturity_level' => $overallMaturity,
                 'pillars' => $audit->results->map(fn ($r) => [
                     'name' => $r->level,
-                    'score' => round(((float) $r->average_score / 5) * 100, 2),
+                    'score' => round(((float) $r->average_score / 4) * 100, 2),
                     'maturity' => $r->maturity_level,
                 ])->values()->all(),
             ]);

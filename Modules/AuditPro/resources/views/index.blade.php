@@ -22,7 +22,7 @@
         ['label' => __('Total audits'), 'value' => $stats['total'], 'color' => 'bg-[#ff9200]', 'icon' => 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z'],
         ['label' => __('In progress'), 'value' => $stats['active'], 'color' => 'bg-[#0094af]', 'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z'],
         ['label' => __('Completed'), 'value' => $stats['completed'], 'color' => 'bg-emerald-500', 'icon' => 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-        ['label' => __('Average score'), 'value' => number_format($stats['average'], 1).'/5', 'color' => 'bg-slate-700', 'icon' => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z'],
+        ['label' => __('Average score'), 'value' => number_format($stats['average'], 1).'/4', 'color' => 'bg-slate-700', 'icon' => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z'],
     ])
     <div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         @foreach ($statCards as $card)
@@ -129,7 +129,7 @@
                                     {{ $audit->status === 'completed' ? __('Completed') : __('In progress') }}
                                 </span>
                             </td>
-                            <td class="px-5 py-4 text-slate-600">{{ $audit->status === 'completed' ? number_format((float) $audit->results->avg('average_score'), 1).'/5' : '—' }}</td>
+                            <td class="px-5 py-4 text-slate-600">{{ $audit->status === 'completed' ? number_format((float) $audit->results->avg('average_score'), 1).'/4' : '—' }}</td>
                             <td class="px-5 py-4 text-right">
                                 <a href="{{ $audit->status === 'completed' ? route('audit.results', $audit) : route('audit.assessment', $audit) }}" class="rounded-lg bg-[#ff9200] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
                                     {{ $audit->status === 'completed' ? __('View') : __('Resume') }}

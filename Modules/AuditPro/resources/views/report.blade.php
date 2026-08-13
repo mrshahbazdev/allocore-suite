@@ -55,7 +55,7 @@
             </div>
             <div class="score">
                 <strong>{{ number_format($overallScore, 1) }}</strong>
-                <span>{{ __('Overall score out of 5') }}</span>
+                <span>{{ __('Overall score out of 4') }}</span>
             </div>
         </header>
 
@@ -74,8 +74,8 @@
                     @foreach ($audit->results as $result)
                         <tr>
                             <td><strong>{{ $result->level }}</strong></td>
-                            <td><div class="bar"><div style="width: {{ min(100, ((float) $result->average_score / 5) * 100) }}%"></div></div></td>
-                            <td>{{ number_format((float) $result->average_score, 1) }}/5</td>
+                            <td><div class="bar"><div style="width: {{ min(100, ((float) $result->average_score / 4) * 100) }}%"></div></div></td>
+                            <td>{{ number_format((float) $result->average_score, 1) }}/4</td>
                             <td>{{ __($result->maturity_level) }}</td>
                         </tr>
                     @endforeach
