@@ -2,16 +2,14 @@
 
 namespace Modules\InvoiceMaker\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use App\Mail\TemplatedMailable;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Content;
 use Illuminate\Support\Facades\URL;
 use Modules\InvoiceMaker\Models\Invoice;
 
-class InvoiceMail extends Mailable
+class InvoiceMail extends TemplatedMailable
 {
-    use Queueable, SerializesModels;
-
     public Invoice $invoice;
 
     public ?string $pdfContent;
@@ -35,26 +33,53 @@ class InvoiceMail extends Mailable
         $this->customBody = $customBody;
     }
 
-    public function build(): self
+    public function templateTool(): string
     {
-        $mailable = $this->subject($this->customSubject)
-            ->markdown('invoicemaker::emails.invoice')
-            ->with([
-                'invoice' => $this->invoice,
-                'subjectLine' => $this->customSubject,
-                'message' => $this->customBody,
-                'url' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
-                'downloadUrl' => URL::signedRoute('invoicemaker.public.download', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
-            ]);
+        return 'invoicemaker';
+    }
 
+    public function templateKey(): string
+    {
+        return 'invoice';
+    }
+
+    public function templateVariables(): array
+    {
+        return [
+            'invoiceNumber' => $this->invoice->invoice_number,
+            'amountDue' => $this->invoice->amount_due,
+            'currencySymbol' => $this->invoice->currency_symbol,
+            'dueDate' => $this->invoice->due_date?->format('d M Y'),
+            'url' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
+            'downloadUrl' => URL::signedRoute('invoicemaker.public.download', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
+            'subjectLine' => $this->customSubject,
+            'message' => $this->customBody,
+            'appName' => config('app.name'),
+        ];
+    }
+
+    protected function defaultSubject(): string
+    {
+        return $this->customSubject;
+    }
+
+    protected function defaultContent(): Content
+    {
+        return new Content(
+            markdown: 'invoicemaker::emails.invoice',
+            with: $this->templateVariables(),
+        );
+    }
+
+    public function attachments(): array
+    {
         if ($this->pdfContent !== null && $this->pdfContent !== '') {
-            $mailable->attachData(
-                $this->pdfContent,
-                $this->invoice->invoice_number.'.pdf',
-                ['mime' => 'application/pdf'],
-            );
+            return [
+                Attachment::fromData(fn () => $this->pdfContent, $this->invoice->invoice_number.'.pdf')
+                    ->withMime('application/pdf'),
+            ];
         }
 
-        return $mailable;
+        return [];
     }
 }

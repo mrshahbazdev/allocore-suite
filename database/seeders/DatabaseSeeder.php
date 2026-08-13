@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(CoreSeeder::class);
+        $this->call(EmailTemplateSeeder::class);
         $this->call(IndustrySeeder::class);
 
         if (app()->environment('local') || env('DEMO_SEED', false)) {
