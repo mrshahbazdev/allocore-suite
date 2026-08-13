@@ -96,14 +96,32 @@ class DynamicSmtpTransport extends AbstractTransport
         $email = $message->getMessage();
         $envelope = $message->getEnvelope();
 
-        if ($email instanceof Email && filled($setting->from_address)) {
-            $from = new Address($setting->from_address, $setting->from_name ?? '');
-            $email->from($from);
+        if ($email instanceof Email) {
+            $fromAddress = $this->resolveFromAddress($setting);
 
-            $envelope = new Envelope($from, $envelope->getRecipients());
+            if (filled($fromAddress)) {
+                $fromName = $setting->from_name ?: MailSetting::query()->global()->first()?->from_name ?: config('mail.from.name');
+                $from = new Address($fromAddress, $fromName ?? '');
+                $email->from($from);
+
+                $envelope = new Envelope($from, $envelope->getRecipients());
+            }
         }
 
         $transport->send($email, $envelope);
+    }
+
+    private function resolveFromAddress(MailSetting $setting): ?string
+    {
+        if (filled($setting->from_address)) {
+            return $setting->from_address;
+        }
+
+        if ($setting->user_id) {
+            return MailSetting::query()->global()->first()?->from_address;
+        }
+
+        return config('mail.from.address');
     }
 
     private function sendWithFallback(SentMessage $message): void
