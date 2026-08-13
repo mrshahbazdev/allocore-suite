@@ -3,31 +3,44 @@
 namespace App\Mail;
 
 use App\Models\ScheduledReport;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class ScheduledReportMail extends Mailable
+class ScheduledReportMail extends TemplatedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public ScheduledReport $scheduledReport,
         public string $filePath,
         public string $fileName,
     ) {}
 
-    public function envelope(): Envelope
+    public function templateTool(): string
     {
-        return new Envelope(
-            subject: __('Scheduled report').': '.$this->scheduledReport->title,
-        );
+        return 'core';
     }
 
-    public function content(): Content
+    public function templateKey(): string
+    {
+        return 'scheduled-report';
+    }
+
+    public function templateVariables(): array
+    {
+        return [
+            'title' => $this->scheduledReport->title,
+            'reportType' => $this->scheduledReport->report_type,
+            'frequency' => $this->scheduledReport->frequency,
+            'format' => $this->scheduledReport->format,
+            'appName' => config('app.name'),
+        ];
+    }
+
+    protected function defaultSubject(): string
+    {
+        return __('Scheduled report').': '.$this->scheduledReport->title;
+    }
+
+    protected function defaultContent(): Content
     {
         return new Content(
             markdown: 'emails.scheduled-report',

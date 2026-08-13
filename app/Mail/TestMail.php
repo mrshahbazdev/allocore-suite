@@ -3,26 +3,36 @@
 namespace App\Mail;
 
 use App\Models\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class TestMail extends Mailable
+class TestMail extends TemplatedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(public User $user) {}
 
-    public function envelope(): Envelope
+    public function templateTool(): string
     {
-        return new Envelope(
-            subject: __('Test email from :app', ['app' => config('app.name')]),
-        );
+        return 'core';
     }
 
-    public function content(): Content
+    public function templateKey(): string
+    {
+        return 'test';
+    }
+
+    public function templateVariables(): array
+    {
+        return [
+            'userName' => $this->user->name,
+            'appName' => config('app.name'),
+        ];
+    }
+
+    protected function defaultSubject(): string
+    {
+        return __('Test email from :app', ['app' => config('app.name')]);
+    }
+
+    protected function defaultContent(): Content
     {
         return new Content(
             view: 'emails.test',
