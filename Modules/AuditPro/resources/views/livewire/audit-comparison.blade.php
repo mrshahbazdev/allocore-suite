@@ -34,17 +34,17 @@
                         <div class="mt-4 flex items-end justify-between border-b border-slate-100 pb-4">
                             <div>
                                 <p class="text-sm text-slate-500">{{ $data['audit']->created_at->format('F d, Y') }}</p>
-                                <p class="text-sm font-medium text-slate-700">{{ $data['audit']->template?->name }}</p>
+                                <p class="text-sm font-medium text-slate-700">{{ __($data['audit']->template?->name) }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-3xl font-bold text-indigo-700">{{ number_format($data['score'], 1) }}</p>
-                                <p class="text-xs font-medium text-slate-500">{{ $data['maturity'] }}</p>
+                                <p class="text-xs font-medium text-slate-500">{{ __($data['maturity']) }}</p>
                             </div>
                         </div>
                         <div class="mt-5 space-y-4">
                             @foreach ($data['results'] as $result)
                                 <div>
-                                    <div class="flex justify-between text-sm"><span class="font-medium text-slate-700">{{ $result->level }}</span><span class="text-slate-500">{{ number_format((float) $result->average_score, 1) }}/4</span></div>
+                                    <div class="flex justify-between text-sm"><span class="font-medium text-slate-700">{{ __($result->level) }}</span><span class="text-slate-500">{{ number_format((float) $result->average_score, 1) }}/4</span></div>
                                     <div class="mt-1 h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full bg-indigo-500" style="width: {{ min(100, ((float) $result->average_score / 4) * 100) }}%"></div></div>
                                 </div>
                             @endforeach
@@ -65,7 +65,7 @@
                         @if ($secondResult)
                             @php($change = (float) $secondResult->average_score - (float) $result->average_score)
                             <div class="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 text-sm">
-                                <span class="font-medium text-slate-700">{{ $level }}</span>
+                                <span class="font-medium text-slate-700">{{ __($level) }}</span>
                                 <span class="{{ $change > 0 ? 'text-emerald-600' : ($change < 0 ? 'text-rose-600' : 'text-slate-500') }}">{{ $change > 0 ? '+' : '' }}{{ number_format($change, 1) }}</span>
                             </div>
                         @endif

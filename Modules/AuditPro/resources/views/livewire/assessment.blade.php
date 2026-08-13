@@ -3,7 +3,7 @@
         <div class="mb-6 flex items-center justify-between gap-4">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ __('AuditPro assessment') }}</p>
-                <h1 class="text-2xl font-bold text-slate-900">{{ $audit->template->name }}</h1>
+                <h1 class="text-2xl font-bold text-slate-900">{{ __($audit->template->name) }}</h1>
                 <p class="text-sm text-slate-500">{{ __('Step :current of :total', ['current' => $currentStep, 'total' => $stepCount]) }}</p>
             </div>
             <button wire:click="saveDraft" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('Save draft') }}</button>
@@ -16,8 +16,8 @@
         @if ($pillar)
             <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-6 py-5">
-                    <h2 class="text-xl font-semibold text-slate-900">{{ $pillar->name }}</h2>
-                    <p class="mt-1 text-sm text-slate-500">{{ $pillar->description }}</p>
+                    <h2 class="text-xl font-semibold text-slate-900">{{ __($pillar->name) }}</h2>
+                    <p class="mt-1 text-sm text-slate-500">{{ __($pillar->description) }}</p>
                 </div>
                 <div class="divide-y divide-slate-100">
                     @php $questionNumber = 1; @endphp
@@ -26,8 +26,8 @@
                             <div class="flex gap-2">
                                 <span class="font-semibold text-slate-900">{{ $questionNumber++ }}.</span>
                                 <div>
-                                    <p class="font-medium text-slate-900">{{ $mainQuestion->question }} @if ($mainQuestion->is_required)<span class="text-rose-500">*</span>@endif</p>
-                                    @if ($mainQuestion->description)<p class="mt-1 text-sm text-slate-500">{{ $mainQuestion->description }}</p>@endif
+                                    <p class="font-medium text-slate-900">{{ __($mainQuestion->question) }} @if ($mainQuestion->is_required)<span class="text-rose-500">*</span>@endif</p>
+                                    @if ($mainQuestion->description)<p class="mt-1 text-sm text-slate-500">{{ __($mainQuestion->description) }}</p>@endif
                                 </div>
                             </div>
 
@@ -40,8 +40,8 @@
                                             <div class="flex gap-2">
                                                 <span class="font-semibold text-slate-700">{{ $questionNumber++ }}.</span>
                                                 <div>
-                                                    <p class="font-medium text-slate-900">{{ $followUp->question }} @if ($followUp->is_required)<span class="text-rose-500">*</span>@endif</p>
-                                                    @if ($followUp->description)<p class="mt-1 text-sm text-slate-500">{{ $followUp->description }}</p>@endif
+                                                    <p class="font-medium text-slate-900">{{ __($followUp->question) }} @if ($followUp->is_required)<span class="text-rose-500">*</span>@endif</p>
+                                                    @if ($followUp->description)<p class="mt-1 text-sm text-slate-500">{{ __($followUp->description) }}</p>@endif
                                                 </div>
                                             </div>
                                             @include('auditpro::livewire.partials.question-input', ['question' => $followUp])

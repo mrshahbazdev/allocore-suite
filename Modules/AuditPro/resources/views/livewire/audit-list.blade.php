@@ -39,7 +39,7 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($audits as $audit)
                         <tr>
-                            <td class="px-5 py-4 font-medium text-slate-900">{{ $audit->template?->name ?? __('Archived template') }}</td>
+                            <td class="px-5 py-4 font-medium text-slate-900">{{ $audit->template?->name ? __($audit->template?->name) : __('Archived template') }}</td>
                             <td class="px-5 py-4 text-slate-600">{{ $audit->creator?->name ?? __('Deleted user') }}</td>
                             <td class="px-5 py-4 text-slate-600">{{ $audit->created_at->format('M d, Y') }}</td>
                             <td class="px-5 py-4">

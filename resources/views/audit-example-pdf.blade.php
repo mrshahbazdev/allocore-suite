@@ -24,7 +24,7 @@
     <div style="margin-top: 24px;">
         <p style="font-size: 14px; color: #64748b;">{{ __('Allocore Score') }}</p>
         <div class="score">{{ $score->score }}</div>
-        <span class="badge">{{ $score->maturity_level }}</span>
+        <span class="badge">{{ __($score->maturity_level) }}</span>
     </div>
 
     <h2>{{ __('Pillar-Ergebnisse') }}</h2>
@@ -39,11 +39,11 @@
         <tbody>
             @foreach ($score->pillars as $pillar)
                 <tr>
-                    <td>{{ $pillar['name'] }}</td>
+                    <td>{{ __($pillar['name']) }}</td>
                     <td>
                         <div class="bar"><div class="bar-fill" style="width: {{ min(100, max(0, $pillar['score'])) }}%"></div></div>
                     </td>
-                    <td>{{ $pillar['maturity'] }}</td>
+                    <td>{{ __($pillar['maturity']) }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -52,7 +52,7 @@
     <h2>{{ __('Priorisierte Empfehlungen') }}</h2>
     @foreach (collect($score->pillars)->sortBy('score')->take(3) as $pillar)
         <div class="recommendation">
-            <strong>{{ $pillar['name'] }} — {{ $pillar['score'] }}</strong>
+            <strong>{{ __($pillar['name']) }} — {{ $pillar['score'] }}</strong>
             <p>{{ __('Als nächstes priorisieren: diesen Reifegrad weiter steigern.') }}</p>
         </div>
     @endforeach

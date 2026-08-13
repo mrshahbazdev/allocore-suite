@@ -62,7 +62,7 @@
                     <label class="mb-1 block text-xs font-medium text-slate-600">{{ __('Template') }}</label>
                     <select name="template_id" required class="w-full rounded-lg border-slate-300 text-sm focus:border-[#ff9200] focus:ring-[#ff9200]/20">
                         @foreach ($templates as $template)
-                            <option value="{{ $template->id }}">{{ $template->name }} ({{ $template->questions_count }})</option>
+                            <option value="{{ $template->id }}">{{ __($template->name) }} ({{ $template->questions_count }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -121,7 +121,7 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($audits as $audit)
                         <tr>
-                            <td class="px-5 py-4 font-medium text-slate-900">{{ $audit->template?->name ?? __('Archived template') }}</td>
+                            <td class="px-5 py-4 font-medium text-slate-900">{{ $audit->template?->name ? __($audit->template?->name) : __('Archived template') }}</td>
                             <td class="px-5 py-4 text-slate-600">{{ __(ucfirst(str_replace('_', ' ', $audit->audit_type))) }}</td>
                             <td class="px-5 py-4 text-slate-600">{{ $audit->creator?->name ?? __('Deleted user') }}</td>
                             <td class="px-5 py-4">

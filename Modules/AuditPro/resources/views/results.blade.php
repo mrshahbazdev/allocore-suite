@@ -7,7 +7,7 @@
         <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ __('Completed assessment') }}</p>
             <h1 class="text-2xl font-bold text-slate-900">{{ $audit->team->name }}</h1>
-            <p class="text-sm text-slate-500">{{ $audit->template?->name }} · {{ __(ucfirst(str_replace('_', ' ', $audit->audit_type))) }} · {{ $audit->updated_at->format('F d, Y') }}</p>
+            <p class="text-sm text-slate-500">{{ __($audit->template?->name) }} · {{ __(ucfirst(str_replace('_', ' ', $audit->audit_type))) }} · {{ $audit->updated_at->format('F d, Y') }}</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('audit.report', $audit) }}" target="_blank" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('Print report') }}</a>
@@ -30,7 +30,7 @@
                         <span class="text-4xl font-bold text-slate-900">{{ $allocoreScore->score }}</span>
                         <span class="mb-1 text-sm text-slate-500">/ 100</span>
                     </div>
-                    <p class="mt-1 text-sm text-slate-600">{{ $allocoreScore->maturity_level }}</p>
+                    <p class="mt-1 text-sm text-slate-600">{{ __($allocoreScore->maturity_level) }}</p>
                 </div>
             @endif
             <dl class="mt-6 space-y-3 border-t border-slate-100 pt-5 text-sm">
@@ -66,7 +66,7 @@
             <p class="mt-1 text-sm text-slate-500">{{ __('A challenge guides you through Plan → Do → Check → Act using the recommended tools.') }}</p>
             <form method="POST" action="{{ route('audit.challenges.store', $audit) }}" class="mt-4">
                 @csrf
-                <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Start challenge for :pillar', ['pillar' => $recommendations['items'][0]['pillar']]) }}</button>
+                <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Start challenge for :pillar', ['pillar' => __($recommendations['items'][0]['pillar'])]) }}</button>
             </form>
         </div>
     @endif
@@ -80,7 +80,7 @@
                 <div class="p-5">
                     <div class="flex items-start justify-between gap-4">
                         <div>
-                            <h3 class="font-semibold text-slate-900">{{ $result->level }}</h3>
+                            <h3 class="font-semibold text-slate-900">{{ __($result->level) }}</h3>
                             <p class="text-sm text-slate-500">{{ __($result->maturity_level) }}</p>
                         </div>
                         <span class="text-lg font-bold text-indigo-700">{{ number_format((float) $result->average_score, 1) }}/4</span>
@@ -101,7 +101,7 @@
             new window.Chart(canvas, {
                 type: 'radar',
                 data: {
-                    labels: @json($radarLabels),
+                    labels: {!! json_encode($radarLabels->map(fn ($l) => __($l))) !!},
                     datasets: [{
                         label: @json(__('Maturity score')),
                         data: @json($radarScores),
