@@ -18,7 +18,7 @@
                     {{ $overallPercent === null ? '—' : number_format($overallPercent, 1).'%' }}
                 </p>
                 <p class="mt-1 text-xs text-indigo-700">
-                    {{ $overallScore === null ? __('Complete an audit to calculate it.') : number_format($overallScore, 1).'/5 '.__('overall score') }}
+                    {{ $overallScore === null ? __('Complete an audit to calculate it.') : number_format($overallScore, 1).'/4 '.__('overall score') }}
                 </p>
             </div>
             <div class="rounded-xl bg-slate-50 p-4">
@@ -104,7 +104,7 @@
                             <div class="h-full rounded-full bg-indigo-500" style="width: {{ $phase['contribution'] === null ? 0 : min(100, ($phase['contribution'] / $phase['target']) * 100) }}%"></div>
                         </div>
                         <p class="mt-1 text-right text-xs text-slate-500">
-                            {{ $phase['score'] === null ? __('Not measured') : number_format($phase['score'], 1).'/5' }}
+                            {{ $phase['score'] === null ? __('Not measured') : number_format($phase['score'], 1).'/4' }}
                         </p>
 
                         <div class="mt-4 divide-y divide-slate-100 border-t border-slate-100">
@@ -119,7 +119,7 @@
                                     </div>
                                     <p class="mt-1 text-xs leading-5 text-slate-500">{{ $question['description'] }}</p>
                                     @if ($question['score'] !== null)
-                                        <p class="mt-1 text-xs font-medium text-indigo-600">{{ number_format($question['score'], 1) }}/5</p>
+                                        <p class="mt-1 text-xs font-medium text-indigo-600">{{ number_format($question['score'], 1) }}/4</p>
                                     @endif
                                 </div>
                             @endforeach

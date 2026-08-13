@@ -20,7 +20,7 @@
             <p class="text-sm font-medium text-slate-500">{{ __('Overall maturity') }}</p>
             <div class="mt-4 flex items-end gap-2">
                 <span class="text-6xl font-bold tracking-tight text-indigo-700">{{ number_format($overallScore, 1) }}</span>
-                <span class="pb-2 text-lg text-slate-400">/ 5</span>
+                <span class="pb-2 text-lg text-slate-400">/ 4</span>
             </div>
             <span class="mt-4 inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">{{ __($overallMaturity) }}</span>
             @if ($allocoreScore)
@@ -83,10 +83,10 @@
                             <h3 class="font-semibold text-slate-900">{{ $result->level }}</h3>
                             <p class="text-sm text-slate-500">{{ __($result->maturity_level) }}</p>
                         </div>
-                        <span class="text-lg font-bold text-indigo-700">{{ number_format((float) $result->average_score, 1) }}/5</span>
+                        <span class="text-lg font-bold text-indigo-700">{{ number_format((float) $result->average_score, 1) }}/4</span>
                     </div>
                     <div class="mt-3 h-2.5 rounded-full bg-slate-100">
-                        <div class="h-2.5 rounded-full bg-indigo-500" style="width: {{ min(100, ((float) $result->average_score / 5) * 100) }}%"></div>
+                        <div class="h-2.5 rounded-full bg-indigo-500" style="width: {{ min(100, ((float) $result->average_score / 4) * 100) }}%"></div>
                     </div>
                 </div>
             @endforeach
@@ -113,7 +113,7 @@
                 },
                 options: {
                     responsive: true,
-                    scales: { r: { beginAtZero: true, min: 0, max: 5, ticks: { stepSize: 1 } } },
+                    scales: { r: { beginAtZero: true, min: 0, max: 4, ticks: { stepSize: 1 } } },
                     plugins: { legend: { display: false } },
                 },
             });

@@ -71,6 +71,6 @@ class AllocoreScoreService
 
     private static function to100(float $raw): float
     {
-        return round(($raw / 5) * 100, 2);
+        return round(($raw / 4) * 100, 2);
     }
 }

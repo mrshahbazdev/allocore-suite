@@ -47,7 +47,7 @@
                                     {{ $audit->status === 'completed' ? __('Completed') : __('In progress') }}
                                 </span>
                             </td>
-                            <td class="px-5 py-4 text-slate-600">{{ $audit->status === 'completed' ? number_format((float) $audit->results->avg('average_score'), 1).'/5' : '—' }}</td>
+                            <td class="px-5 py-4 text-slate-600">{{ $audit->status === 'completed' ? number_format((float) $audit->results->avg('average_score'), 1).'/4' : '—' }}</td>
                             <td class="px-5 py-4">
                                 <div class="flex justify-end gap-3">
                                     <a href="{{ $audit->status === 'completed' ? route('audit.results', $audit) : route('audit.assessment', $audit) }}" class="font-medium text-indigo-600 hover:underline">

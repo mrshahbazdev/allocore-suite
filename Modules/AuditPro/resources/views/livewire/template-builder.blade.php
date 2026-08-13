@@ -111,8 +111,8 @@
                     <div>
                         <label class="text-sm font-medium text-slate-700">{{ __('Answer type') }}</label>
                         <select wire:model.live="questionType" class="mt-1 w-full rounded-lg border-slate-300">
-                            @foreach (['scale_1_to_5', 'yes_no', 'text_input', 'select', 'radio', 'checkbox', 'file_upload'] as $type)
-                                <option value="{{ $type }}">{{ ucfirst(str_replace('_', ' ', $type)) }}</option>
+                            @foreach (['scale_1_to_5' => __('Scale 0 to 4'), 'yes_no' => __('Yes / No'), 'text_input' => __('Text input'), 'select' => __('Select'), 'radio' => __('Radio'), 'checkbox' => __('Checkbox'), 'file_upload' => __('File upload')] as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>

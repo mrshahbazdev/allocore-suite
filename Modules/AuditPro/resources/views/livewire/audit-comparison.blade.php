@@ -44,8 +44,8 @@
                         <div class="mt-5 space-y-4">
                             @foreach ($data['results'] as $result)
                                 <div>
-                                    <div class="flex justify-between text-sm"><span class="font-medium text-slate-700">{{ $result->level }}</span><span class="text-slate-500">{{ number_format((float) $result->average_score, 1) }}/5</span></div>
-                                    <div class="mt-1 h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full bg-indigo-500" style="width: {{ min(100, ((float) $result->average_score / 5) * 100) }}%"></div></div>
+                                    <div class="flex justify-between text-sm"><span class="font-medium text-slate-700">{{ $result->level }}</span><span class="text-slate-500">{{ number_format((float) $result->average_score, 1) }}/4</span></div>
+                                    <div class="mt-1 h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full bg-indigo-500" style="width: {{ min(100, ((float) $result->average_score / 4) * 100) }}%"></div></div>
                                 </div>
                             @endforeach
                         </div>
