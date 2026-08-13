@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DataForSeoSettingController;
+use App\Http\Controllers\Admin\EmailTemplateController as AdminEmailTemplateController;
 use App\Http\Controllers\Admin\EnvController as AdminEnvController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\FinancialController as AdminFinancialController;
@@ -416,6 +417,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('coupons', AdminCouponController::class)->names('coupons');
     Route::resource('tax-rates', AdminTaxRateController::class)->names('tax-rates');
     Route::resource('notification-templates', AdminNotificationTemplateController::class)->names('notification-templates');
+    Route::resource('email-templates', AdminEmailTemplateController::class)->names('email-templates')->only(['index', 'edit', 'update']);
+    Route::get('email-templates/{template}/preview', [AdminEmailTemplateController::class, 'preview'])->name('email-templates.preview');
     Route::get('queue-monitor', [AdminQueueMonitorController::class, 'index'])->name('queue-monitor.index');
 
     Route::get('notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');

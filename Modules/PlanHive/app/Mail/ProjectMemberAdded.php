@@ -2,27 +2,41 @@
 
 namespace Modules\PlanHive\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
+use App\Mail\TemplatedMailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 use Modules\PlanHive\Models\Project;
 
-class ProjectMemberAdded extends Mailable
+class ProjectMemberAdded extends TemplatedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(public Project $project, public string $role) {}
 
-    public function envelope(): Envelope
+    public function templateTool(): string
     {
-        return new Envelope(
-            subject: __('You have been added to :project', ['project' => $this->project->name]),
-        );
+        return 'planhive';
     }
 
-    public function content(): Content
+    public function templateKey(): string
+    {
+        return 'project-member-added';
+    }
+
+    public function templateVariables(): array
+    {
+        return [
+            'projectName' => $this->project->name,
+            'role' => $this->role,
+            'url' => route('planhive.projects.show', $this->project),
+            'buttonText' => __('Open Project'),
+            'appName' => config('app.name'),
+        ];
+    }
+
+    protected function defaultSubject(): string
+    {
+        return __('You have been added to :project', ['project' => $this->project->name]);
+    }
+
+    protected function defaultContent(): Content
     {
         return new Content(
             view: 'planhive::emails.project-member-added',

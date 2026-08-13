@@ -4,7 +4,6 @@ namespace App\Mail\Transport;
 
 use App\Models\MailSetting;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mailer\Transport\Dsn;
@@ -119,13 +118,6 @@ class DynamicSmtpTransport extends AbstractTransport
             $setting->user_id ? $global?->from_address : null,
             $global?->from_address,
             config('mail.from.address'),
-        ]);
-
-        Log::error('DynamicSmtpTransport from candidates', [
-            'setting_from' => $setting->from_address,
-            'global_from' => $global?->from_address,
-            'config_from' => config('mail.from.address'),
-            'candidates' => $candidates,
         ]);
 
         foreach ($candidates as $candidate) {

@@ -2,23 +2,46 @@
 
 namespace Modules\FinancialPlatform\Emails;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use App\Mail\TemplatedMailable;
+use Illuminate\Mail\Mailables\Content;
 
-class KpiReportMail extends Mailable
+class KpiReportMail extends TemplatedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public array $summary,
         public string $period,
         public string $teamName,
     ) {}
 
-    public function build(): self
+    public function templateTool(): string
     {
-        return $this->subject(__('KPI Report for :team', ['team' => $this->teamName]))
-            ->markdown('financialplatform::emails.kpi-report');
+        return 'financialplatform';
+    }
+
+    public function templateKey(): string
+    {
+        return 'kpi-report';
+    }
+
+    public function templateVariables(): array
+    {
+        return [
+            'summaryRows' => $this->summary,
+            'period' => $this->period,
+            'teamName' => $this->teamName,
+            'appName' => config('app.name'),
+        ];
+    }
+
+    protected function defaultSubject(): string
+    {
+        return __('KPI Report for :team', ['team' => $this->teamName]);
+    }
+
+    protected function defaultContent(): Content
+    {
+        return new Content(
+            markdown: 'financialplatform::emails.kpi-report',
+        );
     }
 }

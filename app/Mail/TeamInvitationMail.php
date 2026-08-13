@@ -3,39 +3,47 @@
 namespace App\Mail;
 
 use App\Models\TeamInvitation;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
-class TeamInvitationMail extends Mailable
+class TeamInvitationMail extends TemplatedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(public TeamInvitation $invitation) {}
 
-    public function envelope(): Envelope
+    public function templateTool(): string
     {
-        $projectName = $this->projectName();
-        $subject = $projectName
-            ? __('You are invited to join :team on project :project', ['team' => $this->invitation->team->name, 'project' => $projectName])
-            : __('You are invited to join :team', ['team' => $this->invitation->team->name]);
-
-        return new Envelope(subject: $subject);
+        return 'core';
     }
 
-    public function content(): Content
+    public function templateKey(): string
+    {
+        return 'team-invitation';
+    }
+
+    public function templateVariables(): array
+    {
+        return [
+            'teamName' => $this->invitation->team->name,
+            'inviterName' => $this->invitation->inviter->name,
+            'acceptUrl' => route('teams.invitations.accept', $this->invitation->token),
+            'projectName' => $this->projectName(),
+        ];
+    }
+
+    protected function defaultSubject(): string
+    {
+        $projectName = $this->projectName();
+
+        return $projectName
+            ? __('You are invited to join :team on project :project', ['team' => $this->invitation->team->name, 'project' => $projectName])
+            : __('You are invited to join :team', ['team' => $this->invitation->team->name]);
+    }
+
+    protected function defaultContent(): Content
     {
         return new Content(
             view: 'emails.team-invitation',
-            with: [
-                'acceptUrl' => route('teams.invitations.accept', $this->invitation->token),
-                'teamName' => $this->invitation->team->name,
-                'inviterName' => $this->invitation->inviter->name,
-                'projectName' => $this->projectName(),
-            ],
+            with: $this->templateVariables(),
         );
     }
 
