@@ -104,9 +104,23 @@ class GeminiService implements AiProvider
 
     public function generateText(string $prompt, float $temperature = 0.7): string
     {
-        $response = $this->callApi($prompt, $temperature, jsonMode: false);
+        $lastException = null;
 
-        return $this->extractText($response);
+        foreach ($this->models as $model) {
+            try {
+                $response = $this->callForModel($model, $prompt, $temperature, jsonMode: false);
+
+                return $this->extractText($response);
+            } catch (RuntimeException $e) {
+                $lastException = $e;
+                Log::warning('Gemini text generation failed for model, trying next', [
+                    'model' => $model,
+                    'message' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        throw $lastException ?? new RuntimeException('All Gemini models failed to generate text.');
     }
 
     /**
@@ -114,22 +128,35 @@ class GeminiService implements AiProvider
      */
     public function generateJson(string $prompt, float $temperature = 0.6): array
     {
-        $response = $this->callApi($prompt, $temperature, jsonMode: true);
-        $text = $this->extractText($response);
+        $lastException = null;
 
-        $decoded = $this->decodeJson($text);
+        foreach ($this->models as $model) {
+            try {
+                $response = $this->callForModel($model, $prompt, $temperature, jsonMode: true);
+                $text = $this->extractText($response);
+                $decoded = $this->decodeJson($text);
 
-        if (! is_array($decoded)) {
-            throw new RuntimeException('Gemini returned non-array JSON: '.substr($text, 0, 500));
+                if (! is_array($decoded)) {
+                    throw new RuntimeException('Gemini returned non-array JSON: '.substr($text, 0, 500));
+                }
+
+                return $decoded;
+            } catch (RuntimeException $e) {
+                $lastException = $e;
+                Log::warning('Gemini JSON generation failed for model, trying next', [
+                    'model' => $model,
+                    'message' => $e->getMessage(),
+                ]);
+            }
         }
 
-        return $decoded;
+        throw $lastException ?? new RuntimeException('All Gemini models failed to generate JSON.');
     }
 
     /**
      * @return array<string, mixed>
      */
-    protected function callApi(string $prompt, float $temperature, bool $jsonMode): array
+    protected function callForModel(string $model, string $prompt, float $temperature, bool $jsonMode): array
     {
         if (empty($this->apiKey)) {
             throw new RuntimeException(
@@ -143,59 +170,52 @@ class GeminiService implements AiProvider
         $lastStatus = 0;
         $lastBody = '';
 
-        foreach ($this->models as $model) {
-            for ($attempt = 1; $attempt <= $maxRetriesPerModel; $attempt++) {
-                $response = $this->singleCall($model, $prompt, $temperature, $jsonMode);
+        for ($attempt = 1; $attempt <= $maxRetriesPerModel; $attempt++) {
+            $response = $this->singleCall($model, $prompt, $temperature, $jsonMode);
 
-                if ($response->successful()) {
-                    return (array) $response->json();
+            if ($response->successful()) {
+                return (array) $response->json();
+            }
+
+            $lastStatus = $response->status();
+            $lastBody = $response->body();
+
+            Log::warning('Gemini API call failed', [
+                'model' => $model,
+                'attempt' => $attempt,
+                'status' => $lastStatus,
+                'body' => substr($lastBody, 0, 500),
+            ]);
+
+            $retryable = in_array($lastStatus, [429, 500, 502, 503, 504], true);
+            if (! $retryable) {
+                if (in_array($lastStatus, [400, 404], true)) {
+                    Log::info('Gemini {} on model — trying next fallback', ['status' => $lastStatus, 'model' => $model]);
+
+                    break;
                 }
 
-                $lastStatus = $response->status();
-                $lastBody = $response->body();
+                throw new RuntimeException(
+                    sprintf('Gemini API error %d: %s', $lastStatus, substr($lastBody, 0, 500))
+                );
+            }
 
-                Log::warning('Gemini API call failed', [
+            if ($lastStatus === 429 && str_contains(strtolower($lastBody), 'quota')) {
+                Log::info('Gemini quota exceeded — switching to next fallback model', [
                     'model' => $model,
-                    'attempt' => $attempt,
-                    'status' => $lastStatus,
-                    'body' => substr($lastBody, 0, 500),
                 ]);
 
-                $retryable = in_array($lastStatus, [429, 500, 502, 503, 504], true);
-                if (! $retryable) {
-                    if (in_array($lastStatus, [400, 404], true)) {
-                        Log::info('Gemini {} on model — trying next fallback', ['status' => $lastStatus, 'model' => $model]);
+                break;
+            }
 
-                        continue 2;
-                    }
-
-                    throw new RuntimeException(
-                        sprintf('Gemini API error %d: %s', $lastStatus, substr($lastBody, 0, 500))
-                    );
-                }
-
-                if ($lastStatus === 429 && str_contains(strtolower($lastBody), 'quota')) {
-                    Log::info('Gemini quota exceeded — switching to next fallback model', [
-                        'model' => $model,
-                    ]);
-
-                    continue 2;
-                }
-
-                if ($attempt < $maxRetriesPerModel) {
-                    $delay = $baseDelayMs * (2 ** ($attempt - 1));
-                    usleep($delay * 1000);
-                }
+            if ($attempt < $maxRetriesPerModel) {
+                $delay = $baseDelayMs * (2 ** ($attempt - 1));
+                usleep($delay * 1000);
             }
         }
 
         throw new RuntimeException(
-            sprintf(
-                'Gemini API error %d after retries across %d model(s): %s',
-                $lastStatus,
-                count($this->models),
-                substr($lastBody, 0, 500)
-            )
+            sprintf('Gemini API error %d after retries for model %s: %s', $lastStatus, $model, substr($lastBody, 0, 500))
         );
     }
 
@@ -238,9 +258,7 @@ class GeminiService implements AiProvider
 
         $finishReason = $candidates[0]['finishReason'] ?? null;
         if ($finishReason === 'MAX_TOKENS') {
-            Log::warning('Gemini output hit MAX_TOKENS — response was truncated.', [
-                'finishReason' => $finishReason,
-            ]);
+            throw new RuntimeException('Gemini output hit MAX_TOKENS — response was truncated.');
         }
 
         $parts = $candidates[0]['content']['parts'] ?? [];
