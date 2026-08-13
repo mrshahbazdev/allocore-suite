@@ -49,7 +49,7 @@
             <span class="score">{{ $score->score }}</span>
             <span class="out-of">/ 100</span>
         </div>
-        <span class="badge">{{ $score->maturity_level }}</span>
+        <span class="badge">{{ __($score->maturity_level) }}</span>
         <div class="footer">
             <a href="{{ route('scorecard.public', $team->public_score_slug) }}" target="_blank">{{ __('Allocore Score') }}</a>
         </div>

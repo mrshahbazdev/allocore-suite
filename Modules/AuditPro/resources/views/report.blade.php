@@ -51,7 +51,7 @@
             <div>
                 <div class="eyebrow">{{ __('Business maturity audit') }}</div>
                 <h1>{{ $audit->team->name }}</h1>
-                <div>{{ $audit->template?->name }}</div>
+                <div>{{ __($audit->template?->name) }}</div>
             </div>
             <div class="score">
                 <strong>{{ number_format($overallScore, 1) }}</strong>
@@ -73,7 +73,7 @@
                 <tbody>
                     @foreach ($audit->results as $result)
                         <tr>
-                            <td><strong>{{ $result->level }}</strong></td>
+                            <td><strong>{{ __($result->level) }}</strong></td>
                             <td><div class="bar"><div style="width: {{ min(100, ((float) $result->average_score / 4) * 100) }}%"></div></div></td>
                             <td>{{ number_format((float) $result->average_score, 1) }}/4</td>
                             <td>{{ __($result->maturity_level) }}</td>
@@ -86,7 +86,7 @@
             <div class="recommendations">
                 @foreach ($audit->results->sortBy('average_score')->take(3) as $result)
                     <div class="recommendation">
-                        <strong>{{ $result->level }}</strong>
+                        <strong>{{ __($result->level) }}</strong>
                         {{ __('Create a focused improvement plan for this pillar and review progress during the next audit cycle.') }}
                     </div>
                 @endforeach

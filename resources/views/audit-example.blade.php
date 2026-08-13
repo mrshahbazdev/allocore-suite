@@ -21,7 +21,7 @@
                     </div>
                     <span class="mt-4 inline-flex rounded-full px-3 py-1 text-sm font-semibold
                         {{ match($score->maturity_level) { 'Excellent' => 'bg-emerald-100 text-emerald-700', 'Strong' => 'bg-green-100 text-green-700', 'Solid' => 'bg-blue-100 text-blue-700', 'Weak' => 'bg-amber-100 text-amber-700', default => 'bg-red-100 text-red-700' } }}">
-                        {{ $score->maturity_level }}
+                        {{ __($score->maturity_level) }}
                     </span>
                     <p class="mt-6 text-sm text-slate-500">{{ __('Dieses Beispiel zeigt die Auswertung eines typischen mittelständischen Dienstleisters.') }}</p>
                     <a href="{{ route('audit-example.pdf') }}" class="mt-6 inline-flex items-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Beispiel-PDF herunterladen') }}</a>
@@ -39,13 +39,13 @@
                     @foreach ($score->pillars as $pillar)
                         <div class="rounded-xl border border-slate-100 p-5">
                             <div class="flex items-center justify-between">
-                                <span class="font-semibold text-slate-900">{{ $pillar['name'] }}</span>
+                                <span class="font-semibold text-slate-900">{{ __($pillar['name']) }}</span>
                                 <span class="text-lg font-bold text-slate-900">{{ $pillar['score'] }}</span>
                             </div>
                             <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
                                 <div class="h-full rounded-full bg-indigo-600" style="width: {{ min(100, max(0, $pillar['score'])) }}%"></div>
                             </div>
-                            <p class="mt-2 text-sm text-slate-500">{{ $pillar['maturity'] }}</p>
+                            <p class="mt-2 text-sm text-slate-500">{{ __($pillar['maturity']) }}</p>
                         </div>
                     @endforeach
                 </div>
@@ -56,7 +56,7 @@
                 <div class="mt-6 grid gap-4 md:grid-cols-3">
                     @foreach (collect($score->pillars)->sortBy('score')->take(3) as $pillar)
                         <div class="rounded-xl border border-amber-200 bg-amber-50 p-5">
-                            <p class="font-semibold text-amber-900">{{ $pillar['name'] }}</p>
+                            <p class="font-semibold text-amber-900">{{ __($pillar['name']) }}</p>
                             <p class="mt-2 text-sm text-amber-800">
                                 @if ($pillar['name'] === 'Revenue')
                                     {{ __('Umsatztransparenz und Rechnungsstellung verbessern.') }}
@@ -91,10 +91,10 @@
             new window.Chart(canvas, {
                 type: 'radar',
                 data: {
-                    labels: {!! json_encode(collect($score->pillars)->pluck('name')) !!},
+                    labels: {!! json_encode(collect($score->pillars)->pluck('name')->map(fn ($n) => __($n))) !!},
                     datasets: [{
                         label: "{{ __('Maturity score') }}",
-                        data: {!! json_encode(collect($score->pillars)->pluck('score')->map(fn ($s) => ($s / 100) * 5)) !!},
+                        data: {!! json_encode(collect($score->pillars)->pluck('score')->map(fn ($s) => ($s / 100) * 4)) !!},
                         borderColor: '#4f46e5',
                         backgroundColor: 'rgba(79, 70, 229, 0.18)',
                         pointBackgroundColor: '#4f46e5',
@@ -103,7 +103,7 @@
                 },
                 options: {
                     responsive: true,
-                    scales: { r: { beginAtZero: true, min: 0, max: 5, ticks: { stepSize: 1 } } },
+                    scales: { r: { beginAtZero: true, min: 0, max: 4, ticks: { stepSize: 1 } } },
                     plugins: { legend: { display: false } },
                 },
             });

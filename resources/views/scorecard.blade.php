@@ -3,7 +3,7 @@
 @section('title', __(':name — Allocore Score', ['name' => $team->name]))
 @section('meta_description', __('Public Allocore Score for :name', ['name' => $team->name]))
 @section('og_title', __(':name — Allocore Score :score', ['name' => $team->name, 'score' => $score->score]))
-@section('og_description', __('Maturity: :maturity', ['maturity' => $score->maturity_level]))
+@section('og_description', __('Maturity: :maturity', ['maturity' => __($score->maturity_level)]))
 
 @section('content')
     <section class="py-16 lg:py-24">
@@ -15,7 +15,7 @@
                 <div class="text-8xl font-black text-slate-900">{{ $score->score }}</div>
                 <span class="rounded-full px-4 py-1.5 text-sm font-semibold
                     {{ match($score->maturity_level) { 'Excellent' => 'bg-emerald-100 text-emerald-700', 'Strong' => 'bg-green-100 text-green-700', 'Solid' => 'bg-blue-100 text-blue-700', 'Weak' => 'bg-amber-100 text-amber-700', default => 'bg-red-100 text-red-700' } }}">
-                    {{ $score->maturity_level }}
+                    {{ __($score->maturity_level) }}
                 </span>
                 <p class="text-sm text-slate-500">{{ __('out of 100') }} &middot; {{ $score->calculated_at->diffForHumans() }}</p>
 
@@ -43,13 +43,13 @@
                 @foreach ($score->pillars as $pillar)
                     <div class="rounded-xl border border-slate-200 p-6 shadow-sm">
                         <div class="flex items-center justify-between">
-                            <span class="font-semibold text-slate-900">{{ $pillar['name'] }}</span>
+                            <span class="font-semibold text-slate-900">{{ __($pillar['name']) }}</span>
                             <span class="text-2xl font-bold text-slate-900">{{ $pillar['score'] }}</span>
                         </div>
                         <div class="mt-3 h-3 w-full overflow-hidden rounded-full bg-slate-100">
                             <div class="h-full rounded-full" style="width: {{ min(100, max(0, $pillar['score'])) }}%; background-color: {{ config('app.team_branding.primary_color') ?? '#4f46e5' }}"></div>
                         </div>
-                        <p class="mt-2 text-sm text-slate-500">{{ $pillar['maturity'] }}</p>
+                        <p class="mt-2 text-sm text-slate-500">{{ __($pillar['maturity']) }}</p>
                     </div>
                 @endforeach
             </div>

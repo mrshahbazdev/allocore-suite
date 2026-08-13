@@ -9,7 +9,7 @@
                         <div class="flex-1">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $item['is_first'] ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700' }} text-xs font-bold">{{ $item['priority'] }}</span>
-                                <p class="font-semibold text-slate-900">{{ $item['pillar'] }}</p>
+                                <p class="font-semibold text-slate-900">{{ __($item['pillar']) }}</p>
                                 @if ($item['is_first'])
                                     <span class="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700">{{ __('Address first') }}</span>
                                 @endif
