@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Artisan;
+
 // Prevent accidental web execution (shared-hosting safety).
 if (PHP_SAPI !== 'cli') {
     http_response_code(403);
@@ -9,16 +12,16 @@ if (PHP_SAPI !== 'cli') {
 
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
-$status = Illuminate\Support\Facades\Artisan::call('queue:work', [
+$status = Artisan::call('queue:work', [
     '--stop-when-empty' => true,
     '--tries' => 3,
     '--timeout' => 1200,
     '--sleep' => 3,
 ]);
 
-$output = Illuminate\Support\Facades\Artisan::output();
+$output = Artisan::output();
 echo $output;
 exit($status);
