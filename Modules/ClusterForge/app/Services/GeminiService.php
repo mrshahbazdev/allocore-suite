@@ -17,19 +17,22 @@ class GeminiService implements AiProvider
 
     /** @var array<int, string> */
     protected array $validDefaults = [
-        'gemini-2.5-flash',
-        'gemini-1.5-flash',
-        'gemini-1.5-pro',
-        'gemini-3.5-flash',
         'gemini-3.6-flash',
+        'gemini-3.5-flash',
+        'gemini-2.5-flash',
     ];
 
     /** @var array<int, string> */
     protected array $deprecatedModels = [
+        'gemini-1.5-flash',
+        'gemini-1.5-flash-latest',
+        'gemini-1.5-pro',
+        'gemini-1.5-pro-latest',
         'gemini-2.0-flash',
         'gemini-2.0-flash-001',
         'gemini-2.0-flash-lite',
         'gemini-2.0-flash-lite-001',
+        'gemini-2.5-flash-preview-05-20',
         'gemini-flash-latest',
     ];
 
@@ -79,10 +82,9 @@ class GeminiService implements AiProvider
     {
         $siteValue = SiteSetting::value('gemini_fallback_models');
         $value = $siteValue !== null ? $siteValue : config('services.gemini.fallback_models', [
-            'gemini-1.5-flash',
-            'gemini-1.5-pro',
-            'gemini-3.5-flash',
             'gemini-3.6-flash',
+            'gemini-3.5-flash',
+            'gemini-2.5-flash',
         ]);
 
         if (is_array($value)) {
@@ -187,36 +189,44 @@ class GeminiService implements AiProvider
                 'body' => substr($lastBody, 0, 500),
             ]);
 
-            $retryable = in_array($lastStatus, [429, 500, 502, 503, 504], true);
-            if (! $retryable) {
-                if (in_array($lastStatus, [400, 404], true)) {
-                    Log::info('Gemini {} on model — trying next fallback', ['status' => $lastStatus, 'model' => $model]);
+            if (in_array($lastStatus, [400, 404], true)) {
+                Log::info('Gemini {} on model — trying next fallback', ['status' => $lastStatus, 'model' => $model]);
 
-                    break;
-                }
+                break;
+            }
 
+            if (! in_array($lastStatus, [429, 500, 502, 503, 504], true)) {
                 throw new RuntimeException(
                     sprintf('Gemini API error %d: %s', $lastStatus, substr($lastBody, 0, 500))
                 );
             }
 
-            if ($lastStatus === 429 && str_contains(strtolower($lastBody), 'quota')) {
-                Log::info('Gemini quota exceeded — switching to next fallback model', [
-                    'model' => $model,
-                ]);
-
-                break;
-            }
-
             if ($attempt < $maxRetriesPerModel) {
-                $delay = $baseDelayMs * (2 ** ($attempt - 1));
-                usleep($delay * 1000);
+                $delayMs = $this->retryDelayMs($response, $baseDelayMs * (2 ** ($attempt - 1)));
+                usleep($delayMs * 1000);
             }
         }
 
         throw new RuntimeException(
             sprintf('Gemini API error %d after retries for model %s: %s', $lastStatus, $model, substr($lastBody, 0, 500))
         );
+    }
+
+    protected function retryDelayMs(Response $response, int $defaultDelayMs): int
+    {
+        $retryAfter = $response->header('Retry-After');
+        if (is_string($retryAfter) && is_numeric($retryAfter)) {
+            return max(1000, (int) (((float) $retryAfter) * 1000));
+        }
+
+        $body = $response->body();
+        if (preg_match('/retry in ([\d.]+)\s*s/i', $body, $m)) {
+            $seconds = (float) $m[1];
+
+            return max(1000, (int) ($seconds * 1000));
+        }
+
+        return max(1000, $defaultDelayMs);
     }
 
     protected function singleCall(string $model, string $prompt, float $temperature, bool $jsonMode): Response
