@@ -1,5 +1,4 @@
 {
-  "statusLine": "allocore-suite",
   "env": {
     "APP_ENV": "local"
   }

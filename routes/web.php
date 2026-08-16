@@ -107,6 +107,7 @@ use App\Http\Controllers\UserApiTokenController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkspaceController;
+use App\Livewire\Admin\BrandColorSettings;
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
@@ -444,6 +445,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('thresholds/{threshold}', [AdminThresholdController::class, 'update'])->name('thresholds.update');
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');
+    Route::get('brand-colors', BrandColorSettings::class)->name('brand-colors.index');
 
     Route::get('mail-settings', [MailSettingController::class, 'index'])->name('mail-settings.index');
     Route::put('mail-settings', [MailSettingController::class, 'update'])->name('mail-settings.update');
