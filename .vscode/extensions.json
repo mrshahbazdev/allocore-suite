@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "onecentlin.laravel5-snippets",
+        "calebporzio.better-php-abstract-syntax-tree",
+        "austenc.laravel-blade-spacer",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "xdebug.php-debug"
+    ]
+}
