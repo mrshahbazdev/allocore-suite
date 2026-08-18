@@ -259,7 +259,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('teams/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('teams.invitations.accept');
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('index');
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
     Route::get('users/create', [AdminUserController::class, 'create'])->name('users.create');
@@ -492,7 +492,7 @@ Route::post('logout', LogoutController::class)
     ->name('logout');
 
 Route::view('profile', 'profile')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'verified'])
     ->name('profile');
 
 require __DIR__.'/auth.php';
