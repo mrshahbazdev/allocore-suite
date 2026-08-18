@@ -15,8 +15,8 @@ class BrandColorSettings extends Component
 
     public function mount(): void
     {
-        $this->primary = SiteSetting::value('brand_primary', '#ff9200');
-        $this->secondary = SiteSetting::value('brand_secondary', '#0094af');
+        $this->primary = SiteSetting::value('primary_color', '#ff9200');
+        $this->secondary = SiteSetting::value('accent_color', '#0094af');
     }
 
     public function save(): void
@@ -29,8 +29,8 @@ class BrandColorSettings extends Component
             'secondary.regex' => __('Please enter a valid hex color, e.g. #0094AF.'),
         ]);
 
-        SiteSetting::set('brand_primary', $this->primary);
-        SiteSetting::set('brand_secondary', $this->secondary);
+        SiteSetting::set('primary_color', $this->primary);
+        SiteSetting::set('accent_color', $this->secondary);
 
         session()->flash('success', __('Brand colors updated.'));
         $this->redirectRoute('admin.brand-colors.index', navigate: true);

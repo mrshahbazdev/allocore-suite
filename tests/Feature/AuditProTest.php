@@ -130,7 +130,7 @@ class AuditProTest extends TestCase
             'audit_id' => $audit->id,
             'level' => 'Operations',
             'average_score' => 4,
-            'maturity_level' => 'Strong',
+            'maturity_level' => 'Excellent',
         ]);
     }
 

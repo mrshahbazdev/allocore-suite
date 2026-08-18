@@ -22,6 +22,10 @@ class VerifyEmailController extends Controller
             event(new Verified($request->user()));
         }
 
+        if (! $request->user()->onboarding_completed_at) {
+            return redirect()->route('onboarding.index');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
     }
 }
