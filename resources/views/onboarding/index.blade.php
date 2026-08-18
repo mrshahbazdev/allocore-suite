@@ -20,21 +20,43 @@
     </div>
 
     @if ($step === 0)
-        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 text-xl font-semibold text-slate-900">{{ __('Create your team') }}</h2>
-            <form method="POST" action="{{ route('onboarding.team') }}" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-sm font-medium text-slate-700">{{ __('Team name') }}</label>
-                    <input type="text" name="name" required class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <div class="space-y-6">
+            @if ($teams->isNotEmpty())
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="mb-4 text-xl font-semibold text-slate-900">{{ __('Your companies') }}</h2>
+                    <ul class="divide-y divide-slate-100">
+                        @foreach ($teams as $team)
+                            <li class="flex items-center justify-between py-3">
+                                <div>
+                                    <div class="font-medium text-slate-900">{{ $team->name }}</div>
+                                    <div class="text-xs text-slate-500">
+                                        {{ $team->industry }}{{ $team->industry && $team->country ? ' · ' : '' }}{{ $team->country }}{{ $team->size ? ' · ' . $team->size : '' }}
+                                    </div>
+                                </div>
+                                @if ($team->id === auth()->user()->current_team_id)
+                                    <span class="rounded-full bg-[#ff9200]/10 px-2 py-0.5 text-xs font-medium text-[#ff9200]">{{ __('Current') }}</span>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
-                @include('partials.industry-select', ['clusters' => $industryClusters])
-                <div>
-                    <label class="block text-sm font-medium text-slate-700">{{ __('Company size') }}</label>
-                    <input type="text" name="size" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                </div>
-                <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Create team') }}</button>
-            </form>
+            @endif
+
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="mb-4 text-xl font-semibold text-slate-900">{{ $teams->isEmpty() ? __('Create your first company') : __('Add another company') }}</h2>
+                <form method="POST" action="{{ route('onboarding.team') }}" class="space-y-4">
+                    @csrf
+                    @include('partials.team-form-fields', ['clusters' => $industryClusters])
+                    <button type="submit" class="rounded-lg bg-[#ff9200] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#e58200]">{{ $teams->isEmpty() ? __('Create company') : __('Add company') }}</button>
+                </form>
+            </div>
+
+            @if ($teams->isNotEmpty())
+                <form method="POST" action="{{ route('onboarding.continue') }}" class="flex justify-end">
+                    @csrf
+                    <button type="submit" class="rounded-lg bg-[#0094af] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#007a8f]">{{ __('Continue to plan') }} →</button>
+                </form>
+            @endif
         </div>
     @elseif ($step === 1)
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">

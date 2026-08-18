@@ -140,6 +140,7 @@ Route::view('/offline', 'offline')->name('offline');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/onboarding', OnboardingController::class)->name('onboarding.index');
     Route::post('/onboarding/team', [OnboardingController::class, 'storeTeam'])->name('onboarding.team');
+    Route::post('/onboarding/continue', [OnboardingController::class, 'continueToPlan'])->name('onboarding.continue');
     Route::post('/onboarding/plan', [OnboardingController::class, 'storePlan'])->name('onboarding.plan');
     Route::post('/onboarding/complete', [OnboardingController::class, 'complete'])->name('onboarding.complete');
 

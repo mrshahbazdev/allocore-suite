@@ -83,6 +83,7 @@
                         </a>
                     @endauth
                     @include('partials.locale-switcher')
+                    @include('partials.team-switcher')
 
                     @auth
                         <div class="relative" x-data="{ open: false }">
