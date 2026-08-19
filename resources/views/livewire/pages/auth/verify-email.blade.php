@@ -46,8 +46,11 @@ new #[Layout('layouts.guest')] class extends Component
             <span wire:loading>{{ __('Sending...') }}</span>
         </x-primary-button>
 
-        <button wire:click="logout" type="button" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
-            {{ __('auth.log_out') }}
-        </button>
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
+            @csrf
+            <x-secondary-button type="submit" class="w-full justify-center rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
+                {{ __('auth.log_out') }}
+            </x-secondary-button>
+        </form>
     </div>
 </div>
