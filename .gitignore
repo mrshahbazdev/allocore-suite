@@ -10,7 +10,14 @@
 /.idea
 /.nova
 /.phpunit.cache
-/.vscode
+/.vscode/*
+!/.vscode/extensions.json
+!/.vscode/settings.json
+!/.vscode/launch.json
+
+# Claude Code local/personal files
+CLAUDE.local.md
+/.claude/settings.local.json
 /.zed
 /auth.json
 /node_modules

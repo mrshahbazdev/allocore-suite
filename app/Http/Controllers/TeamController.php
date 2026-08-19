@@ -27,6 +27,8 @@ class TeamController extends Controller
             'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
             'company_age' => 'nullable|integer|min:0|max:250',
+            'country' => 'nullable|string|max:100',
+            'revenue_range' => 'nullable|string|max:100',
         ]);
 
         $team = Team::create($validated + ['owner_id' => $request->user()->id]);
@@ -47,6 +49,8 @@ class TeamController extends Controller
             'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
             'company_age' => 'nullable|integer|min:0|max:250',
+            'country' => 'nullable|string|max:100',
+            'revenue_range' => 'nullable|string|max:100',
         ]);
 
         $team->update($validated);

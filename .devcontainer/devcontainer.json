@@ -1,0 +1,49 @@
+{
+    "name": "Allocore Suite",
+    "image": "mcr.microsoft.com/devcontainers/php:8.3",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+        "ghcr.io/devcontainers/features/mysql:1": { "version": "8.0" }
+    },
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+    "forwardPorts": [8000, 5173, 3306],
+    "portsAttributes": {
+        "8000": { "label": "Laravel", "onAutoForward": "notify" },
+        "5173": { "label": "Vite", "onAutoForward": "silent" },
+        "3306": { "label": "MySQL", "onAutoForward": "silent" }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "onecentlin.laravel5-snippets",
+                "calebporzio.better-php-abstract-syntax-tree",
+                "austenc.laravel-blade-spacer",
+                "amiralizadeh9480.laravel-extra-intellisense",
+                "bradlc.vscode-tailwindcss",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-vscode.vscode-typescript-next",
+                "xdebug.php-debug"
+            ],
+            "settings": {
+                "php.validate.executablePath": "/usr/local/bin/php",
+                "php.intelephense.stubs": ["apache", "bcmath", "Core", "ctype", "curl", "date", "dom", "fileinfo", "filter", "gd", "hash", "iconv", "intl", "json", "libxml", "mbstring", "mysqli", "mysqlnd", "openssl", "pcre", "PDO", "pdo_mysql", "pdo_sqlite", "Phar", "posix", "readline", "Reflection", "session", "SimpleXML", "sodium", "SPL", "standard", "tokenizer", "xml", "xmlreader", "xmlwriter", "zip", "zlib"],
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "[php]": { "editor.defaultFormatter": "bmewburn.vscode-intelephense-client" },
+                "[blade]": { "editor.defaultFormatter": "amiralizadeh9480.laravel-extra-intellisense" },
+                "tailwindCSS.includeLanguages": { "blade": "html", "php": "html" },
+                "emmet.includeLanguages": { "blade": "html" }
+            }
+        }
+    },
+    "remoteUser": "vscode",
+    "remoteEnv": {
+        "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin"
+    },
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,optional=true"
+    ]
+}

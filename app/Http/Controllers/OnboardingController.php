@@ -24,17 +24,22 @@ class OnboardingController extends Controller
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $plans = Plan::where('is_active', true)->whereHas('modules')->with('modules')->get();
         $industryClusters = Industry::clusters()->with('children')->get();
+        $teams = $user->teams()->with('owner')->get();
 
-        return view('onboarding.index', compact('user', 'step', 'modules', 'plans', 'industryClusters'));
+        return view('onboarding.index', compact('user', 'step', 'modules', 'plans', 'industryClusters', 'teams'));
     }
 
     public function storeTeam(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
             'industry' => 'nullable|string|max:255',
             'industry_sub' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:100',
+            'company_age' => 'nullable|integer|min:0|max:250',
+            'country' => 'nullable|string|max:100',
+            'revenue_range' => 'nullable|string|max:100',
         ]);
 
         $team = Team::create($validated + ['owner_id' => $request->user()->id]);
@@ -42,8 +47,14 @@ class OnboardingController extends Controller
 
         $request->user()->update([
             'current_team_id' => $team->id,
-            'onboarding_step' => 1,
         ]);
+
+        return redirect()->route('onboarding.index');
+    }
+
+    public function continueToPlan(Request $request)
+    {
+        $request->user()->update(['onboarding_step' => 1]);
 
         return redirect()->route('onboarding.index');
     }
@@ -89,14 +100,14 @@ class OnboardingController extends Controller
 
     protected function currentStep($user): int
     {
-        if (! $user->current_team_id) {
-            return 0;
+        if ($user->onboarding_step >= 2) {
+            return 2;
         }
 
-        if (! $user->activeSubscriptions()->exists()) {
+        if ($user->onboarding_step == 1 || ($user->current_team_id && ! $user->activeSubscriptions()->exists() && $user->onboarding_step != 0)) {
             return 1;
         }
 
-        return $user->onboarding_step >= 2 ? 2 : 0;
+        return 0;
     }
 }

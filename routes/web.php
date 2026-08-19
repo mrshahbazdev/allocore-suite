@@ -107,6 +107,7 @@ use App\Http\Controllers\UserApiTokenController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkspaceController;
+use App\Livewire\Admin\BrandColorSettings;
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
@@ -139,6 +140,7 @@ Route::view('/offline', 'offline')->name('offline');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/onboarding', OnboardingController::class)->name('onboarding.index');
     Route::post('/onboarding/team', [OnboardingController::class, 'storeTeam'])->name('onboarding.team');
+    Route::post('/onboarding/continue', [OnboardingController::class, 'continueToPlan'])->name('onboarding.continue');
     Route::post('/onboarding/plan', [OnboardingController::class, 'storePlan'])->name('onboarding.plan');
     Route::post('/onboarding/complete', [OnboardingController::class, 'complete'])->name('onboarding.complete');
 
@@ -258,7 +260,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('teams/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('teams.invitations.accept');
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('index');
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
     Route::get('users/create', [AdminUserController::class, 'create'])->name('users.create');
@@ -444,6 +446,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('thresholds/{threshold}', [AdminThresholdController::class, 'update'])->name('thresholds.update');
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');
+    Route::get('brand-colors', BrandColorSettings::class)->name('brand-colors.index');
 
     Route::get('mail-settings', [MailSettingController::class, 'index'])->name('mail-settings.index');
     Route::put('mail-settings', [MailSettingController::class, 'update'])->name('mail-settings.update');
@@ -490,7 +493,7 @@ Route::post('logout', LogoutController::class)
     ->name('logout');
 
 Route::view('profile', 'profile')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'verified'])
     ->name('profile');
 
 require __DIR__.'/auth.php';

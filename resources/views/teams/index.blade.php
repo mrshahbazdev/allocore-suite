@@ -37,18 +37,7 @@
             <form method="POST" action="{{ route('teams.store') }}" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
                 @csrf
                 <h2 class="font-semibold text-slate-900">{{ __('Create a team') }}</h2>
-                <input type="text" name="name" required placeholder="{{ __('Team name') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                <input type="text" name="company_name" placeholder="{{ __('Company name') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                @include('partials.industry-select', ['clusters' => $industryClusters])
-                <select name="size" class="w-full rounded-lg border-slate-300 text-sm">
-                    <option value="">{{ __('Company size') }}</option>
-                    <option value="1-10">1–10</option>
-                    <option value="11-50">11–50</option>
-                    <option value="51-200">51–200</option>
-                    <option value="201-500">201–500</option>
-                    <option value="501+">501+</option>
-                </select>
-                <input type="number" name="company_age" min="0" max="250" placeholder="{{ __('Age (years)') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                @include('partials.team-form-fields', ['clusters' => $industryClusters])
                 @error('name')<p class="text-xs text-rose-600">{{ $message }}</p>@enderror
                 <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Create team') }}</button>
             </form>
@@ -81,18 +70,7 @@
                     @csrf
                     @method('PUT')
                     <h2 class="font-semibold text-slate-900">{{ __('Team profile') }}</h2>
-                    <input type="text" name="name" required value="{{ auth()->user()->currentTeam->name }}" placeholder="{{ __('Team name') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                    <input type="text" name="company_name" value="{{ auth()->user()->currentTeam->company_name }}" placeholder="{{ __('Company name') }}" class="w-full rounded-lg border-slate-300 text-sm">
-                    @include('partials.industry-select', ['clusters' => $industryClusters, 'value' => auth()->user()->currentTeam])
-                    <select name="size" class="w-full rounded-lg border-slate-300 text-sm">
-                        <option value="">{{ __('Company size') }}</option>
-                        <option value="1-10" {{ auth()->user()->currentTeam->size === '1-10' ? 'selected' : '' }}>1–10</option>
-                        <option value="11-50" {{ auth()->user()->currentTeam->size === '11-50' ? 'selected' : '' }}>11–50</option>
-                        <option value="51-200" {{ auth()->user()->currentTeam->size === '51-200' ? 'selected' : '' }}>51–200</option>
-                        <option value="201-500" {{ auth()->user()->currentTeam->size === '201-500' ? 'selected' : '' }}>201–500</option>
-                        <option value="501+" {{ auth()->user()->currentTeam->size === '501+' ? 'selected' : '' }}>501+</option>
-                    </select>
-                    <input type="number" name="company_age" value="{{ auth()->user()->currentTeam->company_age }}" min="0" max="250" placeholder="{{ __('Age (years)') }}" class="w-full rounded-lg border-slate-300 text-sm">
+                    @include('partials.team-form-fields', ['clusters' => $industryClusters, 'team' => auth()->user()->currentTeam])
                     <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Update profile') }}</button>
                 </form>
 

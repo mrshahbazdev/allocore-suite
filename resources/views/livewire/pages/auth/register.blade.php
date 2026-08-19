@@ -47,6 +47,8 @@ new #[Layout('layouts.guest')] class extends Component
 
         Auth::login($user);
 
+        $user->sendEmailVerificationNotification();
+
         if ($token = session('invitation_token')) {
             $invitation = \App\Models\TeamInvitation::where('token', $token)->whereNull('accepted_at')->first();
             if ($invitation && $invitation->email === $user->email) {
@@ -56,7 +58,7 @@ new #[Layout('layouts.guest')] class extends Component
             session()->forget(['invitation_token', 'invitation_email']);
         }
 
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+        $this->redirect(route('verification.notice', absolute: false), navigate: true);
     }
 }; ?>
 
