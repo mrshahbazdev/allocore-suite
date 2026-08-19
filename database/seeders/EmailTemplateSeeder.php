@@ -51,7 +51,7 @@ class EmailTemplateSeeder extends Seeder
 
     private function specificTemplates(): array
     {
-        $button = '<a href="{{ $url }}" style="display:inline-block;background-color:#2563eb;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;">{{ $buttonText }}</a>';
+        $button = '<a href="{{ $url }}" style="display:inline-block;background-color:#ff9200;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 28px;border-radius:8px;">{{ $buttonText }}</a>';
 
         return [
             [
@@ -59,7 +59,7 @@ class EmailTemplateSeeder extends Seeder
                 'key' => 'test',
                 'locale' => 'en',
                 'subject' => 'Test email from {{ $appName }}',
-                'body' => $this->wrap('<h2>Hello {{ $userName }}</h2><p>This is a test email from <strong>{{ $appName }}</strong>. Your SMTP settings are working correctly.</p><p style="color:#94a3b8;font-size:12px;">If you did not request this test, you can ignore it.</p>'),
+                'body' => $this->wrap('<h2>Hello {{ $userName }}</h2><p style="color:#475569;font-size:15px;line-height:1.6;">This is a test email from <strong>{{ $appName }}</strong>. Your SMTP settings are working correctly.</p><p style="color:#94a3b8;font-size:13px;">If you did not request this test, you can ignore it.</p>'),
                 'variables' => ['userName', 'appName'],
             ],
             [
@@ -67,7 +67,7 @@ class EmailTemplateSeeder extends Seeder
                 'key' => 'team-invitation',
                 'locale' => 'en',
                 'subject' => 'You are invited to join {{ $teamName }}',
-                'body' => $this->wrap('@if($projectName)<h2>You are invited to join {{ $teamName }} on project {{ $projectName }}</h2><p>{{ $inviterName }} has invited you to join the team and project.</p>@else<h2>You are invited to join {{ $teamName }}</h2><p>{{ $inviterName }} has invited you to join the team.</p>@endif<a href="{{ $acceptUrl }}" style="display:inline-block;background-color:#2563eb;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;">Accept Invitation</a><p style="color:#94a3b8;font-size:12px;">This invitation will expire in 7 days.</p>'),
+                'body' => $this->wrap('@if($projectName)<h2>You are invited to join {{ $teamName }} on project {{ $projectName }}</h2><p style="color:#475569;font-size:15px;line-height:1.6;">{{ $inviterName }} has invited you to join the team and project.</p>@else<h2>You are invited to join {{ $teamName }}</h2><p style="color:#475569;font-size:15px;line-height:1.6;">{{ $inviterName }} has invited you to join the team.</p>@endif<p style="margin:24px 0;text-align:center;"><a href="{{ $acceptUrl }}" style="display:inline-block;background-color:#ff9200;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 28px;border-radius:8px;">Accept Invitation</a></p><p style="color:#94a3b8;font-size:13px;">This invitation will expire in 7 days.</p>'),
                 'variables' => ['teamName', 'inviterName', 'acceptUrl', 'projectName'],
             ],
             [
@@ -75,7 +75,7 @@ class EmailTemplateSeeder extends Seeder
                 'key' => 'scheduled-report',
                 'locale' => 'en',
                 'subject' => 'Scheduled report: {{ $title }}',
-                'body' => $this->wrap('<h2>{{ $title }}</h2><p>Your scheduled report is attached.</p><ul><li><strong>Report type:</strong> {{ $reportType }}</li><li><strong>Frequency:</strong> {{ $frequency }}</li><li><strong>Format:</strong> {{ strtoupper($format) }}</li></ul>'),
+                'body' => $this->wrap('<h2>{{ $title }}</h2><p style="color:#475569;font-size:15px;line-height:1.6;">Your scheduled report is attached.</p><table style="width:100%;border-collapse:collapse;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;"><tr><td style="padding:16px;font-size:14px;color:#475569;"><p style="margin:0 0 8px 0;"><strong>Report type:</strong> {{ $reportType }}</p><p style="margin:0 0 8px 0;"><strong>Frequency:</strong> {{ $frequency }}</p><p style="margin:0;"><strong>Format:</strong> {{ strtoupper($format) }}</p></td></tr></table>'),
                 'variables' => ['title', 'reportType', 'frequency', 'format'],
             ],
             [
@@ -83,7 +83,7 @@ class EmailTemplateSeeder extends Seeder
                 'key' => 'project-member-added',
                 'locale' => 'en',
                 'subject' => 'You have been added to {{ $projectName }}',
-                'body' => $this->wrap('<h2>You have been added to {{ $projectName }}</h2><p>Your role on the project is: <strong>{{ $role }}</strong></p>'.$button),
+                'body' => $this->wrap('<h2>You have been added to {{ $projectName }}</h2><p style="color:#475569;font-size:15px;line-height:1.6;">Your role on the project is: <strong>{{ $role }}</strong></p>'.$button),
                 'variables' => ['projectName', 'role', 'url', 'buttonText'],
             ],
             [
@@ -91,7 +91,7 @@ class EmailTemplateSeeder extends Seeder
                 'key' => 'delegation-assigned',
                 'locale' => 'en',
                 'subject' => 'New delegation assigned to you',
-                'body' => $this->wrap('<h2>New delegation assigned</h2>@if($taskTitle)<p><strong>{{ $taskTitle }}</strong></p>@endif<p>{{ $goal }}</p>'.$button),
+                'body' => $this->wrap('<h2>New delegation assigned</h2>@if($taskTitle)<p style="color:#475569;font-size:15px;line-height:1.6;"><strong>{{ $taskTitle }}</strong></p>@endif<p style="color:#475569;font-size:15px;line-height:1.6;">{{ $goal }}</p>'.$button),
                 'variables' => ['taskTitle', 'goal', 'url', 'buttonText'],
             ],
             [
@@ -99,8 +99,8 @@ class EmailTemplateSeeder extends Seeder
                 'key' => 'invoice',
                 'locale' => 'en',
                 'subject' => 'Invoice {{ $invoiceNumber }} from {{ $appName }}',
-                'body' => $this->wrap('@if($message)<p>{{ $message }}</p>@endif<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;"><p><strong>Invoice number:</strong> {{ $invoiceNumber }}</p><p><strong>Amount due:</strong> {{ $currencySymbol }}{{ number_format($amountDue, 2) }}</p><p><strong>Due date:</strong> {{ $dueDate }}</p></div><a href="{{ $url }}" style="display:inline-block;background-color:#2563eb;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;">View invoice</a><p style="margin-top:16px;">Download PDF: <a href="{{ $downloadUrl }}">{{ $downloadUrl }}</a></p><p>If you have any questions, reply to this email.</p>'),
-                'variables' => ['invoiceNumber', 'amountDue', 'currencySymbol', 'dueDate', 'url', 'downloadUrl', 'message', 'appName'],
+                'body' => $this->wrap('@if($bodyMessage)<p style="color:#475569;font-size:15px;line-height:1.6;">{{ $bodyMessage }}</p>@endif<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;"><p style="margin:0 0 8px 0;"><strong>Invoice number:</strong> {{ $invoiceNumber }}</p><p style="margin:0 0 8px 0;"><strong>Amount due:</strong> {{ $currencySymbol }}{{ number_format($amountDue, 2) }}</p><p style="margin:0;"><strong>Due date:</strong> {{ $dueDate }}</p></div><p style="margin:24px 0;text-align:center;"><a href="{{ $url }}" style="display:inline-block;background-color:#ff9200;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 28px;border-radius:8px;">View invoice</a></p><p style="font-size:14px;line-height:1.6;">Download PDF: <a href="{{ $downloadUrl }}" style="color:#0094af;text-decoration:none;">{{ $downloadUrl }}</a></p><p style="font-size:14px;line-height:1.6;">If you have any questions, reply to this email.</p>'),
+                'variables' => ['invoiceNumber', 'amountDue', 'currencySymbol', 'dueDate', 'url', 'downloadUrl', 'bodyMessage', 'appName'],
             ],
             [
                 'tool' => 'financialplatform',
@@ -125,9 +125,9 @@ class EmailTemplateSeeder extends Seeder
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
         <tr>
             <td style="padding:32px 16px;">
-                <table role="presentation" width="600" align="center" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+                <table role="presentation" width="600" align="center" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 10px 15px -3px rgba(0,0,0,0.05);">
                     <tr>
-                        <td style="background-color:#2563eb;padding:24px 32px;text-align:center;">
+                        <td style="background-color:#ff9200;padding:28px 32px;text-align:center;background:linear-gradient(135deg,#ff9200 0%,#0094af 100%);">
                             <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">{{ config(\'app.name\') }}</h1>
                         </td>
                     </tr>

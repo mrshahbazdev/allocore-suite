@@ -53,7 +53,7 @@ class InvoiceMail extends TemplatedMailable
             'url' => URL::signedRoute('invoicemaker.public.show', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
             'downloadUrl' => URL::signedRoute('invoicemaker.public.download', ['uuid' => $this->invoice->uuid], now()->addDays(30)),
             'subjectLine' => $this->customSubject,
-            'message' => $this->customBody,
+            'bodyMessage' => $this->customBody,
             'appName' => config('app.name'),
         ];
     }
@@ -66,7 +66,7 @@ class InvoiceMail extends TemplatedMailable
     protected function defaultContent(): Content
     {
         return new Content(
-            markdown: 'invoicemaker::emails.invoice',
+            view: 'invoicemaker::emails.invoice',
             with: $this->templateVariables(),
         );
     }

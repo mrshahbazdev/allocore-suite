@@ -41,9 +41,9 @@ new #[Layout('layouts.guest')] class extends Component
     @endif
 
     <div class="space-y-4">
-        <x-primary-button type="button" wire:click="sendVerification" wire:loading.attr="disabled" wire:loading.class="opacity-75" class="w-full justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold normal-case tracking-normal text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500">
-            <span wire:loading.remove>{{ __('auth.resend_verification') }}</span>
-            <span wire:loading>{{ __('Sending...') }}</span>
+        <x-primary-button type="button" wire:click="sendVerification" wire:target="sendVerification" wire:loading.attr="disabled" wire:loading.class="opacity-75" class="w-full justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold normal-case tracking-normal text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500">
+            <span wire:loading.class="hidden" wire:target="sendVerification">{{ __('auth.resend_verification') }}</span>
+            <span wire:loading.class.remove="hidden" wire:target="sendVerification" class="hidden">{{ __('Sending...') }}</span>
         </x-primary-button>
 
         <form method="POST" action="{{ route('logout') }}" class="w-full">

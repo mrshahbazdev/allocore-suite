@@ -41,7 +41,8 @@ class KpiReportMail extends TemplatedMailable
     protected function defaultContent(): Content
     {
         return new Content(
-            markdown: 'financialplatform::emails.kpi-report',
+            view: 'financialplatform::emails.kpi-report',
+            with: $this->templateVariables(),
         );
     }
 }
