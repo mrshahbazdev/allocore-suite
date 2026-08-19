@@ -51,7 +51,7 @@
             <div>
                 <div class="eyebrow">{{ __('Business maturity audit') }}</div>
                 <h1>{{ $audit->team->name }}</h1>
-                <div>{{ __($audit->template?->name) }}</div>
+                <div>{{ $audit->template?->name ? __($audit->template->name) : __('Archived template') }}</div>
             </div>
             <div class="score">
                 <strong>{{ number_format($overallScore, 1) }}</strong>

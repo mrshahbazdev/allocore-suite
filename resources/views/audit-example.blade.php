@@ -91,10 +91,10 @@
             new window.Chart(canvas, {
                 type: 'radar',
                 data: {
-                    labels: {!! json_encode(collect($score->pillars)->pluck('name')->map(fn ($n) => __($n))) !!},
+                    labels: @json(collect($score->pillars)->pluck('name')->map(fn ($n) => __($n))->values()),
                     datasets: [{
                         label: "{{ __('Maturity score') }}",
-                        data: {!! json_encode(collect($score->pillars)->pluck('score')->map(fn ($s) => ($s / 100) * 4)) !!},
+                        data: @json(collect($score->pillars)->pluck('score')->map(fn ($s) => ($s / 100) * 4)->values()),
                         borderColor: '#4f46e5',
                         backgroundColor: 'rgba(79, 70, 229, 0.18)',
                         pointBackgroundColor: '#4f46e5',

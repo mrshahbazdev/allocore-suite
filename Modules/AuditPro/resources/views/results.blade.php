@@ -7,7 +7,7 @@
         <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{{ __('Completed assessment') }}</p>
             <h1 class="text-2xl font-bold text-slate-900">{{ $audit->team->name }}</h1>
-            <p class="text-sm text-slate-500">{{ __($audit->template?->name) }} · {{ __(ucfirst(str_replace('_', ' ', $audit->audit_type))) }} · {{ $audit->updated_at->format('F d, Y') }}</p>
+            <p class="text-sm text-slate-500">{{ $audit->template?->name ? __($audit->template->name) : __('Archived template') }} · {{ __(ucfirst(str_replace('_', ' ', $audit->audit_type))) }} · {{ $audit->updated_at->format('F d, Y') }}</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('audit.report', $audit) }}" target="_blank" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('Print report') }}</a>
@@ -101,7 +101,7 @@
             new window.Chart(canvas, {
                 type: 'radar',
                 data: {
-                    labels: {!! json_encode($radarLabels->map(fn ($l) => __($l))) !!},
+                    labels: @json($radarLabels->map(fn ($l) => __($l))->values()),
                     datasets: [{
                         label: @json(__('Maturity score')),
                         data: @json($radarScores),

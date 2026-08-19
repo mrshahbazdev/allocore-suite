@@ -14,14 +14,14 @@
                 <label class="text-sm font-medium text-slate-700">{{ __('First audit') }}</label>
                 <select wire:model.live="firstAuditId" class="mt-1 w-full rounded-lg border-slate-300">
                     <option value="">{{ __('Choose an audit') }}</option>
-                    @foreach ($availableAudits as $audit)<option value="{{ $audit->id }}">{{ $audit->created_at->format('M d, Y') }} — {{ $audit->template?->name }}</option>@endforeach
+                    @foreach ($availableAudits as $audit)<option value="{{ $audit->id }}">{{ $audit->created_at->format('M d, Y') }} — {{ $audit->template?->name ? __($audit->template->name) : __('Archived template') }}</option>@endforeach
                 </select>
             </div>
             <div>
                 <label class="text-sm font-medium text-slate-700">{{ __('Second audit') }}</label>
                 <select wire:model.live="secondAuditId" class="mt-1 w-full rounded-lg border-slate-300">
                     <option value="">{{ __('Choose an audit') }}</option>
-                    @foreach ($availableAudits as $audit)<option value="{{ $audit->id }}">{{ $audit->created_at->format('M d, Y') }} — {{ $audit->template?->name }}</option>@endforeach
+                    @foreach ($availableAudits as $audit)<option value="{{ $audit->id }}">{{ $audit->created_at->format('M d, Y') }} — {{ $audit->template?->name ? __($audit->template->name) : __('Archived template') }}</option>@endforeach
                 </select>
             </div>
         </div>
@@ -34,7 +34,7 @@
                         <div class="mt-4 flex items-end justify-between border-b border-slate-100 pb-4">
                             <div>
                                 <p class="text-sm text-slate-500">{{ $data['audit']->created_at->format('F d, Y') }}</p>
-                                <p class="text-sm font-medium text-slate-700">{{ __($data['audit']->template?->name) }}</p>
+                                <p class="text-sm font-medium text-slate-700">{{ $data['audit']->template?->name ? __($data['audit']->template->name) : __('Archived template') }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-3xl font-bold text-indigo-700">{{ number_format($data['score'], 1) }}</p>

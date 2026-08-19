@@ -32,6 +32,8 @@ class SetLocale
             }
         } elseif ($request->user()?->locale && in_array($request->user()->locale, $locales, true)) {
             app()->setLocale($request->user()->locale);
+        } else {
+            app()->setLocale(app()->environment('testing') ? config('app.locale', 'en') : 'de');
         }
 
         return $next($request);
