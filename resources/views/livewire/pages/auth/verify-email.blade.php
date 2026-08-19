@@ -2,7 +2,6 @@
 
 use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -18,7 +17,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         Auth::user()->sendEmailVerificationNotification();
 
-        Session::flash('status', 'verification-link-sent');
+        session()->now('status', 'verification-link-sent');
     }
 
     public function logout(Logout $logout): void
@@ -42,8 +41,9 @@ new #[Layout('layouts.guest')] class extends Component
     @endif
 
     <div class="space-y-4">
-        <x-primary-button wire:click="sendVerification" class="w-full justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold normal-case tracking-normal text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500">
-            {{ __('auth.resend_verification') }}
+        <x-primary-button type="button" wire:click="sendVerification" wire:loading.attr="disabled" wire:loading.class="opacity-75" class="w-full justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold normal-case tracking-normal text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500">
+            <span wire:loading.remove>{{ __('auth.resend_verification') }}</span>
+            <span wire:loading>{{ __('Sending...') }}</span>
         </x-primary-button>
 
         <button wire:click="logout" type="button" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
