@@ -32,12 +32,12 @@ new #[Layout('layouts.guest')] class extends Component
 <div>
     <div class="mb-8 text-center lg:text-left">
         <h1 class="text-2xl font-bold text-slate-900">{{ __('auth.verify_title') }}</h1>
-        <p class="mt-2 text-sm text-slate-500">{{ __('auth.verify_subtitle') }}</p>
+        <p class="mt-2 text-sm text-slate-500">{{ __('auth.verify_subtitle', ['email' => Auth::user()->email]) }}</p>
     </div>
 
     @if (session('status') == 'verification-link-sent')
         <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-            {{ __('auth.verification_sent') }}
+            {{ __('auth.verification_sent', ['email' => Auth::user()->email]) }}
         </div>
     @endif
 
