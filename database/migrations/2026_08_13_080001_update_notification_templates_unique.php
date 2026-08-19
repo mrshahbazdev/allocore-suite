@@ -14,7 +14,8 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'mysql') {
-            DB::statement('ALTER TABLE notification_templates DROP INDEX IF EXISTS notification_templates_key_locale_type_unique');
+            $this->dropIndexIfExists('notification_templates', 'notification_templates_key_locale_type_unique');
+
             DB::statement('ALTER TABLE notification_templates ADD UNIQUE notification_templates_tool_key_locale_type_unique (tool(100), `key`(100), locale(10), type(20))');
 
             return;
@@ -33,7 +34,8 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'mysql') {
-            DB::statement('ALTER TABLE notification_templates DROP INDEX IF EXISTS notification_templates_tool_key_locale_type_unique');
+            $this->dropIndexIfExists('notification_templates', 'notification_templates_tool_key_locale_type_unique');
+
             DB::statement('ALTER TABLE notification_templates ADD UNIQUE notification_templates_key_locale_type_unique (`key`(100), locale(10), type(20))');
 
             return;
@@ -43,5 +45,17 @@ return new class extends Migration
             $table->dropUnique(['tool', 'key', 'locale', 'type']);
             $table->unique(['key', 'locale', 'type']);
         });
+    }
+
+    private function dropIndexIfExists(string $table, string $index): void
+    {
+        $exists = DB::select(
+            'SELECT 1 FROM information_schema.STATISTICS WHERE table_schema = ? AND table_name = ? AND index_name = ?',
+            [DB::getDatabaseName(), $table, $index]
+        );
+
+        if ($exists) {
+            DB::statement("ALTER TABLE {$table} DROP INDEX {$index}");
+        }
     }
 };
