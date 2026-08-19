@@ -43,7 +43,8 @@ class ScheduledReportMail extends TemplatedMailable
     protected function defaultContent(): Content
     {
         return new Content(
-            markdown: 'emails.scheduled-report',
+            view: 'emails.scheduled-report',
+            with: $this->templateVariables(),
         );
     }
 

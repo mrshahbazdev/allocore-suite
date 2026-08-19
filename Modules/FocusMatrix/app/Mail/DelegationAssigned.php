@@ -39,7 +39,8 @@ class DelegationAssigned extends TemplatedMailable
     protected function defaultContent(): Content
     {
         return new Content(
-            markdown: 'focusmatrix::emails.delegation-assigned',
+            view: 'focusmatrix::emails.delegation-assigned',
+            with: $this->templateVariables(),
         );
     }
 }
