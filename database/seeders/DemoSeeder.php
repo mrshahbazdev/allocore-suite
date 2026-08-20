@@ -45,9 +45,24 @@ class DemoSeeder extends Seeder
             [
                 'owner_id' => $admin->id,
                 'industry' => 'Software',
-                'size' => '10–50',
+                'industry_sub' => 'SaaS',
+                'company_name' => 'Demo GmbH',
+                'size' => '11–50',
+                'company_age' => 5,
+                'country' => 'Germany',
+                'revenue_range' => '€1M – €5M',
             ]
         );
+
+        $team->update([
+            'industry' => 'Software',
+            'industry_sub' => 'SaaS',
+            'company_name' => 'Demo GmbH',
+            'size' => '11–50',
+            'company_age' => 5,
+            'country' => 'Germany',
+            'revenue_range' => '€1M – €5M',
+        ]);
 
         $admin->update(['current_team_id' => $team->id]);
         $demoUser->update(['current_team_id' => $team->id]);

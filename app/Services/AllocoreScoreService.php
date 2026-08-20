@@ -26,7 +26,7 @@ class AllocoreScoreService
         $averageRaw = $results->avg('average_score') ?: 0;
         $score100 = self::to100($averageRaw);
 
-        return AllocoreScore::create([
+        $score = AllocoreScore::create([
             'team_id' => $audit->team_id,
             'audit_id' => $audit->id,
             'company_name' => $audit->company_name ?: ($audit->team->company_name ?: $audit->team->name),
@@ -39,6 +39,10 @@ class AllocoreScoreService
             'pillars' => $pillars,
             'calculated_at' => now(),
         ]);
+
+        MaturityDataSnapshotService::fromScore($score);
+
+        return $score;
     }
 
     public static function latestForTeam(?int $teamId): ?AllocoreScore

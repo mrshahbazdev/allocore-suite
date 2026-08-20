@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Industry;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\MaturityDataSnapshotService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -23,12 +24,12 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
-            'industry' => 'nullable|string|max:255',
+            'industry' => 'required|string|max:255',
             'industry_sub' => 'nullable|string|max:255',
-            'size' => 'nullable|string|max:100',
+            'size' => 'required|string|max:100',
             'company_age' => 'nullable|integer|min:0|max:250',
-            'country' => 'nullable|string|max:100',
-            'revenue_range' => 'nullable|string|max:100',
+            'country' => 'required|string|max:100',
+            'revenue_range' => 'required|string|max:100',
         ]);
 
         $team = Team::create($validated + ['owner_id' => $request->user()->id]);
@@ -45,15 +46,17 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
-            'industry' => 'nullable|string|max:255',
+            'industry' => 'required|string|max:255',
             'industry_sub' => 'nullable|string|max:255',
-            'size' => 'nullable|string|max:100',
+            'size' => 'required|string|max:100',
             'company_age' => 'nullable|integer|min:0|max:250',
-            'country' => 'nullable|string|max:100',
-            'revenue_range' => 'nullable|string|max:100',
+            'country' => 'required|string|max:100',
+            'revenue_range' => 'required|string|max:100',
         ]);
 
         $team->update($validated);
+
+        MaturityDataSnapshotService::syncForTeam($team);
 
         return back()->with('success', __('Team profile updated.'));
     }

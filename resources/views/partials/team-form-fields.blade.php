@@ -20,7 +20,7 @@ $selectedSub = $selected['industry_sub'] ?? old('industry_sub', $team?->industry
     <div class="grid gap-4 sm:grid-cols-2">
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('Company size') }}</label>
-            <select name="size" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
+            <select name="size" required class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
                 <option value="">{{ __('Select size') }}</option>
                 @foreach (['1–10', '11–50', '51–200', '201–500', '501+'] as $size)
                     <option value="{{ $size }}" {{ old('size', $team?->size) === $size ? 'selected' : '' }}>{{ $size }}</option>
@@ -37,7 +37,7 @@ $selectedSub = $selected['industry_sub'] ?? old('industry_sub', $team?->industry
     <div class="grid gap-4 sm:grid-cols-2">
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('Country') }}</label>
-            <select name="country" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
+            <select name="country" required class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
                 <option value="">{{ __('Select country') }}</option>
                 @foreach ([
                     'Germany', 'Austria', 'Switzerland', 'Netherlands', 'Belgium', 'France',
@@ -51,7 +51,7 @@ $selectedSub = $selected['industry_sub'] ?? old('industry_sub', $team?->industry
 
         <div>
             <label class="block text-sm font-medium text-slate-700">{{ __('Revenue range') }}</label>
-            <select name="revenue_range" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
+            <select name="revenue_range" required class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
                 <option value="">{{ __('Select revenue') }}</option>
                 @foreach ([
                     '< €500k', '€500k – €1M', '€1M – €5M', '€5M – €25M', '€25M – €100M', '> €100M'
