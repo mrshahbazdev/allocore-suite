@@ -3,21 +3,27 @@
 namespace App\Services;
 
 use App\Models\AllocoreScore;
+use App\Models\MaturityDataSnapshot;
 use Illuminate\Database\Eloquent\Builder;
 
 class AllocoreBenchmarkService
 {
     public static function percentile(AllocoreScore $score): ?float
     {
-        $scope = self::scopeQuery($score);
+        if (! self::snapshotsActive()) {
+            return self::percentileFromAllocoreScore($score);
+        }
+
+        $snapshot = MaturityDataSnapshotService::fromScore($score);
+        $scope = self::scopeQuery($snapshot);
 
         if ($scope === null) {
             return null;
         }
 
         $total = (clone $scope)
+            ->where('team_id', '!=', $snapshot->team_id)
             ->whereNotNull('score')
-            ->where('id', '!=', $score->id)
             ->count();
 
         if ($total === 0) {
@@ -25,8 +31,8 @@ class AllocoreBenchmarkService
         }
 
         $below = (clone $scope)
-            ->where('score', '<', $score->score)
-            ->where('id', '!=', $score->id)
+            ->where('team_id', '!=', $snapshot->team_id)
+            ->where('score', '<', $snapshot->score)
             ->count();
 
         return round(($below / $total) * 100, 1);
@@ -61,29 +67,67 @@ class AllocoreBenchmarkService
         ];
     }
 
-    private static function scopeQuery(AllocoreScore $score): ?Builder
+    private static function snapshotsActive(): bool
     {
-        if ($score->industry === null) {
+        return MaturityDataSnapshot::query()->exists();
+    }
+
+    private static function scopeQuery(MaturityDataSnapshot $snapshot): ?Builder
+    {
+        if ($snapshot->industry === null) {
             return null;
         }
 
-        $subQuery = self::queryFor($score->industry, $score->industry_sub);
+        $subQuery = self::queryFor($snapshot->industry, $snapshot->industry_sub);
 
-        if ($subQuery->whereNotNull('score')->where('id', '!=', $score->id)->count() >= 5) {
+        if ($subQuery->whereNotNull('score')->where('team_id', '!=', $snapshot->team_id)->count() >= 5) {
             return $subQuery;
         }
 
-        return self::queryFor($score->industry, null);
+        return self::queryFor($snapshot->industry, null);
     }
 
     private static function queryFor(string $industry, ?string $subIndustry = null): Builder
     {
-        $query = AllocoreScore::where('industry', $industry);
+        $query = self::snapshotsActive()
+            ? MaturityDataSnapshot::query()
+            : AllocoreScore::query();
+
+        $query->where('industry', $industry);
 
         if ($subIndustry) {
             $query->where('industry_sub', $subIndustry);
         }
 
         return $query;
+    }
+
+    private static function percentileFromAllocoreScore(AllocoreScore $score): ?float
+    {
+        if ($score->industry === null) {
+            return null;
+        }
+
+        $scope = self::queryFor($score->industry, $score->industry_sub);
+
+        if ($scope->where('id', '!=', $score->id)->whereNotNull('score')->count() < 5) {
+            $scope = self::queryFor($score->industry, null);
+        }
+
+        $total = (clone $scope)
+            ->where('id', '!=', $score->id)
+            ->whereNotNull('score')
+            ->count();
+
+        if ($total === 0) {
+            return null;
+        }
+
+        $below = (clone $scope)
+            ->where('id', '!=', $score->id)
+            ->where('score', '<', $score->score)
+            ->count();
+
+        return round(($below / $total) * 100, 1);
     }
 }

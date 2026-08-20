@@ -6,7 +6,7 @@ $selectedSub = $selected['industry_sub'] ?? old('industry_sub', $value->industry
 <div class="grid gap-3 sm:grid-cols-2" data-industry-select>
     <div>
         <label class="mb-1 block text-xs font-medium text-slate-600">{{ __('Industry cluster') }}</label>
-        <select name="industry" class="w-full rounded-lg border-slate-300 text-sm" data-industry-cluster>
+        <select name="industry" required class="w-full rounded-lg border-slate-300 text-sm" data-industry-cluster>
             <option value="">{{ __('Select cluster') }}</option>
             @foreach ($clusters as $cluster)
                 <option value="{{ $cluster->name }}" data-children="{{ $cluster->children->pluck('name')->implode('|') }}" {{ $selectedIndustry === $cluster->name ? 'selected' : '' }}>
