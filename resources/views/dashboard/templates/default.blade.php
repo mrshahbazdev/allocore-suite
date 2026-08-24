@@ -81,12 +81,26 @@
             <div class="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
                 <div class="flex-1">
                     <p class="text-sm font-medium uppercase tracking-wider text-slate-500">{{ __('Allocore Score') }}</p>
-                    <div class="mt-2 flex items-end gap-3">
+                    <div class="mt-2 flex flex-wrap items-end gap-3">
                         <span class="text-5xl font-extrabold text-slate-900 lg:text-6xl">{{ $allocoreScore->score }}</span>
-                        <span class="mb-2 rounded-full px-3 py-1 text-sm font-semibold
-                            {{ match($allocoreScore->maturity_level) { 'Excellent' => 'bg-emerald-100 text-emerald-700', 'Strong' => 'bg-green-100 text-green-700', 'Solid' => 'bg-blue-100 text-blue-700', 'Weak' => 'bg-amber-100 text-amber-700', default => 'bg-red-100 text-red-700' } }}">
-                            {{ __($allocoreScore->maturity_level) }}
-                        </span>
+                        <div class="mb-2 flex flex-col items-start sm:items-center gap-1 sm:flex-row">
+                            <span class="rounded-full px-3 py-1 text-sm font-semibold
+                                {{ match($allocoreScore->maturity_level) { 'Excellent' => 'bg-emerald-100 text-emerald-700', 'Strong' => 'bg-green-100 text-green-700', 'Solid' => 'bg-blue-100 text-blue-700', 'Weak' => 'bg-amber-100 text-amber-700', default => 'bg-red-100 text-red-700' } }}">
+                                {{ __($allocoreScore->maturity_level) }}
+                            </span>
+                            @if (($allocoreCoach['trend']['direction'] ?? 'same') !== 'same')
+                                <span class="inline-flex items-center gap-1 text-sm font-semibold {{ $allocoreCoach['trend']['direction'] === 'up' ? 'text-emerald-600' : 'text-rose-600' }}">
+                                    @if ($allocoreCoach['trend']['direction'] === 'up')
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+                                    @else
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-15 15m0 0h11.25m-11.25 0V8.25"/></svg>
+                                    @endif
+                                    {{ $allocoreCoach['trend']['delta'] }} {{ __('points') }} {{ $allocoreCoach['trend']['text'] }}
+                                </span>
+                            @else
+                                <span class="text-sm font-medium text-slate-500">{{ __('first score') }}</span>
+                            @endif
+                        </div>
                     </div>
                     <p class="mt-1 text-sm text-slate-500">{{ __('out of 100') }} &middot; {{ $allocoreScore->calculated_at->diffForHumans() }}</p>
                 </div>
@@ -107,9 +121,9 @@
                     <a href="{{ route('allocore-score.index') }}" class="mt-4 inline-block text-sm font-semibold text-[#ff9200] hover:underline">{{ __('View score history') }}</a>
                 </div>
             </div>
-
-            @include('partials.allocore-recommendations', ['recommendations' => $allocoreRecommendations])
         </div>
+
+        @include('dashboard.partials.coach')
     @else
         <div class="mb-6 rounded-xl border border-dashed border-slate-300 bg-white p-6 text-slate-600 opacity-0 animate-fade-up" style="animation-delay: 80ms">
             <p class="font-semibold">{{ __('Discover your Allocore Score') }}</p>
