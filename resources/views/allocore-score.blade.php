@@ -57,6 +57,25 @@
             </div>
         </div>
 
+        @if ($glossaryTerm)
+            <div class="mb-6 card">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <svg class="h-5 w-5 text-[#ff9200]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.995 8.995 0 016 18c3.47 0 6.61-1.44 8.883-3.75l.617-.675V3.758A9.026 9.026 0 0018 3.75c1.052 0 2.062.18 3 .512v14.25A8.994 8.994 0 0118 21c-3.47 0-6.61-1.44-8.883-3.75l-.617-.675V3.758A9.026 9.026 0 0012 6.042z"/></svg>
+                            <h2 class="text-base font-semibold text-slate-900">{{ __('Further information on the topic') }}</h2>
+                        </div>
+                        <p class="mt-2 text-lg font-semibold text-slate-900">{{ $glossaryTerm->term }}</p>
+                        <p class="mt-1 text-sm text-slate-600">{{ Str::limit(strip_tags($glossaryTerm->simple_definition ?: $glossaryTerm->definition), 220) }}</p>
+                    </div>
+                    <a href="{{ route('knowledge.show', $glossaryTerm) }}" class="btn btn-primary btn-sm shrink-0">
+                        {{ __('Read more') }}
+                        <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </a>
+                </div>
+            </div>
+        @endif
+
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 class="text-base font-semibold text-slate-900">{{ __('Pillar breakdown') }}</h3>
             <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

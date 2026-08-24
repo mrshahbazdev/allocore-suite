@@ -39,7 +39,7 @@
                     @if (! empty($item['glossary_terms']) && $item['glossary_terms']->isNotEmpty())
                         <div class="mt-3 flex flex-wrap gap-2">
                             @foreach ($item['glossary_terms'] as $term)
-                                <a href="{{ route('glossary.show', $term->slug) }}" target="_blank" class="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100">
+                                <a href="{{ route('knowledge.show', $term->slug) }}" class="inline-flex items-center gap-1 rounded-full border border-[#ff9200]/20 bg-[#ff9200]/5 px-2 py-0.5 text-xs font-medium text-[#ff9200] hover:bg-[#ff9200]/10">
                                     {{ $term->term }}
                                     @if ($term->is_beginner_friendly)
                                         <span class="text-[10px] text-emerald-600">({{ __('Easy') }})</span>

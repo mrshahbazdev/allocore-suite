@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GlossaryTerm;
 use App\Models\SiteSetting;
 use App\Models\Team;
 use App\Services\AllocoreBenchmarkService;
@@ -22,11 +23,12 @@ class AllocoreScoreController extends Controller
         $team = $user?->currentTeam;
         $benchmark = $score ? AllocoreBenchmarkService::percentile($score) : null;
         $industryStats = $score && $score->industry ? AllocoreBenchmarkService::industryStats($score->industry, $score->industry_sub) : null;
+        $glossaryTerm = GlossaryTerm::published()->where('slug', 'allocore-score')->first();
         $embedCode = $team && $team->public_score_enabled && $team->public_score_slug
             ? '<iframe src="'.route('scorecard.embed', $team->public_score_slug).'" width="280" height="160" frameborder="0"></iframe>'
             : null;
 
-        return view('allocore-score', compact('score', 'history', 'recommendations', 'team', 'benchmark', 'industryStats', 'embedCode'));
+        return view('allocore-score', compact('score', 'history', 'recommendations', 'team', 'benchmark', 'industryStats', 'embedCode', 'glossaryTerm'));
     }
 
     public function public(string $slug)
