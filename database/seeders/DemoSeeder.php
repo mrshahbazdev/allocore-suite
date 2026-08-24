@@ -2,14 +2,18 @@
 
 namespace Database\Seeders;
 
+use App\Models\AllocoreScore;
 use App\Models\CaseStudy;
+use App\Models\GlossaryTerm;
 use App\Models\Plan;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Models\User;
+use App\Services\MaturityDataSnapshotService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Modules\AuditPro\Models\Audit;
 use Modules\InvoiceMaker\Models\Client;
 use Modules\InvoiceMaker\Models\Invoice;
 use Modules\InvoiceMaker\Models\InvoiceItem;
@@ -64,8 +68,8 @@ class DemoSeeder extends Seeder
             'revenue_range' => '€1M – €5M',
         ]);
 
-        $admin->update(['current_team_id' => $team->id]);
-        $demoUser->update(['current_team_id' => $team->id]);
+        $admin->update(['current_team_id' => $team->id, 'onboarding_completed_at' => now()]);
+        $demoUser->update(['current_team_id' => $team->id, 'onboarding_completed_at' => now()]);
 
         if (! $team->members()->where('users.id', $demoUser->id)->exists()) {
             $team->members()->attach($demoUser->id, ['role' => 'member']);
@@ -90,10 +94,59 @@ class DemoSeeder extends Seeder
             ]);
         }
 
+        $this->seedAllocoreScore($team, $demoUser);
         $this->seedInvoiceMaker($team, $admin);
         $this->seedPlanHive($team, $admin);
         $this->seedLeadOs($team, $admin);
         $this->seedCaseStudies();
+    }
+
+    protected function seedAllocoreScore(Team $team, User $user): void
+    {
+        GlossaryTerm::firstOrCreate(
+            ['slug' => 'revenue-run-rate'],
+            [
+                'term' => 'Revenue Run Rate',
+                'definition' => 'Projected annual revenue based on recent monthly recurring revenue.',
+                'simple_definition' => 'How much money your business is on track to make in a year.',
+                'related_modules' => ['financial-platform'],
+                'is_published' => true,
+                'is_beginner_friendly' => true,
+            ]
+        );
+
+        $audit = Audit::firstOrCreate(
+            ['team_id' => $team->id, 'company_name' => $team->name],
+            [
+                'created_by' => $user->id,
+                'status' => 'completed',
+                'industry' => $team->industry,
+                'size' => $team->size,
+                'completed_at' => now(),
+            ]
+        );
+
+        $score = AllocoreScore::firstOrCreate(
+            ['audit_id' => $audit->id, 'team_id' => $team->id],
+            [
+                'company_name' => $team->name,
+                'industry' => $team->industry,
+                'size' => $team->size,
+                'company_age' => $team->company_age,
+                'score' => 62.50,
+                'maturity_level' => 'Strong',
+                'pillars' => [
+                    ['name' => 'Revenue', 'score' => 70, 'maturity' => 'Strong'],
+                    ['name' => 'Profit', 'score' => 55, 'maturity' => 'Solid'],
+                    ['name' => 'Order', 'score' => 80, 'maturity' => 'Excellent'],
+                    ['name' => 'Influence', 'score' => 45, 'maturity' => 'Weak'],
+                    ['name' => 'Legacy', 'score' => 62, 'maturity' => 'Strong'],
+                ],
+                'calculated_at' => now(),
+            ]
+        );
+
+        MaturityDataSnapshotService::fromScore($score);
     }
 
     protected function seedInvoiceMaker(Team $team, User $user): void

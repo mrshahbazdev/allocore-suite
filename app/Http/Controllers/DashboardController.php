@@ -7,6 +7,7 @@ use App\Models\Announcement;
 use App\Models\Module;
 use App\Models\SiteSetting;
 use App\Models\ToolSubscription;
+use App\Services\AllocoreCoachService;
 use App\Services\AllocoreRecommendationService;
 use App\Services\AllocoreScoreService;
 use App\Support\DashboardWidgetRegistry;
@@ -55,12 +56,13 @@ class DashboardController extends Controller
         $allocoreScore = AllocoreScoreService::latestForTeam($user->current_team_id);
         $allocoreHistory = AllocoreScoreService::historyForTeam($user->current_team_id, 12);
         $allocoreRecommendations = app(AllocoreRecommendationService::class)->forScore($allocoreScore, $user);
+        $allocoreCoach = app(AllocoreCoachService::class)->forScore($allocoreScore, $user);
 
         $template = in_array(SiteSetting::value('dashboard_template', 'default'), ['default', 'executive', 'operations', 'minimal'], true)
             ? SiteSetting::value('dashboard_template', 'default')
             : 'default';
 
-        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory', 'allocoreRecommendations', 'template'));
+        return view('dashboard', compact('modules', 'accessible', 'widgets', 'announcements', 'activeModules', 'lockedModules', 'subscription', 'activityLogs', 'stats', 'moduleStats', 'allocoreScore', 'allocoreHistory', 'allocoreRecommendations', 'allocoreCoach', 'template'));
 
     }
 }
