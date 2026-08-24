@@ -10,6 +10,26 @@
             </div>
         </div>
 
+        @if ($allocoreCoach['benchmark'] ?? null)
+            <div class="mt-6 rounded-xl border border-blue-200 bg-blue-50/70 p-4 opacity-0 animate-fade-up" style="animation-delay: 140ms">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-blue-900">{{ __('How you compare') }}</p>
+                        <p class="text-sm text-blue-700">
+                            @if ($allocoreCoach['benchmark']['percentile'] !== null)
+                                {{ __('You score better than :percentile% of companies like yours.', ['percentile' => $allocoreCoach['benchmark']['percentile']]) }}
+                            @elseif ($allocoreCoach['benchmark']['average'] !== null)
+                                {{ __('Similar companies average :average points.', ['average' => $allocoreCoach['benchmark']['average']]) }}
+                            @endif
+                        </p>
+                    </div>
+                    @if ($allocoreCoach['benchmark']['cluster'])
+                        <span class="badge badge-gray shrink-0">{{ $allocoreCoach['benchmark']['cluster'] }}</span>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <div class="mt-6 grid gap-4 lg:grid-cols-2">
             {{-- Positive --}}
             <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5">
@@ -77,6 +97,60 @@
                 </div>
             @endif
         </div>
+
+        @if (! empty($allocoreCoach['all']))
+            <div class="mt-6 opacity-0 animate-fade-up" style="animation-delay: 180ms">
+                <details class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <summary class="flex cursor-pointer list-none items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-slate-900">{{ __('All improvement areas') }}</h3>
+                            <p class="text-sm text-slate-500">{{ __('Every weak pillar gets a recommended tool and a knowledge article.') }}</p>
+                        </div>
+                        <span class="badge badge-gray shrink-0">{{ count($allocoreCoach['all']) }}</span>
+                    </summary>
+
+                    <div class="mt-4 space-y-4">
+                        @foreach ($allocoreCoach['all'] as $item)
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <h4 class="font-semibold text-slate-900">
+                                                {{ __($item['problem']['pillar'] ?? '') }}
+                                                <span class="font-normal text-slate-500">({{ $item['problem']['score'] ?? 0 }}/100)</span>
+                                            </h4>
+                                            @if ($item['benchmark'] ?? null)
+                                                @if ($item['benchmark']['worse'])
+                                                    <span class="badge badge-red">-{{ abs($item['benchmark']['diff']) }} {{ __('vs similar') }}</span>
+                                                @elseif ($item['benchmark']['better'])
+                                                    <span class="badge badge-green">+{{ $item['benchmark']['diff'] }} {{ __('vs similar') }}</span>
+                                                @else
+                                                    <span class="badge badge-gray">{{ $item['benchmark']['average'] }} {{ __('similar average') }}</span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                        <p class="mt-1 text-sm text-slate-600">{!! $item['problem']['solution'] ?? '' !!}</p>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                        @if ($item['tool'] ?? null)
+                                            <a href="{{ $item['tool']['route'] ?? route('tools.index') }}" class="btn btn-primary btn-sm">
+                                                {{ __('Open') }} {{ $item['tool']['name'] }}
+                                            </a>
+                                        @endif
+                                        @if ($item['knowledge'] ?? null)
+                                            <a href="{{ $item['knowledge']['link'] }}" class="btn btn-secondary btn-sm">
+                                                {{ $item['knowledge']['term'] }}
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </details>
+            </div>
+        @endif
     </div>
 @else
     <div class="mt-6 rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-slate-600 opacity-0 animate-fade-up" style="animation-delay: 120ms">

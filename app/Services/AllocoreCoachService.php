@@ -33,11 +33,13 @@ class AllocoreCoachService
         return [
             'has_score' => true,
             'trend' => $trend,
+            'benchmark' => $this->benchmark($score),
             'positive' => $this->positive($score, $strongest),
             'problem' => $this->problem($focus),
             'tool' => $this->tool($focus),
             'knowledge' => $this->knowledge($focus),
             'history' => $recommendations['history'] ?? null,
+            'all' => array_map(fn (array $item) => $this->buildImprovement($score, $item), $recommendations['items'] ?? []),
         ];
     }
 
@@ -181,6 +183,66 @@ class AllocoreCoachService
         }
 
         return $terms->first()?->toArray();
+    }
+
+    protected function buildImprovement(AllocoreScore $score, array $focus): array
+    {
+        return [
+            'pillar' => $focus['pillar'] ?? null,
+            'priority' => $focus['priority'] ?? null,
+            'problem' => $this->problem($focus),
+            'tool' => $this->tool($focus),
+            'knowledge' => $this->knowledge($focus),
+            'benchmark' => $this->pillarBenchmark($score, $focus['pillar'] ?? ''),
+        ];
+    }
+
+    protected function benchmark(AllocoreScore $score): ?array
+    {
+        if (! $score->industry) {
+            return null;
+        }
+
+        $stats = AllocoreBenchmarkService::industryStats($score->industry, $score->industry_sub);
+        $percentile = AllocoreBenchmarkService::percentile($score);
+
+        if (($stats['count'] ?? 0) === 0 && $percentile === null) {
+            return null;
+        }
+
+        $parts = array_filter([$score->industry, $score->size]);
+
+        return [
+            'percentile' => $percentile,
+            'average' => $stats['average'] ?? null,
+            'count' => $stats['count'] ?? 0,
+            'cluster' => implode(' · ', $parts),
+        ];
+    }
+
+    protected function pillarBenchmark(AllocoreScore $score, string $pillar): ?array
+    {
+        if (! $score->industry || ! $pillar) {
+            return null;
+        }
+
+        $stats = AllocoreBenchmarkService::pillarStats($score->industry, $score->industry_sub, $pillar);
+
+        if (($stats['count'] ?? 0) === 0) {
+            return null;
+        }
+
+        $userScore = (float) (collect($score->pillars ?? [])->firstWhere('name', $pillar)['score'] ?? 0);
+        $average = (float) ($stats['average'] ?? 0);
+        $diff = round($userScore - $average, 1);
+
+        return [
+            'average' => $average,
+            'count' => $stats['count'],
+            'diff' => $diff,
+            'better' => $diff > 0.01,
+            'worse' => $diff < -0.01,
+        ];
     }
 
     protected function strongestPillar(AllocoreScore $score): ?array
