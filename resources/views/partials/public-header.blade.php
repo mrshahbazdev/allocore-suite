@@ -3,11 +3,7 @@
 <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
         <a href="/" class="flex items-center gap-3">
-            @if ($brand['logo'] ?? false)
-                <img src="{{ $brand['logo'] }}" alt="" class="h-10 w-10 object-contain rounded-xl">
-            @else
-                <div class="flex h-10 w-10 items-center justify-center rounded-xl text-lg font-black text-white" style="background-color: {{ $brand['primary_color'] ?? '#4f46e5' }}">A</div>
-            @endif
+            <img src="{{ $brand['logo'] ?? asset('logo-mark.png') }}" alt="" class="h-10 w-10 object-contain rounded-xl bg-white">
             <span class="text-lg font-bold text-slate-900">{{ $brand['name'] ?? config('app.name') }}</span>
         </a>
 
