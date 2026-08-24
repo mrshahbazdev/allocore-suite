@@ -30,11 +30,7 @@
                 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" class="email-container" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 10px 15px -3px rgba(0,0,0,0.05);">
                     <tr>
                         <td class="email-header" style="background:linear-gradient(135deg, {{ $primary }} 0%, {{ $accent }} 100%);padding:32px;text-align:center;">
-                            @if ($logo)
-                                <img src="{{ $logo }}" alt="" width="48" height="48" style="display:block;margin:0 auto 12px;border-radius:12px;background:#ffffff;">
-                            @else
-                                <div style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:12px;background:#ffffff;color:{{ $primary }};font-size:24px;font-weight:900;text-align:center;margin-bottom:12px;">A</div>
-                            @endif
+                            <img src="{{ $logo ?? asset('logo-mark.png') }}" alt="" width="48" height="48" style="display:block;margin:0 auto 12px;border-radius:12px;background:#ffffff;">
                             <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;letter-spacing:-0.025em;">{{ $siteName }}</h1>
                         </td>
                     </tr>

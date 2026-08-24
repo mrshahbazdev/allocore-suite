@@ -1,1 +1,1 @@
-<img src="{{ asset('logo.png') }}" alt="{{ config('app.name', 'Allocore') }}" {{ $attributes }}>
+<img src="{{ asset('logo-mark.png') }}" alt="{{ config('app.name', 'Allocore') }}" {{ $attributes }}>

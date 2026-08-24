@@ -50,7 +50,7 @@
             <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
                 <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
                     <a href="/" class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white">A</div>
+                        <img src="{{ asset('logo-mark.png') }}" alt="" class="h-10 w-10 object-contain rounded-xl bg-white">
                         <span class="text-lg font-bold text-slate-900">{{ $siteName }}</span>
                     </a>
 
@@ -381,7 +381,7 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-base font-black text-white">A</div>
+                            <img src="{{ asset('logo-mark.png') }}" alt="" class="h-9 w-9 object-contain rounded-lg bg-white">
                             <span class="text-sm font-semibold text-slate-900">{{ $siteName }}</span>
                         </div>
                         <div class="flex items-center gap-6 text-sm text-slate-600">

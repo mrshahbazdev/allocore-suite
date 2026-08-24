@@ -33,11 +33,7 @@
            :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'md:w-0' : 'md:w-64']"
            x-cloak>
         <div class="flex items-center gap-2 px-6 h-16 border-b border-slate-800">
-            @if ($brand['logo'])
-                <img src="{{ $brand['logo'] }}" alt="" class="h-8 w-8 object-contain">
-            @else
-                <div class="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white">A</div>
-            @endif
+            <img src="{{ $brand['logo'] ?? asset('logo-mark.png') }}" alt="" class="h-8 w-8 object-contain rounded-lg bg-white">
             <span class="text-lg font-semibold text-white">{{ $brand['name'] ?? 'Allocore Suite' }}</span>
         </div>
 
@@ -58,7 +54,9 @@
                     <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:flex" aria-label="{{ __('Toggle sidebar') }}">
                         <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
                     </button>
-                    <a href="{{ route('dashboard') }}" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#ff9200] text-sm font-bold text-white" aria-label="{{ $brand['name'] ?? 'Allocore' }}">A</a>
+                    <a href="{{ route('dashboard') }}" class="flex h-8 w-8 shrink-0 items-center justify-center" aria-label="{{ $brand['name'] ?? 'Allocore' }}">
+                        <img src="{{ asset('logo-mark.png') }}" class="h-8 w-8 object-contain" alt="{{ $brand['name'] ?? 'Allocore' }}">
+                    </a>
                     <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
                     <span class="truncate text-base font-semibold text-slate-700">{{ $pageTitle }}</span>
                 </div>

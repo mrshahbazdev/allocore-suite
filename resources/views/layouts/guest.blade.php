@@ -25,11 +25,7 @@
                 {{-- Left: branding --}}
                 <div class="hidden flex-col justify-center lg:flex lg:pr-16">
                     <a href="/" class="mb-8 inline-flex items-center gap-3">
-                        @if ($brand['logo'])
-                            <img src="{{ $brand['logo'] }}" alt="" class="h-12 w-12 object-contain rounded-2xl">
-                        @else
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-black text-white" style="background-color: {{ $brand['primary_color'] ?? '#4f46e5' }}">A</div>
-                        @endif
+                        <img src="{{ $brand['logo'] ?? asset('logo-mark.png') }}" alt="" class="h-12 w-12 object-contain rounded-2xl bg-white">
                         <span class="text-2xl font-bold text-slate-900">{{ $brand['name'] }}</span>
                     </a>
                     <h1 class="max-w-xl text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl">
@@ -59,11 +55,7 @@
                 <div class="relative w-full">
                     <div class="mb-6 flex items-center justify-between lg:hidden">
                         <a href="/" class="inline-flex items-center gap-3">
-                            @if ($brand['logo'])
-                                <img src="{{ $brand['logo'] }}" alt="" class="h-11 w-11 object-contain rounded-2xl">
-                            @else
-                                <div class="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-black text-white" style="background-color: {{ $brand['primary_color'] ?? '#4f46e5' }}">A</div>
-                            @endif
+                            <img src="{{ $brand['logo'] ?? asset('logo-mark.png') }}" alt="" class="h-11 w-11 object-contain rounded-2xl bg-white">
                             <span class="text-xl font-bold text-slate-900">{{ $brand['name'] }}</span>
                         </a>
                         @include('partials.locale-switcher')
