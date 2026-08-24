@@ -104,6 +104,19 @@ class DemoSeeder extends Seeder
     protected function seedAllocoreScore(Team $team, User $user): void
     {
         GlossaryTerm::firstOrCreate(
+            ['slug' => 'allocore-score'],
+            [
+                'term' => 'Allocore Score',
+                'definition' => 'The Allocore Score measures the overall maturity of a business across five pillars on a scale from 0 to 100.',
+                'simple_definition' => 'A single number that shows how strong your business currently is.',
+                'category' => 'Core concepts',
+                'related_modules' => ['auditpro'],
+                'is_published' => true,
+                'is_beginner_friendly' => true,
+            ]
+        );
+
+        GlossaryTerm::firstOrCreate(
             ['slug' => 'revenue-run-rate'],
             [
                 'term' => 'Revenue Run Rate',
