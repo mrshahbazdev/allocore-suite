@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AllocoreScore;
 use App\Models\MaturityDataSnapshot;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class AllocoreBenchmarkService
 {
@@ -85,6 +86,38 @@ class AllocoreBenchmarkService
         }
 
         return self::queryFor($snapshot->industry, null);
+    }
+
+    public static function pillarAverage(string $industry, ?string $subIndustry, string $pillar): ?float
+    {
+        $scores = self::pillarScores($industry, $subIndustry, $pillar);
+
+        return $scores->isEmpty() ? null : round($scores->avg(), 1);
+    }
+
+    public static function pillarStats(string $industry, ?string $subIndustry, string $pillar): array
+    {
+        $scores = self::pillarScores($industry, $subIndustry, $pillar)->sort()->values();
+
+        return [
+            'count' => $scores->count(),
+            'average' => $scores->isEmpty() ? null : round($scores->avg(), 1),
+            'median' => $scores->isEmpty() ? null : round($scores->median(), 1),
+            'min' => $scores->isEmpty() ? null : round($scores->first(), 1),
+            'max' => $scores->isEmpty() ? null : round($scores->last(), 1),
+        ];
+    }
+
+    private static function pillarScores(string $industry, ?string $subIndustry, string $pillar): Collection
+    {
+        return self::queryFor($industry, $subIndustry)
+            ->whereNotNull('pillars')
+            ->get()
+            ->pluck('pillars')
+            ->map(fn ($pillars) => collect($pillars)->firstWhere('name', $pillar)['score'] ?? null)
+            ->filter(fn ($score) => $score !== null)
+            ->map(fn ($score) => (float) $score)
+            ->values();
     }
 
     private static function queryFor(string $industry, ?string $subIndustry = null): Builder
