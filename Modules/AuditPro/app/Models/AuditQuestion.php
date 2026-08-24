@@ -24,6 +24,8 @@ class AuditQuestion extends Model
         'weight',
         'is_required',
         'failure_recommendation',
+        'recommended_module_key',
+        'knowledge_slug',
         'options',
         'depends_on_question_id',
         'depends_on_answer',

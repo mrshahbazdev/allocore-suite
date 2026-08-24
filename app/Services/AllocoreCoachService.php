@@ -3,17 +3,14 @@
 namespace App\Services;
 
 use App\Models\AllocoreScore;
-use App\Models\GlossaryTerm;
 use App\Models\Module;
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class AllocoreCoachService
 {
     public function __construct(
-        private AllocoreRecommendationService $recommendationService,
-        private GlossaryService $glossaryService,
+        private QuestionRecommendationService $questionRecommendationService,
     ) {}
 
     public function forScore(?AllocoreScore $score, User $user): array
@@ -25,21 +22,21 @@ class AllocoreCoachService
             ];
         }
 
-        $recommendations = $this->recommendationService->forScore($score, $user);
+        $questions = $this->questionRecommendationService->gapsForScore($score, $user);
+        $focus = $questions[0] ?? null;
         $trend = $this->trend($score, $user);
         $strongest = $this->strongestPillar($score);
-        $focus = $recommendations['items'][0] ?? null;
 
         return [
             'has_score' => true,
             'trend' => $trend,
             'benchmark' => $this->benchmark($score),
             'positive' => $this->positive($score, $strongest),
-            'problem' => $this->problem($focus),
-            'tool' => $this->tool($focus),
-            'knowledge' => $this->knowledge($focus),
-            'history' => $recommendations['history'] ?? null,
-            'all' => array_map(fn (array $item) => $this->buildImprovement($score, $item), $recommendations['items'] ?? []),
+            'problem' => $focus ? $this->problemForQuestion($focus) : null,
+            'tool' => $focus ? $this->toolForQuestion($focus) : null,
+            'knowledge' => $focus ? $focus['knowledge'] : null,
+            'history' => null,
+            'all' => array_map(fn (array $q) => $this->buildImprovement($q), $questions),
         ];
     }
 
@@ -92,34 +89,30 @@ class AllocoreCoachService
         ];
     }
 
-    protected function problem(?array $focus): ?array
+    protected function problemForQuestion(array $question): array
     {
-        if (! $focus) {
-            return null;
-        }
-
         return [
-            'pillar' => $focus['pillar'],
-            'score' => $focus['score'],
-            'headline' => __('Your biggest current gap is :pillar.', ['pillar' => __($focus['pillar'])]),
-            'solution' => $this->glossaryService->linkTerms(__($focus['action'])),
+            'pillar' => $question['pillar'],
+            'score' => $question['score'],
+            'headline' => $question['question'],
+            'solution' => $question['manual'],
         ];
     }
 
-    protected function tool(?array $focus): ?array
+    protected function toolForQuestion(array $question): ?array
     {
-        if (! $focus || ! $focus['module_name']) {
+        if (! $question['module_key']) {
             return null;
         }
 
-        $module = Module::byKey($focus['module_key']);
+        $module = Module::byKey($question['module_key']);
 
         return [
-            'name' => $focus['module_name'],
-            'key' => $focus['module_key'],
-            'route' => $focus['module_route'],
-            'subscribed' => $focus['subscribed'],
-            'guide' => $this->toolGuide($focus['module_key'], $focus['pillar'], $module?->description),
+            'name' => $question['module_name'],
+            'key' => $question['module_key'],
+            'route' => $question['module_route'],
+            'subscribed' => $question['subscribed'],
+            'guide' => $this->toolGuide($question['module_key'], $question['pillar'], $question['module_description'] ?? $module?->description),
         ];
     }
 
@@ -134,66 +127,15 @@ class AllocoreCoachService
         return $translated === "coach.tool_guide.{$moduleKey}" ? $fallback : $translated;
     }
 
-    protected function knowledge(?array $focus): ?array
-    {
-        if (! $focus) {
-            return null;
-        }
-
-        $term = $this->pickTerm($focus);
-
-        if (! $term) {
-            return null;
-        }
-
-        $definition = $term['simple_definition'] ?: $term['definition'];
-
-        return [
-            'term' => $term['term'],
-            'slug' => $term['slug'],
-            'definition' => Str::limit(strip_tags($definition), 180),
-            'link' => route('knowledge.show', $term['slug']),
-            'is_beginner_friendly' => $term['is_beginner_friendly'],
-        ];
-    }
-
-    protected function pickTerm(?array $focus): ?array
-    {
-        if (! $focus) {
-            return null;
-        }
-
-        $terms = ! empty($focus['glossary_terms']) && $focus['glossary_terms'] instanceof Collection
-            ? $focus['glossary_terms']
-            : collect();
-
-        if ($terms->isEmpty() && $focus['module_key']) {
-            $terms = $this->glossaryService->relatedForModule($focus['module_key'], 1);
-        }
-
-        if ($terms->isEmpty()) {
-            $terms = $this->glossaryService->relatedForPillar($focus['pillar'], 1);
-        }
-
-        if ($terms->isEmpty()) {
-            $terms = GlossaryTerm::published()
-                ->where('slug', 'allocore-score')
-                ->limit(1)
-                ->get();
-        }
-
-        return $terms->first()?->toArray();
-    }
-
-    protected function buildImprovement(AllocoreScore $score, array $focus): array
+    protected function buildImprovement(array $question): array
     {
         return [
-            'pillar' => $focus['pillar'] ?? null,
-            'priority' => $focus['priority'] ?? null,
-            'problem' => $this->problem($focus),
-            'tool' => $this->tool($focus),
-            'knowledge' => $this->knowledge($focus),
-            'benchmark' => $this->pillarBenchmark($score, $focus['pillar'] ?? ''),
+            'pillar' => $question['pillar'],
+            'priority' => $question['priority'],
+            'problem' => $this->problemForQuestion($question),
+            'tool' => $this->toolForQuestion($question),
+            'knowledge' => $question['knowledge'],
+            'benchmark' => $question['benchmark'],
         ];
     }
 
@@ -217,31 +159,6 @@ class AllocoreCoachService
             'average' => $stats['average'] ?? null,
             'count' => $stats['count'] ?? 0,
             'cluster' => implode(' · ', $parts),
-        ];
-    }
-
-    protected function pillarBenchmark(AllocoreScore $score, string $pillar): ?array
-    {
-        if (! $score->industry || ! $pillar) {
-            return null;
-        }
-
-        $stats = AllocoreBenchmarkService::pillarStats($score->industry, $score->industry_sub, $pillar);
-
-        if (($stats['count'] ?? 0) === 0) {
-            return null;
-        }
-
-        $userScore = (float) (collect($score->pillars ?? [])->firstWhere('name', $pillar)['score'] ?? 0);
-        $average = (float) ($stats['average'] ?? 0);
-        $diff = round($userScore - $average, 1);
-
-        return [
-            'average' => $average,
-            'count' => $stats['count'],
-            'diff' => $diff,
-            'better' => $diff > 0.01,
-            'worse' => $diff < -0.01,
         ];
     }
 

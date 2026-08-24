@@ -139,6 +139,26 @@
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
+                        <label class="text-sm font-medium text-slate-700">{{ __('Recommended tool') }}</label>
+                        <select wire:model="questionRecommendedModuleKey" class="mt-1 w-full rounded-lg border-slate-300">
+                            <option value="">{{ __('Automatically derive from question') }}</option>
+                            @foreach ($modules as $module)
+                                <option value="{{ $module->key }}">{{ $module->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-slate-700">{{ __('Knowledge article') }}</label>
+                        <select wire:model="questionKnowledgeSlug" class="mt-1 w-full rounded-lg border-slate-300">
+                            <option value="">{{ __('Automatically derive from pillar') }}</option>
+                            @foreach ($glossaryTerms as $slug => $term)
+                                <option value="{{ $slug }}">{{ $term }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
                         <label class="text-sm font-medium text-slate-700">{{ __('Depends on question') }}</label>
                         <select wire:model="questionDependsOnId" class="mt-1 w-full rounded-lg border-slate-300">
                             <option value="">{{ __('No dependency') }}</option>

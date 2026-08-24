@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\GlossaryTerm;
+use App\Models\Module;
 use Illuminate\Http\Request;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
@@ -15,8 +17,10 @@ class AuditQuestionController extends Controller
         $template = AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->findOrFail($request->template_id);
         $pillar = $request->pillar_id ? AuditPillar::withoutGlobalScope('current_team')->findOrFail($request->pillar_id) : null;
         $pillars = $template->pillars;
+        $modules = Module::where('is_active', true)->orderBy('name')->get();
+        $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
 
-        return view('admin.audits.questions.create', compact('template', 'pillar', 'pillars'));
+        return view('admin.audits.questions.create', compact('template', 'pillar', 'pillars', 'modules', 'glossaryTerms'));
     }
 
     public function store(Request $request)
@@ -30,6 +34,8 @@ class AuditQuestionController extends Controller
             'weight' => 'required|numeric|min:0|max:1000',
             'is_required' => 'nullable|boolean',
             'failure_recommendation' => 'nullable|string|max:2000',
+            'recommended_module_key' => 'nullable|string|max:255',
+            'knowledge_slug' => 'nullable|string|max:255',
             'options' => 'nullable|string|max:2000',
             'depends_on_question_id' => 'nullable|exists:auditpro_questions,id',
             'depends_on_answer' => 'nullable|string|max:255',
@@ -50,6 +56,8 @@ class AuditQuestionController extends Controller
             'weight' => $validated['weight'],
             'is_required' => $request->boolean('is_required'),
             'failure_recommendation' => $validated['failure_recommendation'],
+            'recommended_module_key' => $validated['recommended_module_key'] ?: null,
+            'knowledge_slug' => $validated['knowledge_slug'] ?: null,
             'options' => $options,
             'depends_on_question_id' => $validated['depends_on_question_id'],
             'depends_on_answer' => $validated['depends_on_answer'],
@@ -64,8 +72,10 @@ class AuditQuestionController extends Controller
         $question->load(['template.pillars', 'template.questions', 'pillar.questions']);
         $template = $question->template;
         $pillars = $template->pillars;
+        $modules = Module::where('is_active', true)->orderBy('name')->get();
+        $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
 
-        return view('admin.audits.questions.edit', compact('question', 'template', 'pillars'));
+        return view('admin.audits.questions.edit', compact('question', 'template', 'pillars', 'modules', 'glossaryTerms'));
     }
 
     public function update(Request $request, AuditQuestion $question)
@@ -78,6 +88,8 @@ class AuditQuestionController extends Controller
             'weight' => 'required|numeric|min:0|max:1000',
             'is_required' => 'nullable|boolean',
             'failure_recommendation' => 'nullable|string|max:2000',
+            'recommended_module_key' => 'nullable|string|max:255',
+            'knowledge_slug' => 'nullable|string|max:255',
             'options' => 'nullable|string|max:2000',
             'depends_on_question_id' => 'nullable|exists:auditpro_questions,id',
             'depends_on_answer' => 'nullable|string|max:255',
@@ -94,6 +106,8 @@ class AuditQuestionController extends Controller
             'weight' => $validated['weight'],
             'is_required' => $request->boolean('is_required'),
             'failure_recommendation' => $validated['failure_recommendation'],
+            'recommended_module_key' => $validated['recommended_module_key'] ?: null,
+            'knowledge_slug' => $validated['knowledge_slug'] ?: null,
             'options' => $options,
             'depends_on_question_id' => $validated['depends_on_question_id'],
             'depends_on_answer' => $validated['depends_on_answer'],

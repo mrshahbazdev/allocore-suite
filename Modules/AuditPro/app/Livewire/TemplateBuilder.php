@@ -2,6 +2,8 @@
 
 namespace Modules\AuditPro\Livewire;
 
+use App\Models\GlossaryTerm;
+use App\Models\Module;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -43,6 +45,10 @@ class TemplateBuilder extends Component
     public bool $questionIsRequired = true;
 
     public string $questionFailureRecommendation = '';
+
+    public ?string $questionRecommendedModuleKey = null;
+
+    public ?string $questionKnowledgeSlug = null;
 
     public string $questionOptions = '';
 
@@ -136,6 +142,8 @@ class TemplateBuilder extends Component
         $this->questionWeight = (float) $question->weight;
         $this->questionIsRequired = $question->is_required;
         $this->questionFailureRecommendation = $question->failure_recommendation ?? '';
+        $this->questionRecommendedModuleKey = $question->recommended_module_key;
+        $this->questionKnowledgeSlug = $question->knowledge_slug;
         $this->questionOptions = implode(', ', $question->options ?? []);
         $this->questionDependsOnId = $question->depends_on_question_id;
         $this->questionDependsOnAnswer = $question->depends_on_answer ?? '';
@@ -166,6 +174,8 @@ class TemplateBuilder extends Component
             'questionWeight' => ['required', 'numeric', 'min:0.1', 'max:10'],
             'questionIsRequired' => ['boolean'],
             'questionFailureRecommendation' => ['nullable', 'string'],
+            'questionRecommendedModuleKey' => ['nullable', 'string'],
+            'questionKnowledgeSlug' => ['nullable', 'string'],
             'questionOptions' => ['nullable', 'string'],
             'questionDependsOnId' => [
                 'nullable',
@@ -190,6 +200,8 @@ class TemplateBuilder extends Component
             'weight' => $validated['questionWeight'],
             'is_required' => $validated['questionIsRequired'],
             'failure_recommendation' => $validated['questionFailureRecommendation'],
+            'recommended_module_key' => $validated['questionRecommendedModuleKey'] ?: null,
+            'knowledge_slug' => $validated['questionKnowledgeSlug'] ?: null,
             'options' => $options ?: null,
             'depends_on_question_id' => $validated['questionDependsOnId'],
             'depends_on_answer' => $validated['questionDependsOnAnswer'] ?: null,
@@ -227,6 +239,8 @@ class TemplateBuilder extends Component
             'questionText',
             'questionDescription',
             'questionFailureRecommendation',
+            'questionRecommendedModuleKey',
+            'questionKnowledgeSlug',
             'questionOptions',
             'questionDependsOnId',
             'questionDependsOnAnswer',
@@ -241,7 +255,9 @@ class TemplateBuilder extends Component
     {
         $pillars = $this->template->pillars()->with('questions')->get();
         $dependencyQuestions = $this->template->questions()->orderBy('position')->get();
+        $modules = Module::where('is_active', true)->orderBy('name')->get();
+        $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
 
-        return view('auditpro::livewire.template-builder', compact('pillars', 'dependencyQuestions'));
+        return view('auditpro::livewire.template-builder', compact('pillars', 'dependencyQuestions', 'modules', 'glossaryTerms'));
     }
 }

@@ -48,7 +48,8 @@
                         <svg class="h-5 w-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zM12.75 17.25h.008v.008h-.008v-.008z"/></svg>
                         <h3 class="font-semibold text-rose-900">{{ __('Biggest problem & solution idea') }}</h3>
                     </div>
-                    <p class="mt-2 text-sm font-medium text-rose-800">{{ $allocoreCoach['problem']['headline'] }} ({{ $allocoreCoach['problem']['score'] }}/100)</p>
+                    <p class="mt-2 text-sm font-medium text-rose-800">{{ __($allocoreCoach['problem']['pillar']) }} — {{ $allocoreCoach['problem']['score'] }}/100</p>
+                    <p class="mt-1 text-sm font-semibold text-rose-900">{{ $allocoreCoach['problem']['headline'] }}</p>
                     <p class="mt-1 text-sm text-rose-700">{!! $allocoreCoach['problem']['solution'] !!}</p>
                 </div>
             @endif
@@ -104,7 +105,7 @@
                     <summary class="flex cursor-pointer list-none items-center justify-between">
                         <div>
                             <h3 class="font-semibold text-slate-900">{{ __('All improvement areas') }}</h3>
-                            <p class="text-sm text-slate-500">{{ __('Every weak pillar gets a recommended tool and a knowledge article.') }}</p>
+                            <p class="text-sm text-slate-500">{{ __('Every question that is not fully answered gets a recommended tool and a knowledge article.') }}</p>
                         </div>
                         <span class="badge badge-gray shrink-0">{{ count($allocoreCoach['all']) }}</span>
                     </summary>
@@ -115,8 +116,9 @@
                                 <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                     <div class="flex-1">
                                         <div class="flex flex-wrap items-center gap-2">
+                                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{{ __($item['problem']['pillar'] ?? '') }}</span>
                                             <h4 class="font-semibold text-slate-900">
-                                                {{ __($item['problem']['pillar'] ?? '') }}
+                                                {{ $item['problem']['headline'] ?? '' }}
                                                 <span class="font-normal text-slate-500">({{ $item['problem']['score'] ?? 0 }}/100)</span>
                                             </h4>
                                             @if ($item['benchmark'] ?? null)
@@ -134,9 +136,15 @@
 
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
                                         @if ($item['tool'] ?? null)
-                                            <a href="{{ $item['tool']['route'] ?? route('tools.index') }}" class="btn btn-primary btn-sm">
-                                                {{ __('Open') }} {{ $item['tool']['name'] }}
-                                            </a>
+                                            @if ($item['tool']['subscribed'])
+                                                <a href="{{ $item['tool']['route'] ?? route('tools.index') }}" class="btn btn-primary btn-sm">
+                                                    {{ __('Open') }} {{ $item['tool']['name'] }}
+                                                </a>
+                                            @else
+                                                <a href="{{ route('billing.plans', ['module' => $item['tool']['key']]) }}" class="btn btn-secondary btn-sm">
+                                                    {{ __('Add') }} {{ $item['tool']['name'] }}
+                                                </a>
+                                            @endif
                                         @endif
                                         @if ($item['knowledge'] ?? null)
                                             <a href="{{ $item['knowledge']['link'] }}" class="btn btn-secondary btn-sm">

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditPro\Models\Audit;
 
 class AllocoreScore extends Model
 {
@@ -33,5 +34,10 @@ class AllocoreScore extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function audit(): BelongsTo
+    {
+        return $this->belongsTo(Audit::class);
     }
 }
