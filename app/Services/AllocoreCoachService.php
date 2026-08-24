@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AllocoreScore;
+use App\Models\GlossaryTerm;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -149,7 +150,7 @@ class AllocoreCoachService
             'term' => $term['term'],
             'slug' => $term['slug'],
             'definition' => Str::limit(strip_tags($definition), 180),
-            'link' => route('glossary.show', $term['slug']),
+            'link' => route('knowledge.show', $term['slug']),
             'is_beginner_friendly' => $term['is_beginner_friendly'],
         ];
     }
@@ -170,6 +171,13 @@ class AllocoreCoachService
 
         if ($terms->isEmpty()) {
             $terms = $this->glossaryService->relatedForPillar($focus['pillar'], 1);
+        }
+
+        if ($terms->isEmpty()) {
+            $terms = GlossaryTerm::published()
+                ->where('slug', 'allocore-score')
+                ->limit(1)
+                ->get();
         }
 
         return $terms->first()?->toArray();

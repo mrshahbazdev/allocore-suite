@@ -77,6 +77,7 @@ use App\Http\Controllers\HelpController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\InstallController;
+use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ModuleFallbackController;
@@ -180,6 +181,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('tools', ToolsController::class)->name('tools.index');
     Route::get('recommendations', RecommendationController::class)->name('recommendations.index');
     Route::get('workspace', WorkspaceController::class)->name('workspace.index');
+
+    // Knowledge base inside the app
+    Route::get('knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
+    Route::get('knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('knowledge.show');
+
     Route::redirect('app/auditpro', '/app/audit', 301);
     Route::redirect('app/clusterforge', '/app/clusters', 301);
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
