@@ -4083,7 +4083,7 @@
     "You score better than :percentile% of companies like yours.": "Du liegst besser als :percentile% ähnlicher Unternehmen.",
     "Similar companies average :average points.": "Ähnliche Unternehmen erreichen durchschnittlich :average Punkte.",
     "All improvement areas": "Alle Verbesserungsbereiche",
-    "Every weak pillar gets a recommended tool and a knowledge article.": "Jede schwache Säule erhält ein empfohlenes Tool und einen Wissensartikel.",
+    "Every question that is not fully answered gets a recommended tool and a knowledge article.": "Jede nicht vollständig beantwortete Frage erhält ein empfohlenes Tool und einen Wissensartikel.",
     "vs similar": "vs. ähnlich",
     "similar average": "ähnl. Durchschnitt",
     "records": "Einträge",

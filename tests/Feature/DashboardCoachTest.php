@@ -9,6 +9,10 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\AuditPro\Models\Audit;
+use Modules\AuditPro\Models\AuditAnswer;
+use Modules\AuditPro\Models\AuditPillar;
+use Modules\AuditPro\Models\AuditQuestion;
+use Modules\AuditPro\Models\AuditTemplate;
 use Tests\TestCase;
 
 class DashboardCoachTest extends TestCase
@@ -31,13 +35,59 @@ class DashboardCoachTest extends TestCase
 
         $this->actingAs($user);
 
+        $template = AuditTemplate::create([
+            'team_id' => $team->id,
+            'name' => 'Maturity',
+            'slug' => 'maturity',
+            'created_by' => $user->id,
+            'is_default' => true,
+        ]);
+
         $audit = Audit::create([
             'team_id' => $team->id,
+            'template_id' => $template->id,
             'created_by' => $user->id,
             'status' => 'completed',
             'company_name' => $team->name,
             'industry' => $team->industry,
             'size' => $team->size,
+        ]);
+
+        $revenuePillar = AuditPillar::create([
+            'team_id' => $team->id,
+            'template_id' => $template->id,
+            'name' => 'Revenue',
+            'description' => 'Revenue',
+            'position' => 1,
+        ]);
+
+        $profitPillar = AuditPillar::create([
+            'team_id' => $team->id,
+            'template_id' => $template->id,
+            'name' => 'Profit',
+            'description' => 'Profit',
+            'position' => 2,
+        ]);
+
+        $question = AuditQuestion::create([
+            'team_id' => $team->id,
+            'template_id' => $template->id,
+            'pillar_id' => $revenuePillar->id,
+            'question' => 'How do you track revenue?',
+            'question_type' => 'scale_1_to_5',
+            'weight' => 1,
+            'is_required' => true,
+            'recommended_module_key' => 'financial-platform',
+            'knowledge_slug' => 'revenue-run-rate',
+            'failure_recommendation' => '<p>Set up a revenue dashboard in the <a href="/app/financial-platform">Financial Platform</a>.</p>',
+            'position' => 1,
+        ]);
+
+        AuditAnswer::create([
+            'team_id' => $team->id,
+            'audit_id' => $audit->id,
+            'question_id' => $question->id,
+            'value' => ['answer' => 1],
         ]);
 
         $module = Module::create([

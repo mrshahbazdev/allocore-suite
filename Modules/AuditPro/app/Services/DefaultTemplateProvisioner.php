@@ -3,6 +3,7 @@
 namespace Modules\AuditPro\Services;
 
 use App\Models\Team;
+use App\Services\QuestionToolGuesser;
 use Illuminate\Support\Facades\DB;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
@@ -58,6 +59,8 @@ class DefaultTemplateProvisioner
                         'question' => $questionData['question'],
                         'description' => $questionData['description'],
                         'failure_recommendation' => $questionData['recommendation'],
+                        'recommended_module_key' => QuestionToolGuesser::guess($questionData['question'], $pillarData['name']),
+                        'knowledge_slug' => QuestionToolGuesser::guessKnowledgeSlug($questionData['question'], $pillarData['name']),
                         'question_type' => 'scale_1_to_5',
                         'weight' => 1,
                         'is_required' => true,

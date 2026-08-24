@@ -52,6 +52,28 @@
     <textarea name="failure_recommendation" rows="2" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('failure_recommendation', $question->failure_recommendation ?? '') }}</textarea>
 </div>
 
+<div class="grid gap-5 md:grid-cols-2">
+    <div>
+        <label class="block text-sm font-medium text-slate-700">{{ __('Recommended tool') }}</label>
+        <select name="recommended_module_key" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">{{ __('Automatically derive from question') }}</option>
+            @foreach ($modules as $module)
+                <option value="{{ $module->key }}" @selected(old('recommended_module_key', $question->recommended_module_key ?? '') == $module->key)>{{ $module->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-slate-700">{{ __('Knowledge article') }}</label>
+        <select name="knowledge_slug" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">{{ __('Automatically derive from pillar') }}</option>
+            @foreach ($glossaryTerms as $slug => $term)
+                <option value="{{ $slug }}" @selected(old('knowledge_slug', $question->knowledge_slug ?? '') == $slug)>{{ $term }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
 <div>
     <label class="block text-sm font-medium text-slate-700">{{ __('admin.audit_questions.options') }}</label>
     <input name="options" value="{{ old('options', isset($question) && is_array($question->options) ? implode(', ', $question->options) : '') }}" placeholder="{{ __('Option A, Option B, Option C') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
