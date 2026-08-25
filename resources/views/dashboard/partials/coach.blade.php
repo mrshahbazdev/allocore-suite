@@ -49,7 +49,7 @@
                         <h3 class="font-semibold text-rose-900">{{ __('Biggest problem & solution idea') }}</h3>
                     </div>
                     <p class="mt-2 text-sm font-medium text-rose-800">{{ __($allocoreCoach['problem']['pillar']) }} — {{ $allocoreCoach['problem']['score'] }}/100</p>
-                    <p class="mt-1 text-sm font-semibold text-rose-900">{{ $allocoreCoach['problem']['headline'] }}</p>
+                    <p class="mt-1 text-sm font-semibold text-rose-900">{{ __($allocoreCoach['problem']['headline']) }}</p>
                     <p class="mt-1 text-sm text-rose-700">{!! $allocoreCoach['problem']['solution'] !!}</p>
                 </div>
             @endif
@@ -61,17 +61,17 @@
                         <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17H9.75m9.75 0a3 3 0 11-6 0 3 3 0 016 0zM3.75 13.5h.75M3.75 9.75h.75M3.75 6h.75M9.75 6h.008v.008H9.75V6zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 21h.75m9.75-21h.008v.008H13.5V0zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                         <h3 class="font-semibold text-blue-900">{{ __('Recommended tool') }}</h3>
                     </div>
-                    <p class="mt-2 text-sm font-medium text-blue-800">{{ $allocoreCoach['tool']['name'] }}</p>
-                    <p class="mt-1 text-sm text-blue-700">{{ $allocoreCoach['tool']['guide'] }}</p>
+                    <p class="mt-2 text-sm font-medium text-blue-800">{{ __($allocoreCoach['tool']['name']) }}</p>
+                    <p class="mt-1 text-sm text-blue-700">{{ __($allocoreCoach['tool']['guide']) }}</p>
                     <div class="mt-3">
                         @if ($allocoreCoach['tool']['subscribed'])
                             <a href="{{ $allocoreCoach['tool']['route'] }}" class="inline-flex items-center rounded-lg bg-[#ff9200] px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
-                                {{ __('Open') }} {{ $allocoreCoach['tool']['name'] }}
+                                {{ __('Open') }} {{ __($allocoreCoach['tool']['name']) }}
                                 <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                             </a>
                         @else
                             <a href="{{ route('billing.plans', ['module' => $allocoreCoach['tool']['key']]) }}" class="inline-flex items-center rounded-lg border border-[#ff9200] bg-white px-4 py-2 text-sm font-semibold text-[#ff9200] hover:bg-orange-50">
-                                {{ __('Add') }} {{ $allocoreCoach['tool']['name'] }}
+                                {{ __('Add') }} {{ __($allocoreCoach['tool']['name']) }}
                                 <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                             </a>
                         @endif
@@ -118,7 +118,7 @@
                                         <div class="flex flex-wrap items-center gap-2">
                                             <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{{ __($item['problem']['pillar'] ?? '') }}</span>
                                             <h4 class="font-semibold text-slate-900">
-                                                {{ $item['problem']['headline'] ?? '' }}
+                                                {{ __($item['problem']['headline'] ?? '') }}
                                                 <span class="font-normal text-slate-500">({{ $item['problem']['score'] ?? 0 }}/100)</span>
                                             </h4>
                                             @if ($item['benchmark'] ?? null)
@@ -138,11 +138,11 @@
                                         @if ($item['tool'] ?? null)
                                             @if ($item['tool']['subscribed'])
                                                 <a href="{{ $item['tool']['route'] ?? route('tools.index') }}" class="btn btn-primary btn-sm">
-                                                    {{ __('Open') }} {{ $item['tool']['name'] }}
+                                                    {{ __('Open') }} {{ __($item['tool']['name'] ?? '') }}
                                                 </a>
                                             @else
                                                 <a href="{{ route('billing.plans', ['module' => $item['tool']['key']]) }}" class="btn btn-secondary btn-sm">
-                                                    {{ __('Add') }} {{ $item['tool']['name'] }}
+                                                    {{ __('Add') }} {{ __($item['tool']['name'] ?? '') }}
                                                 </a>
                                             @endif
                                         @endif
