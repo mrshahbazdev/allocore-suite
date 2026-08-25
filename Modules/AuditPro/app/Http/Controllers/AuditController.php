@@ -93,7 +93,7 @@ class AuditController extends Controller
         $lastCompletedAt = $cooldownQuery->latest('completed_at')->value('completed_at');
 
         $cooldownDays = match ($auditType) {
-            'major' => 180,
+            'major' => 28,
             'small' => 90,
             'challenge' => 28,
             'kpi_check' => 7,
