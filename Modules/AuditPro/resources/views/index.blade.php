@@ -52,7 +52,7 @@
                 <div>
                     <label class="mb-1 block text-xs font-medium text-slate-600">{{ __('Audit type') }}</label>
                     <select name="audit_type" required class="w-full rounded-lg border-slate-300 text-sm focus:border-[#ff9200] focus:ring-[#ff9200]/20">
-                        <option value="major">{{ __('Major audit') }} — {{ __('every 4 weeks') }}</option>
+                        <option value="major">{{ __('Major audit — every 4 weeks') }}</option>
                         <option value="small">{{ __('Small audit') }} — {{ __('every 3 months') }}</option>
                         <option value="challenge">{{ __('Challenge') }} — {{ __('every 4 weeks') }}</option>
                         <option value="kpi_check">{{ __('KPI check') }} — {{ __('every week') }}</option>
