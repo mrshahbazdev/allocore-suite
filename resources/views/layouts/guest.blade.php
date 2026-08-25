@@ -8,6 +8,9 @@
 
         @if ($brand['favicon'])
             <link rel="icon" href="{{ $brand['favicon'] }}">
+        @else
+            <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+            <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
         @endif
 
         <title>{{ $brand['name'] }}</title>
@@ -37,13 +40,13 @@
 
                     <div class="mt-10 grid max-w-md gap-4">
                         @foreach ([
-                            ['icon' => 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.637-2.911M15 19.128V13.5a2.25 2.25 0 00-2.25-2.25h-1.5A2.25 2.25 0 009 13.5v3.75m-3-1.837a6.375 6.375 0 0111.637-2.911c1.249 1.037 2.058 2.451 2.305 3.97', 'title' => __('auth.guest.feature_auth')],
-                            ['icon' => 'M18 18.72v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48c0-.66.34-1.26.88-1.61l.28-.17a.75.75 0 00.25-1.03l-.11-.18a3.75 3.75 0 00-6.5 0l-.11.18a.75.75 0 00.25 1.03l.28.17c.54.35.88.95.88 1.61v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48a2.25 2.25 0 00-3-2.12 2.25 2.25 0 00-1.5 2.12v.48a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75v-.48a6.75 6.75 0 0111.25-5.07 6.75 6.75 0 019.75 5.07zM12 12a3 3 0 100-6 3 3 0 000 6z', 'title' => __('auth.guest.feature_teams')],
-                            ['icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z', 'title' => __('auth.guest.feature_billing')],
+                            ['icon' => 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 015.106 15M15 19.128v.106A12.318 12.318 0 015.106 15m0 0a9.333 9.333 0 00-2.646-5.609T5 9.75a9.375 9.375 0 00-2.25 5.25m0 0v-.106A12.318 12.318 0 015.106 15', 'title' => __('Score')],
+                            ['icon' => 'M18 18.72v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48c0-.66.34-1.26.88-1.61l.28-.17a.75.75 0 00.25-1.03l-.11-.18a3.75 3.75 0 00-6.5 0l-.11.18a.75.75 0 00.25 1.03l.28.17c.54.35.88.95.88 1.61v.48m0 0a.75.75 0 00-1.5 0m0 0a.75.75 0 01-1.5 0m0 0a.75.75 0 01-1.5 0v-.48c0-.66.34-1.26.88-1.61l.28-.17a.75.75 0 00.25-1.03l-.11-.18a3.75 3.75 0 00-6.5 0l-.11.18a.75.75 0 00.25 1.03l.28.17c.54.35.88.95.88 1.61v.48m0 0v.48a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v-.48', 'title' => __('Teams')],
+                            ['icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z', 'title' => __('Data')],
                         ] as $item)
                             <div class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: {{ $brand['primary_color'] ? $brand['primary_color'].'20' : '#e0e7ff' }}; color: {{ $brand['primary_color'] ?? '#4f46e5' }}">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: {{ $brand['primary_color'] ? $brand['primary_color'].'20' : '#e0f2fe20' }}; color: {{ $brand['primary_color'] ?? '#0ea5e9' }}">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"></path></svg>
                                 </div>
                                 <div class="text-base font-semibold text-slate-900">{{ $item['title'] }}</div>
                             </div>
