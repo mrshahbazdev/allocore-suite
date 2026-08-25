@@ -11,6 +11,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     @if ($brand['favicon'])
         <link rel="icon" href="{{ $brand['favicon'] }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     @endif
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
@@ -49,10 +52,10 @@
                 {{-- Left: page title --}}
                 <div class="flex min-w-0 flex-1 items-center gap-3">
                     <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:hidden" aria-label="{{ __('Toggle menu') }}">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"></path></svg>
                     </button>
                     <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:flex" aria-label="{{ __('Toggle sidebar') }}">
-                        <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                        <svg class="h-5 w-5 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path></svg>
                     </button>
                     <a href="{{ route('dashboard') }}" class="flex h-8 w-8 shrink-0 items-center justify-center" aria-label="{{ $brand['name'] ?? 'Allocore' }}">
                         <img src="{{ asset('logo-mark.png') }}" class="h-8 w-8 object-contain" alt="{{ $brand['name'] ?? 'Allocore' }}">
@@ -70,7 +73,7 @@
                     @endif
                     @auth
                         <a href="{{ route('notifications.index') }}" class="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700" aria-label="{{ __('Notifications') }}">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.454 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 002.688 6.062M9 15.25c.966 0 1.875-.1 2.75-.3m0 0a24.15 24.15 0 015.5.3m0 0a23.961 23.961 0 01-5.5-.3m0 0c.966.293 1.875.7 2.75 1.194M9 15.25c1.034 0 2.052-.115 3-3m5.25 0a23.95 23.95 0 01-3 3m0 0a23.95 23.95 0 01-5.25 0m0 0v-3m0 3v-6m0 0c-1.034 0-2.052.115-3 .3m7.5 0a23.96 23.96 0 003-.3"></path></svg>
                             @php($unreadCount = auth()->user()->unreadNotifications()->count())
                             @if ($unreadCount > 0)
                                 <span class="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
