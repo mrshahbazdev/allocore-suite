@@ -82,6 +82,7 @@ class Assessment extends Component
 
         if ($this->currentStep < $this->pillars()->count()) {
             $this->currentStep++;
+            $this->dispatch('scrollToTop');
 
             return null;
         }
@@ -93,6 +94,7 @@ class Assessment extends Component
     {
         $this->saveCurrentStep();
         $this->currentStep = max(1, $this->currentStep - 1);
+        $this->dispatch('scrollToTop');
     }
 
     public function saveDraft()
