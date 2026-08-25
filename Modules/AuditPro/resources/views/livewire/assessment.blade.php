@@ -53,7 +53,7 @@
                     @endforeach
                 </div>
                 <div class="flex items-center justify-between border-t border-slate-200 px-6 py-5">
-                    <button wire:click="previousStep" @disabled($currentStep === 1) class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40">{{ __('Previous') }}</button>
+                    <button wire:click="previousStep" @disabled($currentStep === 1) class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50">{{ __('Previous') }}</button>
                     <button wire:click="nextStep" class="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
                         {{ $currentStep === $stepCount ? __('Complete audit') : __('Save and continue') }}
                     </button>
@@ -61,4 +61,16 @@
             </section>
         @endif
     </div>
+
+    <script>
+        document.addEventListener('livewire:navigated', () => {
+            // Scroll to top of page after Livewire update
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Listen for scrollToTop event from component
+        window.addEventListener('scrollToTop', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
 </div>
