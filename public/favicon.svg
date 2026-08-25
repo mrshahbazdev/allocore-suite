@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="64" height="64">
+  <!-- Bottom teal section with white circle cutout -->
+  <g>
+    <!-- Left trapezoid -->
+    <path d="M 50 250 L 80 280 L 150 280 L 180 250 Z" fill="#0B6B8F"/>
+    
+    <!-- Right trapezoid -->
+    <path d="M 220 250 L 250 280 L 320 280 L 350 250 Z" fill="#0B6B8F"/>
+    
+    <!-- Center circle -->
+    <circle cx="200" cy="265" r="35" fill="#FF9200"/>
+  </g>
+  
+  <!-- Dark teal trapezoid (4th level) -->
+  <path d="M 50 200 L 100 250 L 300 250 L 350 200 Z" fill="#1E8FA3"/>
+  
+  <!-- Teal trapezoid (3rd level) -->
+  <path d="M 75 150 L 125 200 L 275 200 L 325 150 Z" fill="#4AAFBE"/>
+  
+  <!-- Light teal/cyan trapezoid (2nd level) -->
+  <path d="M 100 100 L 150 150 L 250 150 L 300 100 Z" fill="#5CBFD1"/>
+  
+  <!-- Orange trapezoid (top) -->
+  <path d="M 130 50 L 180 100 L 220 100 L 270 50 Z" fill="#FF9200"/>
+</svg>
