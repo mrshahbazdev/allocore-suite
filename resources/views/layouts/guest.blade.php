@@ -69,7 +69,8 @@
                             @include('partials.locale-switcher')
                         </div>
 
-                        {{ $slot }}
+                        @yield('content')
+                        {{ $slot ?? '' }}
                     </div>
                 </div>
             </div>
