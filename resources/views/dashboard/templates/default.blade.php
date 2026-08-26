@@ -84,14 +84,7 @@
 
             @include('dashboard.partials.coach')
         @else
-            <div class="mb-6 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-600 opacity-0 animate-fade-up" style="animation-delay: 80ms">
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#ff9200]/10 text-[#ff9200]">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.261 4.14L21 12.84M4.5 17.25h12.75m-12.75 0a1.5 1.5 0 01-1.5-1.5M4.5 17.25a1.5 1.5 0 01-1.5-1.5M17.25 4.5v11.25m0 0l1.5 1.5m-1.5-1.5l-1.5 1.5"/></svg>
-                </div>
-                <p class="mt-4 font-semibold">{{ __('Discover your Allocore Score') }}</p>
-                <p class="mt-1 text-sm">{{ __('Run an AuditPro assessment to see where your company stands on the corporate needs pyramid.') }}</p>
-                <a href="{{ route('audit.index') }}" class="mt-4 inline-block rounded-lg bg-[#ff9200] px-4 py-2 text-sm font-semibold text-white hover:opacity-90">{{ __('Start audit') }}</a>
-            </div>
+            @include('dashboard.partials.getting-started-guide')
         @endif
 
         {{-- Quick actions --}}
