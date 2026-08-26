@@ -166,7 +166,24 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        try {
+            if ($this->hasRole('admin')) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // Role table might not exist or cache issue
+        }
+
+        if (! empty($this->is_admin)) {
+            return true;
+        }
+
+        $adminEmail = config('app.admin_email') ?: env('ADMIN_EMAIL');
+        if ($adminEmail && strcasecmp((string) $this->email, (string) $adminEmail) === 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public function isOwner(): bool
