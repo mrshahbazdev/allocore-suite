@@ -8,17 +8,18 @@
         </div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         @foreach ([
             ['label' => __('Users'), 'value' => $stats['users'], 'route' => 'admin.users.index'],
-            ['label' => __('Admins'), 'value' => $stats['admins']],
             ['label' => __('Teams'), 'value' => $stats['teams'], 'route' => 'admin.teams.index'],
             ['label' => __('Active modules'), 'value' => $stats['modules'], 'route' => 'admin.modules.index'],
+            ['label' => __('Knowledge Base'), 'value' => $stats['glossary'], 'route' => 'admin.glossary.index'],
             ['label' => __('Plans'), 'value' => $stats['plans'], 'route' => 'admin.plans.index'],
             ['label' => __('Subscriptions'), 'value' => $stats['subscriptions'], 'route' => 'admin.subscriptions.index'],
             ['label' => __('Pending bank'), 'value' => $stats['pending_bank']],
             ['label' => __('Analyses'), 'value' => $stats['analyses'], 'route' => 'admin.financial.index'],
             ['label' => __('Audits'), 'value' => $stats['audits'], 'route' => 'admin.audits.index'],
+            ['label' => __('Admins'), 'value' => $stats['admins']],
         ] as $stat)
             <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="text-xs uppercase tracking-wide text-slate-500">{{ $stat['label'] }}</div>

@@ -3,9 +3,17 @@
 @section('content')
     @php($pageTitle = __('Knowledge'))
 
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900">{{ __('Knowledge') }}</h1>
-        <p class="text-sm text-slate-500">{{ __('Terms and concepts that power the Allocore Framework.') }}</p>
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">{{ __('Knowledge') }}</h1>
+            <p class="text-sm text-slate-500">{{ __('Terms and concepts that power the Allocore Framework.') }}</p>
+        </div>
+        @if (auth()->user()?->isAdmin())
+            <a href="{{ route('admin.glossary.create') }}" class="inline-flex items-center gap-1 rounded-lg bg-[#ff9200] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                {{ __('Add Article') }}
+            </a>
+        @endif
     </div>
 
     @forelse ($terms as $category => $group)
