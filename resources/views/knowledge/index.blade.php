@@ -3,10 +3,10 @@
 @section('content')
     @php($pageTitle = __('Knowledge'))
 
-    <div class="mb-6 flex items-center justify-between gap-4">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900">{{ __('Knowledge') }}</h1>
-            <p class="text-sm text-slate-500">{{ __('Terms and concepts that power the Allocore Framework.') }}</p>
+            <h1 class="text-2xl font-bold text-slate-900">{{ __('Knowledge Base') }}</h1>
+            <p class="text-sm text-slate-500">{{ __('Terms and concepts that power the Allocore Framework — sorted alphabetically A-Z.') }}</p>
         </div>
         @if (auth()->user()?->isAdmin())
             <a href="{{ route('admin.glossary.create') }}" class="inline-flex items-center gap-1 rounded-lg bg-[#ff9200] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90">
@@ -15,6 +15,27 @@
             </a>
         @endif
     </div>
+
+    {{-- Alphabet Filter Bar --}}
+    @if (! empty($availableLetters))
+        <div class="mb-8 flex flex-wrap items-center gap-1 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-sm">
+            <a href="{{ route('knowledge.index') }}" class="rounded-lg px-3 py-1.5 text-xs font-semibold transition {{ empty($letter) ? 'bg-[#ff9200] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                {{ __('All') }}
+            </a>
+            @foreach (range('A', 'Z') as $l)
+                @php($hasItems = in_array($l, $availableLetters, true))
+                @if ($hasItems)
+                    <a href="{{ route('knowledge.index', ['letter' => $l]) }}" class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition {{ $letter === $l ? 'bg-[#ff9200] text-white shadow-sm' : 'text-slate-700 hover:bg-orange-50 hover:text-[#ff9200]' }}">
+                        {{ $l }}
+                    </a>
+                @else
+                    <span class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-slate-300 cursor-not-allowed">
+                        {{ $l }}
+                    </span>
+                @endif
+            @endforeach
+        </div>
+    @endif
 
     @forelse ($terms as $category => $group)
         <div class="mb-8">
