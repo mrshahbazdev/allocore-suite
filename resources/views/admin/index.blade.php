@@ -8,12 +8,14 @@
         </div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         @foreach ([
             ['label' => __('Users'), 'value' => $stats['users'], 'route' => 'admin.users.index'],
             ['label' => __('Teams'), 'value' => $stats['teams'], 'route' => 'admin.teams.index'],
             ['label' => __('Active modules'), 'value' => $stats['modules'], 'route' => 'admin.modules.index'],
             ['label' => __('Knowledge Base'), 'value' => $stats['glossary'], 'route' => 'admin.glossary.index'],
+            ['label' => __('Blog Posts'), 'value' => $stats['posts'], 'route' => 'admin.blog.posts.index'],
+            ['label' => __('CMS Pages'), 'value' => $stats['pages'], 'route' => 'admin.pages.index'],
             ['label' => __('Plans'), 'value' => $stats['plans'], 'route' => 'admin.plans.index'],
             ['label' => __('Subscriptions'), 'value' => $stats['subscriptions'], 'route' => 'admin.subscriptions.index'],
             ['label' => __('Pending bank'), 'value' => $stats['pending_bank']],

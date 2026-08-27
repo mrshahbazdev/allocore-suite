@@ -87,5 +87,22 @@ class CoreSeeder extends Seeder
             ['name' => 'Admin', 'password' => Hash::make('password')]
         );
         $admin->assignRole('admin');
+
+        $categories = [
+            ['name' => 'General', 'slug' => 'general', 'description' => 'General business and framework insights.', 'is_active' => true, 'sort_order' => 1],
+            ['name' => 'Strategy', 'slug' => 'strategy', 'description' => 'Strategic planning and business growth.', 'is_active' => true, 'sort_order' => 2],
+            ['name' => 'Finance', 'slug' => 'finance', 'description' => 'Cash flow, margins, and financial intelligence.', 'is_active' => true, 'sort_order' => 3],
+            ['name' => 'Operations', 'slug' => 'operations', 'description' => 'Standard operating procedures and execution.', 'is_active' => true, 'sort_order' => 4],
+            ['name' => 'Productivity', 'slug' => 'productivity', 'description' => 'Time management and executive focus.', 'is_active' => true, 'sort_order' => 5],
+        ];
+
+        foreach ($categories as $cat) {
+            \App\Models\BlogCategory::firstOrCreate(['slug' => $cat['slug']], $cat);
+        }
+
+        $tags = ['Business', 'Growth', 'Leadership', 'SaaS', 'Tips', 'Audit', 'Finance'];
+        foreach ($tags as $tag) {
+            \App\Models\BlogTag::firstOrCreate(['slug' => \Illuminate\Support\Str::slug($tag)], ['name' => $tag]);
+        }
     }
 }
