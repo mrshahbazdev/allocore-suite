@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\BlogCategory;
+use App\Models\BlogTag;
 use App\Models\Module;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class CoreSeeder extends Seeder
@@ -97,12 +100,12 @@ class CoreSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            \App\Models\BlogCategory::firstOrCreate(['slug' => $cat['slug']], $cat);
+            BlogCategory::firstOrCreate(['slug' => $cat['slug']], $cat);
         }
 
         $tags = ['Business', 'Growth', 'Leadership', 'SaaS', 'Tips', 'Audit', 'Finance'];
         foreach ($tags as $tag) {
-            \App\Models\BlogTag::firstOrCreate(['slug' => \Illuminate\Support\Str::slug($tag)], ['name' => $tag]);
+            BlogTag::firstOrCreate(['slug' => Str::slug($tag)], ['name' => $tag]);
         }
     }
 }
