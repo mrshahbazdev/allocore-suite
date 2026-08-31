@@ -92,6 +92,11 @@ class ClusterForgeController extends Controller
 
     public function retry(Request $request, Project $project): RedirectResponse
     {
+        if ($project->isInProgress()) {
+            return redirect()->route('clusterforge.show', $project)
+                ->with('error', __('This project is already being generated.'));
+        }
+
         $project->update([
             'status' => Project::STATUS_PENDING,
             'error' => null,
