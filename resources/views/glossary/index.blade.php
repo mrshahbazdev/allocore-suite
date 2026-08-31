@@ -9,6 +9,27 @@
     </div>
 
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        {{-- Alphabet Filter Bar --}}
+        @if (! empty($availableLetters))
+            <div class="mb-10 flex flex-wrap items-center gap-1 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                <a href="{{ route('glossary.index') }}" class="rounded-lg px-3 py-1.5 text-xs font-semibold transition {{ empty($letter) ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    {{ __('All') }}
+                </a>
+                @foreach (range('A', 'Z') as $l)
+                    @php($hasItems = in_array($l, $availableLetters, true))
+                    @if ($hasItems)
+                        <a href="{{ route('glossary.index', ['letter' => $l]) }}" class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition {{ $letter === $l ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-700 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            {{ $l }}
+                        </a>
+                    @else
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-slate-300 cursor-not-allowed">
+                            {{ $l }}
+                        </span>
+                    @endif
+                @endforeach
+            </div>
+        @endif
+
         @forelse ($terms as $category => $group)
             <div class="mb-10">
                 <h2 class="mb-4 text-xl font-semibold text-slate-900">{{ $category }}</h2>
