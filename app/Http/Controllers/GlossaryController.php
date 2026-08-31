@@ -11,27 +11,30 @@ class GlossaryController extends Controller
 {
     public function index(Request $request): View
     {
-        $letter = strtoupper($request->input('letter', ''));
-        $query = GlossaryTerm::where('is_published', true)->orderBy('term', 'asc');
+        $terms = GlossaryTerm::where('is_published', true)
+            ->orderBy('term', 'asc')
+            ->get();
 
-        if ($letter && ctype_alpha($letter)) {
-            $query->where('term', 'like', $letter.'%');
-        }
-
-        $terms = $query->get()
-            ->groupBy(fn ($term) => $term->category ?: __('General'))
-            ->sortKeys();
-
-        $availableLetters = GlossaryTerm::where('is_published', true)
-            ->get(['term'])
-            ->map(fn ($item) => strtoupper(substr($item->term, 0, 1)))
-            ->filter(fn ($l) => preg_match('/^[A-ZÄÖÜ]$/i', $l))
+        $availableLetters = $terms
+            ->pluck('term')
+            ->map(fn ($term) => mb_strtoupper(mb_substr($term, 0, 1)))
+            ->filter(fn ($letter) => preg_match('/^[A-ZÄÖÜ]$/i', $letter))
             ->unique()
             ->sort()
             ->values()
-            ->all();
+            ->toArray();
 
-        return view('glossary.index', compact('terms', 'letter', 'availableLetters'));
+        $letter = $request->get('letter');
+        if ($letter && preg_match('/^[A-Z]$/i', $letter)) {
+            $letter = mb_strtoupper($letter);
+            $terms = $terms->filter(fn ($term) => mb_strtoupper(mb_substr($term->term, 0, 1)) === $letter)->values();
+        } else {
+            $letter = null;
+        }
+
+        $terms = $terms->groupBy(fn ($term) => $term->category ?: __('General'))->sortKeys();
+
+        return view('glossary.index', compact('terms', 'availableLetters', 'letter'));
     }
 
     public function show(GlossaryTerm $glossary): View
