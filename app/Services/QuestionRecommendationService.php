@@ -144,6 +144,8 @@ class QuestionRecommendationService
 
         if (blank($manual)) {
             $manual = __('Use the recommended tool to make measurable progress on :pillar.', ['pillar' => __($pillar->name)]);
+        } else {
+            $manual = __($manual);
         }
 
         $manual = $this->glossaryService->linkTerms($manual);
@@ -154,17 +156,17 @@ class QuestionRecommendationService
 
         return [
             'priority' => $priority,
-            'pillar' => $pillar->name,
+            'pillar' => __($pillar->name),
             'question_id' => $question->id,
-            'question' => $question->question,
-            'description' => $question->description,
+            'question' => __($question->question),
+            'description' => $question->description ? __($question->description) : null,
             'score' => round(($questionScore / 4) * 100, 2),
             'raw_score' => round($questionScore, 2),
             'max_score' => 4,
             'manual' => $manual,
             'module_key' => $moduleKey,
-            'module_name' => $module?->name,
-            'module_description' => $module?->description,
+            'module_name' => $module ? __($module->name) : null,
+            'module_description' => $module ? __($module->description) : null,
             'module_icon' => $module?->icon,
             'module_route' => $module?->route_prefix ? url('app/'.$module->route_prefix) : null,
             'subscribed' => $subscribed,

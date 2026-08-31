@@ -46,11 +46,11 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
                             <label class="block text-sm font-medium text-slate-700">{{ __('cms.url_slug') }}</label>
-                            <input name="translations[{{ $locale }}][slug]" type="text" value="{{ old('translations.'.$locale.'.slug', $translation?->slug) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <input name="translations[{{ $locale }}][slug]" type="text" value="{{ old('translations.'.$locale.'.slug', $translation?->slug) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ $locale === config('app.locale', 'de') ? __('e.g. about-us') : __('Optional (defaults to base slug)') }}">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">{{ __('cms.title') }}</label>
-                            <input name="translations[{{ $locale }}][title]" type="text" value="{{ old('translations.'.$locale.'.title', $translation?->title) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <input name="translations[{{ $locale }}][title]" type="text" value="{{ old('translations.'.$locale.'.title', $translation?->title) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ $locale === config('app.locale', 'de') ? __('e.g. Über uns') : __('Optional (defaults to primary title)') }}">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">{{ __('cms.meta_title') }}</label>

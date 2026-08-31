@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Allocore Suite'),
 
+    'admin_email' => env('ADMIN_EMAIL', null),
+
     'installed' => env('APP_INSTALLED', false),
 
     /*

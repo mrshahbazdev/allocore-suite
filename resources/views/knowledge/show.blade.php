@@ -3,17 +3,25 @@
 @section('content')
     @php($pageTitle = $knowledge->term)
 
-    <div class="mb-6">
-        <a href="{{ route('knowledge.index') }}" class="text-sm text-[#0094af] hover:underline">{{ __('Back to knowledge') }}</a>
-        <h1 class="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $knowledge->term }}</h1>
-        <div class="mt-2 flex flex-wrap items-center gap-2">
-            @if ($knowledge->category)
-                <span class="badge badge-gray">{{ $knowledge->category }}</span>
-            @endif
-            @if ($knowledge->is_beginner_friendly)
-                <span class="badge badge-green">{{ __('Beginner-friendly') }}</span>
-            @endif
+    <div class="mb-6 flex items-start justify-between gap-4">
+        <div>
+            <a href="{{ route('knowledge.index') }}" class="text-sm text-[#0094af] hover:underline">{{ __('Back to knowledge') }}</a>
+            <h1 class="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $knowledge->term }}</h1>
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+                @if ($knowledge->category)
+                    <span class="badge badge-gray">{{ $knowledge->category }}</span>
+                @endif
+                @if ($knowledge->is_beginner_friendly)
+                    <span class="badge badge-green">{{ __('Beginner-friendly') }}</span>
+                @endif
+            </div>
         </div>
+        @if (auth()->user()?->isAdmin())
+            <a href="{{ route('admin.glossary.edit', $knowledge) }}" class="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                {{ __('Edit') }}
+            </a>
+        @endif
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">

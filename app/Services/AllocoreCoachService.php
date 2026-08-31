@@ -92,9 +92,9 @@ class AllocoreCoachService
     protected function problemForQuestion(array $question): array
     {
         return [
-            'pillar' => $question['pillar'],
+            'pillar' => __($question['pillar']),
             'score' => $question['score'],
-            'headline' => $question['question'],
+            'headline' => __($question['question']),
             'solution' => $question['manual'],
         ];
     }
@@ -108,7 +108,7 @@ class AllocoreCoachService
         $module = Module::byKey($question['module_key']);
 
         return [
-            'name' => $question['module_name'],
+            'name' => __($question['module_name'] ?? $module?->name),
             'key' => $question['module_key'],
             'route' => $question['module_route'],
             'subscribed' => $question['subscribed'],

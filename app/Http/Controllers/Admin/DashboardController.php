@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\GlossaryTerm;
 use App\Models\Module;
+use App\Models\Page;
 use App\Models\Plan;
+use App\Models\Post;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Models\User;
@@ -25,6 +28,9 @@ class DashboardController extends Controller
             'pending_bank' => ToolSubscription::where('payment_method', 'bank')->where('status', 'pending')->count(),
             'analyses' => Analysis::withoutGlobalScope('current_team')->count(),
             'audits' => Audit::withoutGlobalScope('current_team')->count(),
+            'glossary' => GlossaryTerm::count(),
+            'posts' => Post::count(),
+            'pages' => Page::count(),
         ];
 
         $recentUsers = User::with('currentTeam')->latest()->limit(8)->get();

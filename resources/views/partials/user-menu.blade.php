@@ -18,6 +18,9 @@
 
         <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#ff9200]">{{ __('Profile') }}</a>
         <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#ff9200]">{{ __('Dashboard') }}</a>
+        @if ($user?->isAdmin())
+            <a href="{{ route('admin.index') }}" class="block px-4 py-2 text-sm font-semibold text-[#0094af] hover:bg-slate-50 hover:text-[#ff9200]">{{ __('Administration') }}</a>
+        @endif
 
         <div class="my-1 border-t border-slate-100"></div>
         <div class="px-4 py-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">{{ __('Companies') }}</div>

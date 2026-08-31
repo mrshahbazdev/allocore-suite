@@ -41,6 +41,7 @@
                                 @else
                                     <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{{ __('cms.draft') }}</span>
                                 @endif
+                                <a href="{{ route('page.show', $translation?->slug ?: $page->slug) }}" target="_blank" class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100">{{ __('cms.view') }}</a>
                                 <a href="{{ route('admin.pages.edit', $page) }}" class="rounded-lg px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50">{{ __('cms.edit') }}</a>
                                 <form method="POST" action="{{ route('admin.pages.destroy', $page) }}" onsubmit="return confirm('{{ __('cms.delete_confirm') }}')">
                                     @csrf

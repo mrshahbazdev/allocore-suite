@@ -12,14 +12,13 @@ class GlossaryController extends Controller
     public function index(Request $request): View
     {
         $terms = GlossaryTerm::where('is_published', true)
-            ->orderBy('sort_order')
-            ->latest()
+            ->orderBy('term', 'asc')
             ->get();
 
         $availableLetters = $terms
             ->pluck('term')
             ->map(fn ($term) => mb_strtoupper(mb_substr($term, 0, 1)))
-            ->filter(fn ($letter) => preg_match('/^[A-Z]$/', $letter))
+            ->filter(fn ($letter) => preg_match('/^[A-ZÄÖÜ]$/i', $letter))
             ->unique()
             ->sort()
             ->values()
@@ -33,7 +32,7 @@ class GlossaryController extends Controller
             $letter = null;
         }
 
-        $terms = $terms->groupBy(fn ($term) => $term->category ?: __('General'));
+        $terms = $terms->groupBy(fn ($term) => $term->category ?: __('General'))->sortKeys();
 
         return view('glossary.index', compact('terms', 'availableLetters', 'letter'));
     }

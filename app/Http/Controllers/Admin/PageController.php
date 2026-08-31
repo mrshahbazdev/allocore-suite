@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class PageController extends Controller
@@ -23,44 +24,60 @@ class PageController extends Controller
 
     public function store(Request $request)
     {
-        $locales = config('app.available_locales', ['en']);
+        $locales = config('app.available_locales', ['en', 'de']);
+        $defaultLocale = config('app.locale', 'de');
 
-        $rules = [
+        $validated = $request->validate([
             'slug' => 'required|string|max:255|unique:pages,slug',
             'type' => 'required|in:page,help',
-            'is_published' => 'boolean',
-            'sort_order' => 'integer|min:0',
-        ];
+            'is_published' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
+            'translations' => 'required|array',
+        ]);
 
-        foreach ($locales as $locale) {
-            $rules["translations.{$locale}.slug"] = [
-                'required', 'string', 'max:255',
-                Rule::unique('page_translations', 'slug')->where('locale', $locale),
-            ];
-            $rules["translations.{$locale}.title"] = 'required|string|max:255';
-            $rules["translations.{$locale}.meta_title"] = 'nullable|string|max:255';
-            $rules["translations.{$locale}.meta_description"] = 'nullable|string|max:1000';
-            $rules["translations.{$locale}.meta_keywords"] = 'nullable|string|max:255';
-            $rules["translations.{$locale}.og_title"] = 'nullable|string|max:255';
-            $rules["translations.{$locale}.og_description"] = 'nullable|string|max:1000';
-            $rules["translations.{$locale}.og_image"] = 'nullable|string|max:1000';
-            $rules["translations.{$locale}.body"] = 'nullable|string|max:50000';
-            $rules["translations.{$locale}.blocks"] = 'nullable|array';
+        $primaryLocale = $defaultLocale;
+        if (empty($request->input("translations.{$primaryLocale}.title"))) {
+            $primaryLocale = 'en';
+            if (empty($request->input("translations.{$primaryLocale}.title"))) {
+                foreach ($locales as $l) {
+                    if (! empty($request->input("translations.{$l}.title"))) {
+                        $primaryLocale = $l;
+                        break;
+                    }
+                }
+            }
         }
 
-        $validated = $request->validate($rules);
+        $primaryData = $request->input("translations.{$primaryLocale}") ?? [];
+        if (empty($primaryData['title'])) {
+            return back()->withInput()->withErrors(['slug' => __('Please provide at least a title for the page.')]);
+        }
 
         $page = Page::create([
-            'slug' => $validated['slug'],
+            'slug' => Str::slug($validated['slug']),
             'type' => $validated['type'],
             'is_published' => $request->boolean('is_published'),
             'sort_order' => $validated['sort_order'] ?? 0,
         ]);
 
         foreach ($locales as $locale) {
+            $trans = $request->input("translations.{$locale}") ?? [];
+            $title = ! empty($trans['title']) ? $trans['title'] : $primaryData['title'];
+            $slug = ! empty($trans['slug']) ? Str::slug($trans['slug']) : Str::slug($validated['slug']);
+            $body = ! empty($trans['body']) ? $trans['body'] : ($primaryData['body'] ?? null);
+
             $page->translations()->create([
                 'locale' => $locale,
-                ...$validated['translations'][$locale],
+                'slug' => $slug,
+                'title' => $title,
+                'body' => $body,
+                'meta_title' => $trans['meta_title'] ?? ($primaryData['meta_title'] ?? null),
+                'meta_description' => $trans['meta_description'] ?? ($primaryData['meta_description'] ?? null),
+                'meta_keywords' => $trans['meta_keywords'] ?? ($primaryData['meta_keywords'] ?? null),
+                'og_title' => $trans['og_title'] ?? ($primaryData['og_title'] ?? null),
+                'og_description' => $trans['og_description'] ?? ($primaryData['og_description'] ?? null),
+                'og_image' => $trans['og_image'] ?? ($primaryData['og_image'] ?? null),
+                'blocks' => $trans['blocks'] ?? ($primaryData['blocks'] ?? null),
             ]);
         }
 
@@ -76,48 +93,63 @@ class PageController extends Controller
 
     public function update(Request $request, Page $page)
     {
-        $locales = config('app.available_locales', ['en']);
+        $locales = config('app.available_locales', ['en', 'de']);
+        $defaultLocale = config('app.locale', 'de');
 
-        $rules = [
+        $validated = $request->validate([
             'slug' => ['required', 'string', 'max:255', Rule::unique('pages', 'slug')->ignore($page->id)],
             'type' => 'required|in:page,help',
-            'is_published' => 'boolean',
-            'sort_order' => 'integer|min:0',
-        ];
+            'is_published' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
+            'translations' => 'required|array',
+        ]);
 
-        foreach ($locales as $locale) {
-            $translation = $page->translations()->where('locale', $locale)->first();
-
-            $rules["translations.{$locale}.slug"] = [
-                'required', 'string', 'max:255',
-                Rule::unique('page_translations', 'slug')
-                    ->where('locale', $locale)
-                    ->ignore($translation?->id),
-            ];
-            $rules["translations.{$locale}.title"] = 'required|string|max:255';
-            $rules["translations.{$locale}.meta_title"] = 'nullable|string|max:255';
-            $rules["translations.{$locale}.meta_description"] = 'nullable|string|max:1000';
-            $rules["translations.{$locale}.meta_keywords"] = 'nullable|string|max:255';
-            $rules["translations.{$locale}.og_title"] = 'nullable|string|max:255';
-            $rules["translations.{$locale}.og_description"] = 'nullable|string|max:1000';
-            $rules["translations.{$locale}.og_image"] = 'nullable|string|max:1000';
-            $rules["translations.{$locale}.body"] = 'nullable|string|max:50000';
-            $rules["translations.{$locale}.blocks"] = 'nullable|array';
+        $primaryLocale = $defaultLocale;
+        if (empty($request->input("translations.{$primaryLocale}.title"))) {
+            $primaryLocale = 'en';
+            if (empty($request->input("translations.{$primaryLocale}.title"))) {
+                foreach ($locales as $l) {
+                    if (! empty($request->input("translations.{$l}.title"))) {
+                        $primaryLocale = $l;
+                        break;
+                    }
+                }
+            }
         }
 
-        $validated = $request->validate($rules);
+        $primaryData = $request->input("translations.{$primaryLocale}") ?? [];
+        if (empty($primaryData['title'])) {
+            $existingFirst = $page->translations()->first();
+            $primaryData['title'] = $existingFirst?->title ?: $validated['slug'];
+        }
 
         $page->update([
-            'slug' => $validated['slug'],
+            'slug' => Str::slug($validated['slug']),
             'type' => $validated['type'],
             'is_published' => $request->boolean('is_published'),
             'sort_order' => $validated['sort_order'] ?? $page->sort_order,
         ]);
 
         foreach ($locales as $locale) {
+            $trans = $request->input("translations.{$locale}") ?? [];
+            $title = ! empty($trans['title']) ? $trans['title'] : $primaryData['title'];
+            $slug = ! empty($trans['slug']) ? Str::slug($trans['slug']) : Str::slug($validated['slug']);
+            $body = isset($trans['body']) && $trans['body'] !== '' ? $trans['body'] : ($primaryData['body'] ?? null);
+
             $page->translations()->updateOrCreate(
                 ['locale' => $locale],
-                $validated['translations'][$locale]
+                [
+                    'slug' => $slug,
+                    'title' => $title,
+                    'body' => $body,
+                    'meta_title' => $trans['meta_title'] ?? ($primaryData['meta_title'] ?? null),
+                    'meta_description' => $trans['meta_description'] ?? ($primaryData['meta_description'] ?? null),
+                    'meta_keywords' => $trans['meta_keywords'] ?? ($primaryData['meta_keywords'] ?? null),
+                    'og_title' => $trans['og_title'] ?? ($primaryData['og_title'] ?? null),
+                    'og_description' => $trans['og_description'] ?? ($primaryData['og_description'] ?? null),
+                    'og_image' => $trans['og_image'] ?? ($primaryData['og_image'] ?? null),
+                    'blocks' => $trans['blocks'] ?? ($primaryData['blocks'] ?? null),
+                ]
             );
         }
 

@@ -14,11 +14,11 @@ class GlossaryTermController extends Controller
     {
         $terms = GlossaryTerm::when($request->filled('search'), function ($query) use ($request) {
             $query->where('term', 'like', '%'.$request->search.'%')
-                ->orWhere('definition', 'like', '%'.$request->search.'%');
+                ->orWhere('definition', 'like', '%'.$request->search.'%')
+                ->orWhere('category', 'like', '%'.$request->search.'%');
         })
-            ->orderBy('sort_order')
-            ->latest()
-            ->paginate(20)
+            ->orderBy('term', 'asc')
+            ->paginate(25)
             ->withQueryString();
 
         return view('admin.glossary.index', compact('terms'));
