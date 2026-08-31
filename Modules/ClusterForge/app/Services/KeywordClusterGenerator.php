@@ -135,10 +135,16 @@ PROMPT;
         $questions = array_slice(array_values($data), 0, 10);
 
         DB::transaction(function () use ($subtopic, $questions) {
-            $subtopic->questions()->delete();
+            $fresh = Subtopic::where('id', $subtopic->id)->lockForUpdate()->first();
+
+            if (! $fresh) {
+                return;
+            }
+
+            $fresh->questions()->delete();
             foreach ($questions as $i => $q) {
                 $text = is_array($q) ? (string) ($q['question'] ?? json_encode($q)) : (string) $q;
-                $subtopic->questions()->create([
+                $fresh->questions()->create([
                     'question' => $text,
                     'sort_order' => $i,
                 ]);
@@ -201,8 +207,16 @@ PROMPT;
             throw new RuntimeException('AI provider returned no parseable answers for subtopic '.$subtopic->id);
         }
 
-        DB::transaction(function () use ($questions, $answers) {
-            foreach ($questions as $i => $question) {
+        DB::transaction(function () use ($subtopic, $answers) {
+            $fresh = Subtopic::where('id', $subtopic->id)->lockForUpdate()->first();
+
+            if (! $fresh) {
+                return;
+            }
+
+            $freshQuestions = $fresh->questions()->orderBy('sort_order')->get();
+
+            foreach ($freshQuestions as $i => $question) {
                 $answer = $answers[$i + 1] ?? null;
                 $question->update(['answer' => $answer !== null && $answer !== '' ? $answer : null]);
             }
@@ -281,11 +295,19 @@ PROMPT;
             $body .= "### {$q->question}\n\n".($q->answer ?? '_Answer not yet generated._')."\n\n";
         }
 
-        $subtopic->update([
-            'cluster_title' => $title,
-            'cluster_meta_description' => mb_substr($meta, 0, 320),
-            'cluster_content' => $body,
-        ]);
+        DB::transaction(function () use ($subtopic, $title, $meta, $body) {
+            $fresh = Subtopic::where('id', $subtopic->id)->lockForUpdate()->first();
+
+            if (! $fresh) {
+                return;
+            }
+
+            $fresh->update([
+                'cluster_title' => $title,
+                'cluster_meta_description' => mb_substr($meta, 0, 320),
+                'cluster_content' => $body,
+            ]);
+        });
     }
 
     public function generatePillarPage(Project $project): void
