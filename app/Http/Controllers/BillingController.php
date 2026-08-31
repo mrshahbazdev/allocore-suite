@@ -117,6 +117,12 @@ class BillingController extends Controller
 
     protected function stripeCheckout(ToolSubscription $subscription, Plan $plan, array $pricing)
     {
+        if (blank(config('cashier.secret'))) {
+            $subscription->delete();
+
+            return back()->with('error', __('Stripe is not configured for this environment.'));
+        }
+
         $session = Cashier::stripe()->checkout->sessions->create([
             'mode' => 'payment',
             'customer_email' => Auth::user()->email,
