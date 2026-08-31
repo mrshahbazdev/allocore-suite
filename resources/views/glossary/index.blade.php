@@ -29,6 +29,8 @@
                 @endforeach
             </div>
         @endif
+
+        @forelse ($terms as $category => $group)
             <div class="mb-10">
                 <h2 class="mb-4 text-xl font-semibold text-slate-900">{{ $category }}</h2>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
