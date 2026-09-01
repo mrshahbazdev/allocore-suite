@@ -23,7 +23,47 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @stack('styles')
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+        .glossary-link {
+            display: inline !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+            text-decoration: underline dashed 1.5px !important;
+            text-decoration-color: #94a3b8 !important;
+            text-underline-offset: 4px !important;
+            cursor: pointer !important;
+            padding: 1px 3px !important;
+            border-radius: 4px !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .glossary-link:hover {
+            color: #0f172a !important;
+            background-color: rgba(100, 116, 139, 0.12) !important;
+            text-decoration-style: solid !important;
+            text-decoration-color: #475569 !important;
+        }
+        [style*="background-color"] .glossary-link,
+        [style*="bg-"] .glossary-link,
+        .bg-slate-900 .glossary-link,
+        .bg-slate-800 .glossary-link,
+        .bg-slate-950 .glossary-link,
+        .dark .glossary-link {
+            color: #e2e8f0 !important;
+            text-decoration-color: #cbd5e1 !important;
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [style*="background-color"] .glossary-link:hover,
+        [style*="bg-"] .glossary-link:hover,
+        .bg-slate-900 .glossary-link:hover,
+        .bg-slate-800 .glossary-link:hover,
+        .bg-slate-950 .glossary-link:hover,
+        .dark .glossary-link:hover {
+            color: #ffffff !important;
+            text-decoration-color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.2) !important;
+        }
+    </style>
 </head>
 @php($isModulePage = request()->is('app/*'))
 @php($currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null)
