@@ -46,7 +46,7 @@ class GlossaryTermController extends Controller
 
     public function update(Request $request, GlossaryTerm $glossary)
     {
-        $validated = $this->validateData($request);
+        $validated = $this->validateData($request, $glossary);
 
         $glossary->update($validated);
         Cache::forget('glossary.published_terms');
@@ -62,7 +62,7 @@ class GlossaryTermController extends Controller
         return redirect()->route('admin.glossary.index')->with('success', __('Glossary term deleted.'));
     }
 
-    private function validateData(Request $request): array
+    private function validateData(Request $request, ?GlossaryTerm $glossary = null): array
     {
         $validated = $request->validate([
             'term' => 'required|string|max:255',
@@ -76,7 +76,10 @@ class GlossaryTermController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
-        $validated['slug'] = $validated['slug'] ?: Str::slug($validated['term']);
+        $validated['slug'] = $this->ensureUniqueSlug(
+            $validated['slug'] ?: Str::slug($validated['term']),
+            $glossary
+        );
         $validated['is_published'] = $request->boolean('is_published');
         $validated['is_beginner_friendly'] = $request->boolean('is_beginner_friendly');
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
@@ -88,5 +91,19 @@ class GlossaryTermController extends Controller
         }
 
         return $validated;
+    }
+
+    private function ensureUniqueSlug(string $slug, ?GlossaryTerm $glossary = null): string
+    {
+        $original = $slug;
+        $counter = 1;
+
+        while (GlossaryTerm::where('slug', $slug)
+            ->when($glossary, fn ($query) => $query->where('id', '!=', $glossary->id))
+            ->exists()) {
+            $slug = $original.'-'.$counter++;
+        }
+
+        return $slug;
     }
 }
