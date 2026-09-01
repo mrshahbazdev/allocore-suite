@@ -199,9 +199,9 @@
     .glossary-link {
         display: inline;
         font-weight: 600;
-        color: #ff9200 !important;
-        text-decoration: underline dashed 2px !important;
-        text-decoration-color: #ff9200 !important;
+        color: #475569 !important; /* refined slate grey */
+        text-decoration: underline dashed 1.5px !important;
+        text-decoration-color: #94a3b8 !important; /* medium slate grey underline */
         text-underline-offset: 4px;
         cursor: pointer;
         padding: 1px 3px;
@@ -210,21 +210,21 @@
     }
 
     .glossary-link:hover {
-        color: #e07f00 !important;
-        background-color: rgba(255, 146, 0, 0.15) !important;
+        color: #0f172a !important; /* dark slate on hover */
+        background-color: rgba(100, 116, 139, 0.12) !important;
         text-decoration-style: solid !important;
-        text-decoration-color: #e07f00 !important;
+        text-decoration-color: #475569 !important;
     }
 
-    /* Clear and vibrant on custom background colors (e.g. teal, blue, dark slate) */
+    /* Elegant light silver-grey on custom/colored/dark backgrounds (e.g. teal, blue, dark slate) */
     [style*="background-color"] .glossary-link,
     .bg-slate-900 .glossary-link,
     .bg-slate-800 .glossary-link,
     .bg-slate-950 .glossary-link,
     .dark .glossary-link {
-        color: #fde047 !important; /* bright distinct yellow/gold */
-        text-decoration-color: #fde047 !important;
-        background-color: rgba(0, 0, 0, 0.12);
+        color: #e2e8f0 !important; /* light silver-grey */
+        text-decoration-color: #cbd5e1 !important; /* soft light grey underline */
+        background-color: rgba(255, 255, 255, 0.08);
     }
 
     [style*="background-color"] .glossary-link:hover,
@@ -234,6 +234,6 @@
     .dark .glossary-link:hover {
         color: #ffffff !important;
         text-decoration-color: #ffffff !important;
-        background-color: rgba(253, 224, 71, 0.3) !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
     }
 }
