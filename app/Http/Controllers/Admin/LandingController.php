@@ -3,30 +3,84 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Support\LandingBlocks;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
 {
+    private const BASE_LOCALE = 'de';
+
+    private array $stringFields = [
+        'site_name',
+        'hero_badge',
+        'hero_heading',
+        'hero_subheading',
+        'hero_cta_primary_label',
+        'hero_cta_primary_link',
+        'hero_cta_secondary_label',
+        'hero_cta_secondary_link',
+        'framework_heading',
+        'framework_subheading',
+        'framework_description',
+        'features_heading',
+        'features_subheading',
+        'feature_auth_title',
+        'feature_auth_desc',
+        'feature_teams_title',
+        'feature_teams_desc',
+        'feature_billing_title',
+        'feature_billing_desc',
+        'feature_analytics_title',
+        'feature_analytics_desc',
+        'how_heading',
+        'how_subheading',
+        'modules_heading',
+        'modules_subheading',
+        'testimonials_heading',
+        'testimonials_quote',
+        'testimonials_author',
+        'cta_heading',
+        'cta_subheading',
+        'cta_primary_label',
+        'cta_primary_link',
+        'cta_secondary_label',
+        'cta_secondary_link',
+        'footer_text',
+    ];
+
+    private array $arrayFields = [
+        'top_stats' => ['label', 'value'],
+        'framework_steps' => ['title', 'desc'],
+        'how_steps' => ['title', 'desc'],
+    ];
+
+    private array $arrayFilterField = [
+        'top_stats' => 'label',
+        'framework_steps' => 'title',
+        'how_steps' => 'title',
+    ];
+
     public function index(Request $request)
     {
         $locale = $this->locale($request);
-        $blocks = LandingBlocks::forAdmin($locale);
+        $settings = $this->settings($locale);
 
-        return view('admin.landing.index', compact('blocks', 'locale'));
+        return view('admin.landing.index', compact('settings', 'locale'));
     }
 
     public function update(Request $request)
     {
         $locale = $this->locale($request);
 
-        $request->validate([
-            'blocks' => 'nullable|array',
-            'blocks.*.type' => 'required|in:hero,features,text,image,cta,faq,stats,testimonials,pricing,steps,logos,divider,spacer',
-        ]);
+        $request->validate($this->rules());
 
-        $blocks = $this->normalizeBlocks($request->input('blocks', []));
-        LandingBlocks::save($blocks, $locale);
+        foreach ($this->stringFields as $field) {
+            SiteSetting::set($field, $this->string($request, $field), $locale);
+        }
+
+        foreach ($this->arrayFields as $field => $keys) {
+            SiteSetting::set($field, $this->array($request, $field, $keys), $locale);
+        }
 
         return redirect()->route('admin.landing.index', ['locale' => $locale])
             ->with('success', __('Landing page updated.'));
@@ -37,105 +91,69 @@ class LandingController extends Controller
         $locale = $request->input('locale', app()->getLocale());
         $available = config('app.available_locales', ['en', 'de']);
 
-        return in_array($locale, $available, true) ? $locale : LandingBlocks::BASE_LOCALE;
+        return in_array($locale, $available, true) ? $locale : self::BASE_LOCALE;
     }
 
-    private function normalizeBlocks(array $blocks): array
+    private function settings(string $locale): array
     {
-        return collect($blocks)
-            ->filter(fn ($block) => filled($block['type'] ?? null))
-            ->map(fn ($block) => $this->sanitizeBlock($block))
+        $settings = [];
+
+        foreach ($this->stringFields as $field) {
+            $settings[$field] = SiteSetting::value($field, '', $locale);
+        }
+
+        foreach ($this->arrayFields as $field => $keys) {
+            $value = SiteSetting::value($field, [], $locale);
+            $settings[$field] = is_array($value) ? $value : [];
+        }
+
+        return $settings;
+    }
+
+    private function rules(): array
+    {
+        $rules = array_fill_keys($this->stringFields, 'nullable|string|max:2000');
+
+        foreach ($this->arrayFields as $field => $keys) {
+            $rules[$field] = 'nullable|array';
+            foreach ($keys as $key) {
+                $rules[$field.'.*.'.$key] = 'nullable|string|max:2000';
+            }
+        }
+
+        return $rules;
+    }
+
+    private function string(Request $request, string $field, string $default = ''): string
+    {
+        $value = $request->input($field, $default);
+
+        return is_string($value) ? strip_tags($value) : $default;
+    }
+
+    private function array(Request $request, string $field, array $keys): array
+    {
+        $items = $request->input($field, []);
+
+        if (! is_array($items)) {
+            return [];
+        }
+
+        $filterKey = $this->arrayFilterField[$field] ?? $keys[0];
+
+        return collect($items)
+            ->map(fn ($item) => collect($keys)
+                ->mapWithKeys(fn ($key) => [$key => $this->stringFromArray($item, $key)])
+                ->all()
+            )
+            ->filter(fn ($item) => filled($item[$filterKey] ?? ''))
             ->values()
             ->all();
     }
 
-    private function sanitizeBlock(array $block): array
+    private function stringFromArray(mixed $item, string $key, string $default = ''): string
     {
-        $type = $block['type'];
-
-        return match ($type) {
-            'hero' => $this->sanitizeBase($block, ['heading', 'subheading', 'image', 'cta_text', 'cta_url']),
-            'features' => $this->sanitizeItemBlock($block, ['title', 'description']),
-            'text' => $this->sanitizeBase($block, ['content']),
-            'image' => $this->sanitizeBase($block, ['src', 'alt']),
-            'cta' => $this->sanitizeBase($block, ['title', 'text', 'button_text', 'button_url']),
-            'faq' => $this->sanitizeItemBlock($block, ['question', 'answer']),
-            'stats' => $this->sanitizeItemBlock($block, ['label', 'value', 'suffix', 'source']),
-            'testimonials' => $this->sanitizeItemBlock($block, ['quote', 'author', 'role']),
-            'pricing' => $this->sanitizeItemBlock($block, ['name', 'price', 'period', 'features', 'cta_text', 'cta_url', 'highlighted']),
-            'steps' => $this->sanitizeItemBlock($block, ['title', 'description']),
-            'logos' => $this->sanitizeItemBlock($block, ['name', 'image_url']),
-            'divider' => $this->sanitizeBase($block, ['color', 'width', 'icon']),
-            'spacer' => $this->sanitizeBase($block, ['height']),
-            default => $block,
-        };
-    }
-
-    private function sanitizeBase(array $block, array $fields): array
-    {
-        $data = [
-            'type' => $block['type'],
-            'enabled' => filter_var($block['enabled'] ?? true, FILTER_VALIDATE_BOOLEAN),
-            'style' => $this->style($block),
-            'layout' => $this->layout($block),
-            'animation' => $this->string($block, 'animation'),
-        ];
-
-        foreach ($fields as $field) {
-            $data[$field] = $this->string($block, $field);
-        }
-
-        return $data;
-    }
-
-    private function sanitizeItemBlock(array $block, array $itemFields): array
-    {
-        $data = [
-            'type' => $block['type'],
-            'enabled' => filter_var($block['enabled'] ?? true, FILTER_VALIDATE_BOOLEAN),
-            'title' => $this->string($block, 'title'),
-            'items' => collect($block['items'] ?? [])
-                ->map(fn ($i) => collect($itemFields)->mapWithKeys(fn ($f) => [$f => $this->string($i, $f)])->all())
-                ->filter(fn ($i) => filled($i[$itemFields[0]] ?? ''))
-                ->values()
-                ->all(),
-            'style' => $this->style($block),
-            'layout' => $this->layout($block),
-            'animation' => $this->string($block, 'animation'),
-        ];
-
-        return $data;
-    }
-
-    private function style(array $block): array
-    {
-        $style = is_array($block['style'] ?? null) ? $block['style'] : [];
-
-        return [
-            'bg' => $this->string($style, 'bg'),
-            'text_color' => $this->string($style, 'text_color'),
-            'text_align' => in_array($style['text_align'] ?? '', ['left', 'center', 'right']) ? $style['text_align'] : 'center',
-            'padding' => in_array($style['padding'] ?? '', ['small', 'medium', 'large']) ? $style['padding'] : 'medium',
-            'container' => in_array($style['container'] ?? '', ['default', 'max-w-7xl', 'max-w-5xl', 'max-w-3xl', 'full']) ? $style['container'] : 'default',
-            'rounded' => filter_var($style['rounded'] ?? false, FILTER_VALIDATE_BOOLEAN),
-            'border' => filter_var($style['border'] ?? false, FILTER_VALIDATE_BOOLEAN),
-        ];
-    }
-
-    private function layout(array $block): array
-    {
-        $layout = is_array($block['layout'] ?? null) ? $block['layout'] : [];
-
-        return [
-            'columns' => in_array((int) ($layout['columns'] ?? 0), [1, 2, 3, 4]) ? (int) $layout['columns'] : 0,
-            'gap' => in_array($layout['gap'] ?? '', ['small', 'medium', 'large']) ? $layout['gap'] : 'medium',
-            'align' => in_array($layout['align'] ?? '', ['start', 'center', 'end', 'stretch']) ? $layout['align'] : 'stretch',
-        ];
-    }
-
-    private function string(array $data, string $key, string $default = ''): string
-    {
-        $value = $data[$key] ?? $default;
+        $value = is_array($item) ? ($item[$key] ?? $default) : $default;
 
         return is_string($value) ? strip_tags($value) : $default;
     }
