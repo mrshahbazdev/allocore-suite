@@ -20,30 +20,32 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="h-full font-sans text-slate-600 antialiased">
-        @php($modules = \App\Models\Module::where('is_active', true)->get())
-        @php($siteName = \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')))
-        @php($landingStats = [
-            'modules' => \App\Models\Module::where('is_active', true)->count(),
-            'teams' => \App\Models\Team::count(),
-            'users' => \App\Models\User::count(),
-            'subscriptions' => \App\Models\ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(),
-        ])
-        @php($moduleBenefits = [
-            'north-star' => ['benefit' => 'Vision entwickeln', 'desc' => 'Klare Unternehmensvision und langfristige Ausrichtung definieren.'],
-            'org-matrix' => ['benefit' => 'Verantwortlichkeiten klären', 'desc' => 'Rolle, Entscheidungen und Verantwortlichkeiten transparent machen.'],
-            'sweet-spot' => ['benefit' => 'Profitabelste Kunden finden', 'desc' => 'Kundensegmente mit höchstem Deckungsbeitrag identifizieren.'],
-            'financial-platform' => ['benefit' => 'Finanzen im Griff', 'desc' => 'Umsatz, Kosten und Kennzahlen zentral analysieren.'],
-            'cash-core' => ['benefit' => 'Cashflow sicherstellen', 'desc' => 'Liquidität und Profitabilität frühzeitig erkennen.'],
-            'invoice-maker' => ['benefit' => 'Rechnungen ohne Reibung', 'desc' => 'Angebote und Rechnungen schnell und professionell erstellen.'],
-            'plan-hive' => ['benefit' => 'Projekte im Fokus', 'desc' => 'Projekte, Aufgaben und Termine zentral steuern.'],
-            'time-butler' => ['benefit' => 'Zeit sinnvoll nutzen', 'desc' => 'Urlaub, Fehlzeiten und Zeiterfassung organisieren.'],
-            'loop-engine' => ['benefit' => 'Abläufe automatisieren', 'desc' => 'Wiederkehrende Prozesse als Checklisten abbilden.'],
-            'focus-matrix' => ['benefit' => 'Prioritäten setzen', 'desc' => 'Wichtige Aufgaben von Ablenkungen unterscheiden.'],
-            'keyword-cluster' => ['benefit' => 'SEO-Struktur aufbauen', 'desc' => 'Keywords gruppieren und Content planen.'],
-            'lead-quality' => ['benefit' => 'Bessere Leads gewinnen', 'desc' => 'Anfragen bewerten und gezielt nachverfolgen.'],
-            'vision-flow' => ['benefit' => 'Mission leben', 'desc' => 'Werte und Vision im Alltag verankern.'],
-            'nur-du' => ['benefit' => 'Führung stärken', 'desc' => 'Persönliche Entwicklung und Führungskultur fördern.'],
-        ])
+        @php
+            $modules = \App\Models\Module::where('is_active', true)->get();
+            $siteName = \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite'));
+            $landingStats = [
+                'modules' => \App\Models\Module::where('is_active', true)->count(),
+                'teams' => \App\Models\Team::count(),
+                'users' => \App\Models\User::count(),
+                'subscriptions' => \App\Models\ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(),
+            ];
+            $moduleBenefits = [
+                'north-star' => ['benefit' => 'Vision entwickeln', 'desc' => 'Klare Unternehmensvision und langfristige Ausrichtung definieren.'],
+                'org-matrix' => ['benefit' => 'Verantwortlichkeiten klären', 'desc' => 'Rolle, Entscheidungen und Verantwortlichkeiten transparent machen.'],
+                'sweet-spot' => ['benefit' => 'Profitabelste Kunden finden', 'desc' => 'Kundensegmente mit höchstem Deckungsbeitrag identifizieren.'],
+                'financial-platform' => ['benefit' => 'Finanzen im Griff', 'desc' => 'Umsatz, Kosten und Kennzahlen zentral analysieren.'],
+                'cash-core' => ['benefit' => 'Cashflow sicherstellen', 'desc' => 'Liquidität und Profitabilität frühzeitig erkennen.'],
+                'invoice-maker' => ['benefit' => 'Rechnungen ohne Reibung', 'desc' => 'Angebote und Rechnungen schnell und professionell erstellen.'],
+                'plan-hive' => ['benefit' => 'Projekte im Fokus', 'desc' => 'Projekte, Aufgaben und Termine zentral steuern.'],
+                'time-butler' => ['benefit' => 'Zeit sinnvoll nutzen', 'desc' => 'Urlaub, Fehlzeiten und Zeiterfassung organisieren.'],
+                'loop-engine' => ['benefit' => 'Abläufe automatisieren', 'desc' => 'Wiederkehrende Prozesse als Checklisten abbilden.'],
+                'focus-matrix' => ['benefit' => 'Prioritäten setzen', 'desc' => 'Wichtige Aufgaben von Ablenkungen unterscheiden.'],
+                'keyword-cluster' => ['benefit' => 'SEO-Struktur aufbauen', 'desc' => 'Keywords gruppieren und Content planen.'],
+                'lead-quality' => ['benefit' => 'Bessere Leads gewinnen', 'desc' => 'Anfragen bewerten und gezielt nachverfolgen.'],
+                'vision-flow' => ['benefit' => 'Mission leben', 'desc' => 'Werte und Vision im Alltag verankern.'],
+                'nur-du' => ['benefit' => 'Führung stärken', 'desc' => 'Persönliche Entwicklung und Führungskultur fördern.'],
+            ];
+        @endphp
 
         <div class="flex min-h-full flex-col bg-slate-50">
             {{-- Header --}}
@@ -166,14 +168,16 @@
                         </div>
 
                         <div class="mx-auto mt-16 grid max-w-5xl gap-4">
-                            @php($frameworkSteps = \App\Models\SiteSetting::value('framework_steps') ?: [
-                                ['title' => 'Strategie', 'desc' => 'Vision, Positionierung und langfristige Ziele klar definieren.'],
-                                ['title' => 'Umsatz', 'desc' => 'Umsatzquellen systematisieren und nachhaltig ausbauen.'],
-                                ['title' => 'Gewinn', 'desc' => 'Rentabilität und Cashflow steuern statt nur Umsatz zu jagen.'],
-                                ['title' => 'Ordnung', 'desc' => 'Prozesse, Projekte und Verantwortlichkeiten effizient aufstellen.'],
-                                ['title' => 'Einfluss', 'desc' => 'Sichtbarkeit, Leads und Marktpositionierung stärken.'],
-                                ['title' => 'Vermächtnis', 'desc' => 'Kultur, Werte und Nachfolge für langfristigen Erfolg sichern.'],
-                            ])
+                            @php
+                                $frameworkSteps = \App\Models\SiteSetting::value('framework_steps') ?: [
+                                    ['title' => 'Strategie', 'desc' => 'Vision, Positionierung und langfristige Ziele klar definieren.'],
+                                    ['title' => 'Umsatz', 'desc' => 'Umsatzquellen systematisieren und nachhaltig ausbauen.'],
+                                    ['title' => 'Gewinn', 'desc' => 'Rentabilität und Cashflow steuern statt nur Umsatz zu jagen.'],
+                                    ['title' => 'Ordnung', 'desc' => 'Prozesse, Projekte und Verantwortlichkeiten effizient aufstellen.'],
+                                    ['title' => 'Einfluss', 'desc' => 'Sichtbarkeit, Leads und Marktpositionierung stärken.'],
+                                    ['title' => 'Vermächtnis', 'desc' => 'Kultur, Werte und Nachfolge für langfristigen Erfolg sichern.'],
+                                ];
+                            @endphp
                             <div class="relative grid gap-4 md:grid-cols-3">
                                 @foreach ($frameworkSteps as $index => $step)
                                     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-indigo-200 hover:shadow-md">
@@ -260,9 +264,11 @@
                         </div>
 
                         @auth
-                            @php($accessible = auth()->user()->accessibleModules()->pluck('key')->all())
-                            @php($activeModules = $modules->filter(fn ($m) => in_array($m->key, $accessible))->values())
-                            @php($lockedModules = $modules->filter(fn ($m) => ! in_array($m->key, $accessible))->values())
+                            @php
+                                $accessible = auth()->user()->accessibleModules()->pluck('key')->all();
+                                $activeModules = $modules->filter(fn ($m) => in_array($m->key, $accessible))->values();
+                                $lockedModules = $modules->filter(fn ($m) => ! in_array($m->key, $accessible))->values();
+                            @endphp
 
                             @if ($activeModules->isNotEmpty())
                                 <div class="mx-auto mt-10 max-w-2xl text-left">

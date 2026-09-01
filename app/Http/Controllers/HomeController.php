@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\LandingBlocks;
+
 class HomeController extends Controller
 {
     public function __invoke()
     {
-        return view('welcome');
+        $blocks = LandingBlocks::forPublic();
+
+        return view('home', compact('blocks'));
     }
 }
