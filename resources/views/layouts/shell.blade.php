@@ -61,14 +61,26 @@
             text-decoration-color: #0f172a !important;
         }
 
-        /* Only when directly on dark text block with no white card */
+        /* On colored / teal / dark sections (Banner Text Blocks) */
+        .is-dark-section .glossary-link,
+        section[style*="background-color"] .prose .glossary-link,
+        section[style*="background-color"] > div > p .glossary-link,
         .prose[style*="color: rgb(255"] .glossary-link,
         .prose[style*="color: #fff"] .glossary-link,
         .prose[style*="color:#fff"] .glossary-link,
         .dark:not(.bg-white) .glossary-link {
-            color: #f1f5f9 !important;
-            text-decoration-color: #cbd5e1 !important;
-            background-color: rgba(255, 255, 255, 0.15) !important;
+            color: #e2e8f0 !important; /* light silver-grey */
+            text-decoration: underline dashed 1.5px !important;
+            text-decoration-color: #cbd5e1 !important; /* soft light grey dashed underline */
+            background-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        .is-dark-section .glossary-link:hover,
+        section[style*="background-color"] .prose .glossary-link:hover,
+        section[style*="background-color"] > div > p .glossary-link:hover,
+        .dark:not(.bg-white) .glossary-link:hover {
+            color: #ffffff !important;
+            text-decoration-color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.25) !important;
         }
     </style>
 </head>

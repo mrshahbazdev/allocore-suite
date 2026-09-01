@@ -49,8 +49,29 @@ class LandingBlock
         $align = in_array($layout['align'] ?? '', ['start', 'center', 'end', 'stretch']) ? $layout['align'] : 'stretch';
         $alignClass = 'items-'.$align;
 
+        $isDarkBg = false;
+        if (filled($style['bg'] ?? '')) {
+            $hex = ltrim(trim($style['bg']), '#');
+            if (strlen($hex) === 3) {
+                $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+            }
+            if (strlen($hex) === 6 && ctype_xdigit($hex)) {
+                $r = hexdec(substr($hex, 0, 2));
+                $g = hexdec(substr($hex, 2, 2));
+                $b = hexdec(substr($hex, 4, 2));
+                $luminance = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
+                $isDarkBg = $luminance < 0.65;
+            }
+        }
+
         $bgStyle = filled($style['bg'] ?? '') ? 'background-color: '.e($style['bg']).';' : '';
-        $textStyle = filled($style['text_color'] ?? '') ? 'color: '.e($style['text_color']).';' : '';
+        if (filled($style['text_color'] ?? '')) {
+            $textStyle = 'color: '.e($style['text_color']).';';
+        } elseif ($isDarkBg) {
+            $textStyle = 'color: #f8fafc;';
+        } else {
+            $textStyle = '';
+        }
         $inlineStyle = trim($bgStyle.' '.$textStyle);
 
         return [
@@ -61,6 +82,7 @@ class LandingBlock
             'border_class' => $border ? 'border border-slate-200' : '',
             'animation_class' => $animation ? 'reveal reveal-'.$animation : '',
             'inline_style' => $inlineStyle,
+            'is_dark_bg' => $isDarkBg,
             'gap_class' => $gapClass,
             'columns_class' => $columnsClass,
             'align_class' => $alignClass,
