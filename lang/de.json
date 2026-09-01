@@ -6277,5 +6277,17 @@
     "Lege fest, wie viele neue Interessenten monatlich erreicht werden sollen.": "Lege fest, wie viele neue Interessenten monatlich erreicht werden sollen.",
     "Berechne Deine Abschlussquote der letzten drei Monate.": "Berechne Deine Abschlussquote der letzten drei Monate.",
     "Prüfe die letzten fünf Aufträge auf Termin- und Qualitätsabweichungen.": "Prüfe die letzten fünf Aufträge auf Termin- und Qualitätsabweichungen.",
-    "Erstelle eine aktuelle Übersicht aller offenen Rechnungen und ihrer Fälligkeit.": "Erstelle eine aktuelle Übersicht aller offenen Rechnungen und ihrer Fälligkeit."
+    "Erstelle eine aktuelle Übersicht aller offenen Rechnungen und ihrer Fälligkeit.": "Erstelle eine aktuelle Übersicht aller offenen Rechnungen und ihrer Fälligkeit.",
+    "Bundle name": "Paketname",
+    "Bundles & Pricing": "Pakete & Preise",
+    "Create and price bundles of tools, set monthly and yearly prices, and control which plans are active.": "Erstelle Werkzeug-Pakete, lege Monats- und Jahrespreise fest und steuere, welche Pakete aktiv sind.",
+    "Create bundle": "Paket erstellen",
+    "Delete this bundle?": "Dieses Paket löschen?",
+    "Describe what is included in this bundle.": "Beschreibe, was in diesem Paket enthalten ist.",
+    "Included tools": "Enthaltene Werkzeuge",
+    "New bundle": "Neues Paket",
+    "No bundles yet.": "Noch keine Pakete.",
+    "Save bundle": "Paket speichern",
+    "View Pricing Page": "Preisseite anzeigen",
+    "e.g. All Tools Bundle": "z. B. All Tools Paket"
 }
