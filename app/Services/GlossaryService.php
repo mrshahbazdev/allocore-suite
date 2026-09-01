@@ -43,7 +43,7 @@ class GlossaryService
             $url = route('glossary.show', $term['slug']);
             $title = e(Str::limit($term['simple_definition'] ?: $term['definition'], 160));
 
-            return '<a href="'.$url.'" class="border-b border-dotted border-indigo-500 text-indigo-600 hover:text-indigo-800" title="'.$title.'">'.$matches[0].'</a>';
+            return '<a href="'.$url.'" class="glossary-link" title="'.$title.'">'.$matches[0].'</a>';
         }, e($text));
     }
 
@@ -70,7 +70,7 @@ class GlossaryService
                 $tag = strtolower(trim($chunk, '<'));
                 $tagName = strtok($tag, " \t\r\n/>");
 
-                if (in_array($tagName, ['script', 'style', 'textarea', 'title', 'head'], true)) {
+                if (in_array($tagName, ['script', 'style', 'textarea', 'title', 'head', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'button', 'select', 'option', 'svg', 'nav'], true) || str_contains($tag, 'no-glossary')) {
                     $inSkip = ! str_starts_with($chunk, '</');
                 }
 

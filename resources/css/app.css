@@ -195,4 +195,18 @@
     .reveal-zoom-in {
         transform: scale(0.92);
     }
+
+    .glossary-link {
+        color: inherit !important;
+        text-decoration: underline dotted !important;
+        text-decoration-color: currentColor !important;
+        text-underline-offset: 3px;
+        opacity: 0.95;
+        transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+    }
+
+    .glossary-link:hover {
+        opacity: 1;
+        text-decoration-style: solid !important;
+    }
 }
