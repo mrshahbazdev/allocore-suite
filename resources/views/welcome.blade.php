@@ -50,7 +50,7 @@
             <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
                 <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
                     <a href="/" class="flex items-center gap-3">
-                        <img src="{{ asset('logo-mark.png') }}" alt="" class="h-10 w-10 object-contain rounded-xl bg-white">
+                        <img src="{{ \App\Models\SiteSetting::value('site_logo') ?: asset('logo-mark.png') }}" alt="" class="h-10 w-10 object-contain rounded-xl bg-white">
                         <span class="text-lg font-bold text-slate-900">{{ $siteName }}</span>
                     </a>
 
@@ -117,33 +117,36 @@
                         <div class="mx-auto max-w-3xl text-center">
                             <div class="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700">
                                 <span class="h-2 w-2 rounded-full bg-indigo-600"></span>
-                                {{ __('landing.hero.badge') }}
+                                {{ \App\Models\SiteSetting::value('hero_badge') ?: __('landing.hero.badge') }}
                             </div>
                             <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
-                                {{ \App\Models\SiteSetting::value('hero_heading', __('landing.hero.heading')) }}
+                                {{ \App\Models\SiteSetting::value('hero_heading') ?: __('landing.hero.heading') }}
                             </h1>
                             <p class="mt-6 text-lg leading-8 text-slate-600 sm:text-xl">
-                                {{ \App\Models\SiteSetting::value('hero_subheading', __('landing.hero.subheading')) }}
+                                {{ \App\Models\SiteSetting::value('hero_subheading') ?: __('landing.hero.subheading') }}
                             </p>
                             <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                                 @auth
                                     <a href="{{ route('dashboard') }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ __('landing.hero.open_dashboard') }}</a>
                                     <a href="{{ route('tool-analyzer.index') }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ __('Analyze my tools') }}</a>
                                 @else
-                                    @php($primary = \App\Models\SiteSetting::value('hero_cta_primary_link', route('register')))
-                                    @php($secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link', route('login')))
-                                    <a href="{{ $primary }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ \App\Models\SiteSetting::value('hero_cta_primary_label', __('landing.hero.cta_primary')) }}</a>
-                                    <a href="{{ $secondary }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ \App\Models\SiteSetting::value('hero_cta_secondary_label', __('landing.hero.cta_secondary')) }}</a>
+                                    @php($primary = \App\Models\SiteSetting::value('hero_cta_primary_link') ?: route('register'))
+                                    @php($secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link') ?: route('login'))
+                                    <a href="{{ $primary }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ \App\Models\SiteSetting::value('hero_cta_primary_label') ?: __('landing.hero.cta_primary') }}</a>
+                                    <a href="{{ $secondary }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ \App\Models\SiteSetting::value('hero_cta_secondary_label') ?: __('landing.hero.cta_secondary') }}</a>
                                 @endauth
                             </div>
                         </div>
 
                         <div class="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-3">
-                            @foreach ([
-                                ['label' => __('landing.stats.central_auth'), 'value' => __('landing.stats.value_one_login')],
-                                ['label' => __('landing.stats.teams_billing'), 'value' => __('landing.stats.value_shared')],
-                                ['label' => __('landing.stats.per_user'), 'value' => __('landing.stats.value_module_gated')],
-                            ] as $stat)
+                            @php
+                                $topStats = \App\Models\SiteSetting::value('top_stats') ?: [
+                                    ['label' => __('landing.stats.central_auth'), 'value' => __('landing.stats.value_one_login')],
+                                    ['label' => __('landing.stats.teams_billing'), 'value' => __('landing.stats.value_shared')],
+                                    ['label' => __('landing.stats.per_user'), 'value' => __('landing.stats.value_module_gated')],
+                                ];
+                            @endphp
+                            @foreach ($topStats as $stat)
                                 <div class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
                                     <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $stat['label'] }}</div>
                                     <div class="mt-2 text-lg font-bold text-slate-900">{{ $stat['value'] }}</div>
@@ -157,13 +160,13 @@
                 <section id="framework" class="bg-slate-50 py-24">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
                         <div class="mx-auto max-w-2xl text-center">
-                            <p class="text-sm font-semibold uppercase tracking-wider text-indigo-600">{{ __('Allocore Framework') }}</p>
-                            <h2 class="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('Sechs Dimensionen für nachhaltige Unternehmensentwicklung') }}</h2>
-                            <p class="mt-4 text-lg text-slate-600">{{ __('Allocore begleitet Ihr Unternehmen entlang eines bewährten Reifegradmodells — von der Strategie bis zum Vermächtnis.') }}</p>
+                            <p class="text-sm font-semibold uppercase tracking-wider text-indigo-600">{{ \App\Models\SiteSetting::value('framework_heading') ?: __('Allocore Framework') }}</p>
+                            <h2 class="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ \App\Models\SiteSetting::value('framework_subheading') ?: __('Sechs Dimensionen für nachhaltige Unternehmensentwicklung') }}</h2>
+                            <p class="mt-4 text-lg text-slate-600">{{ \App\Models\SiteSetting::value('framework_description') ?: __('Allocore begleitet Ihr Unternehmen entlang eines bewährten Reifegradmodells — von der Strategie bis zum Vermächtnis.') }}</p>
                         </div>
 
                         <div class="mx-auto mt-16 grid max-w-5xl gap-4">
-                            @php($frameworkSteps = [
+                            @php($frameworkSteps = \App\Models\SiteSetting::value('framework_steps') ?: [
                                 ['title' => 'Strategie', 'desc' => 'Vision, Positionierung und langfristige Ziele klar definieren.'],
                                 ['title' => 'Umsatz', 'desc' => 'Umsatzquellen systematisieren und nachhaltig ausbauen.'],
                                 ['title' => 'Gewinn', 'desc' => 'Rentabilität und Cashflow steuern statt nur Umsatz zu jagen.'],
@@ -188,8 +191,8 @@
                 <section id="features" class="bg-slate-50 py-24">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
                         <div class="mx-auto max-w-2xl text-center">
-                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.features.heading') }}</h2>
-                            <p class="mt-4 text-lg text-slate-600">{{ __('landing.features.subheading') }}</p>
+                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ \App\Models\SiteSetting::value('features_heading') ?: __('landing.features.heading') }}</h2>
+                            <p class="mt-4 text-lg text-slate-600">{{ \App\Models\SiteSetting::value('features_subheading') ?: __('landing.features.subheading') }}</p>
                         </div>
 
                         <div class="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -204,10 +207,10 @@
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $feature['icon'] }}"/></svg>
                                     </div>
                                     <h3 class="mt-4 text-lg font-semibold text-slate-900">
-                                        {{ \App\Models\SiteSetting::value('feature_'.$feature['title'].'_title', __('landing.features.'.$feature['title'].'.title')) }}
+                                        {{ \App\Models\SiteSetting::value('feature_'.$feature['title'].'_title') ?: __('landing.features.'.$feature['title'].'.title') }}
                                     </h3>
                                     <p class="mt-2 text-sm leading-relaxed text-slate-600">
-                                        {{ \App\Models\SiteSetting::value('feature_'.$feature['title'].'_desc', __('landing.features.'.$feature['title'].'.desc')) }}
+                                        {{ \App\Models\SiteSetting::value('feature_'.$feature['title'].'_desc') ?: __('landing.features.'.$feature['title'].'.desc') }}
                                     </p>
                                 </div>
                             @endforeach
@@ -219,21 +222,29 @@
                 <section id="how-it-works" class="bg-white py-24">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
                         <div class="mx-auto max-w-2xl text-center">
-                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.how.heading') }}</h2>
-                            <p class="mt-4 text-lg text-slate-600">{{ __('landing.how.subheading') }}</p>
+                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ \App\Models\SiteSetting::value('how_heading') ?: __('landing.how.heading') }}</h2>
+                            <p class="mt-4 text-lg text-slate-600">{{ \App\Models\SiteSetting::value('how_subheading') ?: __('landing.how.subheading') }}</p>
                         </div>
                         <div class="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-3">
-                            @foreach ([
-                                'step1' => 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
-                                'step2' => 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z',
-                                'step3' => 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z',
-                            ] as $key => $icon)
+                            @php
+                                $howSteps = \App\Models\SiteSetting::value('how_steps') ?: [
+                                    ['title' => __('landing.how.step1.title'), 'desc' => __('landing.how.step1.desc')],
+                                    ['title' => __('landing.how.step2.title'), 'desc' => __('landing.how.step2.desc')],
+                                    ['title' => __('landing.how.step3.title'), 'desc' => __('landing.how.step3.desc')],
+                                ];
+                                $howIcons = [
+                                    'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
+                                    'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z',
+                                    'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z',
+                                ];
+                            @endphp
+                            @foreach ($howSteps as $index => $step)
                                 <div class="relative rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
                                     <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/></svg>
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $howIcons[$index] }}"/></svg>
                                     </div>
-                                    <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ __('landing.how.'.$key.'.title') }}</h3>
-                                    <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ __('landing.how.'.$key.'.desc') }}</p>
+                                    <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ $step['title'] }}</h3>
+                                    <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $step['desc'] }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -244,8 +255,8 @@
                 <section id="modules" class="bg-slate-50 py-24">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
                         <div class="mx-auto max-w-2xl text-center">
-                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.modules.heading') }}</h2>
-                            <p class="mt-4 text-lg text-slate-600">{{ __('landing.modules.subheading') }}</p>
+                            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ \App\Models\SiteSetting::value('modules_heading') ?: __('landing.modules.heading') }}</h2>
+                            <p class="mt-4 text-lg text-slate-600">{{ \App\Models\SiteSetting::value('modules_subheading') ?: __('landing.modules.subheading') }}</p>
                         </div>
 
                         @auth
@@ -349,27 +360,27 @@
                 {{-- Testimonial --}}
                 <section class="bg-white py-24">
                     <div class="mx-auto max-w-4xl px-6 lg:px-8 text-center">
-                        <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.testimonials.heading') }}</h2>
+                        <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ \App\Models\SiteSetting::value('testimonials_heading') ?: __('landing.testimonials.heading') }}</h2>
                         <blockquote class="mt-10 text-xl font-medium leading-8 text-slate-700">
-                            “{{ __('landing.testimonials.quote') }}”
+                            “{{ \App\Models\SiteSetting::value('testimonials_quote') ?: __('landing.testimonials.quote') }}”
                         </blockquote>
-                        <p class="mt-4 text-sm font-semibold text-slate-900">— {{ __('landing.testimonials.author') }}</p>
+                        <p class="mt-4 text-sm font-semibold text-slate-900">— {{ \App\Models\SiteSetting::value('testimonials_author') ?: __('landing.testimonials.author') }}</p>
                     </div>
                 </section>
 
                 {{-- CTA --}}
                 <section class="bg-slate-900 py-20">
                     <div class="mx-auto max-w-4xl px-6 text-center lg:px-8">
-                        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ __('landing.cta.heading') }}</h2>
-                        <p class="mt-4 text-lg text-slate-300">{{ __('landing.cta.subheading') }}</p>
+                        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ \App\Models\SiteSetting::value('cta_heading') ?: __('landing.cta.heading') }}</h2>
+                        <p class="mt-4 text-lg text-slate-300">{{ \App\Models\SiteSetting::value('cta_subheading') ?: __('landing.cta.subheading') }}</p>
                         <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                             @auth
                                 <a href="{{ route('dashboard') }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ __('landing.nav.dashboard') }}</a>
                             @else
-                                @php($primary = \App\Models\SiteSetting::value('cta_primary_link', route('register')))
-                                @php($secondary = \App\Models\SiteSetting::value('cta_secondary_link', route('billing.plans')))
-                                <a href="{{ $primary }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ \App\Models\SiteSetting::value('cta_primary_label', __('landing.cta.primary')) }}</a>
-                                <a href="{{ $secondary }}" class="rounded-lg border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white hover:bg-slate-800">{{ \App\Models\SiteSetting::value('cta_secondary_label', __('landing.cta.secondary')) }}</a>
+                                @php($primary = \App\Models\SiteSetting::value('cta_primary_link') ?: route('register'))
+                                @php($secondary = \App\Models\SiteSetting::value('cta_secondary_link') ?: route('billing.plans'))
+                                <a href="{{ $primary }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ \App\Models\SiteSetting::value('cta_primary_label') ?: __('landing.cta.primary') }}</a>
+                                <a href="{{ $secondary }}" class="rounded-lg border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white hover:bg-slate-800">{{ \App\Models\SiteSetting::value('cta_secondary_label') ?: __('landing.cta.secondary') }}</a>
                             @endauth
                         </div>
                     </div>
@@ -381,7 +392,7 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
                         <div class="flex items-center gap-3">
-                            <img src="{{ asset('logo-mark.png') }}" alt="" class="h-9 w-9 object-contain rounded-lg bg-white">
+                            <img src="{{ \App\Models\SiteSetting::value('site_logo') ?: asset('logo-mark.png') }}" alt="" class="h-9 w-9 object-contain rounded-lg bg-white">
                             <span class="text-sm font-semibold text-slate-900">{{ $siteName }}</span>
                         </div>
                         <div class="flex items-center gap-6 text-sm text-slate-600">
@@ -391,7 +402,7 @@
                             @endif
                             <a href="{{ route('billing.plans') }}" class="hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
                         </div>
-                        <p class="text-xs text-slate-500">&copy; {{ date('Y') }} {{ $siteName }}. {{ \App\Models\SiteSetting::value('footer_text', __('landing.footer.copyright')) }}</p>
+                        <p class="text-xs text-slate-500">&copy; {{ date('Y') }} {{ $siteName }}. {{ \App\Models\SiteSetting::value('footer_text') ?: __('landing.footer.copyright') }}</p>
                     </div>
                 </div>
             </footer>
