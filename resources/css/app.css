@@ -197,16 +197,43 @@
     }
 
     .glossary-link {
-        color: inherit !important;
-        text-decoration: underline dotted !important;
-        text-decoration-color: currentColor !important;
-        text-underline-offset: 3px;
-        opacity: 0.95;
-        transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+        display: inline;
+        font-weight: 600;
+        color: #ff9200 !important;
+        text-decoration: underline dashed 2px !important;
+        text-decoration-color: #ff9200 !important;
+        text-underline-offset: 4px;
+        cursor: pointer;
+        padding: 1px 3px;
+        border-radius: 4px;
+        transition: all 0.2s ease-in-out;
     }
 
     .glossary-link:hover {
-        opacity: 1;
+        color: #e07f00 !important;
+        background-color: rgba(255, 146, 0, 0.15) !important;
         text-decoration-style: solid !important;
+        text-decoration-color: #e07f00 !important;
+    }
+
+    /* Clear and vibrant on custom background colors (e.g. teal, blue, dark slate) */
+    [style*="background-color"] .glossary-link,
+    .bg-slate-900 .glossary-link,
+    .bg-slate-800 .glossary-link,
+    .bg-slate-950 .glossary-link,
+    .dark .glossary-link {
+        color: #fde047 !important; /* bright distinct yellow/gold */
+        text-decoration-color: #fde047 !important;
+        background-color: rgba(0, 0, 0, 0.12);
+    }
+
+    [style*="background-color"] .glossary-link:hover,
+    .bg-slate-900 .glossary-link:hover,
+    .bg-slate-800 .glossary-link:hover,
+    .bg-slate-950 .glossary-link:hover,
+    .dark .glossary-link:hover {
+        color: #ffffff !important;
+        text-decoration-color: #ffffff !important;
+        background-color: rgba(253, 224, 71, 0.3) !important;
     }
 }
