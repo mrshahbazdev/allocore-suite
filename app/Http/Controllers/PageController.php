@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\View\View;
 
 class PageController extends Controller
 {
-    public function show(string $slug): Response
+    public function show(string $slug): View
     {
         $page = Page::whereHas('translations', function ($query) use ($slug) {
             $query->where('slug', $slug);
