@@ -20,14 +20,14 @@
 
     {{-- 3 Simple Steps --}}
     <div class="mt-8 grid gap-6 md:grid-cols-3">
-        {{-- Step 1: 5-Min Audit --}}
+        {{-- Step 1: 25-Min Audit --}}
         <div class="relative flex flex-col justify-between rounded-2xl border-2 {{ $allocoreScore ? 'border-emerald-300 bg-emerald-50/40' : 'border-[#ff9200] bg-white' }} p-6 shadow-sm transition hover:shadow-md">
             <span class="absolute -top-3 left-6 rounded-full {{ $allocoreScore ? 'bg-emerald-600' : 'bg-[#ff9200]' }} px-3 py-0.5 text-xs font-bold text-white uppercase tracking-wider">
                 {{ $allocoreScore ? '✓ ' . __('Step 1 done') : __('Step 1') }}
             </span>
             <div>
                 <div class="mt-2 text-3xl">📋</div>
-                <h3 class="mt-3 text-base font-bold text-slate-900">{{ __('5-Minute Business Check') }}</h3>
+                <h3 class="mt-3 text-base font-bold text-slate-900">{{ __('25-Minute Business Check') }}</h3>
                 <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ __('Answer 25 quick yes/no questions about your sales, cash flow, delivery, and team.') }}</p>
             </div>
             <div class="mt-6">
@@ -37,7 +37,7 @@
                     </a>
                 @else
                     <a href="{{ route('audit.index') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ff9200] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:opacity-90">
-                        {{ __('Start 5-min Check') }}
+                        {{ __('Start 25-min Check') }}
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                     </a>
                 @endif
