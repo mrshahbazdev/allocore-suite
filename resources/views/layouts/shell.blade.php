@@ -84,9 +84,11 @@
         }
     </style>
 </head>
-@php($isModulePage = request()->is('app/*'))
-@php($currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null)
-@php($pageTitle = $pageTitle ?? ($currentModule?->name ?? ($isModulePage ? __('Tools') : __('Dashboard'))))
+@php
+    $isModulePage = request()->is('app/*');
+    $currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null;
+    $pageTitle = $pageTitle ?? ($currentModule?->name ?? ($isModulePage ? __('Tools') : __('Dashboard')));
+@endphp
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 <div id="nav-progress" class="fixed left-0 top-0 z-[60] h-1 w-0 bg-[#ff9200] shadow-[0_0_8px_rgba(255,146,0,0.7)] transition-[width] duration-300 ease-out" aria-hidden="true"></div>
 <div class="min-h-full flex">

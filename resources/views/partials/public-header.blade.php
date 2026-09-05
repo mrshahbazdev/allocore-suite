@@ -1,6 +1,6 @@
-@php($brand = config('app.team_branding') ?? [])
-@php($menu = \App\Models\SiteSetting::value('public_nav_menu', []))
 @php
+    $brand = config('app.team_branding') ?? [];
+    $menu = \App\Models\SiteSetting::value('public_nav_menu', []);
     if (empty($menu)) {
         $menu = [
             ['label' => __('Glossary'), 'url' => route('glossary.index'), 'children' => []],
