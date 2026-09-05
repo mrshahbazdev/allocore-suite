@@ -25,7 +25,9 @@
                     <tr>
                         <td class="px-4 py-3 text-slate-900">{{ $incident->title }}</td>
                         <td class="px-4 py-3">
-                            @php($badge = match($incident->severity) { 'critical' => 'bg-rose-100 text-rose-700', 'major' => 'bg-orange-100 text-orange-700', 'minor' => 'bg-amber-100 text-amber-700', default => 'bg-slate-100 text-slate-700' })
+                            @php
+                                $badge = match($incident->severity) { 'critical' => 'bg-rose-100 text-rose-700', 'major' => 'bg-orange-100 text-orange-700', 'minor' => 'bg-amber-100 text-amber-700', default => 'bg-slate-100 text-slate-700' };
+                            @endphp
                             <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ $badge }}">{{ $incident->severity }}</span>
                         </td>
                         <td class="px-4 py-3 text-slate-600">{{ $incident->status }}</td>

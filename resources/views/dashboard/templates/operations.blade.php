@@ -57,7 +57,9 @@
             <div class="mt-4 h-48">
                 <canvas id="moduleUsageChart"></canvas>
             </div>
-            @php($chartModules = collect($moduleStats)->filter(fn($v) => $v['accessible'])->values())
+            @php
+                $chartModules = collect($moduleStats)->filter(fn($v) => $v['accessible'])->values();
+            @endphp
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     const ctx = document.getElementById('moduleUsageChart');

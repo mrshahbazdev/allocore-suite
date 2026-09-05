@@ -4,7 +4,9 @@
     <div class="mx-auto max-w-3xl px-4 py-16">
         <div class="flex items-center justify-between">
             <h1 class="text-3xl font-bold text-slate-900">{{ __('Status Page') }}</h1>
-            @php($statusBadge = match($overallStatus) { 'operational' => 'bg-emerald-100 text-emerald-700', 'degraded' => 'bg-amber-100 text-amber-700', default => 'bg-rose-100 text-rose-700' })
+            @php
+                $statusBadge = match($overallStatus) { 'operational' => 'bg-emerald-100 text-emerald-700', 'degraded' => 'bg-amber-100 text-amber-700', default => 'bg-rose-100 text-rose-700' };
+            @endphp
             <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold {{ $statusBadge }}">{{ ucfirst($overallStatus) }}</span>
         </div>
 
@@ -12,7 +14,9 @@
             <div class="mt-8 space-y-4">
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('Active incidents') }}</h2>
                 @foreach ($active as $incident)
-                    @php($badge = match($incident->severity) { 'critical' => 'bg-rose-100 text-rose-700', 'major' => 'bg-orange-100 text-orange-700', 'minor' => 'bg-amber-100 text-amber-700', default => 'bg-slate-100 text-slate-700' })
+                    @php
+                        $badge = match($incident->severity) { 'critical' => 'bg-rose-100 text-rose-700', 'major' => 'bg-orange-100 text-orange-700', 'minor' => 'bg-amber-100 text-amber-700', default => 'bg-slate-100 text-slate-700' };
+                    @endphp
                     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                         <div class="flex items-start justify-between">
                             <div>

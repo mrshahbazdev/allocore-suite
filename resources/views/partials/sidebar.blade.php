@@ -1,6 +1,8 @@
-@php($user = auth()->user())
-@php($isAdmin = $user?->isAdmin())
-@php($accessibleModules = \App\Models\Module::where('is_active', true)->get()->filter(fn ($m) => $user?->hasModule($m->key)))
+@php
+    $user = auth()->user();
+    $isAdmin = $user?->isAdmin();
+    $accessibleModules = \App\Models\Module::where('is_active', true)->get()->filter(fn ($m) => $user?->hasModule($m->key));
+@endphp
 
 <nav class="flex h-full flex-col px-3 py-4 space-y-5 overflow-y-auto">
     @if (request()->is('app/*'))
