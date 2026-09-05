@@ -86,7 +86,23 @@ class AppearanceController extends Controller
     private function normalizeLinks(array $value): array
     {
         return collect($value)
-            ->filter(fn ($item) => filled($item['label'] ?? null) && filled($item['url'] ?? null))
+            ->filter(fn ($item) => is_array($item) && filled($item['label'] ?? null))
+            ->map(function ($item) {
+                $children = collect($item['children'] ?? [])
+                    ->filter(fn ($c) => is_array($c) && filled($c['label'] ?? null))
+                    ->map(fn ($c) => [
+                        'label' => trim($c['label']),
+                        'url' => trim($c['url'] ?? '#'),
+                    ])
+                    ->values()
+                    ->all();
+
+                return [
+                    'label' => trim($item['label']),
+                    'url' => trim($item['url'] ?? '#'),
+                    'children' => $children,
+                ];
+            })
             ->values()
             ->all();
     }

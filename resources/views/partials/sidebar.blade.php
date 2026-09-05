@@ -80,4 +80,36 @@
             <x-sidebar-link route="knowledge.index" icon="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.967 8.967 0 00-6 2.292m6-2.292v14.25m0-14.25A8.967 8.967 0 0118 3.75c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25">{{ __('Knowledge') }}</x-sidebar-link>
         </div>
     </div>
+
+    @php($sideCustomMenu = \App\Models\SiteSetting::value('public_nav_menu', []))
+    @if (!empty($sideCustomMenu))
+        <div class="border-t border-slate-800 pt-4">
+            <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">{{ __('Site Links') }}</p>
+            <div class="mt-1.5 space-y-1">
+                @foreach ($sideCustomMenu as $item)
+                    @if (empty($item['children']))
+                        <a href="{{ $item['url'] ?? '#' }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+                            <span class="truncate">{{ $item['label'] ?? '' }}</span>
+                        </a>
+                    @else
+                        <div x-data="{ subOpen: false }" class="space-y-1">
+                            <button @click="subOpen = !subOpen" type="button" class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+                                <span class="truncate">{{ $item['label'] ?? '' }}</span>
+                                <svg class="h-4 w-4 transition-transform duration-200" :class="subOpen ? 'rotate-180 text-indigo-400' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="subOpen" x-cloak class="pl-4 space-y-1 border-l border-slate-800 ml-3">
+                                @foreach ($item['children'] as $child)
+                                    <a href="{{ $child['url'] ?? '#' }}" class="block rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-indigo-300 transition">
+                                        {{ $child['label'] ?? '' }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    @endif
 </nav>

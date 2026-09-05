@@ -123,8 +123,45 @@
                     <span class="truncate text-base font-semibold text-slate-700">{{ $pageTitle }}</span>
                 </div>
 
+                {{-- Center: Global Custom Navigation Menu with Submenus (Always Visible) --}}
+                @php($shellMenu = \App\Models\SiteSetting::value('public_nav_menu', []))
+                @if (!empty($shellMenu))
+                    <nav class="hidden lg:flex items-center gap-6 shrink-0 mx-2">
+                        @foreach ($shellMenu as $item)
+                            @if (empty($item['children']))
+                                <a href="{{ $item['url'] ?? '#' }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+                                    {{ $item['label'] ?? '' }}
+                                </a>
+                            @else
+                                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
+                                    <button @click="open = !open" class="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900 transition py-1">
+                                        <span>{{ $item['label'] ?? '' }}</span>
+                                        <svg class="h-4 w-4 transition-transform duration-200 text-slate-400" :class="open ? 'rotate-180 text-indigo-600' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="open" x-cloak
+                                         x-transition:enter="transition ease-out duration-150"
+                                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                         x-transition:leave="transition ease-in duration-100"
+                                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                         class="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5">
+                                        @foreach ($item['children'] as $child)
+                                            <a href="{{ $child['url'] ?? '#' }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                                                {{ $child['label'] ?? '' }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </nav>
+                @endif
+
                 {{-- Right: page actions, notifications, user --}}
-                <div class="flex items-center gap-2 sm:gap-4">
+                <div class="flex items-center gap-2 sm:gap-4 shrink-0">
                     @yield('topbar-actions')
 
                     @if (session('impersonated_by'))
