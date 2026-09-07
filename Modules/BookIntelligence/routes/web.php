@@ -1,16 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\BookIntelligence\Http\Controllers\AffiliateController;
 use Modules\BookIntelligence\Http\Controllers\BookAnalysisController;
 use Modules\BookIntelligence\Http\Controllers\BookController;
+use Modules\BookIntelligence\Http\Controllers\ContentEngineController;
 use Modules\BookIntelligence\Http\Controllers\DashboardController;
 use Modules\BookIntelligence\Http\Controllers\GuideController;
 use Modules\BookIntelligence\Http\Controllers\KnowledgeGapController;
 use Modules\BookIntelligence\Http\Controllers\LibrarySetupController;
 use Modules\BookIntelligence\Http\Controllers\QuestionMappingController;
 use Modules\BookIntelligence\Http\Controllers\ReadingProgressController;
+use Modules\BookIntelligence\Http\Controllers\RepurposingController;
 use Modules\BookIntelligence\Http\Controllers\SearchController;
 use Modules\BookIntelligence\Http\Middleware\EnsureCurrentTeam;
+
+// Public affiliate link redirection
+Route::get('/app/books/affiliate/redirect/{book}', [AffiliateController::class, 'redirect'])
+    ->name('bookintelligence.affiliate.redirect');
 
 Route::middleware(['auth', 'verified', 'module:book-intelligence', EnsureCurrentTeam::class])
     ->prefix('app/books')
@@ -47,6 +54,21 @@ Route::middleware(['auth', 'verified', 'module:book-intelligence', EnsureCurrent
         Route::post('/gaps/{gap}/recommendations', [KnowledgeGapController::class, 'refreshRecommendations'])->name('gaps.recommendations');
         Route::post('/gaps/{gap}/import', [KnowledgeGapController::class, 'importBook'])->name('gaps.import');
         Route::patch('/gaps/{gap}/status', [KnowledgeGapController::class, 'updateStatus'])->name('gaps.status');
+
+        // Module 6 & 7: AI Content & SEO Intelligence + 8-Section Blog Creation
+        Route::get('/content', [ContentEngineController::class, 'index'])->name('content.index');
+        Route::post('/content/discover', [ContentEngineController::class, 'discover'])->name('content.discover');
+        Route::post('/content/blog/generate', [ContentEngineController::class, 'generateBlog'])->name('content.blog.generate');
+        Route::get('/content/blog/{blog}', [ContentEngineController::class, 'showBlog'])->name('content.blog.show');
+        Route::post('/content/blog/{blog}/publish', [ContentEngineController::class, 'publishBlog'])->name('content.blog.publish');
+
+        // Module 8: Affiliate Monetization Engine
+        Route::get('/affiliate', [AffiliateController::class, 'index'])->name('affiliate.index');
+
+        // Module 9: Book-to-Content Repurposing Engine
+        Route::get('/repurposing', [RepurposingController::class, 'index'])->name('repurposing.index');
+        Route::get('/repurposing/{book}', [RepurposingController::class, 'show'])->name('repurposing.show');
+        Route::post('/repurposing/{book}/generate', [RepurposingController::class, 'generate'])->name('repurposing.generate');
 
         // Setup
         Route::get('/setup', [LibrarySetupController::class, 'index'])->name('setup.index');

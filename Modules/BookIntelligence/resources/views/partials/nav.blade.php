@@ -25,6 +25,21 @@
         'active' => 'bookintelligence.gaps.*',
     ],
     [
+        'route' => 'bookintelligence.content.index',
+        'label' => __('Content & SEO Engine'),
+        'active' => 'bookintelligence.content.*',
+    ],
+    [
+        'route' => 'bookintelligence.repurposing.index',
+        'label' => __('Content Repurposing'),
+        'active' => 'bookintelligence.repurposing.*',
+    ],
+    [
+        'route' => 'bookintelligence.affiliate.index',
+        'label' => __('Affiliate Engine'),
+        'active' => 'bookintelligence.affiliate.*',
+    ],
+    [
         'route' => 'bookintelligence.setup.index',
         'label' => __('Library Setup'),
         'active' => 'bookintelligence.setup.*',
