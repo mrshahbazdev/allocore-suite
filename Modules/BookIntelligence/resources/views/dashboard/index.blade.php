@@ -4,7 +4,7 @@
 @section('content')
     @include('bookintelligence::partials.nav')
 
-    <div class="space-y-6">
+    <div class="space-y-6" data-no-navigate>
         <section class="overflow-hidden rounded-3xl bg-slate-950 shadow-sm">
             <div class="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:px-10 lg:py-10">
                 <div>

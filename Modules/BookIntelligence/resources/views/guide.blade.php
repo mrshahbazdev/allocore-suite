@@ -4,7 +4,7 @@
 @section('content')
     @include('bookintelligence::partials.nav')
 
-    <div class="mx-auto max-w-5xl space-y-6">
+    <div class="mx-auto max-w-5xl space-y-6" data-no-navigate>
         <section class="rounded-3xl bg-slate-950 px-6 py-10 text-white shadow-sm sm:px-10">
             <p class="text-xs font-semibold uppercase tracking-wider text-[#ffb34d]">{{ __('Product guide') }}</p>
             <h1 class="mt-3 max-w-3xl text-3xl font-bold sm:text-4xl">{{ __('From a shelf of books to useful organizational knowledge') }}</h1>

@@ -4,7 +4,7 @@
 @section('content')
     @include('bookintelligence::partials.nav')
 
-    <div class="space-y-6">
+    <div class="space-y-6" data-no-navigate>
         @include('bookintelligence::partials.validation-errors')
 
         <div>

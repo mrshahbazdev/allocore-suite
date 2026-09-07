@@ -4,7 +4,7 @@
 @section('content')
     @include('bookintelligence::partials.nav')
 
-    <div class="space-y-6">
+    <div class="space-y-6" data-no-navigate>
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[#0094af]">{{ __('Knowledge Library') }}</p>

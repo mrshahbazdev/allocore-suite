@@ -21,4 +21,6 @@
     ],
 ])
 
-@include('partials.module-nav', ['layout' => $layout ?? 'horizontal'])
+<div data-no-navigate>
+    @include('partials.module-nav', ['layout' => $layout ?? 'horizontal'])
+</div>
