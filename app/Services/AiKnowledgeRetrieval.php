@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Modules\BookIntelligence\Models\Book;
 use Modules\KnowledgeManager\Models\Project;
 use Modules\LoopEngine\Models\Process;
 use Modules\SopBuilder\Models\Sop;
@@ -22,6 +23,7 @@ class AiKnowledgeRetrieval
 
         $results = collect();
         $results = $results->merge($this->searchPages($user, $words));
+        $results = $results->merge($this->searchBooks($user, $words));
         $results = $results->merge($this->searchKnowledgeProjects($user, $words));
         $results = $results->merge($this->searchLoopEngineProcesses($user, $words));
         $results = $results->merge($this->searchSops($user, $words));
@@ -139,6 +141,46 @@ class AiKnowledgeRetrieval
                     'source' => __('Knowledge Project'),
                     'url' => route('knowledgemanager.projects.show', $project),
                     'excerpt' => Str::limit(strip_tags($project->description ?? ''), 200),
+                    'score' => $score,
+                ];
+            })
+            ->filter()
+            ->values();
+    }
+
+    protected function searchBooks(User $user, Collection $words): Collection
+    {
+        if (! class_exists(Book::class) || ! $user->hasModule('book-intelligence')) {
+            return collect();
+        }
+
+        return Book::with(['author', 'publisher', 'mainTopic', 'subtopics'])
+            ->where('status', 'active')
+            ->get()
+            ->map(function (Book $book) use ($words) {
+                $text = implode(' ', [
+                    $book->title,
+                    $book->description,
+                    $book->author?->name,
+                    $book->publisher?->name,
+                    $book->mainTopic?->name,
+                    $book->subtopics->pluck('name')->implode(' '),
+                    implode(' ', $book->relevant_roles ?? []),
+                ]);
+                $score = $this->scoreText($text, $words, 3);
+
+                if ($score <= 0) {
+                    return null;
+                }
+
+                return [
+                    'title' => $book->title,
+                    'source' => __('Knowledge Library'),
+                    'url' => route('bookintelligence.books.show', $book),
+                    'excerpt' => Str::limit(
+                        strip_tags($book->description ?: __('A book in the organizational knowledge library.')),
+                        200,
+                    ),
                     'score' => $score,
                 ];
             })

@@ -20,5 +20,6 @@
     "KnowledgeManager": true,
     "DevManager": true,
     "AuditIntelligence": true,
-    "CustomerSuccess": true
+    "CustomerSuccess": true,
+    "BookIntelligence": true
 }
