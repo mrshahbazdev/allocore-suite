@@ -2,12 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\BookIntelligence\Http\Controllers\AffiliateController;
+use Modules\BookIntelligence\Http\Controllers\AssessmentController;
 use Modules\BookIntelligence\Http\Controllers\BookAnalysisController;
 use Modules\BookIntelligence\Http\Controllers\BookController;
+use Modules\BookIntelligence\Http\Controllers\ChallengeController;
+use Modules\BookIntelligence\Http\Controllers\CompetencyController;
 use Modules\BookIntelligence\Http\Controllers\ContentEngineController;
 use Modules\BookIntelligence\Http\Controllers\DashboardController;
+use Modules\BookIntelligence\Http\Controllers\ExpertiseController;
 use Modules\BookIntelligence\Http\Controllers\GuideController;
 use Modules\BookIntelligence\Http\Controllers\KnowledgeGapController;
+use Modules\BookIntelligence\Http\Controllers\LearningPathController;
 use Modules\BookIntelligence\Http\Controllers\LibrarySetupController;
 use Modules\BookIntelligence\Http\Controllers\QuestionMappingController;
 use Modules\BookIntelligence\Http\Controllers\ReadingProgressController;
@@ -69,6 +74,32 @@ Route::middleware(['auth', 'verified', 'module:book-intelligence', EnsureCurrent
         Route::get('/repurposing', [RepurposingController::class, 'index'])->name('repurposing.index');
         Route::get('/repurposing/{book}', [RepurposingController::class, 'show'])->name('repurposing.show');
         Route::post('/repurposing/{book}/generate', [RepurposingController::class, 'generate'])->name('repurposing.generate');
+
+        // Module 10 & 11: Allocore Competency Framework & Career Progression
+        Route::get('/competency', [CompetencyController::class, 'index'])->name('competency.index');
+        Route::get('/competency/roles/{role}', [CompetencyController::class, 'showRole'])->name('competency.roles.show');
+
+        // Module 12: Personalized Learning Paths
+        Route::get('/learning', [LearningPathController::class, 'index'])->name('learning.index');
+        Route::post('/learning/generate', [LearningPathController::class, 'generate'])->name('learning.generate');
+        Route::get('/learning/{learningPath}', [LearningPathController::class, 'show'])->name('learning.show');
+        Route::post('/learning/{learningPath}/step', [LearningPathController::class, 'updateStep'])->name('learning.step');
+
+        // Module 13: Skill Assessment Engine
+        Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
+        Route::post('/library/{book}/assessments/generate', [AssessmentController::class, 'generate'])->name('assessments.generate');
+        Route::get('/assessments/{assessment}', [AssessmentController::class, 'show'])->name('assessments.show');
+        Route::post('/assessments/{assessment}/submit', [AssessmentController::class, 'submit'])->name('assessments.submit');
+
+        // Module 14: Practical Learning & Challenge Engine
+        Route::get('/challenges', [ChallengeController::class, 'index'])->name('challenges.index');
+        Route::post('/library/{book}/challenges/generate', [ChallengeController::class, 'generate'])->name('challenges.generate');
+        Route::get('/challenges/{challenge}', [ChallengeController::class, 'show'])->name('challenges.show');
+        Route::post('/challenges/{challenge}/submit', [ChallengeController::class, 'submit'])->name('challenges.submit');
+
+        // Module 15: Expertise Progression System
+        Route::get('/expertise', [ExpertiseController::class, 'index'])->name('expertise.index');
+        Route::post('/expertise/roles', [ExpertiseController::class, 'updateRoles'])->name('expertise.roles');
 
         // Setup
         Route::get('/setup', [LibrarySetupController::class, 'index'])->name('setup.index');
