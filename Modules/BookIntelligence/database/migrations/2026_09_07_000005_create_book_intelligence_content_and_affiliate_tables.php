@@ -25,8 +25,8 @@ return new class extends Migration
             $table->foreignId('generated_post_id')->nullable()->constrained('posts')->nullOnDelete();
             $table->timestamps();
 
-            $table->index(['team_id', 'content_type']);
-            $table->index(['team_id', 'status']);
+            $table->index(['team_id', 'content_type'], 'bi_opps_team_type_idx');
+            $table->index(['team_id', 'status'], 'bi_opps_team_status_idx');
         });
 
         // Module 7: Automated 8-Section Blog Creation
@@ -53,7 +53,7 @@ return new class extends Migration
             $table->string('status', 24)->default('draft'); // draft, published, archived
             $table->timestamps();
 
-            $table->index(['team_id', 'status']);
+            $table->index(['team_id', 'status'], 'bi_blogs_team_status_idx');
         });
 
         // Module 8: Affiliate Link Click & Revenue Tracking
@@ -71,8 +71,8 @@ return new class extends Migration
             $table->decimal('commission_amount', 8, 2)->default(0.00);
             $table->timestamps();
 
-            $table->index(['team_id', 'book_id']);
-            $table->index(['team_id', 'source_type']);
+            $table->index(['team_id', 'book_id'], 'bi_clicks_team_book_idx');
+            $table->index(['team_id', 'source_type'], 'bi_clicks_team_source_idx');
         });
 
         // Module 9: Book-to-Content Repurposed Bundles
@@ -89,7 +89,7 @@ return new class extends Migration
             $table->json('whitepaper_concepts')->nullable(); // 5 Whitepapers
             $table->timestamps();
 
-            $table->unique(['team_id', 'book_id']);
+            $table->unique(['team_id', 'book_id'], 'bi_bundles_team_book_uniq');
         });
     }
 
