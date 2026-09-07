@@ -10,6 +10,21 @@
         'active' => 'bookintelligence.books.*',
     ],
     [
+        'route' => 'bookintelligence.questions.index',
+        'label' => __('Question Engine & FAQs'),
+        'active' => 'bookintelligence.questions.*',
+    ],
+    [
+        'route' => 'bookintelligence.search.index',
+        'label' => __('Knowledge Search'),
+        'active' => 'bookintelligence.search.*',
+    ],
+    [
+        'route' => 'bookintelligence.gaps.index',
+        'label' => __('Knowledge Gaps'),
+        'active' => 'bookintelligence.gaps.*',
+    ],
+    [
         'route' => 'bookintelligence.setup.index',
         'label' => __('Library Setup'),
         'active' => 'bookintelligence.setup.*',

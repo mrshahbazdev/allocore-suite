@@ -292,6 +292,48 @@
                     </div>
                 </section>
 
+                <!-- Module 3: Question Mappings & FAQs Section -->
+                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-[#0094af]">{{ __('Module 3 — Question Mapping Engine') }}</p>
+                            <h2 class="mt-1 text-xl font-bold text-slate-900">{{ __('Questions Answered & Problems Solved') }}</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <form method="POST" action="{{ route('bookintelligence.questions.generate', $book) }}">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0094af] px-4 py-2 text-xs font-semibold text-white hover:bg-[#007a90] shadow-sm">
+                                    ⚡ {{ __('Extract AI FAQs & Mappings') }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 space-y-4">
+                        @forelse ($book->questionMappings as $mapping)
+                            <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                                <div class="flex items-start justify-between gap-2">
+                                    <h3 class="text-sm font-bold text-slate-900">❓ {{ $mapping->question }}</h3>
+                                    <span class="rounded bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-800">{{ $mapping->category ?? 'General' }}</span>
+                                </div>
+                                <p class="mt-2 text-xs leading-relaxed text-slate-600">
+                                    {{ $mapping->answer_excerpt }}
+                                </p>
+                                @if ($mapping->when_to_read_trigger)
+                                    <p class="mt-2 text-[11px] font-medium text-amber-800 bg-amber-50 rounded p-1.5">
+                                        ⏱️ <strong>{{ __('When to Read:') }}</strong> {{ $mapping->when_to_read_trigger }}
+                                    </p>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="rounded-xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">
+                                <p>{{ __('No question mappings generated yet for this book.') }}</p>
+                                <p class="mt-1 text-slate-400">{{ __('Click "Extract AI FAQs & Mappings" above to automatically generate 5–10 authoritative business questions and triggers.') }}</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </section>
+
                 <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#0094af]">{{ __('Resources') }}</p>
                     <h2 class="mt-1 text-xl font-bold text-slate-900">{{ __('Book access') }}</h2>

@@ -153,6 +153,7 @@ class QuestionRecommendationService
         $subscribed = $moduleKey && $user->hasModule($moduleKey);
 
         $knowledge = $this->knowledgeForQuestion($question, $moduleKey, $pillar->name);
+        $book = $this->bookForQuestion($question, $moduleKey, $pillar->name);
 
         return [
             'priority' => $priority,
@@ -171,6 +172,7 @@ class QuestionRecommendationService
             'module_route' => $module?->route_prefix ? url('app/'.$module->route_prefix) : null,
             'subscribed' => $subscribed,
             'knowledge' => $knowledge,
+            'book' => $book,
             'benchmark' => $this->questionBenchmark($score, $pillar->name),
         ];
     }
@@ -206,6 +208,65 @@ class QuestionRecommendationService
             'link' => route('knowledge.show', $term->slug),
             'is_beginner_friendly' => $term->is_beginner_friendly,
         ];
+    }
+
+    protected function bookForQuestion(AuditQuestion $question, ?string $moduleKey, string $pillar): ?array
+    {
+        try {
+            // Check if QuestionMapping directly matches this audit question
+            if (class_exists(\Modules\BookIntelligence\Models\QuestionMapping::class)) {
+                $mapping = \Modules\BookIntelligence\Models\QuestionMapping::query()
+                    ->active()
+                    ->where('audit_question_id', $question->id)
+                    ->with('book.author')
+                    ->first();
+
+                if (! $mapping && $moduleKey) {
+                    $mapping = \Modules\BookIntelligence\Models\QuestionMapping::query()
+                        ->active()
+                        ->where('module_key', $moduleKey)
+                        ->with('book.author')
+                        ->first();
+                }
+
+                if ($mapping && $mapping->book) {
+                    $b = $mapping->book;
+                    return [
+                        'id' => $b->id,
+                        'title' => $b->title,
+                        'author' => $b->author?->name ?? 'Author',
+                        'cover_url' => $b->cover_url,
+                        'why_recommended' => $mapping->when_to_read_trigger ?: $mapping->problem_statement,
+                        'link' => route('bookintelligence.books.show', $b->id),
+                        'affiliate_link' => $b->affiliate_link,
+                    ];
+                }
+            }
+
+            // Fallback to searching BookIntelligence books
+            if (class_exists(\Modules\BookIntelligence\Models\Book::class)) {
+                $book = \Modules\BookIntelligence\Models\Book::query()
+                    ->where('status', 'active')
+                    ->with('author')
+                    ->first();
+
+                if ($book) {
+                    return [
+                        'id' => $book->id,
+                        'title' => $book->title,
+                        'author' => $book->author?->name ?? 'Author',
+                        'cover_url' => $book->cover_url,
+                        'why_recommended' => Str::limit($book->description, 150),
+                        'link' => route('bookintelligence.books.show', $book->id),
+                        'affiliate_link' => $book->affiliate_link,
+                    ];
+                }
+            }
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return null;
     }
 
     protected function questionBenchmark(AllocoreScore $score, string $pillar): ?array
