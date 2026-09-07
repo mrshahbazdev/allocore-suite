@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\AuditIntelligence\Models\Finding;
 use Modules\AuditPro\Models\Audit;
+use Modules\BookIntelligence\Models\Book;
 use Modules\CashCore\Models\CashTransaction;
 use Modules\ClusterForge\Models\Project as ClusterProject;
 use Modules\CustomerSuccess\Models\Inquiry;
@@ -34,6 +35,7 @@ class ModuleStats
      */
     protected array $resourceMap = [
         'audit-intelligence' => ['model' => Finding::class, 'label' => 'Findings'],
+        'book-intelligence' => ['model' => Book::class, 'label' => 'Books'],
         'customer-success' => ['model' => Inquiry::class, 'label' => 'Inquiries'],
         'dev-manager' => ['model' => Idea::class, 'label' => 'Ideas'],
         'knowledge-manager' => ['model' => KnowledgeProject::class, 'label' => 'Knowledge projects'],
