@@ -1,0 +1,11 @@
+{
+    "name": "BookIntelligence",
+    "alias": "bookintelligence",
+    "description": "Organize books, topics, role relevance, and personal reading progress in one guided knowledge library.",
+    "keywords": ["books", "knowledge", "library", "learning", "reading"],
+    "priority": 0,
+    "providers": [
+        "Modules\\BookIntelligence\\Providers\\BookIntelligenceServiceProvider"
+    ],
+    "files": []
+}
