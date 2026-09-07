@@ -28,10 +28,17 @@
         --menu-link-color: {{ $menuLinkColor }};
         --menu-hover-color: {{ $menuHoverColor }};
     }
-    .site-nav-container {
-        display: flex !important;
-        align-items: center !important;
-        gap: var(--menu-gap, 28px) !important;
+    @media (min-width: 1024px) {
+        .site-nav-container {
+            display: flex !important;
+            align-items: center !important;
+            gap: var(--menu-gap, 28px) !important;
+        }
+    }
+    @media (max-width: 1023.98px) {
+        .site-nav-container {
+            display: none !important;
+        }
     }
     .site-nav-item {
         display: inline-flex !important;

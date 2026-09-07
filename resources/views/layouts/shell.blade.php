@@ -95,10 +95,17 @@
             --menu-link-color: {{ \App\Models\SiteSetting::value('menu_link_color', '#334155') }};
             --menu-hover-color: {{ \App\Models\SiteSetting::value('menu_hover_color', '#4f46e5') }};
         }
-        .site-nav-container {
-            display: flex !important;
-            align-items: center !important;
-            gap: var(--menu-gap, 28px) !important;
+        @media (min-width: 1024px) {
+            .site-nav-container {
+                display: flex !important;
+                align-items: center !important;
+                gap: var(--menu-gap, 28px) !important;
+            }
+        }
+        @media (max-width: 1023.98px) {
+            .site-nav-container {
+                display: none !important;
+            }
         }
         .site-nav-item {
             display: inline-flex !important;
