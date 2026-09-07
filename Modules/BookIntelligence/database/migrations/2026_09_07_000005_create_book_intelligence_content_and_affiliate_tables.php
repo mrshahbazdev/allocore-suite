@@ -8,6 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::dropIfExists('bookintelligence_repurposed_bundles');
+        Schema::dropIfExists('bookintelligence_affiliate_clicks');
+        Schema::dropIfExists('bookintelligence_generated_blogs');
+        Schema::dropIfExists('bookintelligence_content_opportunities');
+
         // Module 6: Content & SEO Opportunities
         Schema::create('bookintelligence_content_opportunities', function (Blueprint $table): void {
             $table->id();
