@@ -14,8 +14,8 @@
 
                 window.tinymce.init({
                     selector: 'textarea.tinymce-editor',
-                    plugins: 'link lists code',
-                    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link code',
+                    plugins: 'link lists code image table',
+                    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table code',
                     menubar: false,
                     height: 320,
                     branding: false,

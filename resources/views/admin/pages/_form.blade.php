@@ -69,8 +69,13 @@
                             <input name="translations[{{ $locale }}][og_title]" type="text" value="{{ old('translations.'.$locale.'.og_title', $translation?->og_title) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">{{ __('cms.og_image') }}</label>
-                            <input name="translations[{{ $locale }}][og_image]" type="text" value="{{ old('translations.'.$locale.'.og_image', $translation?->og_image) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-sm font-medium text-slate-700">{{ __('cms.og_image') }}</label>
+                                <a href="{{ route('admin.media.index') }}" target="_blank" class="text-xs font-semibold text-indigo-600 hover:underline">
+                                    {{ __('Browse Media ↗') }}
+                                </a>
+                            </div>
+                            <input name="translations[{{ $locale }}][og_image]" type="text" value="{{ old('translations.'.$locale.'.og_image', $translation?->og_image) }}" placeholder="https://..." class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">{{ __('cms.og_description') }}</label>

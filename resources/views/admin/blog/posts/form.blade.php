@@ -42,12 +42,20 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-slate-700">{{ __('Body') }}</label>
-            <textarea name="body" rows="10" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" required>{{ old('body', $post->body) }}</textarea>
+            <div class="mt-1">
+                <x-tinymce-editor name="body" :value="old('body', $post->body)" />
+            </div>
         </div>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-700">{{ __('Featured image URL') }}</label>
-            <input type="url" name="featured_image" value="{{ old('featured_image', $post->featured_image) }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <div class="flex items-center justify-between">
+                <label class="block text-sm font-medium text-slate-700">{{ __('Featured image URL') }}</label>
+                <a href="{{ route('admin.media.index') }}" target="_blank" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    {{ __('Upload / Browse Media Library ↗') }}
+                </a>
+            </div>
+            <input type="url" name="featured_image" value="{{ old('featured_image', $post->featured_image) }}" placeholder="https://..." class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
         <div class="mb-4">
@@ -85,8 +93,13 @@
                 <textarea name="og_description" rows="2" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('og_description', $post->og_description) }}</textarea>
             </div>
             <div class="mb-3">
-                <label class="block text-sm font-medium text-slate-700">{{ __('OG image') }}</label>
-                <input type="url" name="og_image" value="{{ old('og_image', $post->og_image) }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <div class="flex items-center justify-between">
+                    <label class="block text-sm font-medium text-slate-700">{{ __('OG image') }}</label>
+                    <a href="{{ route('admin.media.index') }}" target="_blank" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
+                        {{ __('Browse Media ↗') }}
+                    </a>
+                </div>
+                <input type="url" name="og_image" value="{{ old('og_image', $post->og_image) }}" placeholder="https://..." class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
         </div>
 
