@@ -15,6 +15,39 @@ class AccountingCategory extends Model
 
     protected $guarded = [];
 
+    public function getEffectiveCostTypeAttribute(): string
+    {
+        if (!empty($this->cost_type)) {
+            return $this->cost_type;
+        }
+
+        $name = strtolower((string) $this->name);
+        $fixedKeywords = [
+            'rent', 'miete', 'software', 'saas', 'license', 'lizenz', 'subscription', 'abo',
+            'insurance', 'versich', 'salary', 'salaries', 'gehalt', 'lohn', 'hosting', 'server',
+            'internet', 'phone', 'telefon', 'strom', 'electricity', 'tax advisor', 'steuerberater',
+            'fixed', 'fix'
+        ];
+
+        foreach ($fixedKeywords as $keyword) {
+            if (str_contains($name, $keyword)) {
+                return 'fixed';
+            }
+        }
+
+        return 'variable';
+    }
+
+    public function isFixedCost(): bool
+    {
+        return $this->effective_cost_type === 'fixed';
+    }
+
+    public function isVariableCost(): bool
+    {
+        return $this->effective_cost_type === 'variable';
+    }
+
     public function business(): BelongsTo
     {
         return $this->profile();

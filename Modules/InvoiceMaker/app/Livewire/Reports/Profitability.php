@@ -2,6 +2,7 @@
 
 namespace Modules\InvoiceMaker\Livewire\Reports;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -20,20 +21,51 @@ class Profitability extends Component
 
     public $search = '';
 
+    public $period = '1M';
+
     public $startDate;
 
     public $endDate;
 
     public function mount()
     {
-        $this->startDate = now()->startOfMonth()->format('Y-m-d');
-        $this->endDate = now()->endOfMonth()->format('Y-m-d');
+        $this->setPeriod('1M');
+    }
+
+    public function setPeriod(string $period)
+    {
+        $this->period = $period;
+
+        switch ($period) {
+            case '1M':
+                $this->startDate = now()->startOfMonth()->format('Y-m-d');
+                $this->endDate = now()->endOfMonth()->format('Y-m-d');
+                break;
+            case '3M':
+                $this->startDate = now()->subMonths(2)->startOfMonth()->format('Y-m-d');
+                $this->endDate = now()->endOfMonth()->format('Y-m-d');
+                break;
+            case '6M':
+                $this->startDate = now()->subMonths(5)->startOfMonth()->format('Y-m-d');
+                $this->endDate = now()->endOfMonth()->format('Y-m-d');
+                break;
+            case '12M':
+                $this->startDate = now()->subMonths(11)->startOfMonth()->format('Y-m-d');
+                $this->endDate = now()->endOfMonth()->format('Y-m-d');
+                break;
+            case 'custom':
+            default:
+                break;
+        }
+
+        $this->resetPage();
     }
 
     public function updated($property)
     {
         if (in_array($property, ['startDate', 'endDate'])) {
-            $this->resetPage(); // If pagination is used later
+            $this->period = 'custom';
+            $this->resetPage();
         }
     }
 
@@ -41,14 +73,12 @@ class Profitability extends Component
     {
         $business = app(InvoiceMakerContext::class)->profile();
 
-        // 1. Overall Revenue (Accrual/Invoiced Basis)
-        // Sum all invoices issued in the date range (excluding drafts and cancelled)
+        // 1. Overall Revenue (Accrual/Invoiced Basis + Cash Book Manual Income)
         $invoicedRevenue = Invoice::where('team_id', $business->team_id)
             ->whereBetween('invoice_date', [$this->startDate, $this->endDate])
             ->whereNotIn('status', ['draft', 'cancelled'])
             ->sum('grand_total');
 
-        // Sum manual income from Cash Book (e.g. income not linked to an invoice - keep as cash basis)
         $manualIncome = CashBookEntry::where('team_id', $business->team_id)
             ->where('type', 'income')
             ->whereNull('invoice_id')
@@ -57,13 +87,42 @@ class Profitability extends Component
 
         $totalRevenue = (float) $invoicedRevenue + (float) $manualIncome;
 
-        $totalExpenses = Expense::where('team_id', $business->team_id)
+        // 2. Expenses & Cost Classification (Fixed vs Variable)
+        $expenses = Expense::where('team_id', $business->team_id)
             ->whereBetween('date', [$this->startDate, $this->endDate])
-            ->sum('amount');
+            ->with('category')
+            ->get();
 
-        $netIncome = $totalRevenue - $totalExpenses;
+        $fixedExpensesTotal = 0.0;
+        $variableExpensesTotal = 0.0;
+        $costCategories = [];
 
-        // 2. Customer Profitability (Invoices vs Linked Expenses)
+        foreach ($expenses as $expense) {
+            $amount = (float) $expense->amount;
+            $isFixed = $expense->isFixedCost();
+
+            if ($isFixed) {
+                $fixedExpensesTotal += $amount;
+            } else {
+                $variableExpensesTotal += $amount;
+            }
+
+            $catName = $expense->category?->name ?? ($expense->category ?? __('Other / General'));
+            if (!isset($costCategories[$catName])) {
+                $costCategories[$catName] = [
+                    'name' => $catName,
+                    'total' => 0.0,
+                    'is_fixed' => $isFixed,
+                    'count' => 0,
+                ];
+            }
+            $costCategories[$catName]['total'] += $amount;
+            $costCategories[$catName]['count']++;
+        }
+
+        uasort($costCategories, fn ($a, $b) => $b['total'] <=> $a['total']);
+
+        // 3. Customer Profitability (Invoices vs Linked Expenses)
         $clientProfitability = Client::where('team_id', $business->team_id)
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
@@ -79,31 +138,27 @@ class Profitability extends Component
             ])
             ->get()
             ->map(function ($client) {
-                // Sum total invoiced amount for this client in the range
-                $sales = $client->invoices->sum('grand_total');
-
-                // Sum ALL direct expenses linked to this client in the date range
-                $directCosts = Expense::where('client_id', $client->id)
+                $sales = (float) $client->invoices->sum('grand_total');
+                $directCosts = (float) Expense::where('client_id', $client->id)
                     ->whereBetween('date', [$this->startDate, $this->endDate])
                     ->sum('amount');
 
                 return [
                     'id' => $client->id,
                     'name' => $client->company_name ?? $client->name,
-                    'sales' => (float) $sales,
-                    'costs' => (float) $directCosts,
-                    'difference' => (float) ($sales - $directCosts),
+                    'sales' => $sales,
+                    'costs' => $directCosts,
+                    'difference' => $sales - $directCosts,
                     'margin' => $sales > 0 ? (($sales - $directCosts) / $sales) * 100 : ($directCosts > 0 ? -100 : 0),
                 ];
             })
             ->filter(fn ($item) => $item['sales'] > 0 || $item['costs'] > 0)
             ->sortByDesc('difference');
 
-        // 3. Product Profitability (Price vs Purchase Price) - Comprehensive List
+        // 4. Product Profitability (Price vs Purchase Price COGS)
         $productProfitability = Product::where('team_id', $business->team_id)
             ->get()
             ->map(function ($product) {
-                // Sum sales for this product in range
                 $salesData = DB::table('invoicemaker_invoice_items')
                     ->join('invoicemaker_invoices', 'invoicemaker_invoice_items.invoice_id', '=', 'invoicemaker_invoices.id')
                     ->where('invoicemaker_invoice_items.product_id', $product->id)
@@ -115,8 +170,7 @@ class Profitability extends Component
                     )
                     ->first();
 
-                // Sum direct expenses linked to this product (e.g. specific stock purchases)
-                $productDirectExpenses = Expense::where('product_id', $product->id)
+                $productDirectExpenses = (float) Expense::where('product_id', $product->id)
                     ->whereBetween('date', [$this->startDate, $this->endDate])
                     ->sum('amount');
 
@@ -131,14 +185,14 @@ class Profitability extends Component
                     'sold' => $totalSold,
                     'sales' => $totalRevenue,
                     'costs' => $totalCosts,
-                    'difference' => (float) ($totalRevenue - $totalCosts),
+                    'difference' => $totalRevenue - $totalCosts,
                     'margin' => $totalRevenue > 0 ? (($totalRevenue - $totalCosts) / $totalRevenue) * 100 : ($totalCosts > 0 ? -100 : 0),
                 ];
             })
             ->filter(fn ($item) => $item['sales'] > 0 || $item['costs'] > 0);
 
-        // Capture revenue from items with NO product_id (Uncategorized/One-off items)
-        $uncategorizedSales = DB::table('invoicemaker_invoice_items')
+        // Capture one-off / uncategorized line item sales
+        $uncategorizedSales = (float) DB::table('invoicemaker_invoice_items')
             ->join('invoicemaker_invoices', 'invoicemaker_invoice_items.invoice_id', '=', 'invoicemaker_invoices.id')
             ->where('invoicemaker_invoices.team_id', $business->team_id)
             ->whereNull('invoicemaker_invoice_items.product_id')
@@ -151,23 +205,77 @@ class Profitability extends Component
                 'id' => null,
                 'name' => __('Other / Custom Line Items'),
                 'sold' => 0,
-                'sales' => (float) $uncategorizedSales,
+                'sales' => $uncategorizedSales,
                 'costs' => 0,
-                'difference' => (float) $uncategorizedSales,
+                'difference' => $uncategorizedSales,
                 'margin' => 100,
             ]);
         }
 
         $productProfitability = $productProfitability->sortByDesc('difference');
 
-        // Top Performers for Summary Overview
+        // Total Cost Aggregation
+        $totalFixedCosts = $fixedExpensesTotal;
+        $totalVariableCosts = $variableExpensesTotal;
+        $totalOperationalCosts = $totalFixedCosts + $totalVariableCosts;
+        $netIncome = $totalRevenue - $totalOperationalCosts;
+
+        // 5. Monthly Averages & Absolute Minimum Revenue Benchmark
+        $startDateObj = Carbon::parse($this->startDate);
+        $endDateObj = Carbon::parse($this->endDate);
+        $periodDays = max(1, $startDateObj->diffInDays($endDateObj) + 1);
+        $periodMonths = max(0.5, round($periodDays / 30.4375, 2));
+
+        $monthlyAvgFixed = $totalFixedCosts / $periodMonths;
+        $monthlyAvgVariable = $totalVariableCosts / $periodMonths;
+        $monthlyAvgTotalCosts = $totalOperationalCosts / $periodMonths;
+        $monthlyAvgRevenue = $totalRevenue / $periodMonths;
+
+        // Absolute Minimum Monthly Revenue is the break-even run rate
+        $absoluteMinMonthlyRevenue = $monthlyAvgTotalCosts;
+
+        // 6. Real-Time Break-Even & Trend Gap Analysis KPI
+        $revenueGap = $totalRevenue - $totalOperationalCosts;
+        $isBreakEvenMet = $revenueGap >= 0;
+        $costCoveragePercent = $totalOperationalCosts > 0 ? round(($totalRevenue / $totalOperationalCosts) * 100, 1) : ($totalRevenue > 0 ? 100.0 : 0.0);
+
+        // Trend Velocity / Run-Rate Projection
+        $today = now();
+        if ($today->between($startDateObj, $endDateObj)) {
+            $daysElapsed = max(1, $startDateObj->diffInDays($today) + 1);
+            $projectedRevenue = ($totalRevenue / $daysElapsed) * $periodDays;
+            $projectedCoverage = $totalOperationalCosts > 0 ? round(($projectedRevenue / $totalOperationalCosts) * 100, 1) : 100.0;
+            $projectedGap = $projectedRevenue - $totalOperationalCosts;
+        } else {
+            $projectedRevenue = $totalRevenue;
+            $projectedCoverage = $costCoveragePercent;
+            $projectedGap = $revenueGap;
+        }
+
+        // Top Performers
         $topClients = $clientProfitability->take(3);
         $topProducts = $productProfitability->take(3);
 
         return view('invoicemaker::livewire.reports.profitability', [
             'totalRevenue' => $totalRevenue,
-            'totalExpenses' => $totalExpenses,
+            'totalExpenses' => $totalOperationalCosts,
+            'totalFixedCosts' => $totalFixedCosts,
+            'totalVariableCosts' => $totalVariableCosts,
             'netIncome' => $netIncome,
+            'periodMonths' => $periodMonths,
+            'periodDays' => $periodDays,
+            'monthlyAvgFixed' => $monthlyAvgFixed,
+            'monthlyAvgVariable' => $monthlyAvgVariable,
+            'monthlyAvgTotalCosts' => $monthlyAvgTotalCosts,
+            'monthlyAvgRevenue' => $monthlyAvgRevenue,
+            'absoluteMinMonthlyRevenue' => $absoluteMinMonthlyRevenue,
+            'revenueGap' => $revenueGap,
+            'isBreakEvenMet' => $isBreakEvenMet,
+            'costCoveragePercent' => $costCoveragePercent,
+            'projectedRevenue' => $projectedRevenue,
+            'projectedCoverage' => $projectedCoverage,
+            'projectedGap' => $projectedGap,
+            'costCategories' => $costCategories,
             'clientProfitability' => $clientProfitability,
             'productProfitability' => $productProfitability,
             'topClients' => $topClients,

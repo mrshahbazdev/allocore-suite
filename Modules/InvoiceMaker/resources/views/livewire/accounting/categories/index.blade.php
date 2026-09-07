@@ -25,6 +25,7 @@
  <th class="text-left py-3 px-4 text-sm font-semibold text-txmain">{{ __('Name') }}</th>
  <th class="text-left py-3 px-4 text-sm font-semibold text-txmain">{{ __('Account') }}</th>
  <th class="text-left py-3 px-4 text-sm font-semibold text-txmain">{{ __('Type') }}</th>
+ <th class="text-left py-3 px-4 text-sm font-semibold text-txmain">{{ __('Cost Classification') }}</th>
  <th class="text-left py-3 px-4 text-sm font-semibold text-txmain">{{ __('Posting Rule') }}</th>
  <th class="text-right py-3 px-4 text-sm font-semibold text-txmain">{{ __('Actions') }}</th>
  </tr>
@@ -39,6 +40,21 @@
  class="px-2 py-1 rounded-full text-xs font-semibold {{ $category->type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
  {{ ucfirst(__($category->type)) }}
  </span>
+ </td>
+ <td class="py-3 px-4">
+ @if($category->type === 'expense')
+ @if($category->effective_cost_type === 'fixed')
+ <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+ 🔒 {{ __('Fixed Cost') }}
+ </span>
+ @else
+ <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+ 📊 {{ __('Variable Cost') }}
+ </span>
+ @endif
+ @else
+ <span class="text-xs text-gray-400">-</span>
+ @endif
  </td>
  <td class="py-3 px-4 text-txmain text-sm truncate max-w-xs" title="{{ $category->posting_rule }}">
  {{ $category->posting_rule ?: __('No rule defined') }}
@@ -59,7 +75,7 @@
  </tr>
  @empty
  <tr>
- <td colspan="4" class="py-8 text-center text-gray-500 italic">
+ <td colspan="6" class="py-8 text-center text-gray-500 italic">
  {{ __('No categories found. Click "Add Category" to get started.') }}
  </td>
  </tr>
@@ -101,13 +117,33 @@
  </div>
  <div>
  <label class="block text-sm font-medium text-txmain mb-1">{{ __('Type') }}</label>
- <select wire:model="type"
+ <select wire:model.live="type"
  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
  <option value="expense">{{ __('Expense (Ausgabe)') }}</option>
  <option value="income">{{ __('Income (Einnahme)') }}</option>
  </select>
  @error('type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
  </div>
+ @if($type === 'expense')
+ <div>
+ <label class="block text-sm font-medium text-txmain mb-1">{{ __('Default Cost Classification') }}</label>
+ <div class="flex items-center gap-3 pt-1">
+ <label class="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+ <input type="radio" wire:model="cost_type" value="fixed" class="text-brand-600 focus:ring-brand-500">
+ <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800">
+ 🔒 {{ __('Fixed Cost') }}
+ </span>
+ </label>
+ <label class="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+ <input type="radio" wire:model="cost_type" value="variable" class="text-brand-600 focus:ring-brand-500">
+ <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-800">
+ 📊 {{ __('Variable Cost') }}
+ </span>
+ </label>
+ </div>
+ @error('cost_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+ </div>
+ @endif
  <div>
  <label
  class="block text-sm font-medium text-txmain mb-1">{{ __('Posting Rule (Buchungsregel)') }}</label>
