@@ -20,6 +20,13 @@ class AppearanceController extends Controller
         'public_nav_menu',
         'social_links',
         'dashboard_template',
+        'menu_gap',
+        'menu_padding_x',
+        'menu_padding_y',
+        'menu_font_size',
+        'menu_font_weight',
+        'menu_link_color',
+        'menu_hover_color',
     ];
 
     public function index()
@@ -79,6 +86,13 @@ class AppearanceController extends Controller
             'public_nav_menu' => [],
             'social_links' => [],
             'dashboard_template' => 'default',
+            'menu_gap' => '28',
+            'menu_padding_x' => '14',
+            'menu_padding_y' => '8',
+            'menu_font_size' => '15',
+            'menu_font_weight' => '600',
+            'menu_link_color' => '#334155',
+            'menu_hover_color' => '#4f46e5',
             default => '',
         };
     }

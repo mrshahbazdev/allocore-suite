@@ -18,45 +18,6 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <style>
-            /* Site Navigation Menu Styles */
-            .site-nav-container {
-                display: flex !important;
-                align-items: center !important;
-                gap: 1.75rem !important;
-            }
-            .site-nav-item {
-                display: inline-flex !important;
-                align-items: center !important;
-                padding: 0.5rem 0.875rem !important;
-                border-radius: 0.5rem !important;
-                font-size: 0.9375rem !important;
-                font-weight: 600 !important;
-                color: #334155 !important;
-                transition: all 0.15s ease-in-out !important;
-                text-decoration: none !important;
-                white-space: nowrap !important;
-            }
-            .site-nav-item:hover {
-                color: #4f46e5 !important;
-                background-color: #f1f5f9 !important;
-            }
-            .site-nav-dropdown-item {
-                display: flex !important;
-                align-items: center !important;
-                padding: 0.5rem 0.75rem !important;
-                border-radius: 0.5rem !important;
-                font-size: 0.875rem !important;
-                font-weight: 500 !important;
-                color: #334155 !important;
-                transition: all 0.15s ease-in-out !important;
-                text-decoration: none !important;
-            }
-            .site-nav-dropdown-item:hover {
-                color: #4f46e5 !important;
-                background-color: #eef2ff !important;
-            }
-        </style>
     </head>
     <body class="h-full font-sans text-slate-600 antialiased">
         @php
@@ -109,8 +70,10 @@
                                     <a href="{{ route('dashboard') }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ __('landing.hero.open_dashboard') }}</a>
                                     <a href="{{ route('tool-analyzer.index') }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ __('Analyze my tools') }}</a>
                                 @else
-                                    @php($primary = \App\Models\SiteSetting::value('hero_cta_primary_link') ?: route('register'))
-                                    @php($secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link') ?: route('login'))
+                                    @php
+                                        $primary = \App\Models\SiteSetting::value('hero_cta_primary_link') ?: route('register');
+                                        $secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link') ?: route('login');
+                                    @endphp
                                     <a href="{{ $primary }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ \App\Models\SiteSetting::value('hero_cta_primary_label') ?: __('landing.hero.cta_primary') }}</a>
                                     <a href="{{ $secondary }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ \App\Models\SiteSetting::value('hero_cta_secondary_label') ?: __('landing.hero.cta_secondary') }}</a>
                                 @endauth
@@ -294,7 +257,9 @@
                         @else
                             <div class="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 @forelse ($modules as $module)
-                                    @php($benefit = $moduleBenefits[$module->key] ?? null)
+                                    @php
+                                        $benefit = $moduleBenefits[$module->key] ?? null;
+                                    @endphp
                                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
                                         <div class="flex items-start justify-between gap-4">
                                             <div>
@@ -360,8 +325,10 @@
                             @auth
                                 <a href="{{ route('dashboard') }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ __('landing.nav.dashboard') }}</a>
                             @else
-                                @php($primary = \App\Models\SiteSetting::value('cta_primary_link') ?: route('register'))
-                                @php($secondary = \App\Models\SiteSetting::value('cta_secondary_link') ?: route('billing.plans'))
+                                @php
+                                    $primary = \App\Models\SiteSetting::value('cta_primary_link') ?: route('register');
+                                    $secondary = \App\Models\SiteSetting::value('cta_secondary_link') ?: route('billing.plans');
+                                @endphp
                                 <a href="{{ $primary }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ \App\Models\SiteSetting::value('cta_primary_label') ?: __('landing.cta.primary') }}</a>
                                 <a href="{{ $secondary }}" class="rounded-lg border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white hover:bg-slate-800">{{ \App\Models\SiteSetting::value('cta_secondary_label') ?: __('landing.cta.secondary') }}</a>
                             @endauth
