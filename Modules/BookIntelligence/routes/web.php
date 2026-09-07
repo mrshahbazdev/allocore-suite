@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\BookIntelligence\Http\Controllers\BookAnalysisController;
 use Modules\BookIntelligence\Http\Controllers\BookController;
 use Modules\BookIntelligence\Http\Controllers\DashboardController;
 use Modules\BookIntelligence\Http\Controllers\GuideController;
@@ -20,6 +21,10 @@ Route::middleware(['auth', 'verified', 'module:book-intelligence', EnsureCurrent
             ->names('books');
         Route::put('/library/{book}/reading-progress', [ReadingProgressController::class, 'update'])
             ->name('books.reading-progress');
+        Route::post('/library/{book}/analysis', [BookAnalysisController::class, 'store'])
+            ->name('books.analysis.store');
+        Route::get('/library/{book}/analysis/status', [BookAnalysisController::class, 'status'])
+            ->name('books.analysis.status');
 
         Route::get('/setup', [LibrarySetupController::class, 'index'])->name('setup.index');
         Route::post('/setup/authors', [LibrarySetupController::class, 'storeAuthor'])->name('setup.authors.store');

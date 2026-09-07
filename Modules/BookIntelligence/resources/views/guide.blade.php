@@ -12,10 +12,11 @@
             <a href="{{ route('bookintelligence.books.create') }}" class="mt-6 inline-flex rounded-xl bg-[#ff9200] px-5 py-3 text-sm font-semibold text-white hover:bg-orange-600">{{ __('Add a book now') }}</a>
         </section>
 
-        <section class="grid gap-5 md:grid-cols-3">
+        <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             @foreach ([
                 [__('Library Setup'), __('Create main topics, subtopics, authors, and publishers that can be reused across all books.'), route('bookintelligence.setup.index')],
                 [__('Book Library'), __('Store complete book metadata and classify each book by knowledge area, difficulty, and job role.'), route('bookintelligence.books.index')],
+                [__('AI Book Intelligence'), __('Open a book to generate summaries, takeaways, frameworks, and practical recommendations.'), route('bookintelligence.books.index')],
                 [__('Reading Progress'), __('Each user builds a personal reading plan while the shared book catalog stays consistent for the team.'), route('bookintelligence.books.index', ['reading_status' => 'reading'])],
             ] as [$heading, $copy, $link])
                 <a href="{{ $link }}" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-orange-200 hover:shadow-md">
@@ -35,6 +36,7 @@
                     [__('Capture the identity'), __('Add the title, author, publisher, ISBN, language, year, and page count.')],
                     [__('Explain the value'), __('Write a short description focused on the business problems and learning outcomes the book supports.')],
                     [__('Classify the knowledge'), __('Choose a main topic, select subtopics, set difficulty, and list the job roles that benefit most.')],
+                    [__('Generate book intelligence'), __('Add trusted source notes when available, then let Allocore create summaries, lessons, frameworks, and next actions.')],
                     [__('Connect access'), __('Optionally add a cover image and affiliate purchase link so employees can quickly find the book.')],
                     [__('Start learning'), __('Add the book to your personal reading plan and keep progress and notes updated.')],
                 ] as [$heading, $copy])
@@ -51,7 +53,7 @@
 
         <section class="rounded-2xl border border-orange-200 bg-orange-50 p-6 sm:p-8">
             <h2 class="text-xl font-bold text-orange-900">{{ __('What comes next?') }}</h2>
-            <p class="mt-2 max-w-3xl text-sm leading-6 text-orange-800">{{ __('This structured library is the foundation for future AI summaries, extracted frameworks, question mapping, knowledge-gap detection, and book recommendations. Better metadata now means better AI results later.') }}</p>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-orange-800">{{ __('Book intelligence now turns saved sources into usable learning assets. The next phases will connect this intelligence to question mapping, knowledge-gap detection, and smarter book recommendations.') }}</p>
         </section>
     </div>
 @endsection

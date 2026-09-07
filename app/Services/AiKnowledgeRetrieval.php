@@ -154,10 +154,11 @@ class AiKnowledgeRetrieval
             return collect();
         }
 
-        return Book::with(['author', 'publisher', 'mainTopic', 'subtopics'])
+        return Book::with(['author', 'publisher', 'mainTopic', 'subtopics', 'analysis'])
             ->where('status', 'active')
             ->get()
             ->map(function (Book $book) use ($words) {
+                $analysis = $book->analysis?->isCompleted() ? $book->analysis : null;
                 $text = implode(' ', [
                     $book->title,
                     $book->description,
@@ -166,6 +167,11 @@ class AiKnowledgeRetrieval
                     $book->mainTopic?->name,
                     $book->subtopics->pluck('name')->implode(' '),
                     implode(' ', $book->relevant_roles ?? []),
+                    $analysis?->short_summary,
+                    $analysis?->long_summary,
+                    json_encode($analysis?->key_takeaways ?? [], JSON_UNESCAPED_UNICODE),
+                    json_encode($analysis?->frameworks ?? [], JSON_UNESCAPED_UNICODE),
+                    json_encode($analysis?->actionable_recommendations ?? [], JSON_UNESCAPED_UNICODE),
                 ]);
                 $score = $this->scoreText($text, $words, 3);
 
@@ -178,7 +184,11 @@ class AiKnowledgeRetrieval
                     'source' => __('Knowledge Library'),
                     'url' => route('bookintelligence.books.show', $book),
                     'excerpt' => Str::limit(
-                        strip_tags($book->description ?: __('A book in the organizational knowledge library.')),
+                        strip_tags(
+                            $analysis?->short_summary
+                                ?: $book->description
+                                ?: __('A book in the organizational knowledge library.')
+                        ),
                         200,
                     ),
                     'score' => $score,

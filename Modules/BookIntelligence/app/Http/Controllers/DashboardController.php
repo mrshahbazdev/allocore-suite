@@ -5,6 +5,7 @@ namespace Modules\BookIntelligence\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\BookIntelligence\Models\Author;
 use Modules\BookIntelligence\Models\Book;
+use Modules\BookIntelligence\Models\BookAnalysis;
 use Modules\BookIntelligence\Models\ReadingProgress;
 use Modules\BookIntelligence\Models\Topic;
 
@@ -13,10 +14,14 @@ class DashboardController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $books = Book::with(['author', 'mainTopic', 'currentUserProgress'])
+        $books = Book::with(['author', 'mainTopic', 'currentUserProgress', 'analysis'])
             ->latest()
             ->limit(6)
             ->get();
+        $bookToAnalyze = Book::whereDoesntHave(
+            'analysis',
+            fn ($analysis) => $analysis->where('status', BookAnalysis::STATUS_COMPLETED),
+        )->oldest()->first();
 
         $readingCounts = ReadingProgress::where('user_id', $userId)
             ->selectRaw('status, count(*) as total')
@@ -28,6 +33,7 @@ class DashboardController extends Controller
             'authors' => Author::count(),
             'topics' => Topic::count(),
             'read' => (int) $readingCounts->get('read', 0),
+            'analyzed' => BookAnalysis::where('status', BookAnalysis::STATUS_COMPLETED)->count(),
         ];
 
         $setup = [
@@ -44,6 +50,15 @@ class DashboardController extends Controller
                 'complete' => $stats['books'] > 0,
                 'route' => route('bookintelligence.books.create'),
                 'action' => __('Add a book'),
+            ],
+            [
+                'label' => __('Generate your first book intelligence'),
+                'description' => __('Turn a saved book into summaries, key lessons, frameworks, and next actions.'),
+                'complete' => $stats['analyzed'] > 0,
+                'route' => $bookToAnalyze
+                    ? route('bookintelligence.books.show', $bookToAnalyze)
+                    : route('bookintelligence.books.index'),
+                'action' => __('Choose a book to analyze'),
             ],
             [
                 'label' => __('Start a reading plan'),
