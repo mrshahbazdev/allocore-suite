@@ -3,72 +3,77 @@
 namespace Modules\BookIntelligence\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Modules\BookIntelligence\Models\AffiliateClick;
+use Modules\BookIntelligence\Models\AssessmentSubmission;
 use Modules\BookIntelligence\Models\Author;
 use Modules\BookIntelligence\Models\Book;
 use Modules\BookIntelligence\Models\BookAnalysis;
+use Modules\BookIntelligence\Models\ChallengeSubmission;
+use Modules\BookIntelligence\Models\CompetencyRole;
+use Modules\BookIntelligence\Models\ContentOpportunity;
+use Modules\BookIntelligence\Models\GeneratedBlog;
+use Modules\BookIntelligence\Models\KnowledgeGap;
+use Modules\BookIntelligence\Models\LearningPath;
+use Modules\BookIntelligence\Models\QuestionMapping;
 use Modules\BookIntelligence\Models\ReadingProgress;
+use Modules\BookIntelligence\Models\SearchQuery;
 use Modules\BookIntelligence\Models\Topic;
+use Modules\BookIntelligence\Models\UserExpertiseProfile;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $userId = auth()->id();
-        $books = Book::with(['author', 'mainTopic', 'currentUserProgress', 'analysis'])
-            ->latest()
-            ->limit(6)
-            ->get();
-        $bookToAnalyze = Book::whereDoesntHave(
-            'analysis',
-            fn ($analysis) => $analysis->where('status', BookAnalysis::STATUS_COMPLETED),
-        )->oldest()->first();
 
-        $readingCounts = ReadingProgress::where('user_id', $userId)
-            ->selectRaw('status, count(*) as total')
-            ->groupBy('status')
-            ->pluck('total', 'status');
+        // 1. Knowledge Metrics
+        $totalBooks = Book::count();
+        $totalAnalyzed = BookAnalysis::where('status', BookAnalysis::STATUS_COMPLETED)->count();
+        $totalFaqs = QuestionMapping::count();
+        $openGaps = KnowledgeGap::whereIn('status', ['open', 'reviewing'])->count();
+        $recentSearches = SearchQuery::latest()->take(5)->get();
+
+        // 2. Employee Learning & Expertise Metrics
+        $activeLearningPaths = LearningPath::where('status', 'active')->count();
+        $assessmentsPassed = AssessmentSubmission::where('passed', true)->count();
+        $challengesCompleted = ChallengeSubmission::where('status', 'graded')->count();
+        $teamProfiles = UserExpertiseProfile::with(['user', 'currentRole', 'targetRole'])->orderByDesc('points')->take(5)->get();
+        $totalRoles = CompetencyRole::count();
+
+        // 3. Content & SEO Metrics
+        $seoOpportunities = ContentOpportunity::count();
+        $generatedBlogs = GeneratedBlog::count();
+        $publishedPosts = GeneratedBlog::where('status', 'published')->count();
+
+        // 4. Affiliate Monetization Metrics
+        $totalAffiliateClicks = AffiliateClick::count();
+        $totalAffiliateRevenue = (float) AffiliateClick::sum('commission_amount');
+        $conversionRate = $totalAffiliateClicks > 0
+            ? round((AffiliateClick::where('is_converted', true)->count() / $totalAffiliateClicks) * 100, 1)
+            : 0.0;
+
+        $recentBooks = Book::with(['author', 'mainTopic', 'analysis'])
+            ->latest()
+            ->take(4)
+            ->get();
 
         $stats = [
-            'books' => Book::count(),
-            'authors' => Author::count(),
-            'topics' => Topic::count(),
-            'read' => (int) $readingCounts->get('read', 0),
-            'analyzed' => BookAnalysis::where('status', BookAnalysis::STATUS_COMPLETED)->count(),
+            'books' => $totalBooks,
+            'analyzed' => $totalAnalyzed,
+            'faqs' => $totalFaqs,
+            'open_gaps' => $openGaps,
+            'learning_paths' => $activeLearningPaths,
+            'assessments_passed' => $assessmentsPassed,
+            'challenges_completed' => $challengesCompleted,
+            'roles' => $totalRoles,
+            'seo_opportunities' => $seoOpportunities,
+            'generated_blogs' => $generatedBlogs,
+            'published_blogs' => $publishedPosts,
+            'affiliate_clicks' => $totalAffiliateClicks,
+            'affiliate_revenue' => $totalAffiliateRevenue,
+            'conversion_rate' => $conversionRate,
         ];
 
-        $setup = [
-            [
-                'label' => __('Create your library structure'),
-                'description' => __('Add authors, publishers, and topics so every book stays organized.'),
-                'complete' => $stats['authors'] > 0 && $stats['topics'] > 0,
-                'route' => route('bookintelligence.setup.index'),
-                'action' => __('Open library setup'),
-            ],
-            [
-                'label' => __('Add your first book'),
-                'description' => __('Capture metadata, difficulty, job-role relevance, and affiliate details.'),
-                'complete' => $stats['books'] > 0,
-                'route' => route('bookintelligence.books.create'),
-                'action' => __('Add a book'),
-            ],
-            [
-                'label' => __('Generate your first book intelligence'),
-                'description' => __('Turn a saved book into summaries, key lessons, frameworks, and next actions.'),
-                'complete' => $stats['analyzed'] > 0,
-                'route' => $bookToAnalyze
-                    ? route('bookintelligence.books.show', $bookToAnalyze)
-                    : route('bookintelligence.books.index'),
-                'action' => __('Choose a book to analyze'),
-            ],
-            [
-                'label' => __('Start a reading plan'),
-                'description' => __('Choose Planned, Currently Reading, or Read and track progress.'),
-                'complete' => $readingCounts->sum() > 0,
-                'route' => route('bookintelligence.books.index'),
-                'action' => __('Choose a book'),
-            ],
-        ];
-
-        return view('bookintelligence::dashboard.index', compact('books', 'readingCounts', 'setup', 'stats'));
+        return view('bookintelligence::dashboard.index', compact('stats', 'recentBooks', 'recentSearches', 'teamProfiles'));
     }
 }
