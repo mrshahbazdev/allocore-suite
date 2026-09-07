@@ -19,15 +19,15 @@
         </a>
 
         {{-- Desktop Navigation with Submenus --}}
-        <div class="hidden items-center gap-7 lg:flex">
+        <div class="site-nav-container hidden items-center lg:flex" style="display: flex; align-items: center; gap: 1.75rem;">
             @foreach ($menu as $item)
                 @if (empty($item['children']))
-                    <a href="{{ $item['url'] ?? '#' }}" class="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition">
+                    <a href="{{ $item['url'] ?? '#' }}" class="site-nav-item text-sm font-semibold text-slate-700 hover:text-indigo-600 transition" style="padding: 0.5rem 0.875rem; text-decoration: none; border-radius: 0.5rem;">
                         {{ $item['label'] ?? '' }}
                     </a>
                 @else
                     <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
-                        <button @click="open = !open" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-indigo-600 transition py-1">
+                        <button @click="open = !open" class="site-nav-item inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-indigo-600 transition" style="padding: 0.5rem 0.875rem; border-radius: 0.5rem;">
                             <span>{{ $item['label'] ?? '' }}</span>
                             <svg class="h-4 w-4 transition-transform duration-200 text-slate-400" :class="open ? 'rotate-180 text-indigo-600' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -42,7 +42,7 @@
                              x-transition:leave-end="opacity-0 translate-y-2 scale-95"
                              class="absolute left-0 top-full z-50 mt-1.5 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5">
                             @foreach ($item['children'] as $child)
-                                <a href="{{ $child['url'] ?? '#' }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                                <a href="{{ $child['url'] ?? '#' }}" class="site-nav-dropdown-item flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition" style="padding: 0.5rem 0.75rem; text-decoration: none; border-radius: 0.5rem;">
                                     <span>{{ $child['label'] ?? '' }}</span>
                                 </a>
                             @endforeach

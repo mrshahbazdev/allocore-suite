@@ -70,10 +70,42 @@
         .is-dark-section .glossary-link:hover,
         section[style*="background-color"] .prose .glossary-link:hover,
         section[style*="background-color"] > div > p .glossary-link:hover,
-        .dark:not(.bg-white) .glossary-link:hover {
-            color: #ffffff !important;
-            text-decoration-color: #ffffff !important;
-            background-color: rgba(255, 255, 255, 0.25) !important;
+        /* Site Navigation Menu Styles */
+        .site-nav-container {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1.75rem !important;
+        }
+        .site-nav-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 0.5rem 0.875rem !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.9375rem !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            transition: all 0.15s ease-in-out !important;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+        }
+        .site-nav-item:hover {
+            color: #4f46e5 !important;
+            background-color: #f1f5f9 !important;
+        }
+        .site-nav-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.5rem 0.75rem !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            color: #334155 !important;
+            transition: all 0.15s ease-in-out !important;
+            text-decoration: none !important;
+        }
+        .site-nav-dropdown-item:hover {
+            color: #4f46e5 !important;
+            background-color: #eef2ff !important;
         }
     </style>
 </head>

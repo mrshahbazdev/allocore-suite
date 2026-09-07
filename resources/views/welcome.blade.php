@@ -18,6 +18,45 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            /* Site Navigation Menu Styles */
+            .site-nav-container {
+                display: flex !important;
+                align-items: center !important;
+                gap: 1.75rem !important;
+            }
+            .site-nav-item {
+                display: inline-flex !important;
+                align-items: center !important;
+                padding: 0.5rem 0.875rem !important;
+                border-radius: 0.5rem !important;
+                font-size: 0.9375rem !important;
+                font-weight: 600 !important;
+                color: #334155 !important;
+                transition: all 0.15s ease-in-out !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+            }
+            .site-nav-item:hover {
+                color: #4f46e5 !important;
+                background-color: #f1f5f9 !important;
+            }
+            .site-nav-dropdown-item {
+                display: flex !important;
+                align-items: center !important;
+                padding: 0.5rem 0.75rem !important;
+                border-radius: 0.5rem !important;
+                font-size: 0.875rem !important;
+                font-weight: 500 !important;
+                color: #334155 !important;
+                transition: all 0.15s ease-in-out !important;
+                text-decoration: none !important;
+            }
+            .site-nav-dropdown-item:hover {
+                color: #4f46e5 !important;
+                background-color: #eef2ff !important;
+            }
+        </style>
     </head>
     <body class="h-full font-sans text-slate-600 antialiased">
         @php
@@ -48,69 +87,7 @@
         @endphp
 
         <div class="flex min-h-full flex-col bg-slate-50">
-            {{-- Header --}}
-            <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-                <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
-                    <a href="/" class="flex items-center gap-3">
-                        <img src="{{ \App\Models\SiteSetting::value('site_logo') ?: asset('logo-mark.png') }}" alt="" class="h-10 w-10 object-contain rounded-xl bg-white">
-                        <span class="text-lg font-bold text-slate-900">{{ $siteName }}</span>
-                    </a>
-
-                    <div class="hidden items-center gap-8 lg:flex">
-                        <a href="#framework" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Framework') }}</a>
-                        <a href="{{ route('case-studies.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Case Studies') }}</a>
-                        <a href="{{ route('audit-example.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Audit Example') }}</a>
-                        <a href="#modules" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Solutions') }}</a>
-                        <a href="{{ route('billing.plans') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
-                    </div>
-
-                    <div class="hidden items-center gap-4 lg:flex">
-                        @include('partials.locale-switcher')
-
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('landing.nav.dashboard') }}</a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.login') }}</a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('landing.nav.get_started') }}</a>
-                            @endif
-                        @endauth
-                    </div>
-
-                    <button type="button" id="mobile-menu-button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-slate-600 lg:hidden" aria-expanded="false" aria-controls="mobile-menu">
-                        <span class="sr-only">{{ __('Open main menu') }}</span>
-                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
-                    </button>
-                </nav>
-
-                {{-- Mobile menu --}}
-                <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white lg:hidden">
-                    <div class="mx-auto max-w-7xl px-6 py-4">
-                        <div class="flex flex-col gap-2">
-                            <a href="#framework" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Framework') }}</a>
-                            <a href="{{ route('case-studies.index') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Case Studies') }}</a>
-                            <a href="{{ route('audit-example.index') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Audit Example') }}</a>
-                            <a href="#modules" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Solutions') }}</a>
-                            <a href="{{ route('billing.plans') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
-                            <div class="mt-2 border-t border-slate-200 pt-4">
-                                @include('partials.locale-switcher')
-                            </div>
-                            <div class="mt-2 flex flex-col gap-2 border-t border-slate-200 pt-4">
-                                @auth
-                                    <a href="{{ route('dashboard') }}" class="rounded-lg bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700">{{ __('landing.nav.dashboard') }}</a>
-                                @else
-                                    <a href="{{ route('login') }}" class="rounded-lg px-4 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">{{ __('landing.nav.login') }}</a>
-                                    @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="rounded-lg bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700">{{ __('landing.nav.get_started') }}</a>
-                                    @endif
-                                @endauth
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            @include('partials.public-header')
 
             {{-- Hero --}}
             <main class="flex-1">

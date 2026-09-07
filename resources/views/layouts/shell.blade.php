@@ -79,10 +79,42 @@
         .is-dark-section .glossary-link:hover,
         section[style*="background-color"] .prose .glossary-link:hover,
         section[style*="background-color"] > div > p .glossary-link:hover,
-        .dark:not(.bg-white) .glossary-link:hover {
-            color: #ffffff !important;
-            text-decoration-color: #ffffff !important;
-            background-color: rgba(255, 255, 255, 0.25) !important;
+        /* Site Navigation Menu Styles */
+        .site-nav-container {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1.75rem !important;
+        }
+        .site-nav-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 0.5rem 0.875rem !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.9375rem !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            transition: all 0.15s ease-in-out !important;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+        }
+        .site-nav-item:hover {
+            color: #4f46e5 !important;
+            background-color: #f1f5f9 !important;
+        }
+        .site-nav-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.5rem 0.75rem !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            color: #334155 !important;
+            transition: all 0.15s ease-in-out !important;
+            text-decoration: none !important;
+        }
+        .site-nav-dropdown-item:hover {
+            color: #4f46e5 !important;
+            background-color: #eef2ff !important;
         }
     </style>
 </head>
@@ -130,15 +162,15 @@
                 {{-- Center: Global Custom Navigation Menu with Submenus (Always Visible) --}}
                 @php($shellMenu = \App\Models\SiteSetting::value('public_nav_menu', []))
                 @if (!empty($shellMenu))
-                    <nav class="hidden lg:flex items-center gap-6 shrink-0 mx-2">
+                    <nav class="site-nav-container hidden lg:flex items-center shrink-0 mx-4" style="display: flex; align-items: center; gap: 1.75rem;">
                         @foreach ($shellMenu as $item)
                             @if (empty($item['children']))
-                                <a href="{{ $item['url'] ?? '#' }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+                                <a href="{{ $item['url'] ?? '#' }}" class="site-nav-item text-sm font-medium text-slate-600 hover:text-slate-900 transition" style="padding: 0.5rem 0.875rem; text-decoration: none; border-radius: 0.5rem;">
                                     {{ $item['label'] ?? '' }}
                                 </a>
                             @else
                                 <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
-                                    <button @click="open = !open" class="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900 transition py-1">
+                                    <button @click="open = !open" class="site-nav-item inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900 transition" style="padding: 0.5rem 0.875rem; border-radius: 0.5rem;">
                                         <span>{{ $item['label'] ?? '' }}</span>
                                         <svg class="h-4 w-4 transition-transform duration-200 text-slate-400" :class="open ? 'rotate-180 text-indigo-600' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -153,7 +185,7 @@
                                          x-transition:leave-end="opacity-0 translate-y-2 scale-95"
                                          class="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5">
                                         @foreach ($item['children'] as $child)
-                                            <a href="{{ $child['url'] ?? '#' }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                                            <a href="{{ $child['url'] ?? '#' }}" class="site-nav-dropdown-item block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition" style="padding: 0.5rem 0.75rem; text-decoration: none; border-radius: 0.5rem;">
                                                 {{ $child['label'] ?? '' }}
                                             </a>
                                         @endforeach
