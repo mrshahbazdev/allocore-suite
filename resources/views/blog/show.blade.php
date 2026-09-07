@@ -47,7 +47,7 @@
             <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="mt-6 w-full rounded-2xl object-cover">
         @endif
 
-        <div class="prose prose-slate mt-8 max-w-none">
+        <div class="prose prose-slate mt-8 max-w-none blog-content-body">
             {!! $post->body !!}
         </div>
 

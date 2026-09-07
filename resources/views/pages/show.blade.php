@@ -27,7 +27,7 @@
             @endforeach
         @else
             <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <article class="prose prose-slate max-w-none">
+                <article class="prose prose-slate max-w-none page-content-body">
                     {!! $translation->body !!}
                 </article>
             </div>
