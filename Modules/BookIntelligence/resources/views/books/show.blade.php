@@ -137,7 +137,7 @@
                                 <label for="progress_percent" class="block text-sm font-semibold text-slate-700">{{ __('Progress') }}</label>
                                 <span class="text-sm font-bold text-[#ff9200]" x-text="`${progress}%`">{{ old('progress_percent', $book->currentUserProgress?->progress_percent ?? 0) }}%</span>
                             </div>
-                            <input id="progress_percent" name="progress_percent" type="range" min="0" max="100" step="5" x-model.number="progress" class="mt-3 w-full accent-[#ff9200]">
+                            <input id="progress_percent" name="progress_percent" type="range" min="0" max="100" step="1" x-model.number="progress" class="mt-3 w-full accent-[#ff9200]">
                         </div>
                         <div>
                             <label for="reading_notes" class="block text-sm font-semibold text-slate-700">{{ __('Notes') }}</label>

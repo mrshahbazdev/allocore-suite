@@ -124,14 +124,14 @@ class BookIntelligenceFlowTest extends TestCase
         $this->actingAs($user)
             ->put(route('bookintelligence.books.reading-progress', $book), [
                 'reading_status' => 'reading',
-                'progress_percent' => 45,
+                'progress_percent' => 37,
                 'reading_notes' => 'Working through the execution chapter.',
             ])
             ->assertRedirect();
 
         $progress = ReadingProgress::where('book_id', $book->id)->firstOrFail();
         $this->assertSame('reading', $progress->status);
-        $this->assertSame(45, $progress->progress_percent);
+        $this->assertSame(37, $progress->progress_percent);
         $this->assertNotNull($progress->started_at);
 
         $this->actingAs($user)
@@ -139,7 +139,8 @@ class BookIntelligenceFlowTest extends TestCase
             ->assertOk()
             ->assertSee('A practical system for scaling')
             ->assertSee('Leadership')
-            ->assertSee('45%');
+            ->assertSee('37%')
+            ->assertSeeHtml('step="1"');
     }
 
     public function test_books_are_isolated_between_teams(): void
