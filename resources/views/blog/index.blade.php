@@ -17,7 +17,9 @@
                     @if ($post->featured_image)
                         <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="mb-4 h-40 w-full rounded-lg object-cover">
                     @endif
-                    <span class="text-xs font-semibold uppercase tracking-wide text-indigo-600">{{ $post->category->name ?? '' }}</span>
+                    @if ($post->category)
+                        <a href="{{ route('blog.category', $post->category) }}" class="text-xs font-semibold uppercase tracking-wide text-indigo-600 hover:underline">{{ $post->category->name }}</a>
+                    @endif
                     <h2 class="mt-2 text-xl font-bold text-slate-900">
                         <a href="{{ route('blog.show', $post) }}" class="hover:text-indigo-600">{{ $post->title }}</a>
                     </h2>
@@ -46,10 +48,14 @@
                                 <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="mb-4 h-48 w-full rounded-lg object-cover">
                             @endif
                             <div class="flex items-center gap-2 text-xs text-slate-500">
-                                <span class="font-semibold text-indigo-600">{{ $post->category->name ?? '' }}</span>
-                                <span>·</span>
-                                <span>{{ $post->published_at?->format('M d, Y') }}</span>
-                                <span>·</span>
+                                @if ($post->category)
+                                    <a href="{{ route('blog.category', $post->category) }}" class="font-semibold text-indigo-600 hover:underline">{{ $post->category->name }}</a>
+                                    <span>·</span>
+                                @endif
+                                @if ($post->published_at)
+                                    <span>{{ $post->published_at->format('M d, Y') }}</span>
+                                    <span>·</span>
+                                @endif
                                 <span>{{ $post->readingTime() }} min read</span>
                             </div>
                             <h2 class="mt-2 text-xl font-bold text-slate-900">

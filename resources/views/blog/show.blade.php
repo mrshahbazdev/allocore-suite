@@ -9,18 +9,20 @@
 
 @push('meta')
     <link rel="canonical" href="{{ route('blog.show', $post) }}">
-    @php($schema = [
-        '@context' => 'https://schema.org',
-        '@type' => 'BlogPosting',
-        'headline' => $post->title,
-        'description' => $post->effectiveMetaDescription(),
-        'image' => $post->effectiveOgImage(),
-        'datePublished' => $post->published_at?->toIso8601String(),
-        'dateModified' => $post->updated_at->toIso8601String(),
-        'author' => ['@type' => 'Person', 'name' => $post->user?->name ?? config('app.name')],
-        'publisher' => ['@type' => 'Organization', 'name' => \App\Models\SiteSetting::value('site_name', config('app.name'))],
-        'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => route('blog.show', $post)],
-    ])
+    @php
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'headline' => $post->title,
+            'description' => $post->effectiveMetaDescription(),
+            'image' => $post->effectiveOgImage(),
+            'datePublished' => $post->published_at?->toIso8601String(),
+            'dateModified' => $post->updated_at->toIso8601String(),
+            'author' => ['@type' => 'Person', 'name' => $post->user?->name ?? config('app.name')],
+            'publisher' => ['@type' => 'Organization', 'name' => \App\Models\SiteSetting::value('site_name', config('app.name'))],
+            'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => route('blog.show', $post)],
+        ];
+    @endphp
     <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}</script>
 @endpush
 
@@ -28,10 +30,14 @@
 <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
     <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
         <div class="flex items-center gap-2 text-sm text-slate-500">
-            <a href="{{ route('blog.category', $post->category) }}" class="font-semibold text-indigo-600 hover:underline">{{ $post->category?->name ?? '' }}</a>
-            <span>·</span>
-            <span>{{ $post->published_at?->format('M d, Y') }}</span>
-            <span>·</span>
+            @if ($post->category)
+                <a href="{{ route('blog.category', $post->category) }}" class="font-semibold text-indigo-600 hover:underline">{{ $post->category->name }}</a>
+                <span>·</span>
+            @endif
+            @if ($post->published_at)
+                <span>{{ $post->published_at->format('M d, Y') }}</span>
+                <span>·</span>
+            @endif
             <span>{{ $post->readingTime() }} min read</span>
         </div>
 
@@ -45,11 +51,13 @@
             {!! $post->body !!}
         </div>
 
-        <div class="mt-8 flex flex-wrap gap-2">
-            @foreach ($post->tags as $tag)
-                <a href="{{ route('blog.tag', $tag) }}" class="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600 hover:bg-slate-200">#{{ $tag->name }}</a>
-            @endforeach
-        </div>
+        @if ($post->tags && $post->tags->isNotEmpty())
+            <div class="mt-8 flex flex-wrap gap-2">
+                @foreach ($post->tags as $tag)
+                    <a href="{{ route('blog.tag', $tag) }}" class="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600 hover:bg-slate-200">#{{ $tag->name }}</a>
+                @endforeach
+            </div>
+        @endif
     </article>
 
     @if ($related->isNotEmpty())
