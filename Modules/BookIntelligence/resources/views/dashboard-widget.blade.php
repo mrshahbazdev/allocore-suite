@@ -8,5 +8,5 @@
         <span class="text-sm font-semibold text-[#0094af] group-hover:underline">{{ __('Open') }}</span>
     </div>
     <h2 class="mt-4 font-bold text-slate-900">{{ __('Knowledge Library') }}</h2>
-    <p class="mt-1 text-sm text-slate-500">{{ trans_choice(':count book|:count books', $bookCount, ['count' => $bookCount]) }} · {{ $readingCount }} {{ __('currently reading') }}</p>
+    <p class="mt-1 text-sm text-slate-500">{{ trans_choice(':count book|:count books', $bookCount, ['count' => $bookCount]) }} · {{ $analysisCount }} {{ __('AI-ready') }} · {{ $readingCount }} {{ __('currently reading') }}</p>
 </a>

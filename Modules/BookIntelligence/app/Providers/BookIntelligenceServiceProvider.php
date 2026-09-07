@@ -5,6 +5,7 @@ namespace Modules\BookIntelligence\Providers;
 use App\Support\DashboardWidgetRegistry;
 use Illuminate\Support\Facades\View;
 use Modules\BookIntelligence\Models\Book;
+use Modules\BookIntelligence\Models\BookAnalysis;
 use Modules\BookIntelligence\Models\ReadingProgress;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
@@ -50,6 +51,7 @@ class BookIntelligenceServiceProvider extends ModuleServiceProvider
         View::composer('bookintelligence::dashboard-widget', function ($view): void {
             $view->with([
                 'bookCount' => Book::count(),
+                'analysisCount' => BookAnalysis::where('status', BookAnalysis::STATUS_COMPLETED)->count(),
                 'readingCount' => ReadingProgress::where('user_id', auth()->id())
                     ->where('status', 'reading')
                     ->count(),

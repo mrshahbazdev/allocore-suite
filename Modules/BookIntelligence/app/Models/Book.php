@@ -81,6 +81,11 @@ class Book extends Model
             ->where('user_id', auth()->id());
     }
 
+    public function analysis(): HasOne
+    {
+        return $this->hasOne(BookAnalysis::class);
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -106,5 +111,24 @@ class Book extends Model
     public function readingStatus(): string
     {
         return $this->currentUserProgress?->status ?? 'unassigned';
+    }
+
+    public function analysisFingerprint(?string $sourceMaterial = null): string
+    {
+        $this->loadMissing(['author', 'publisher', 'mainTopic', 'subtopics']);
+
+        return hash('sha256', json_encode([
+            'title' => $this->title,
+            'author' => $this->author?->name,
+            'publisher' => $this->publisher?->name,
+            'publication_year' => $this->publication_year,
+            'language' => $this->language,
+            'difficulty' => $this->difficulty,
+            'description' => $this->description,
+            'main_topic' => $this->mainTopic?->name,
+            'subtopics' => $this->subtopics->pluck('name')->sort()->values()->all(),
+            'relevant_roles' => collect($this->relevant_roles)->sort()->values()->all(),
+            'source_material' => trim((string) $sourceMaterial),
+        ], JSON_THROW_ON_ERROR));
     }
 }

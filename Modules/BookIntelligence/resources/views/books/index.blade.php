@@ -89,7 +89,12 @@
                         <div class="flex gap-4">
                             @include('bookintelligence::partials.book-cover', ['book' => $book])
                             <div class="min-w-0 flex-1">
-                                @include('bookintelligence::partials.reading-status', ['status' => $book->readingStatus()])
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @include('bookintelligence::partials.reading-status', ['status' => $book->readingStatus()])
+                                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $book->analysis?->isCompleted() ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
+                                        {{ $book->analysis?->isCompleted() ? __('AI ready') : __('Needs analysis') }}
+                                    </span>
+                                </div>
                                 <h2 class="mt-3 line-clamp-2 text-lg font-bold leading-snug text-slate-900">
                                     <a href="{{ route('bookintelligence.books.show', $book) }}" class="hover:text-[#ff9200]">{{ $book->title }}</a>
                                 </h2>

@@ -13,12 +13,13 @@ use Modules\BookIntelligence\Models\Book;
 use Modules\BookIntelligence\Models\Publisher;
 use Modules\BookIntelligence\Models\ReadingProgress;
 use Modules\BookIntelligence\Models\Topic;
+use Modules\ClusterForge\Services\AiService;
 
 class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Book::with(['author', 'mainTopic', 'currentUserProgress'])
+        $query = Book::with(['author', 'mainTopic', 'currentUserProgress', 'analysis'])
             ->search($request->string('q')->toString());
 
         if ($request->filled('difficulty')) {
@@ -88,11 +89,15 @@ class BookController extends Controller
             ->with('success', __('Book added to the knowledge library.'));
     }
 
-    public function show(Book $book)
+    public function show(Book $book, AiService $ai)
     {
-        $book->load(['author', 'publisher', 'mainTopic', 'subtopics', 'currentUserProgress']);
+        $book->load(['author', 'publisher', 'mainTopic', 'subtopics', 'currentUserProgress', 'analysis.user']);
 
-        return view('bookintelligence::books.show', compact('book'));
+        return view('bookintelligence::books.show', [
+            'book' => $book,
+            'aiConfigured' => $ai->isConfigured(),
+            'aiProvider' => $ai->configuredProviderName(),
+        ]);
     }
 
     public function edit(Book $book)

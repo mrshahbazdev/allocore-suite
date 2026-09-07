@@ -15,7 +15,7 @@
                         {{ __('Build knowledge people can actually find and use.') }}
                     </h1>
                     <p class="mt-3 max-w-2xl text-base leading-7 text-slate-300">
-                        {{ __('Organize books by topic and role, make the right reading easy to discover, and track learning progress in one place.') }}
+                        {{ __('Organize books by topic and role, turn them into practical AI knowledge, and track learning progress in one place.') }}
                     </p>
                     <div class="mt-6 flex flex-wrap gap-3">
                         <a href="{{ route('bookintelligence.books.create') }}" class="rounded-xl bg-[#ff9200] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600">
@@ -50,7 +50,7 @@
         <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="{{ __('Knowledge library statistics') }}">
             @foreach ([
                 [__('Books'), $stats['books'], __('Available knowledge sources')],
-                [__('Authors'), $stats['authors'], __('Experts represented')],
+                [__('AI-ready books'), $stats['analyzed'], __('Summaries and actions available')],
                 [__('Topics'), $stats['topics'], __('Knowledge areas organized')],
                 [__('Books read'), $stats['read'], __('Your completed reading')],
             ] as [$label, $value, $description])
@@ -67,7 +67,7 @@
                 <div class="flex items-start justify-between gap-4">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-[#0094af]">{{ __('Quick start') }}</p>
-                        <h2 class="mt-1 text-xl font-bold text-slate-900">{{ __('Set up in three steps') }}</h2>
+                        <h2 class="mt-1 text-xl font-bold text-slate-900">{{ __('Set up in four steps') }}</h2>
                     </div>
                     <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                         {{ collect($setup)->where('complete', true)->count() }}/{{ count($setup) }} {{ __('done') }}
@@ -123,6 +123,9 @@
                                     <p class="truncate font-semibold text-slate-900">{{ $book->title }}</p>
                                     <p class="truncate text-sm text-slate-500">{{ $book->author?->name ?? __('Author not set') }} · {{ $book->mainTopic?->name ?? __('Uncategorized') }}</p>
                                 </div>
+                                <span class="hidden rounded-full px-2.5 py-1 text-xs font-semibold sm:inline-flex {{ $book->analysis?->isCompleted() ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
+                                    {{ $book->analysis?->isCompleted() ? __('AI ready') : __('Needs analysis') }}
+                                </span>
                                 @include('bookintelligence::partials.reading-status', ['status' => $book->readingStatus()])
                             </a>
                         @endforeach
@@ -132,11 +135,12 @@
         </div>
 
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="grid gap-6 md:grid-cols-3">
+            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                 @foreach ([
                     [__('1. Organize'), __('Add trustworthy book metadata and classify knowledge by topic and role.')],
                     [__('2. Discover'), __('Search and filter the library to find the right book for a goal or problem.')],
-                    [__('3. Learn'), __('Build a reading plan, update progress, and keep useful notes with each book.')],
+                    [__('3. Analyze'), __('Generate concise summaries, core lessons, reusable frameworks, and next actions.')],
+                    [__('4. Learn'), __('Build a reading plan, update progress, and apply useful insights from each book.')],
                 ] as [$heading, $copy])
                     <div>
                         <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0094af]/10 text-sm font-bold text-[#0094af]">{{ $loop->iteration }}</span>
