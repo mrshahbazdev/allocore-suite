@@ -5,6 +5,7 @@ use Modules\BookIntelligence\Http\Controllers\AffiliateController;
 use Modules\BookIntelligence\Http\Controllers\AssessmentController;
 use Modules\BookIntelligence\Http\Controllers\BookAnalysisController;
 use Modules\BookIntelligence\Http\Controllers\BookController;
+use Modules\BookIntelligence\Http\Controllers\BookImportController;
 use Modules\BookIntelligence\Http\Controllers\ChallengeController;
 use Modules\BookIntelligence\Http\Controllers\CompetencyController;
 use Modules\BookIntelligence\Http\Controllers\ContentEngineController;
@@ -31,7 +32,12 @@ Route::middleware(['auth', 'verified', 'module:book-intelligence', EnsureCurrent
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/guide', GuideController::class)->name('guide');
 
-        // Module 1 & 2: Library & Analysis
+        // Module 1 & 2: Library, Bulk Import/Export & Analysis
+        Route::get('/library/import', [BookImportController::class, 'index'])->name('books.import.index');
+        Route::post('/library/import', [BookImportController::class, 'import'])->name('books.import.store');
+        Route::get('/library/import/template', [BookImportController::class, 'downloadTemplate'])->name('books.import.template');
+        Route::get('/library/export', [BookImportController::class, 'export'])->name('books.export');
+
         Route::resource('library', BookController::class)
             ->parameters(['library' => 'book'])
             ->names('books');

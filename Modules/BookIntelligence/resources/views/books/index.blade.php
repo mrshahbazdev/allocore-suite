@@ -11,10 +11,21 @@
                 <h1 class="mt-1 text-3xl font-bold text-slate-900">{{ __('Book Library') }}</h1>
                 <p class="mt-2 max-w-2xl text-sm text-slate-500">{{ __('Find books by topic, difficulty, role relevance, or your reading status.') }}</p>
             </div>
-            <a href="{{ route('bookintelligence.books.create') }}" class="inline-flex items-center justify-center rounded-xl bg-[#ff9200] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-600">
-                {{ __('Add book') }}
-            </a>
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('bookintelligence.books.export') }}" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
+                    <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    {{ __('Export CSV') }}
+                </a>
+                <a href="{{ route('bookintelligence.books.import.index') }}" class="inline-flex items-center gap-1.5 rounded-xl border border-[#0094af] bg-[#0094af]/10 px-4 py-2.5 text-xs font-bold text-[#0094af] shadow-sm hover:bg-[#0094af]/20">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                    {{ __('Mass Import (Excel/CSV)') }}
+                </a>
+                <a href="{{ route('bookintelligence.books.create') }}" class="inline-flex items-center justify-center rounded-xl bg-[#ff9200] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-orange-600">
+                    {{ __('+ Add Book') }}
+                </a>
+            </div>
         </div>
+
 
         <form method="GET" action="{{ route('bookintelligence.books.index') }}" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
