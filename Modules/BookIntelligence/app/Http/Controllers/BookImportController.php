@@ -72,7 +72,7 @@ class BookImportController extends Controller
                     continue;
                 }
 
-                // Resolve Author
+                // Resolve Author (e.g. "Mike Michalowicz", "Diverse Autoren", "Biebig, Althof, Wagner")
                 $authorName = trim($row['author'] ?? $row['autor'] ?? $row['author_name'] ?? '');
                 $authorId = null;
                 if (!empty($authorName)) {
@@ -86,18 +86,48 @@ class BookImportController extends Controller
                     $authorId = $author->id;
                 }
 
-                // Resolve Main Topic / Category
-                $topicName = trim($row['category'] ?? $row['topic'] ?? $row['kategorie'] ?? $row['genre'] ?? '');
-                $topicId = null;
-                if (!empty($topicName)) {
-                    $topic = Topic::firstOrCreate(
-                        ['team_id' => $teamId, 'name' => $topicName],
-                        ['slug' => Str::slug($topicName) ?: 'topic']
+                // Resolve Topics: Parent (Wissenswelt / Hauptwelt) and Subtopic (Thema)
+                $wissenswelt = trim($row['wissenswelt'] ?? $row['hauptwelt'] ?? $row['main_topic'] ?? '');
+                $thema = trim($row['thema'] ?? $row['category'] ?? $row['topic'] ?? $row['kategorie'] ?? $row['genre'] ?? '');
+
+                $parentTopicId = null;
+                if (!empty($wissenswelt)) {
+                    $parentTopic = Topic::firstOrCreate(
+                        ['team_id' => $teamId, 'name' => $wissenswelt, 'parent_id' => null],
+                        ['slug' => Str::slug($wissenswelt) ?: 'wissenswelt']
                     );
-                    if ($topic->wasRecentlyCreated) {
+                    if ($parentTopic->wasRecentlyCreated) {
                         $newTopics++;
                     }
-                    $topicId = $topic->id;
+                    $parentTopicId = $parentTopic->id;
+                }
+
+                $mainTopicId = $parentTopicId;
+                if (!empty($thema)) {
+                    $subTopic = Topic::firstOrCreate(
+                        ['team_id' => $teamId, 'name' => $thema, 'parent_id' => $parentTopicId],
+                        ['slug' => Str::slug(($wissenswelt ? $wissenswelt.'-' : '').$thema) ?: 'thema']
+                    );
+                    if ($subTopic->wasRecentlyCreated) {
+                        $newTopics++;
+                    }
+                    $mainTopicId = $subTopic->id;
+                }
+
+                // Secondary Topics: Nebenwelt1 & Nebenwelt2
+                $secondaryTopicIds = [];
+                foreach (['nebenwelt1', 'nebenwelt2', 'nebenwelt', 'subtopic'] as $nwKey) {
+                    $nwName = trim($row[$nwKey] ?? '');
+                    if (!empty($nwName)) {
+                        $nwTopic = Topic::firstOrCreate(
+                            ['team_id' => $teamId, 'name' => $nwName],
+                            ['slug' => Str::slug($nwName) ?: 'topic']
+                        );
+                        if ($nwTopic->wasRecentlyCreated) {
+                            $newTopics++;
+                        }
+                        $secondaryTopicIds[] = $nwTopic->id;
+                    }
                 }
 
                 // Resolve Publisher
@@ -110,8 +140,14 @@ class BookImportController extends Controller
                     $publisherId = $publisher->id;
                 }
 
-                // Attributes
+                // Code / Reference identifier (e.g. FAC-001, FIN-001, FUE-001)
+                $code = trim($row['code'] ?? $row['buch_code'] ?? $row['id_code'] ?? '');
                 $isbn = trim($row['isbn'] ?? '');
+                if (empty($isbn) && !empty($code)) {
+                    $isbn = $code;
+                }
+
+                // Attributes
                 $year = !empty($row['year'] ?? $row['jahr'] ?? $row['publication_year'] ?? null)
                     ? (int) ($row['year'] ?? $row['jahr'] ?? $row['publication_year'])
                     : null;
@@ -123,12 +159,21 @@ class BookImportController extends Controller
                     $language = substr($language, 0, 12);
                 }
 
-                $difficulty = strtolower(trim($row['difficulty'] ?? $row['level'] ?? $row['schwierigkeit'] ?? 'intermediate'));
-                if (!in_array($difficulty, Book::DIFFICULTIES)) {
+                // Relevanz / Difficulty mapping (Hoch -> Advanced, Mittel -> Intermediate, Niedrig -> Beginner)
+                $rawRelevance = strtolower(trim($row['relevanz'] ?? $row['relevance'] ?? $row['priority'] ?? $row['difficulty'] ?? $row['level'] ?? ''));
+                if (in_array($rawRelevance, ['hoch', 'high', 'advanced', 'expert'])) {
+                    $difficulty = 'advanced';
+                } elseif (in_array($rawRelevance, ['niedrig', 'low', 'beginner', 'grundlagen'])) {
+                    $difficulty = 'beginner';
+                } else {
                     $difficulty = 'intermediate';
                 }
 
                 $description = trim($row['description'] ?? $row['beschreibung'] ?? $row['summary'] ?? $row['zusammenfassung'] ?? '');
+                if (!empty($code) && !str_contains($description, $code)) {
+                    $description = "Katalog-Code: {$code}" . ($description ? "\n\n{$description}" : '');
+                }
+
                 $affiliateLink = trim($row['affiliate_link'] ?? $row['amazon_link'] ?? $row['link'] ?? $row['url'] ?? '');
                 $relevantRolesText = trim($row['roles'] ?? $row['rollen'] ?? $row['relevant_roles'] ?? '');
                 $roles = collect(preg_split('/[\r\n,;|]+/', $relevantRolesText))
@@ -138,7 +183,7 @@ class BookImportController extends Controller
                     ->values()
                     ->all();
 
-                // Check existing book by Title or ISBN
+                // Check existing book by Title or Code/ISBN
                 $existingBook = Book::where(function ($q) use ($title, $isbn) {
                     $q->where('title', $title);
                     if (!empty($isbn)) {
@@ -155,7 +200,7 @@ class BookImportController extends Controller
                     $existingBook->update([
                         'author_id' => $authorId ?: $existingBook->author_id,
                         'publisher_id' => $publisherId ?: $existingBook->publisher_id,
-                        'main_topic_id' => $topicId ?: $existingBook->main_topic_id,
+                        'main_topic_id' => $mainTopicId ?: $existingBook->main_topic_id,
                         'isbn' => $isbn ?: $existingBook->isbn,
                         'publication_year' => $year ?: $existingBook->publication_year,
                         'page_count' => $pageCount ?: $existingBook->page_count,
@@ -165,6 +210,10 @@ class BookImportController extends Controller
                         'affiliate_link' => $affiliateLink ?: $existingBook->affiliate_link,
                         'relevant_roles' => !empty($roles) ? $roles : $existingBook->relevant_roles,
                     ]);
+
+                    if (!empty($secondaryTopicIds)) {
+                        $existingBook->subtopics()->syncWithoutDetaching($secondaryTopicIds);
+                    }
 
                     $this->syncImportedReadingProgress($existingBook, $row);
                     $updated++;
@@ -178,7 +227,7 @@ class BookImportController extends Controller
                     'slug' => $this->uniqueSlug($title),
                     'author_id' => $authorId,
                     'publisher_id' => $publisherId,
-                    'main_topic_id' => $topicId,
+                    'main_topic_id' => $mainTopicId,
                     'isbn' => $isbn ?: null,
                     'publication_year' => $year,
                     'page_count' => $pageCount,
@@ -190,9 +239,14 @@ class BookImportController extends Controller
                     'status' => 'active',
                 ]);
 
+                if (!empty($secondaryTopicIds)) {
+                    $book->subtopics()->sync($secondaryTopicIds);
+                }
+
                 $this->syncImportedReadingProgress($book, $row);
                 $imported++;
             }
+
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -216,6 +270,171 @@ class BookImportController extends Controller
             ->with('success', $message);
     }
 
+    public function downloadTemplate(): StreamedResponse
+    {
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="allocore_books_import_template.csv"',
+        ];
+
+        return response()->stream(function () {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Column structure matching user's exact Excel catalog
+            fputcsv($handle, [
+                'Code',
+                'Wissenswelt',
+                'Thema',
+                'Titel',
+                'Autor',
+                'Hauptwelt',
+                'Nebenwelt1',
+                'Nebenwelt2',
+                'Relevanz',
+                'Reading Status',
+                'Notes',
+            ]);
+
+            // Sample rows based on user's exact catalog
+            fputcsv($handle, [
+                'FAC-001',
+                'Fachwissen Logistik',
+                'Gefahrgut',
+                'ADR/RID',
+                'Diverse Autoren',
+                'Fachbibliothek',
+                '',
+                '',
+                'Mittel',
+                'planned',
+                '',
+            ]);
+
+            fputcsv($handle, [
+                'FIN-001',
+                'Finanzen',
+                'Cashflow',
+                'Profit First',
+                'Mike Michalowicz',
+                'Finanzen',
+                'Unternehmertum',
+                '',
+                'Hoch',
+                'read',
+                'Kernprinzip: Zuerst den Gewinn entnehmen.',
+            ]);
+
+            fputcsv($handle, [
+                'FIN-002',
+                'Finanzen',
+                'Finanzbildung',
+                'Rich Dad Poor Dad',
+                'Robert T. Kiyosaki',
+                'Finanzen',
+                'Persönliche Entwicklung',
+                '',
+                'Hoch',
+                'read',
+                'Vermögenswerte vs. Verbindlichkeiten.',
+            ]);
+
+            fputcsv($handle, [
+                'FUE-001',
+                'Führung',
+                'Leadership',
+                'Führen ohne Fesseln',
+                'Dirk Linn',
+                'Führung',
+                'Unternehmertum',
+                '',
+                'Hoch',
+                'read',
+                'Agiles Führen und Team-Autonomie.',
+            ]);
+
+            fputcsv($handle, [
+                'FUE-004',
+                'Führung',
+                'Change Management',
+                'Leading Change',
+                'John P. Kotter',
+                'Führung',
+                'Innovation & Veränderung',
+                'Unternehmertum',
+                'Hoch',
+                'reading',
+                '8-Stufen-Modell für Veränderungsprozesse.',
+            ]);
+
+            fclose($handle);
+        }, 200, $headers);
+    }
+
+    public function export(): StreamedResponse
+    {
+        $books = Book::with(['author', 'publisher', 'mainTopic', 'subtopics', 'currentUserProgress'])->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="allocore_books_library_export_'.date('Y-m-d').'.csv"',
+        ];
+
+        return response()->stream(function () use ($books) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($handle, [
+                'Code',
+                'Wissenswelt',
+                'Thema',
+                'Titel',
+                'Autor',
+                'Hauptwelt',
+                'Nebenwelt1',
+                'Nebenwelt2',
+                'Relevanz',
+                'Reading Status',
+                'Progress Percent',
+                'Reading Notes',
+                'Language',
+            ]);
+
+            foreach ($books as $b) {
+                $subtopicNames = $b->subtopics->pluck('name')->all();
+                $neben1 = $subtopicNames[0] ?? '';
+                $neben2 = $subtopicNames[1] ?? '';
+
+                $relevanz = match ($b->difficulty) {
+                    'advanced' => 'Hoch',
+                    'beginner' => 'Niedrig',
+                    default => 'Mittel',
+                };
+
+                $parentTopic = $b->mainTopic?->parent?->name ?? $b->mainTopic?->name ?? '';
+                $subTopic = $b->mainTopic?->parent ? $b->mainTopic->name : '';
+
+                fputcsv($handle, [
+                    $b->isbn ?? '',
+                    $parentTopic,
+                    $subTopic,
+                    $b->title,
+                    $b->author?->name ?? '',
+                    $parentTopic,
+                    $neben1,
+                    $neben2,
+                    $relevanz,
+                    $b->currentUserProgress?->status ?? 'unassigned',
+                    $b->currentUserProgress?->progress_percent ?? 0,
+                    $b->currentUserProgress?->notes ?? '',
+                    $b->language,
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, $headers);
+    }
+
     private function uniqueSlug(string $title): string
     {
         $base = Str::slug($title) ?: 'book';
@@ -230,4 +449,5 @@ class BookImportController extends Controller
         return $slug;
     }
 }
+
 
