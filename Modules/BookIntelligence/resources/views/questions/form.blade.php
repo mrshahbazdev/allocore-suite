@@ -115,7 +115,7 @@
                                 <option value="">{{ __('-- None / Auto-detect --') }}</option>
                                 @foreach ($auditQuestions as $aq)
                                     <option value="{{ $aq->id }}" @selected((string) old('audit_question_id', $mapping->audit_question_id) === (string) $aq->id)>
-                                        {{ Str::limit($aq->question, 80) }}
+                                        {{ Str::limit(__($aq->question), 100) }}
                                     </option>
                                 @endforeach
                             </select>
