@@ -41,34 +41,35 @@ class PersonalizedLearningPathGenerator
         ];
 
         $prompt = <<<PROMPT
-You are Allocore's Chief Talent Development & Career Strategist. Design a structured, personalized learning path for an employee advancing toward a target role.
+You are Allocore's Chief Talent Development & Career Strategist. Design a structured, personalized learning path in German (auf Deutsch für deutsche Mitarbeiter und Führungskräfte) for an employee advancing toward a target role.
 
 Context:
 PROMPT
         . json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . <<<PROMPT
 
-Requirements:
-1. Create a logical 4 to 6 step progression sequence.
+Requirements (All in German):
+1. Create a logical 4 to 6 step progression sequence in German.
 2. For each step:
-   - Provide a step title (e.g. "Step 1: Mastering Outbound Sales Fundamentals")
+   - Provide a German step title (z. B. "Schritt 1: Grundlagen des B2B-Outbound-Vertriebs meistern").
    - Assign the most relevant book from the available library (provide exact book_id).
-   - Define the primary competency developed in this step.
-   - Provide practical execution rationale (why this step is essential before moving to the next).
+   - Define the primary competency developed in this step (in German).
+   - Provide practical execution rationale in German (why this step is essential before moving to the next).
 
 Output rules:
 - Return ONLY a valid JSON object matching the schema below.
+- Write ALL titles, rationales, and competencies in GERMAN.
 
 Schema:
 {
-  "title": "string",
-  "ai_rationale": "string",
+  "title": "string (in German)",
+  "ai_rationale": "string (in German)",
   "steps": [
     {
       "order": 1,
-      "title": "string",
+      "title": "string (in German)",
       "book_id": 1,
-      "competency": "string",
-      "rationale": "string"
+      "competency": "string (in German)",
+      "rationale": "string (in German)"
     }
   ]
 }

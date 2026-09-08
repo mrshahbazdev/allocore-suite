@@ -50,8 +50,8 @@ class QuestionMappingGenerator
     private function prompt(Book $book): string
     {
         $language = match ($book->language) {
-            'de' => 'German',
-            default => 'English',
+            'en' => 'English',
+            default => 'German',
         };
 
         $context = [

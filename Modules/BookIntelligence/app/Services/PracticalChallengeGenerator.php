@@ -34,32 +34,33 @@ class PracticalChallengeGenerator
         ];
 
         $prompt = <<<PROMPT
-You are Allocore's Master Executive Coach & Simulation Director. Design a realistic, high-stakes practical business challenge / simulation assignment based on the frameworks from the book below.
+You are Allocore's Master Executive Coach & Simulation Director. Design a realistic, high-stakes practical business challenge / simulation assignment in German (auf Deutsch für Führungskräfte und Teams) based on the frameworks from the book below.
 
 Context:
 PROMPT
         . json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . <<<PROMPT
 
-Requirements:
-1. "scenario_description": A realistic operational situation (e.g. "You are hired as VP Sales at an 8-figure SaaS company with declining quota attainment and high CAC...").
-2. "assignment_brief": Exact deliverables the employee must create and submit.
-3. "deliverable_format": (e.g. "Written Strategy Memo (500-1000 words)", "Playbook & KPI Matrix").
-4. "reflection_questions": 3 deep self-reflection questions for the employee.
-5. "evaluation_rubric": 3-4 scoring criteria with expectations for Master, Proficient, and Needs Improvement.
+Requirements (All in German):
+1. "scenario_description": Realistische betriebliche Ausgangssituation (auf Deutsch).
+2. "assignment_brief": Konkrete Aufgabenstellung und geforderte Arbeitsergebnisse (auf Deutsch).
+3. "deliverable_format": (z. B. "Strategie-Memo (500–1000 Wörter)", "Prozess-Playbook & KPI-Matrix").
+4. "reflection_questions": 3 tiefgründige Selbstreflexions-Fragen für den Mitarbeiter (auf Deutsch).
+5. "evaluation_rubric": 3-4 Bewertungskriterien mit Erwartungen für Exzellent, Erfüllt und Verbesserungsbedarf (auf Deutsch).
 
 Output rules:
 - Return ONLY a valid JSON object matching the schema below.
+- Write ALL texts, scenarios, questions, and rubrics in GERMAN.
 
 Schema:
 {
-  "title": "string",
-  "scenario_description": "string",
-  "assignment_brief": "string",
-  "deliverable_format": "string",
+  "title": "string (in German)",
+  "scenario_description": "string (in German)",
+  "assignment_brief": "string (in German)",
+  "deliverable_format": "string (in German)",
   "difficulty": "intermediate|advanced|expert",
-  "reflection_questions": ["string"],
+  "reflection_questions": ["string (in German)"],
   "evaluation_rubric": [
-    { "criteria": "string", "weight": "string", "standard": "string" }
+    { "criteria": "string (in German)", "weight": "string", "standard": "string (in German)" }
   ]
 }
 PROMPT;

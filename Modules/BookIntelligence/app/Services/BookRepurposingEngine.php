@@ -30,15 +30,18 @@ class BookRepurposingEngine
         ];
 
         $prompt = <<<PROMPT
-You are Allocore's Content Multiplier & Omnichannel Repurposing Director. Transform the book context below into a massive library of high-impact marketing and thought leadership content assets.
+You are Allocore's Content Multiplier & Omnichannel Repurposing Director. Transform the book context below into a massive library of high-impact marketing and thought leadership content assets in German (auf Deutsch für den deutschsprachigen DACH-Markt).
 
-Output Requirements:
-1. "blog_articles": 20 compelling, SEO-rich blog article titles with target keywords and core angles.
-2. "linkedin_posts": 50 high-engagement LinkedIn post drafts covering viral hooks, framework breakdowns, founder lessons, and carousels.
-3. "faq_articles": 20 high-intent FAQ questions with concise 2-sentence answers.
-4. "checklists": 10 actionable operational checklists with step-by-step items.
-5. "practical_guides": 10 implementation playbooks with clear execution steps.
-6. "whitepaper_concepts": 5 executive whitepaper titles, target audiences, and executive summaries.
+Language Requirement:
+- IMPORTANT: All 6 content formats below MUST be written entirely in professional Business German (auf Deutsch).
+
+Output Requirements (in German):
+1. "blog_articles": 20 compelling, SEO-rich German blog article titles with target keywords and core angles.
+2. "linkedin_posts": 50 high-engagement German LinkedIn post drafts covering viral hooks, framework breakdowns, founder lessons, and carousels.
+3. "faq_articles": 20 high-intent German FAQ questions with concise 2-sentence answers.
+4. "checklists": 10 actionable operational German checklists with step-by-step items.
+5. "practical_guides": 10 implementation German playbooks with clear execution steps.
+6. "whitepaper_concepts": 5 executive German whitepaper titles, target audiences, and executive summaries.
 
 Output rules:
 - Return ONLY a valid JSON object matching the schema below.
@@ -46,22 +49,22 @@ Output rules:
 Schema:
 {
   "blog_articles": [
-    { "title": "string", "keyword": "string", "angle": "string" }
+    { "title": "string (in German)", "keyword": "string (in German)", "angle": "string (in German)" }
   ],
   "linkedin_posts": [
-    { "hook": "string", "content": "string", "type": "story|breakdown|framework|carousel|contrarian" }
+    { "hook": "string (in German)", "content": "string (in German)", "type": "story|breakdown|framework|carousel|contrarian" }
   ],
   "faq_articles": [
-    { "question": "string", "answer": "string" }
+    { "question": "string (in German)", "answer": "string (in German)" }
   ],
   "checklists": [
-    { "title": "string", "items": ["string"] }
+    { "title": "string (in German)", "items": ["string (in German)"] }
   ],
   "practical_guides": [
-    { "title": "string", "steps": ["string"], "outcome": "string" }
+    { "title": "string (in German)", "steps": ["string (in German)"], "outcome": "string (in German)" }
   ],
   "whitepaper_concepts": [
-    { "title": "string", "target_audience": "string", "summary": "string" }
+    { "title": "string (in German)", "target_audience": "string (in German)", "summary": "string (in German)" }
   ]
 }
 

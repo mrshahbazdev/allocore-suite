@@ -25,8 +25,8 @@ class AutomatedBlogGenerator
     {
         $book->loadMissing(['author', 'mainTopic', 'analysis']);
 
-        $topicTitle = $opportunity?->title ?: ($customTopic ?: "How to Master {$book->mainTopic?->name} Using Insights from {$book->title}");
-        $targetKeyword = $opportunity?->target_keyword ?: ($book->mainTopic?->name ?? 'Business Optimization');
+        $topicTitle = $opportunity?->title ?: ($customTopic ?: "Wie Sie {$book->mainTopic?->name} mit den Erkenntnissen aus {$book->title} meistern");
+        $targetKeyword = $opportunity?->target_keyword ?: ($book->mainTopic?->name ?? 'Unternehmensoptimierung');
 
         $prompt = $this->buildPrompt($book, $topicTitle, $targetKeyword, $opportunity);
         $result = $this->ai->generateJson($prompt, 0.3);
@@ -116,46 +116,48 @@ class AutomatedBlogGenerator
         ];
 
         return <<<PROMPT
-You are Allocore's Master Thought Leadership Author. Write a comprehensive, highly authoritative, and engaging 8-section blog article on the topic below.
+You are Allocore's Master Thought Leadership Author. Write a comprehensive, highly authoritative, and engaging 8-section blog article in German (Business Deutsch / auf Deutsch) on the topic below.
 
 Topic: "{$topic}"
 Target SEO Keyword: "{$keyword}"
 Angle/Hook: "{$opportunity?->angle_hook}"
+Language: German (Deutsch)
 
 Source Book Knowledge:
 PROMPT
         . json_encode($bookContext, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . <<<PROMPT
 
-MANDATORY 8-SECTION BLOG STRUCTURE:
-1. Section 1: Problem — Describe the exact high-stakes challenge and frustration faced by modern business operators/leaders.
-2. Section 2: Root Causes — Explain why this problem happens and the hidden pitfalls behind it.
-3. Section 3: Solutions — Present clear, strategic approaches to solve the problem.
-4. Section 4: Practical Implementation — Provide step-by-step, actionable execution instructions with frameworks from the book.
-5. Section 5: Common Mistakes — Highlight 3 to 5 typical errors teams make when attempting to solve this.
-6. Section 6: Summary — Summarize the core lessons and strategic takeaways.
-7. Section 7: Call to Action (CTA) — Clear call-to-action inviting readers to audit their operations using Allocore Suite tools.
-8. Section 8: Recommended Book — A compelling review and recommendation of "{$book->title}" by {$book->author?->name}, explaining exactly why the reader must read this book to master the topic.
+MANDATORY 8-SECTION BLOG STRUCTURE (Write all sections in German):
+1. Section 1: Problem — Beschreiben Sie die konkrete geschäftliche Herausforderung und Frustration moderner Führungskräfte/Unternehmer.
+2. Section 2: Root Causes — Erklären Sie, warum dieses Problem entsteht und welche versteckten Ursachen dahinterstecken.
+3. Section 3: Solutions — Stellen Sie klare, strategische Lösungsansätze vor.
+4. Section 4: Practical Implementation — Konkrete Schritt-für-Schritt-Anleitung mit Frameworks und Methoden aus dem Buch.
+5. Section 5: Common Mistakes — 3 bis 5 typische Fehler, die Teams bei der Umsetzung machen und wie man sie vermeidet.
+6. Section 6: Summary — Zusammenfassung der wichtigsten Erkenntnisse und strategischen Learnings.
+7. Section 7: Call to Action (CTA) — Klarer Handlungsaufruf, die eigenen Unternehmensprozesse mit den Allocore Suite Werkzeugen zu analysieren und zu automatisieren.
+8. Section 8: Recommended Book — Eine fundierte Empfehlung von "{$book->title}" von {$book->author?->name} auf Deutsch.
 
 Output rules:
-- Return ONLY a valid JSON object matching the schema below.
+- IMPORTANT: Write all text, headings, explanations, and metadata entirely in GERMAN (Business-Deutsch).
 - Format each section in clean, rich HTML (using <p>, <h3>, <ul>, <li>, <strong>, <blockquote>).
+- Return ONLY a valid JSON object matching the schema below.
 
 Schema:
 {
-  "title": "string",
-  "meta_description": "string (150-160 chars)",
-  "section_1_problem": "html string",
-  "section_2_root_causes": "html string",
-  "section_3_solutions": "html string",
-  "section_4_implementation": "html string",
-  "section_5_common_mistakes": "html string",
-  "section_6_summary": "html string",
-  "section_7_cta": "html string",
+  "title": "string (in German)",
+  "meta_description": "string (150-160 chars in German)",
+  "section_1_problem": "html string (in German)",
+  "section_2_root_causes": "html string (in German)",
+  "section_3_solutions": "html string (in German)",
+  "section_4_implementation": "html string (in German)",
+  "section_5_common_mistakes": "html string (in German)",
+  "section_6_summary": "html string (in German)",
+  "section_7_cta": "html string (in German)",
   "section_8_recommended_book": {
     "title": "{$book->title}",
     "author": "{$book->author?->name}",
-    "why_recommended": "string",
-    "reading_time_value": "string"
+    "why_recommended": "string (in German)",
+    "reading_time_value": "string (in German)"
   }
 }
 PROMPT;
@@ -185,8 +187,8 @@ PROMPT;
                 ? $result['section_8_recommended_book']
                 : [
                     'title' => $book->title,
-                    'author' => $book->author?->name ?? 'Author',
-                    'why_recommended' => "Deep dive into the core methodology of {$book->title}.",
+                    'author' => $book->author?->name ?? 'Autor',
+                    'why_recommended' => "Fundierte Einblicke in die Kernmethodik von {$book->title}.",
                 ],
         ];
     }
@@ -198,37 +200,37 @@ PROMPT;
         return <<<HTML
 <div class="allocore-blog-article">
     <section class="blog-section mb-8">
-        <h2>The Challenge</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Die Herausforderung</h2>
         {$data['section_1_problem']}
     </section>
 
     <section class="blog-section mb-8">
-        <h2>Root Causes: Why This Happens</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Ursachen: Warum dieses Problem entsteht</h2>
         {$data['section_2_root_causes']}
     </section>
 
     <section class="blog-section mb-8">
-        <h2>Strategic Solutions</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Strategische Lösungsansätze</h2>
         {$data['section_3_solutions']}
     </section>
 
     <section class="blog-section mb-8">
-        <h2>Practical Step-by-Step Implementation</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Praktische Schritt-für-Schritt-Umsetzung</h2>
         {$data['section_4_implementation']}
     </section>
 
     <section class="blog-section mb-8">
-        <h2>Common Mistakes to Avoid</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Typische Fehler & Fallstricke vermeiden</h2>
         {$data['section_5_common_mistakes']}
     </section>
 
     <section class="blog-section mb-8">
-        <h2>Summary & Key Takeaways</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Zusammenfassung & Wichtigste Erkenntnisse</h2>
         {$data['section_6_summary']}
     </section>
 
     <section class="blog-section mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-        <h3>Accelerate Your Execution</h3>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Jetzt Umsetzung starten</h3>
         {$data['section_7_cta']}
     </section>
 

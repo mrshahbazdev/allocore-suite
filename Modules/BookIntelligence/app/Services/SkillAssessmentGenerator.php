@@ -34,37 +34,38 @@ class SkillAssessmentGenerator
         ];
 
         $prompt = <<<PROMPT
-You are Allocore's Chief Assessment & Knowledge Evaluation Psychometrician. Create a rigorous, scenario-based 5-question skill assessment based on the book context below.
+You are Allocore's Chief Assessment & Knowledge Evaluation Psychometrician. Create a rigorous, scenario-based 5-question skill assessment in German (auf Deutsch für deutsche Fach- und Führungskräfte) based on the book context below.
 
 Context:
 PROMPT
         . json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . <<<PROMPT
 
 Requirements:
-1. Write 5 challenging scenario-based questions that test practical comprehension and decision-making (not mere trivial recall).
+1. Write 5 challenging scenario-based questions in German that test practical comprehension and operational decision-making.
 2. For each question:
-   - Provide realistic business context.
-   - Provide 4 distinct options.
+   - Provide realistic business context (in German).
+   - Provide 4 distinct options (in German).
    - Specify "correct_index" (0, 1, 2, or 3).
-   - Provide an in-depth "explanation" explaining why the correct choice is superior and why others fail.
-   - Tag the specific "competency" evaluated.
+   - Provide an in-depth "explanation" in German explaining why the correct choice is superior and why others fail.
+   - Tag the specific "competency" evaluated (in German).
 
 Output rules:
 - Return ONLY a valid JSON object matching the schema below.
+- All titles, questions, options, and explanations MUST be written in German.
 
 Schema:
 {
-  "title": "string",
-  "description": "string",
+  "title": "string (in German)",
+  "description": "string (in German)",
   "passing_score": 70,
   "questions": [
     {
       "id": 1,
-      "question": "string",
-      "options": ["string", "string", "string", "string"],
+      "question": "string (in German)",
+      "options": ["string (in German)", "string (in German)", "string (in German)", "string (in German)"],
       "correct_index": 0,
-      "explanation": "string",
-      "competency": "string"
+      "explanation": "string (in German)",
+      "competency": "string (in German)"
     }
   ]
 }

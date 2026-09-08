@@ -40,7 +40,7 @@ class ContentOpportunityDiscoveryService
         ];
 
         $prompt = <<<PROMPT
-You are Allocore's Chief Content & SEO Growth Strategist. Analyze our organizational knowledge, book intelligence, user searches, and unresolved knowledge gaps to identify 8 to 12 high-intent, high-traffic content marketing opportunities.
+You are Allocore's Chief Content & SEO Growth Strategist. Analyze our organizational knowledge, book intelligence, user searches, and unresolved knowledge gaps to identify 8 to 12 high-intent, high-traffic content marketing opportunities in German (auf Deutsch für den DACH-Markt).
 
 Content Types:
 - blog (In-depth 8-section tactical guides)
@@ -49,6 +49,9 @@ Content Types:
 - newsletter (Executive briefings and strategic memos)
 - linkedin (Viral hooks, carousels, and founder takeaways)
 
+Language Requirement:
+- Write all titles, target keywords, target audiences, and angle hooks strictly in GERMAN (Business Deutsch).
+
 Output rules:
 - Return ONLY a valid JSON array of objects with the exact schema below.
 
@@ -56,13 +59,13 @@ Schema:
 [
   {
     "book_id": 1,
-    "title": "string",
-    "target_keyword": "string",
+    "title": "string (in German)",
+    "target_keyword": "string (in German)",
     "content_type": "blog|faq|whitepaper|newsletter|linkedin",
     "search_intent": "informational|commercial|transactional",
     "estimated_demand": "high|medium|niche",
-    "target_audience": ["string"],
-    "angle_hook": "string"
+    "target_audience": ["string (in German)"],
+    "angle_hook": "string (in German)"
   }
 ]
 

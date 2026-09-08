@@ -14,9 +14,9 @@ class AffiliateRecommendationService
     public function renderRecommendationBoxHtml(Book $book, ?string $whyRecommended = null): string
     {
         $bookTitle = e($book->title);
-        $authorName = e($book->author?->name ?? 'Author');
+        $authorName = e($book->author?->name ?? 'Autor');
         $coverUrl = $book->cover_url ?: asset('images/book-placeholder.png');
-        $explanation = e($whyRecommended ?: ($book->analysis?->short_summary ?? $book->description ?? 'Highly recommended reading for operational excellence.'));
+        $explanation = e($whyRecommended ?: ($book->analysis?->short_summary ?? $book->description ?? 'Dringend empfohlene Lektüre für unternehmerische Exzellenz.'));
         $trackUrl = route('bookintelligence.affiliate.redirect', ['book' => $book->id, 'source' => 'blog']);
 
         return <<<HTML
@@ -26,14 +26,14 @@ class AffiliateRecommendationService
     </div>
     <div class="flex-1 text-center sm:text-left space-y-3">
         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider">
-            <span>⭐</span> Recommended Reading
+            <span>⭐</span> Buchempfehlung
         </div>
         <h3 class="text-xl font-extrabold text-slate-900">{$bookTitle}</h3>
-        <p class="text-sm font-medium text-slate-500">By {$authorName}</p>
+        <p class="text-sm font-medium text-slate-500">Von {$authorName}</p>
         <p class="text-sm leading-relaxed text-slate-700">{$explanation}</p>
         <div class="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
             <a href="{$trackUrl}" target="_blank" rel="noopener noreferrer sponsored" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 text-white font-bold text-sm shadow-md hover:from-orange-600 hover:to-orange-700 transition">
-                <span>🛒</span> Get This Book on Amazon ↗
+                <span>🛒</span> Buch auf Amazon ansehen ↗
             </a>
         </div>
     </div>
