@@ -21,5 +21,6 @@
     "DevManager": true,
     "AuditIntelligence": true,
     "CustomerSuccess": true,
-    "BookIntelligence": true
+    "BookIntelligence": true,
+    "RevenuePlanner": true
 }

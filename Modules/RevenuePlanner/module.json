@@ -1,0 +1,19 @@
+{
+    "name": "RevenuePlanner",
+    "alias": "revenueplanner",
+    "description": "Calculate required target revenue, analyze revenue gaps, optimize existing customer potential, and calculate exact new customer lead requirements.",
+    "keywords": [
+        "revenue",
+        "target",
+        "gap",
+        "sales-funnel",
+        "planning",
+        "financial",
+        "umsatzplaner"
+    ],
+    "priority": 0,
+    "providers": [
+        "Modules\\RevenuePlanner\\Providers\\RevenuePlannerServiceProvider"
+    ],
+    "files": []
+}
