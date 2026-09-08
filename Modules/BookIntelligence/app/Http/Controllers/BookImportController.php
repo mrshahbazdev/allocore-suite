@@ -435,6 +435,88 @@ class BookImportController extends Controller
         }, 200, $headers);
     }
 
+    private function parseCsvFile(string $path): array
+    {
+        $rows = [];
+        if (!file_exists($path) || !is_readable($path)) {
+            return [];
+        }
+
+        $sample = file_get_contents($path, false, null, 0, 2048);
+        $delimiters = [';' => substr_count($sample, ';'), ',' => substr_count($sample, ','), "\t" => substr_count($sample, "\t")];
+        arsort($delimiters);
+        $delimiter = key($delimiters) ?: ',';
+
+        if (($handle = fopen($path, 'r')) !== false) {
+            $header = null;
+            while (($data = fgetcsv($handle, 4096, $delimiter)) !== false) {
+                if ($header === null) {
+                    $header = array_map(function ($h) {
+                        return strtolower(trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $h)));
+                    }, $data);
+                    continue;
+                }
+
+                if (count($data) === 1 && empty($data[0])) {
+                    continue;
+                }
+
+                $row = [];
+                foreach ($header as $i => $colName) {
+                    $row[$colName] = $data[$i] ?? null;
+                }
+                $rows[] = $row;
+            }
+            fclose($handle);
+        }
+
+        return $rows;
+    }
+
+    private function normalizeRowKeys(array $row): array
+    {
+        $normalized = [];
+        foreach ($row as $k => $v) {
+            $cleanKey = strtolower(trim(preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $k)));
+            $cleanKey = trim(preg_replace('/_+/', '_', $cleanKey), '_');
+            $normalized[$cleanKey] = is_string($v) ? trim($v) : $v;
+        }
+        return $normalized;
+    }
+
+    private function syncImportedReadingProgress(Book $book, array $row): void
+    {
+        $rawStatus = strtolower(trim($row['reading_status'] ?? $row['lesestatus'] ?? $row['status_read'] ?? $row['status'] ?? ''));
+        $progress = isset($row['progress_percent']) ? (int) $row['progress_percent'] : (isset($row['progress']) ? (int) $row['progress'] : null);
+        $notes = trim($row['reading_notes'] ?? $row['notes'] ?? $row['notizen'] ?? '');
+
+        $status = 'unassigned';
+        if (in_array($rawStatus, ['read', 'gelesen', 'completed', 'fertig', 'done', 'yes', 'ja'])) {
+            $status = 'read';
+            $progress = 100;
+        } elseif (in_array($rawStatus, ['reading', 'am lesen', 'current', 'in_progress', 'wip'])) {
+            $status = 'reading';
+            $progress = $progress !== null ? $progress : 50;
+        } elseif (in_array($rawStatus, ['planned', 'geplant', 'to_read', 'toread', 'wishlist'])) {
+            $status = 'planned';
+            $progress = 0;
+        }
+
+        if ($status !== 'unassigned') {
+            $book->progressRecords()->updateOrCreate(
+                ['user_id' => auth()->id()],
+                [
+                    'team_id' => auth()->user()->current_team_id,
+                    'status' => $status,
+                    'progress_percent' => $progress ?: 0,
+                    'started_at' => $status !== 'planned' ? now()->toDateString() : null,
+                    'completed_at' => $status === 'read' ? now()->toDateString() : null,
+                    'notes' => !empty($notes) ? $notes : null,
+                ]
+            );
+        }
+    }
+
     private function uniqueSlug(string $title): string
     {
         $base = Str::slug($title) ?: 'book';
@@ -449,5 +531,6 @@ class BookImportController extends Controller
         return $slug;
     }
 }
+
 
 
