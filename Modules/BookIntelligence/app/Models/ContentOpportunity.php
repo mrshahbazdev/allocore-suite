@@ -61,6 +61,11 @@ class ContentOpportunity extends Model
         return $this->belongsTo(Post::class, 'generated_post_id');
     }
 
+    public function generatedBlog(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(GeneratedBlog::class, 'opportunity_id');
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->whereNotIn('status', [self::STATUS_ARCHIVED]);

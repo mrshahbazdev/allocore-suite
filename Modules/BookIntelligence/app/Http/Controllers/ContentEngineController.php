@@ -20,7 +20,7 @@ class ContentEngineController extends Controller
         $type = $request->query('type', 'all');
         $status = $request->query('status', 'all');
 
-        $query = ContentOpportunity::query()->with(['book.author', 'post']);
+        $query = ContentOpportunity::query()->with(['book.author', 'post', 'generatedBlog']);
 
         if ($type !== 'all') {
             $query->where('content_type', $type);

@@ -108,9 +108,20 @@
                     <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md">
                         <div class="space-y-3">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="rounded-md bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold uppercase text-slate-700">
-                                    {{ $opp->content_type }}
-                                </span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="rounded-md bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold uppercase text-slate-700">
+                                        {{ $opp->content_type }}
+                                    </span>
+                                    @if ($opp->status === 'published' || $opp->generated_post_id)
+                                        <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-300">
+                                            ● {{ __('Veröffentlicht') }}
+                                        </span>
+                                    @elseif ($opp->status === 'generated' || $opp->generatedBlog)
+                                        <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-800 border border-blue-300">
+                                            ● {{ __('Generiert (Entwurf)') }}
+                                        </span>
+                                    @endif
+                                </div>
                                 <span class="rounded px-2 py-0.5 text-[10px] font-bold uppercase {{ $opp->estimated_demand === 'high' ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700' }}">
                                     {{ $opp->estimated_demand }} {{ __('Demand') }}
                                 </span>
@@ -139,18 +150,31 @@
                             @endif
                         </div>
 
-                        <div class="mt-5 border-t border-slate-100 pt-4">
-                            @if ($opp->generated_post_id)
-                                <a href="{{ route('blog.show', $opp->post->slug ?? '') }}" target="_blank" class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-sm">
-                                    ✅ {{ __('View Published Article') }} ↗
-                                </a>
+                        <div class="mt-5 border-t border-slate-100 pt-4 space-y-2">
+                            @if ($opp->generated_post_id && $opp->post)
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('blog.show', $opp->post->slug) }}" target="_blank" class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-sm transition">
+                                        ✅ {{ __('Im Blog ansehen') }} ↗
+                                    </a>
+                                    @if ($opp->generatedBlog)
+                                        <a href="{{ route('bookintelligence.content.blog.show', $opp->generatedBlog->id) }}" class="inline-flex items-center justify-center rounded-xl bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-200 transition">
+                                            ✏️ {{ __('Editor') }}
+                                        </a>
+                                    @endif
+                                </div>
+                            @elseif ($opp->generatedBlog)
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('bookintelligence.content.blog.show', $opp->generatedBlog->id) }}" class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white hover:bg-blue-700 shadow-sm transition">
+                                        📝 {{ __('Entwurf prüfen & veröffentlichen') }} &rarr;
+                                    </a>
+                                </div>
                             @else
                                 <form method="POST" action="{{ route('bookintelligence.content.blog.generate') }}">
                                     @csrf
                                     <input type="hidden" name="book_id" value="{{ $opp->book_id ?? $books->first()?->id }}">
                                     <input type="hidden" name="opportunity_id" value="{{ $opp->id }}">
-                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 py-2.5 text-xs font-bold text-white hover:from-orange-600 hover:to-orange-700 shadow-sm">
-                                        ⚡ {{ __('Generate 8-Section Blog Article') }} &rarr;
+                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 py-2.5 text-xs font-bold text-white hover:from-orange-600 hover:to-orange-700 shadow-sm transition">
+                                        ⚡ {{ __('8-Abschnitte Blogartikel generieren') }} &rarr;
                                     </button>
                                 </form>
                             @endif
