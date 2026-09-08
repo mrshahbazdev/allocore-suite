@@ -6,7 +6,7 @@
 
     <div class="space-y-6" data-no-navigate>
         <!-- Header -->
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" x-data="{ showCreateModal: false }">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[#0094af]">{{ __('Module 10 & 11 — Competency & Career OS') }}</p>
                 <h1 class="mt-1 text-3xl font-bold text-slate-900">{{ __('Role Competencies & Career Progression Trajectories') }}</h1>
@@ -14,9 +14,80 @@
                     {{ __('Clear, transparent development ladders connecting company roles, required knowledge, competencies, skills, and recommended books.') }}
                 </p>
             </div>
-            <a href="{{ route('bookintelligence.learning.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-[#ff9200] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-600">
-                🚀 {{ __('Generate My Personalized Learning Path') }} &rarr;
-            </a>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="button" @click="showCreateModal = true" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition">
+                    + {{ __('Neue Rolle anlegen') }}
+                </button>
+                <a href="{{ route('bookintelligence.learning.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-[#ff9200] px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-600 transition">
+                    🚀 {{ __('Lernpfad generieren') }} &rarr;
+                </a>
+            </div>
+
+            <!-- Modal for Adding Role -->
+            <div x-show="showCreateModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-xs">
+                <div @click.away="showCreateModal = false" class="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h3 class="text-lg font-bold text-slate-900">{{ __('Neue Unternehmensrolle anlegen') }}</h3>
+                        <button type="button" @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    </div>
+
+                    <form method="POST" action="{{ route('bookintelligence.competency.roles.store') }}" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700">{{ __('Rollenbezeichnung *') }}</label>
+                            <input type="text" name="name" required placeholder="z. B. Senior Product Marketing Manager" class="mt-1 w-full rounded-xl border-slate-300 text-xs font-semibold focus:border-[#ff9200] focus:ring-[#ff9200]">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">{{ __('Abteilung *') }}</label>
+                                <input type="text" name="department" required placeholder="Sales, Operations, CS, Tech..." class="mt-1 w-full rounded-xl border-slate-300 text-xs focus:border-[#ff9200] focus:ring-[#ff9200]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">{{ __('Erfahrungslevel *') }}</label>
+                                <select name="level" class="mt-1 w-full rounded-xl border-slate-300 text-xs focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                    <option value="starter">{{ __('Starter') }}</option>
+                                    <option value="junior">{{ __('Junior') }}</option>
+                                    <option value="professional" selected>{{ __('Professional') }}</option>
+                                    <option value="senior">{{ __('Senior') }}</option>
+                                    <option value="expert">{{ __('Expert') }}</option>
+                                    <option value="master">{{ __('Master') }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700">{{ __('Kurzbeschreibung & Kernverantwortung') }}</label>
+                            <textarea name="description" rows="2" placeholder="Was ist das Hauptziel und die Verantwortung dieser Rolle?" class="mt-1 w-full rounded-xl border-slate-300 text-xs"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700">{{ __('Erforderliches Wissen (Kommagetrennt oder Zeilenumbruch)') }}</label>
+                            <textarea name="required_knowledge" rows="2" placeholder="z. B. MEDDPICC, Unit Economics, SaaS Metriken..." class="mt-1 w-full rounded-xl border-slate-300 text-xs"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">{{ __('Kern-Kompetenzen') }}</label>
+                                <textarea name="required_competencies" rows="2" placeholder="Pipeline Generation, Closing..." class="mt-1 w-full rounded-xl border-slate-300 text-xs"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">{{ __('Taktische Skills') }}</label>
+                                <textarea name="required_skills" rows="2" placeholder="Cold Calling, CRM Hygiene..." class="mt-1 w-full rounded-xl border-slate-300 text-xs"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                            <button type="button" @click="showCreateModal = false" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">
+                                {{ __('Abbrechen') }}
+                            </button>
+                            <button type="submit" class="rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:from-orange-600 hover:to-orange-700">
+                                💾 {{ __('Rolle speichern') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- Career Progression Paths Visual Map -->

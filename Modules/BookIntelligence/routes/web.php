@@ -83,7 +83,10 @@ Route::middleware(['auth', 'verified', 'module:book-intelligence', EnsureCurrent
 
         // Module 10 & 11: Allocore Competency Framework & Career Progression
         Route::get('/competency', [CompetencyController::class, 'index'])->name('competency.index');
+        Route::post('/competency/roles', [CompetencyController::class, 'storeRole'])->name('competency.roles.store');
         Route::get('/competency/roles/{role}', [CompetencyController::class, 'showRole'])->name('competency.roles.show');
+        Route::put('/competency/roles/{role}', [CompetencyController::class, 'updateRole'])->name('competency.roles.update');
+        Route::delete('/competency/roles/{role}', [CompetencyController::class, 'destroyRole'])->name('competency.roles.destroy');
 
         // Module 12: Personalized Learning Paths
         Route::get('/learning', [LearningPathController::class, 'index'])->name('learning.index');
