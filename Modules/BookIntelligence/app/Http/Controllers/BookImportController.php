@@ -72,14 +72,11 @@ class BookImportController extends Controller
                     continue;
                 }
 
-                // Resolve Author (e.g. "Mike Michalowicz", "Diverse Autoren", "Biebig, Althof, Wagner")
+                // Resolve Author
                 $authorName = trim($row['author'] ?? $row['autor'] ?? $row['author_name'] ?? '');
                 $authorId = null;
                 if (!empty($authorName)) {
-                    $author = Author::firstOrCreate(
-                        ['team_id' => $teamId, 'name' => $authorName],
-                        ['slug' => Str::slug($authorName) ?: 'author']
-                    );
+                    $author = $this->findOrCreateAuthor($teamId, $authorName);
                     if ($author->wasRecentlyCreated) {
                         $newAuthors++;
                     }
@@ -92,10 +89,7 @@ class BookImportController extends Controller
 
                 $parentTopicId = null;
                 if (!empty($wissenswelt)) {
-                    $parentTopic = Topic::firstOrCreate(
-                        ['team_id' => $teamId, 'name' => $wissenswelt, 'parent_id' => null],
-                        ['slug' => Str::slug($wissenswelt) ?: 'wissenswelt']
-                    );
+                    $parentTopic = $this->findOrCreateTopic($teamId, $wissenswelt, null);
                     if ($parentTopic->wasRecentlyCreated) {
                         $newTopics++;
                     }
@@ -104,10 +98,7 @@ class BookImportController extends Controller
 
                 $mainTopicId = $parentTopicId;
                 if (!empty($thema)) {
-                    $subTopic = Topic::firstOrCreate(
-                        ['team_id' => $teamId, 'name' => $thema, 'parent_id' => $parentTopicId],
-                        ['slug' => Str::slug(($wissenswelt ? $wissenswelt.'-' : '').$thema) ?: 'thema']
-                    );
+                    $subTopic = $this->findOrCreateTopic($teamId, $thema, $parentTopicId);
                     if ($subTopic->wasRecentlyCreated) {
                         $newTopics++;
                     }
@@ -119,10 +110,7 @@ class BookImportController extends Controller
                 foreach (['nebenwelt1', 'nebenwelt2', 'nebenwelt', 'subtopic'] as $nwKey) {
                     $nwName = trim($row[$nwKey] ?? '');
                     if (!empty($nwName)) {
-                        $nwTopic = Topic::firstOrCreate(
-                            ['team_id' => $teamId, 'name' => $nwName],
-                            ['slug' => Str::slug($nwName) ?: 'topic']
-                        );
+                        $nwTopic = $this->findOrCreateTopic($teamId, $nwName, null);
                         if ($nwTopic->wasRecentlyCreated) {
                             $newTopics++;
                         }
@@ -134,11 +122,10 @@ class BookImportController extends Controller
                 $publisherName = trim($row['publisher'] ?? $row['verlag'] ?? '');
                 $publisherId = null;
                 if (!empty($publisherName)) {
-                    $publisher = Publisher::firstOrCreate(
-                        ['team_id' => $teamId, 'name' => $publisherName]
-                    );
+                    $publisher = $this->findOrCreatePublisher($teamId, $publisherName);
                     $publisherId = $publisher->id;
                 }
+
 
                 // Code / Reference identifier (e.g. FAC-001, FIN-001, FUE-001)
                 $code = trim($row['code'] ?? $row['buch_code'] ?? $row['id_code'] ?? '');
@@ -529,6 +516,80 @@ class BookImportController extends Controller
         }
 
         return $slug;
+    }
+
+    private function findOrCreateTopic(int $teamId, string $name, ?int $parentId = null): Topic
+    {
+        $name = trim($name);
+
+        // 1. Check existing by team and name under this parent (if parent provided)
+        $query = Topic::where('team_id', $teamId)->where('name', $name);
+        if ($parentId !== null) {
+            $query->where('parent_id', $parentId);
+        }
+        $existing = $query->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        // 2. Check existing by team and name under any parent
+        $existingByName = Topic::where('team_id', $teamId)->where('name', $name)->first();
+        if ($existingByName) {
+            return $existingByName;
+        }
+
+        // 3. Check existing by slug
+        $baseSlug = Str::slug($name) ?: 'topic';
+        $existingBySlug = Topic::where('team_id', $teamId)->where('slug', $baseSlug)->first();
+        if ($existingBySlug && mb_strtolower($existingBySlug->name) === mb_strtolower($name)) {
+            return $existingBySlug;
+        }
+
+        // 4. Generate unique slug for this team
+        $slug = $baseSlug;
+        $suffix = 2;
+        while (Topic::where('team_id', $teamId)->where('slug', $slug)->exists()) {
+            $slug = $baseSlug.'-'.$suffix;
+            $suffix++;
+        }
+
+        return Topic::create([
+            'team_id' => $teamId,
+            'user_id' => auth()->id(),
+            'parent_id' => $parentId,
+            'name' => $name,
+            'slug' => $slug,
+        ]);
+    }
+
+    private function findOrCreateAuthor(int $teamId, string $name): Author
+    {
+        $name = trim($name);
+        $existing = Author::where('team_id', $teamId)->where('name', $name)->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        return Author::create([
+            'team_id' => $teamId,
+            'user_id' => auth()->id(),
+            'name' => $name,
+        ]);
+    }
+
+    private function findOrCreatePublisher(int $teamId, string $name): Publisher
+    {
+        $name = trim($name);
+        $existing = Publisher::where('team_id', $teamId)->where('name', $name)->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        return Publisher::create([
+            'team_id' => $teamId,
+            'user_id' => auth()->id(),
+            'name' => $name,
+        ]);
     }
 }
 
