@@ -23,6 +23,7 @@ class LearningPathController extends Controller
 
     public function generate(Request $request, PersonalizedLearningPathGenerator $generator): RedirectResponse
     {
+        @set_time_limit(300);
         $validated = $request->validate([
             'target_role_id' => ['required', 'exists:bookintelligence_competency_roles,id'],
             'current_role_id' => ['nullable', 'exists:bookintelligence_competency_roles,id'],

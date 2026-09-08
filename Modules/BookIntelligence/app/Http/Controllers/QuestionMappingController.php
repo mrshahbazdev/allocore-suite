@@ -168,6 +168,7 @@ class QuestionMappingController extends Controller
 
     public function generate(Book $book, QuestionMappingGenerator $generator): RedirectResponse
     {
+        @set_time_limit(300);
         try {
             $mappings = $generator->generateForBook($book);
 

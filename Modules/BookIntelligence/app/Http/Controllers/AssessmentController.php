@@ -24,6 +24,7 @@ class AssessmentController extends Controller
 
     public function generate(Book $book, SkillAssessmentGenerator $generator): RedirectResponse
     {
+        @set_time_limit(300);
         try {
             $assessment = $generator->generateForBook($book);
 

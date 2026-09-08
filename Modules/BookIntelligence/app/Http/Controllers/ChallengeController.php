@@ -24,6 +24,7 @@ class ChallengeController extends Controller
 
     public function generate(Book $book, PracticalChallengeGenerator $generator): RedirectResponse
     {
+        @set_time_limit(300);
         try {
             $challenge = $generator->generateForBook($book);
 

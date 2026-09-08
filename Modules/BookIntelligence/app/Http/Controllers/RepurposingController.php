@@ -30,6 +30,7 @@ class RepurposingController extends Controller
 
     public function generate(Book $book, BookRepurposingEngine $engine): RedirectResponse
     {
+        @set_time_limit(300);
         try {
             $bundle = $engine->generateBundle($book);
 

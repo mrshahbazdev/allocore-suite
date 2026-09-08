@@ -47,6 +47,7 @@ class ContentEngineController extends Controller
 
     public function discover(Request $request, ContentOpportunityDiscoveryService $service): RedirectResponse
     {
+        @set_time_limit(300);
         $bookId = $request->input('book_id');
         $book = $bookId ? Book::find($bookId) : null;
 
@@ -63,6 +64,7 @@ class ContentEngineController extends Controller
 
     public function generateBlog(Request $request, AutomatedBlogGenerator $generator): RedirectResponse
     {
+        @set_time_limit(300);
         $validated = $request->validate([
             'book_id' => ['required', 'exists:bookintelligence_books,id'],
             'opportunity_id' => ['nullable', 'exists:bookintelligence_content_opportunities,id'],
