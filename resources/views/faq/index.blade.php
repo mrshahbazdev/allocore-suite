@@ -74,7 +74,10 @@
             @endforeach
         </div>
 
-        <button type="button" @click.stop="showAskModal = true" class="inline-flex items-center gap-2 rounded-xl bg-[#0094af] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#007b91] transition cursor-pointer">
+        <button type="button" 
+                @click.stop="showAskModal = true" 
+                onclick="window.openFaqModal && window.openFaqModal()"
+                class="inline-flex items-center gap-2 rounded-xl bg-[#0094af] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#007b91] transition cursor-pointer">
             ✍️ {{ __('Eigene Frage stellen') }}
         </button>
     </div>
@@ -103,7 +106,10 @@
                 <a href="{{ route('faq.index') }}" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50">
                     {{ __('Alle Fragen anzeigen') }}
                 </a>
-                <button type="button" @click.stop="showAskModal = true" class="rounded-xl bg-[#ff9200] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-600 cursor-pointer">
+                <button type="button" 
+                        @click.stop="showAskModal = true" 
+                        onclick="window.openFaqModal && window.openFaqModal()"
+                        class="rounded-xl bg-[#ff9200] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-600 cursor-pointer">
                     ✍️ {{ __('Jetzt Frage stellen') }}
                 </button>
             </div>
@@ -112,7 +118,7 @@
         <div class="space-y-4">
             @foreach ($faqs as $faq)
                 <div class="rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:border-slate-300 overflow-hidden">
-                    <button type="button" @click="openFaq = (openFaq === {{ $faq->id }} ? null : {{ $faq->id }})" class="flex w-full items-center justify-between p-5 text-left">
+                    <button type="button" @click="openFaq = (openFaq === {{ $faq->id }} ? null : {{ $faq->id }})" class="flex w-full items-center justify-between p-5 text-left cursor-pointer">
                         <div class="flex items-center gap-3 pr-4">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-sm font-bold text-[#ff9200]">
                                 ?
@@ -195,16 +201,11 @@
     @endif
 
     <!-- Ask Question Modal -->
-    <div x-show="showAskModal" 
+    <div id="ask-modal"
+         x-show="showAskModal" 
          x-cloak 
-         @keydown.escape.window="showAskModal = false"
-         @click.self="showAskModal = false"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
+         @keydown.escape.window="showAskModal = false; window.closeFaqModal && window.closeFaqModal();"
+         @click.self="showAskModal = false; window.closeFaqModal && window.closeFaqModal();"
          class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
         <div @click.stop class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -212,7 +213,10 @@
                     <h3 class="text-lg font-bold text-slate-900">{{ __('Haben Sie eine Frage?') }}</h3>
                     <p class="text-xs text-slate-500">{{ __('Stellen Sie Ihre Frage direkt an unsere Wissensdatenbank.') }}</p>
                 </div>
-                <button type="button" @click.stop="showAskModal = false" class="text-slate-400 hover:text-slate-600 text-2xl font-bold cursor-pointer p-1">&times;</button>
+                <button type="button" 
+                        @click.stop="showAskModal = false" 
+                        onclick="window.closeFaqModal && window.closeFaqModal()"
+                        class="text-slate-400 hover:text-slate-600 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
             <form method="POST" action="{{ route('faq.ask') }}" class="space-y-4">
@@ -252,7 +256,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                    <button type="button" @click.stop="showAskModal = false" class="cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
+                    <button type="button" 
+                            @click.stop="showAskModal = false" 
+                            onclick="window.closeFaqModal && window.closeFaqModal()"
+                            class="cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
                         {{ __('Abbrechen') }}
                     </button>
                     <button type="submit" class="cursor-pointer rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 transition">
@@ -263,4 +270,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.openFaqModal = function() {
+        var m = document.getElementById('ask-modal');
+        if (m) {
+            m.style.display = 'flex';
+            m.removeAttribute('x-cloak');
+        }
+    };
+    window.closeFaqModal = function() {
+        var m = document.getElementById('ask-modal');
+        if (m) {
+            m.style.display = 'none';
+        }
+    };
+</script>
 @endsection

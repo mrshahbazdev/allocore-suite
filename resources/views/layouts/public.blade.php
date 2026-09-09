@@ -17,8 +17,10 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     @stack('styles')
     <style>
+        [x-cloak] { display: none !important; }
         .glossary-link {
             display: inline !important;
             font-weight: 600 !important;
