@@ -156,6 +156,7 @@ Route::get('language/{locale}', LanguageController::class)->name('language')->wh
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
 
 Route::get('search', GlobalSearchController::class)->name('search');
+Route::get('search/index', fn () => redirect()->route('search'))->name('search.index');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('help', [HelpController::class, 'index'])->name('help.index');
 Route::get('status', [StatusPageController::class, 'index'])->name('status.index');
@@ -192,7 +193,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('app/auditpro', '/app/audit', 301);
     Route::redirect('app/clusterforge', '/app/clusters', 301);
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
-    Route::get('search', SearchController::class)->name('search.index');
     Route::get('imports', [ImportController::class, 'index'])->name('imports.index');
     Route::post('imports/upload', [ImportController::class, 'upload'])->name('imports.upload');
     Route::post('imports', [ImportController::class, 'store'])->name('imports.store');
