@@ -22,17 +22,30 @@
 
         <!-- Search Bar -->
         <div class="mx-auto mt-8 max-w-2xl">
-            <form method="GET" action="{{ route('faq.index') }}" class="relative flex items-center shadow-2xl rounded-2xl overflow-hidden">
+            <form method="GET" action="{{ route('faq.index') }}" class="relative flex items-center shadow-2xl rounded-2xl overflow-hidden border border-slate-200 bg-white">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-6 w-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
-                <input type="text" name="q" value="{{ $search }}" placeholder="{{ __('Stichwort oder Frage eingeben (z. B. Pricing, OKRs, Vertrieb, Liquidität)...') }}" class="w-full border-0 bg-white py-4.5 pl-12 pr-32 text-base text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#ff9200]">
+                <input type="text" 
+                       name="q" 
+                       value="{{ $search }}" 
+                       autocomplete="off"
+                       placeholder="{{ __('Stichwort oder Frage eingeben (z. B. Pricing, OKRs, Vertrieb, Liquidität)...') }}" 
+                       style="color: #0f172a !important; background-color: #ffffff !important; font-size: 1.05rem !important;"
+                       class="w-full border-0 bg-white py-4.5 pl-12 pr-32 text-slate-900 font-medium placeholder:text-slate-400 focus:outline-none focus:ring-0">
+                
+                @if($search !== '')
+                    <a href="{{ route('faq.index', ['category' => $selectedCategory]) }}" class="absolute right-28 top-3.5 bottom-3.5 px-2 flex items-center text-slate-400 hover:text-slate-700 text-lg font-bold" title="{{ __('Suche leeren') }}">
+                        &times;
+                    </a>
+                @endif
+
                 @if($selectedCategory !== 'all')
                     <input type="hidden" name="category" value="{{ $selectedCategory }}">
                 @endif
-                <button type="submit" class="absolute right-2 top-2 bottom-2 inline-flex items-center rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 px-6 text-sm font-bold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 transition">
+                <button type="submit" class="absolute right-2 top-2 bottom-2 inline-flex items-center rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 px-6 text-sm font-bold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 transition cursor-pointer">
                     {{ __('Suchen') }}
                 </button>
             </form>
