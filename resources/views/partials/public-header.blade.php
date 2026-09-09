@@ -3,6 +3,7 @@
     $menu = \App\Models\SiteSetting::value('public_nav_menu', []);
     if (empty($menu)) {
         $menu = [
+            ['label' => __('FAQ'), 'url' => route('faq.index'), 'children' => []],
             ['label' => __('Glossary'), 'url' => route('glossary.index'), 'children' => []],
             ['label' => __('Blog'), 'url' => route('blog.index'), 'children' => []],
             ['label' => __('public.nav.pricing'), 'url' => route('billing.plans'), 'children' => []],

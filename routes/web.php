@@ -71,6 +71,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\HelpController;
@@ -131,6 +132,8 @@ Route::get('case-studies', [CaseStudyController::class, 'index'])->name('case-st
 Route::get('case-studies/{caseStudy}', [CaseStudyController::class, 'show'])->name('case-studies.show');
 Route::get('glossary', [GlossaryController::class, 'index'])->name('glossary.index');
 Route::get('glossary/{glossary}', [GlossaryController::class, 'show'])->name('glossary.show');
+Route::get('faq', [FaqController::class, 'index'])->name('faq.index');
+Route::post('faq/ask', [FaqController::class, 'ask'])->name('faq.ask');
 Route::get('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.index');
 Route::post('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.calculate');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');

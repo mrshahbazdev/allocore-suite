@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogPost;
+use App\Models\GlossaryTerm;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Models\Audit;
+use Modules\BookIntelligence\Models\QuestionMapping;
 use Modules\FinancialPlatform\Models\Company;
 use Modules\FinancialPlatform\Models\Lead;
 use Modules\InvoiceMaker\Models\Client;
@@ -27,34 +30,114 @@ class GlobalSearchController extends Controller
     public function __invoke(Request $request)
     {
         $query = trim($request->get('q', ''));
-        $teamId = $request->user()->current_team_id;
+        $user = $request->user();
+        $teamId = $user?->current_team_id;
         $results = [];
 
-        if ($query && $teamId) {
-            foreach ($this->searchable as $group => [$model, $fields, $route]) {
-                $q = $model::query();
+        if ($query !== '') {
+            // 1. FAQs & Questions (Publicly accessible)
+            if (class_exists(QuestionMapping::class)) {
+                $faqs = QuestionMapping::withoutGlobalScope('current_team')
+                    ->where('is_active', true)
+                    ->search($query)
+                    ->limit(6)
+                    ->get()
+                    ->map(fn ($faq) => [
+                        'type' => 'faq',
+                        'title' => $faq->question,
+                        'description' => $faq->answer_excerpt ?: $faq->problem_statement,
+                        'category' => $faq->category,
+                        'url' => route('faq.index', ['q' => $faq->question]),
+                    ]);
 
-                $q->where('team_id', $teamId);
-
-                $q->where(function ($q) use ($fields, $query) {
-                    foreach ($fields as $field) {
-                        $q->orWhere($field, 'like', '%'.$query.'%');
-                    }
-                });
-
-                $items = $q->limit(5)->get()->map(function ($item) use ($group, $route) {
-                    return [
-                        'type' => $group,
-                        'title' => $this->titleFor($item, $group),
-                        'url' => Route::has($route) ? route($route, $item) : null,
+                if ($faqs->isNotEmpty()) {
+                    $results['faqs'] = [
+                        'module' => __('Häufige Fragen & Antworten (FAQ)'),
+                        'records' => $faqs,
                     ];
-                });
-
-                if ($items->isNotEmpty()) {
-                    $results[$group] = $items;
                 }
             }
 
+            // 2. Glossary Terms (Publicly accessible)
+            if (class_exists(GlossaryTerm::class)) {
+                $terms = GlossaryTerm::where('is_published', true)
+                    ->where(function ($q) use ($query) {
+                        $q->where('term', 'like', "%{$query}%")
+                            ->orWhere('definition', 'like', "%{$query}%");
+                    })
+                    ->limit(6)
+                    ->get()
+                    ->map(fn ($term) => [
+                        'type' => 'glossary',
+                        'title' => $term->term,
+                        'description' => $term->definition,
+                        'url' => route('glossary.show', $term),
+                    ]);
+
+                if ($terms->isNotEmpty()) {
+                    $results['glossary'] = [
+                        'module' => __('Glossar & Fachbegriffe'),
+                        'records' => $terms,
+                    ];
+                }
+            }
+
+            // 3. Blog Articles (Publicly accessible)
+            if (class_exists(BlogPost::class)) {
+                $posts = BlogPost::where('is_published', true)
+                    ->where(function ($q) use ($query) {
+                        $q->where('title', 'like', "%{$query}%")
+                            ->orWhere('excerpt', 'like', "%{$query}%");
+                    })
+                    ->limit(6)
+                    ->get()
+                    ->map(fn ($post) => [
+                        'type' => 'blog',
+                        'title' => $post->title,
+                        'description' => $post->excerpt,
+                        'url' => route('blog.show', $post->slug),
+                    ]);
+
+                if ($posts->isNotEmpty()) {
+                    $results['blog'] = [
+                        'module' => __('Blog & Fachartikel'),
+                        'records' => $posts,
+                    ];
+                }
+            }
+
+            // 4. Authenticated Team Records (Contacts, Invoices, Leads, etc.)
+            if ($teamId) {
+                foreach ($this->searchable as $group => [$model, $fields, $route]) {
+                    if (!class_exists($model)) {
+                        continue;
+                    }
+
+                    $q = $model::query()->where('team_id', $teamId);
+                    $q->where(function ($q) use ($fields, $query) {
+                        foreach ($fields as $field) {
+                            $q->orWhere($field, 'like', '%'.$query.'%');
+                        }
+                    });
+
+                    $items = $q->limit(5)->get()->map(function ($item) use ($group, $route) {
+                        return [
+                            'type' => $group,
+                            'title' => $this->titleFor($item, $group),
+                            'url' => Route::has($route) ? route($route, $item) : null,
+                        ];
+                    });
+
+                    if ($items->isNotEmpty()) {
+                        $results[$group] = [
+                            'module' => __(ucfirst($group)),
+                            'records' => $items,
+                        ];
+                    }
+                }
+            }
+
+            // 5. Public Pages
             $pages = Page::where('is_active', true)
                 ->whereHas('translations', function ($q) use ($query) {
                     $q->where('title', 'like', '%'.$query.'%')
@@ -69,7 +152,10 @@ class GlobalSearchController extends Controller
                 ]);
 
             if ($pages->isNotEmpty()) {
-                $results['pages'] = $pages;
+                $results['pages'] = [
+                    'module' => __('Seiten'),
+                    'records' => $pages,
+                ];
             }
         }
 
