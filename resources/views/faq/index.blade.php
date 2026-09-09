@@ -61,7 +61,7 @@
             @endforeach
         </div>
 
-        <button type="button" @click="showAskModal = true" class="inline-flex items-center gap-2 rounded-xl bg-[#0094af] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#007b91] transition">
+        <button type="button" @click.stop="showAskModal = true" class="inline-flex items-center gap-2 rounded-xl bg-[#0094af] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#007b91] transition cursor-pointer">
             ✍️ {{ __('Eigene Frage stellen') }}
         </button>
     </div>
@@ -90,7 +90,7 @@
                 <a href="{{ route('faq.index') }}" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50">
                     {{ __('Alle Fragen anzeigen') }}
                 </a>
-                <button type="button" @click="showAskModal = true" class="rounded-xl bg-[#ff9200] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-600">
+                <button type="button" @click.stop="showAskModal = true" class="rounded-xl bg-[#ff9200] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-600 cursor-pointer">
                     ✍️ {{ __('Jetzt Frage stellen') }}
                 </button>
             </div>
@@ -182,14 +182,24 @@
     @endif
 
     <!-- Ask Question Modal -->
-    <div x-show="showAskModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
-        <div @click.away="showAskModal = false" class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+    <div x-show="showAskModal" 
+         x-cloak 
+         @keydown.escape.window="showAskModal = false"
+         @click.self="showAskModal = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
+        <div @click.stop class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                     <h3 class="text-lg font-bold text-slate-900">{{ __('Haben Sie eine Frage?') }}</h3>
                     <p class="text-xs text-slate-500">{{ __('Stellen Sie Ihre Frage direkt an unsere Wissensdatenbank.') }}</p>
                 </div>
-                <button type="button" @click="showAskModal = false" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+                <button type="button" @click.stop="showAskModal = false" class="text-slate-400 hover:text-slate-600 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
             <form method="POST" action="{{ route('faq.ask') }}" class="space-y-4">
@@ -229,10 +239,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                    <button type="button" @click="showAskModal = false" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">
+                    <button type="button" @click.stop="showAskModal = false" class="cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
                         {{ __('Abbrechen') }}
                     </button>
-                    <button type="submit" class="rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:from-orange-600 hover:to-orange-700">
+                    <button type="submit" class="cursor-pointer rounded-xl bg-gradient-to-r from-[#ff9200] to-orange-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 transition">
                         🚀 {{ __('Frage absenden') }}
                     </button>
                 </div>
