@@ -139,13 +139,11 @@
                         </div>
 
                         <div class="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-3">
-                            @php
-                                $topStats = \App\Models\SiteSetting::value('top_stats') ?: [
-                                    ['label' => __('landing.stats.central_auth'), 'value' => __('landing.stats.value_one_login')],
-                                    ['label' => __('landing.stats.teams_billing'), 'value' => __('landing.stats.value_shared')],
-                                    ['label' => __('landing.stats.per_user'), 'value' => __('landing.stats.value_module_gated')],
-                                ];
-                            @endphp
+                            @php($topStats = \App\Models\SiteSetting::value('top_stats') ?: [
+                                ['label' => __('landing.stats.central_auth'), 'value' => __('landing.stats.value_one_login')],
+                                ['label' => __('landing.stats.teams_billing'), 'value' => __('landing.stats.value_shared')],
+                                ['label' => __('landing.stats.per_user'), 'value' => __('landing.stats.value_module_gated')],
+                            ])
                             @foreach ($topStats as $stat)
                                 <div class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
                                     <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $stat['label'] }}</div>
@@ -226,18 +224,16 @@
                             <p class="mt-4 text-lg text-slate-600">{{ \App\Models\SiteSetting::value('how_subheading') ?: __('landing.how.subheading') }}</p>
                         </div>
                         <div class="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-3">
-                            @php
-                                $howSteps = \App\Models\SiteSetting::value('how_steps') ?: [
-                                    ['title' => __('landing.how.step1.title'), 'desc' => __('landing.how.step1.desc')],
-                                    ['title' => __('landing.how.step2.title'), 'desc' => __('landing.how.step2.desc')],
-                                    ['title' => __('landing.how.step3.title'), 'desc' => __('landing.how.step3.desc')],
-                                ];
-                                $howIcons = [
+                            @php($howSteps = \App\Models\SiteSetting::value('how_steps') ?: [
+                                ['title' => __('landing.how.step1.title'), 'desc' => __('landing.how.step1.desc')],
+                                ['title' => __('landing.how.step2.title'), 'desc' => __('landing.how.step2.desc')],
+                                ['title' => __('landing.how.step3.title'), 'desc' => __('landing.how.step3.desc')],
+                            ])
+                            @php($howIcons = [
                                     'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
                                     'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z',
                                     'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z',
-                                ];
-                            @endphp
+                            ])
                             @foreach ($howSteps as $index => $step)
                                 <div class="relative rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
                                     <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white">
