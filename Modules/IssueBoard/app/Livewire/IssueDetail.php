@@ -113,9 +113,12 @@ class IssueDetail extends Component
 
     public function render()
     {
+        $comments = $this->issue->comments()->with('user', 'replies', 'attachments')->get();
+
         return view('issueboard::detail', [
             'statuses' => IssueStatus::cases(),
-            'comments' => $this->issue->comments()->with('user', 'replies', 'attachments')->get(),
+            'comments' => $comments,
+            'openQuestionCount' => $comments->filter->is_open_question->count(),
             'history' => $this->issue->statusLogs()->with('user')->limit(10)->get(),
         ])->layout('issueboard::layouts.master');
     }
