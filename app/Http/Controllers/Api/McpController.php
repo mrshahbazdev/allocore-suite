@@ -32,7 +32,7 @@ use Modules\BookIntelligence\Models\QuestionMapping;
 class McpController extends Controller
 {
     /**
-     * Handle incoming MCP Requests (GET discovery, OPTIONS CORS, POST JSON-RPC).
+     * Handle incoming MCP Requests (GET SSE/discovery, OPTIONS CORS, POST JSON-RPC).
      */
     public function handle(Request $request): JsonResponse|Response
     {
@@ -44,29 +44,30 @@ class McpController extends Controller
         // 2. Authenticate optional/provided token
         $this->authenticateRequest($request);
 
-        // 3. Handle GET request (Browser / Claude discovery / SSE)
+        // 3. Handle GET request (Default to SSE Stream for Claude / MCP clients)
         if ($request->isMethod('GET')) {
-            if ($request->header('Accept') === 'text/event-stream') {
-                return $this->handleSseStream($request);
+            if ($request->query('format') === 'json' || ($request->expectsJson() && ! str_contains($request->header('Accept', ''), 'text/event-stream'))) {
+                return response()->json([
+                    'name' => 'Allocore Enterprise MCP Server',
+                    'version' => '1.0.0',
+                    'protocolVersion' => '2024-11-05',
+                    'status' => 'operational',
+                    'authenticated' => Auth::check(),
+                    'user' => Auth::user()?->name,
+                    'capabilities' => [
+                        'tools' => ['listChanged' => false],
+                        'resources' => ['subscribe' => false, 'listChanged' => false],
+                        'prompts' => ['listChanged' => false],
+                    ],
+                    'endpoints' => [
+                        'rpc' => url('/api/mcp/rpc'),
+                        'sse' => url('/api/mcp'),
+                        'tools' => url('/api/mcp/tools'),
+                    ],
+                ], 200, $this->corsHeaders());
             }
 
-            return response()->json([
-                'name' => 'Allocore Enterprise MCP Server',
-                'version' => '1.0.0',
-                'protocolVersion' => '2024-11-05',
-                'status' => 'operational',
-                'authenticated' => Auth::check(),
-                'user' => Auth::user()?->name,
-                'capabilities' => [
-                    'tools' => ['listChanged' => false],
-                    'resources' => ['subscribe' => false, 'listChanged' => false],
-                    'prompts' => ['listChanged' => false],
-                ],
-                'endpoints' => [
-                    'rpc' => url('/api/mcp/rpc'),
-                    'tools' => url('/api/mcp/tools'),
-                ],
-            ], 200, $this->corsHeaders());
+            return $this->handleSseStream($request);
         }
 
         // 4. Handle POST JSON-RPC Request
@@ -76,8 +77,12 @@ class McpController extends Controller
     /**
      * JSON-RPC 2.0 / MCP Protocol Handler.
      */
-    public function handleRpc(Request $request): JsonResponse
+    public function handleRpc(Request $request): JsonResponse|Response
     {
+        if ($request->isMethod('OPTIONS')) {
+            return response('', 200, $this->corsHeaders());
+        }
+
         $this->authenticateRequest($request);
 
         $payload = $request->json()->all();
@@ -86,7 +91,7 @@ class McpController extends Controller
         $id = $payload['id'] ?? $request->input('id', 1);
 
         // Notifications (methods without id)
-        if ($id === null && ($method === 'notifications/initialized' || str_starts_with($method, 'notifications/'))) {
+        if ($id === null && ($method === 'notifications/initialized' || str_starts_with($method ?? '', 'notifications/'))) {
             return response()->json(['status' => 'ok'], 200, $this->corsHeaders());
         }
 
@@ -105,7 +110,7 @@ class McpController extends Controller
                 'prompts/get' => $this->getPrompt($params['name'] ?? '', $params['arguments'] ?? []),
 
                 // Direct tool execution fallback
-                default => $this->callTool($method, $params),
+                default => $this->callTool($method ?? '', $params),
             };
 
             return response()->json([
@@ -121,7 +126,7 @@ class McpController extends Controller
                     'code' => -32603,
                     'message' => $e->getMessage(),
                 ],
-            ], 200, $this->corsHeaders()); // Return 200 with JSON-RPC error for MCP clients
+            ], 200, $this->corsHeaders());
         }
     }
 
@@ -199,20 +204,26 @@ class McpController extends Controller
         return [
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Authorization, Content-Type, X-Api-Key, X-Allocore-Token, Accept, Origin, X-Requested-With',
+            'Access-Control-Allow-Headers' => 'Authorization, Content-Type, X-Api-Key, X-Allocore-Token, Accept, Origin, X-Requested-With, Cache-Control',
             'Access-Control-Max-Age' => '86400',
         ];
     }
 
     /**
-     * Handle SSE Stream for MCP.
+     * Handle SSE Stream for Claude / MCP Remote Connectors.
      */
     protected function handleSseStream(Request $request): Response
     {
-        return response("event: endpoint\ndata: ".url('/api/mcp/rpc')."\n\n", 200, array_merge($this->corsHeaders(), [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
+        $queryString = $request->getQueryString();
+        $rpcUrl = url('/api/mcp/rpc').($queryString ? '?'.$queryString : '');
+
+        $body = "event: endpoint\ndata: ".$rpcUrl."\n\n";
+
+        return response($body, 200, array_merge($this->corsHeaders(), [
+            'Content-Type' => 'text/event-stream; charset=utf-8',
+            'Cache-Control' => 'no-cache, no-transform',
             'Connection' => 'keep-alive',
+            'X-Accel-Buffering' => 'no',
         ]));
     }
 
