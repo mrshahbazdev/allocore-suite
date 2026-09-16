@@ -54,13 +54,19 @@ class AuditQuestionController extends Controller
             $templateId = $pillar->template_id;
         }
 
-        $template = $templateId ? AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->find($templateId) : null;
-        $pillars = $template
-            ? $template->pillars
-            : AuditPillar::withoutGlobalScope('current_team')->orderBy('position')->get();
-        $templateQuestions = $template
-            ? $template->questions
-            : AuditQuestion::withoutGlobalScope('current_team')->get();
+        $template = $templateId ? AuditTemplate::withoutGlobalScope('current_team')->find($templateId) : null;
+        $pillars = AuditPillar::withoutGlobalScope('current_team')
+            ->when($template, fn ($q) => $q->where('template_id', $template->id))
+            ->orderBy('position')
+            ->get();
+
+        if ($pillars->isEmpty()) {
+            $pillars = AuditPillar::withoutGlobalScope('current_team')->orderBy('name')->get();
+        }
+
+        $templateQuestions = AuditQuestion::withoutGlobalScope('current_team')
+            ->when($template, fn ($q) => $q->where('template_id', $template->id))
+            ->get();
 
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
@@ -127,22 +133,27 @@ class AuditQuestionController extends Controller
     {
         $template = null;
         if ($question->template_id) {
-            $template = AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->find($question->template_id);
+            $template = AuditTemplate::withoutGlobalScope('current_team')->find($question->template_id);
         }
         if (! $template && $question->pillar_id) {
             $pillar = AuditPillar::withoutGlobalScope('current_team')->find($question->pillar_id);
             if ($pillar?->template_id) {
-                $template = AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->find($pillar->template_id);
+                $template = AuditTemplate::withoutGlobalScope('current_team')->find($pillar->template_id);
             }
         }
 
-        $pillars = $template
-            ? $template->pillars
-            : AuditPillar::withoutGlobalScope('current_team')->orderBy('position')->get();
+        $pillars = AuditPillar::withoutGlobalScope('current_team')
+            ->when($template, fn ($q) => $q->where('template_id', $template->id))
+            ->orderBy('position')
+            ->get();
 
-        $templateQuestions = $template
-            ? $template->questions
-            : AuditQuestion::withoutGlobalScope('current_team')->get();
+        if ($pillars->isEmpty()) {
+            $pillars = AuditPillar::withoutGlobalScope('current_team')->orderBy('name')->get();
+        }
+
+        $templateQuestions = AuditQuestion::withoutGlobalScope('current_team')
+            ->when($template, fn ($q) => $q->where('template_id', $template->id))
+            ->get();
 
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');

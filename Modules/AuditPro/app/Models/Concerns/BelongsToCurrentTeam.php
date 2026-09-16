@@ -11,7 +11,7 @@ trait BelongsToCurrentTeam
     protected static function bootBelongsToCurrentTeam(): void
     {
         static::addGlobalScope('current_team', function (Builder $builder): void {
-            if (! auth()->check()) {
+            if (! auth()->check() || request()?->is('admin/*') || request()?->routeIs('admin.*')) {
                 return;
             }
 
