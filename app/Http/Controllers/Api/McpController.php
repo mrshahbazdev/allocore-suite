@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApiToken;
 use App\Models\GlossaryTerm;
 use App\Models\Module;
 use App\Models\Plan;
@@ -13,8 +14,11 @@ use App\Services\QuestionRecommendationService;
 use App\Services\QuestionToolGuesser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditAnswer;
@@ -28,16 +32,70 @@ use Modules\BookIntelligence\Models\QuestionMapping;
 class McpController extends Controller
 {
     /**
-     * JSON-RPC 2.0 / MCP Dispatcher endpoint.
+     * Handle incoming MCP Requests (GET discovery, OPTIONS CORS, POST JSON-RPC).
+     */
+    public function handle(Request $request): JsonResponse|Response
+    {
+        // 1. Handle CORS Preflight
+        if ($request->isMethod('OPTIONS')) {
+            return response('', 200, $this->corsHeaders());
+        }
+
+        // 2. Authenticate optional/provided token
+        $this->authenticateRequest($request);
+
+        // 3. Handle GET request (Browser / Claude discovery / SSE)
+        if ($request->isMethod('GET')) {
+            if ($request->header('Accept') === 'text/event-stream') {
+                return $this->handleSseStream($request);
+            }
+
+            return response()->json([
+                'name' => 'Allocore Enterprise MCP Server',
+                'version' => '1.0.0',
+                'protocolVersion' => '2024-11-05',
+                'status' => 'operational',
+                'authenticated' => Auth::check(),
+                'user' => Auth::user()?->name,
+                'capabilities' => [
+                    'tools' => ['listChanged' => false],
+                    'resources' => ['subscribe' => false, 'listChanged' => false],
+                    'prompts' => ['listChanged' => false],
+                ],
+                'endpoints' => [
+                    'rpc' => url('/api/mcp/rpc'),
+                    'tools' => url('/api/mcp/tools'),
+                ],
+            ], 200, $this->corsHeaders());
+        }
+
+        // 4. Handle POST JSON-RPC Request
+        return $this->handleRpc($request);
+    }
+
+    /**
+     * JSON-RPC 2.0 / MCP Protocol Handler.
      */
     public function handleRpc(Request $request): JsonResponse
     {
-        $method = $request->input('method');
-        $params = $request->input('params', []);
-        $id = $request->input('id', 1);
+        $this->authenticateRequest($request);
+
+        $payload = $request->json()->all();
+        $method = $payload['method'] ?? $request->input('method');
+        $params = $payload['params'] ?? $request->input('params', []);
+        $id = $payload['id'] ?? $request->input('id', 1);
+
+        // Notifications (methods without id)
+        if ($id === null && ($method === 'notifications/initialized' || str_starts_with($method, 'notifications/'))) {
+            return response()->json(['status' => 'ok'], 200, $this->corsHeaders());
+        }
 
         try {
             $result = match ($method) {
+                // MCP Standard Handshake
+                'initialize' => $this->handleInitialize($params),
+                'ping' => ['status' => 'pong'],
+
                 // MCP Protocol Core
                 'tools/list' => $this->listTools(),
                 'tools/call' => $this->callTool($params['name'] ?? '', $params['arguments'] ?? []),
@@ -54,7 +112,7 @@ class McpController extends Controller
                 'jsonrpc' => '2.0',
                 'id' => $id,
                 'result' => $result,
-            ]);
+            ], 200, $this->corsHeaders());
         } catch (\Throwable $e) {
             return response()->json([
                 'jsonrpc' => '2.0',
@@ -63,8 +121,99 @@ class McpController extends Controller
                     'code' => -32603,
                     'message' => $e->getMessage(),
                 ],
-            ], 500);
+            ], 200, $this->corsHeaders()); // Return 200 with JSON-RPC error for MCP clients
         }
+    }
+
+    /**
+     * MCP Initialize Handshake Response.
+     */
+    protected function handleInitialize(array $params): array
+    {
+        return [
+            'protocolVersion' => $params['protocolVersion'] ?? '2024-11-05',
+            'capabilities' => [
+                'tools' => [
+                    'listChanged' => false,
+                ],
+                'resources' => [
+                    'subscribe' => false,
+                    'listChanged' => false,
+                ],
+                'prompts' => [
+                    'listChanged' => false,
+                ],
+            ],
+            'serverInfo' => [
+                'name' => 'Allocore Enterprise Server',
+                'version' => '1.0.0',
+            ],
+        ];
+    }
+
+    /**
+     * Authenticate via Bearer, X-Api-Key, X-Allocore-Token, or query token.
+     */
+    protected function authenticateRequest(Request $request): void
+    {
+        if (Auth::check()) {
+            return;
+        }
+
+        $tokenStr = null;
+
+        // 1. Header: Authorization: Bearer <token>
+        $header = $request->header('Authorization');
+        if ($header && str_starts_with($header, 'Bearer ')) {
+            $tokenStr = substr($header, 7);
+        }
+
+        // 2. Header: X-Api-Key or X-Allocore-Token
+        if (! $tokenStr) {
+            $tokenStr = $request->header('X-Api-Key') ?: $request->header('X-Allocore-Token');
+        }
+
+        // 3. Query Param: ?token=... or ?api_token=...
+        if (! $tokenStr) {
+            $tokenStr = $request->query('token') ?: $request->query('api_token');
+        }
+
+        if ($tokenStr) {
+            $apiToken = ApiToken::with('user')->get()->first(function ($t) use ($tokenStr) {
+                return Hash::check($tokenStr, $t->token);
+            });
+
+            if ($apiToken && ! $apiToken->isExpired() && $apiToken->user) {
+                $apiToken->markAsUsed();
+                Auth::login($apiToken->user);
+                $request->attributes->set('api_token', $apiToken);
+            }
+        }
+    }
+
+    /**
+     * CORS Headers for Remote MCP Clients (Claude, Cursor).
+     */
+    protected function corsHeaders(): array
+    {
+        return [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers' => 'Authorization, Content-Type, X-Api-Key, X-Allocore-Token, Accept, Origin, X-Requested-With',
+            'Access-Control-Max-Age' => '86400',
+        ];
+    }
+
+    /**
+     * Handle SSE Stream for MCP.
+     */
+    protected function handleSseStream(Request $request): Response
+    {
+        return response("event: endpoint\ndata: ".url('/api/mcp/rpc')."\n\n", 200, array_merge($this->corsHeaders(), [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+        ]));
     }
 
     /**
@@ -430,8 +579,7 @@ class McpController extends Controller
 
     protected function toolListAuditQuestions(array $args): array
     {
-        $query = AuditQuestion::withoutGlobalScope('current_team')
-            ->with(['pillar']);
+        $query = AuditQuestion::withoutGlobalScope('current_team')->with(['pillar']);
 
         if (! empty($args['pillar'])) {
             $query->whereHas('pillar', fn ($q) => $q->where('name', 'like', "%{$args['pillar']}%"));

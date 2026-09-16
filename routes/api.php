@@ -15,11 +15,13 @@ Route::middleware('api-token')->group(function () {
     Route::get('/modules/{module}', [ModuleStatsController::class, 'show'])->name('api.modules.show');
     Route::get('/modules/{module}/records', [ModuleResourceController::class, 'index'])->name('api.modules.records.index');
     Route::get('/modules/{module}/records/{id}', [ModuleResourceController::class, 'show'])->name('api.modules.records.show');
-
-    // Allocore Model Context Protocol (MCP) Endpoints
-    Route::post('/mcp/rpc', [McpController::class, 'handleRpc'])->name('api.mcp.rpc');
-    Route::get('/mcp/tools', [McpController::class, 'listTools'])->name('api.mcp.tools');
-    Route::get('/mcp/resources', [McpController::class, 'listResources'])->name('api.mcp.resources');
-    Route::get('/mcp/prompts', [McpController::class, 'listPrompts'])->name('api.mcp.prompts');
 });
+
+// Allocore Model Context Protocol (MCP) Endpoints (Open discovery + Bearer / Query Token authentication)
+Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [McpController::class, 'handle'])->name('api.mcp');
+Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [McpController::class, 'handleRpc'])->name('api.mcp.rpc');
+Route::match(['GET', 'OPTIONS'], '/mcp/tools', [McpController::class, 'listTools'])->name('api.mcp.tools');
+Route::match(['GET', 'OPTIONS'], '/mcp/resources', [McpController::class, 'listResources'])->name('api.mcp.resources');
+Route::match(['GET', 'OPTIONS'], '/mcp/prompts', [McpController::class, 'listPrompts'])->name('api.mcp.prompts');
+
 
