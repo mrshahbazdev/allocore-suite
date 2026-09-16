@@ -1,7 +1,7 @@
 @php($brand = config('app.team_branding') ?? [])
 @php($social = \App\Models\SiteSetting::value('social_links', []))
 @php($footerText = \App\Models\SiteSetting::value('footer_text', ''))
-<footer class="border-t border-slate-200 bg-white py-10">
+<footer class="border-t border-slate-200 bg-white py-10 no-glossary">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div class="flex items-center gap-3">
@@ -10,7 +10,11 @@
             </div>
 
             <p class="text-xs text-slate-500">
-                {{ filled($footerText) ? $footerText : '&copy; '.date('Y').' '.($brand['name'] ?? config('app.name')).'. '.__('landing.footer.copyright') }}
+                @if (filled($footerText))
+                    {!! $footerText !!}
+                @else
+                    &copy; {{ date('Y') }} {{ $brand['name'] ?? config('app.name') }}. {{ __('landing.footer.copyright') }}
+                @endif
             </p>
 
             @if ($social)

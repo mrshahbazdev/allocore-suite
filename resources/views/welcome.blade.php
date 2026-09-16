@@ -338,7 +338,7 @@
             </main>
 
             {{-- Footer --}}
-            <footer class="border-t border-slate-200 bg-white py-12">
+            <footer class="border-t border-slate-200 bg-white py-12 no-glossary">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
                         <div class="flex items-center gap-3">

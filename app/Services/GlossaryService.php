@@ -70,7 +70,7 @@ class GlossaryService
                 $tag = strtolower(trim($chunk, '<'));
                 $tagName = strtok($tag, " \t\r\n/>");
 
-                if (in_array($tagName, ['script', 'style', 'textarea', 'title', 'head', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'button', 'select', 'option', 'svg', 'nav'], true) || str_contains($tag, 'no-glossary')) {
+                if (in_array($tagName, ['script', 'style', 'textarea', 'title', 'head', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'button', 'select', 'option', 'svg', 'nav', 'footer'], true) || str_contains($tag, 'no-glossary')) {
                     $inSkip = ! str_starts_with($chunk, '</');
                 }
 
