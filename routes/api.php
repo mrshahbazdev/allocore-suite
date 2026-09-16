@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\McpController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ModuleResourceController;
 use App\Http\Controllers\Api\V1\ModuleStatsController;
@@ -14,4 +15,11 @@ Route::middleware('api-token')->group(function () {
     Route::get('/modules/{module}', [ModuleStatsController::class, 'show'])->name('api.modules.show');
     Route::get('/modules/{module}/records', [ModuleResourceController::class, 'index'])->name('api.modules.records.index');
     Route::get('/modules/{module}/records/{id}', [ModuleResourceController::class, 'show'])->name('api.modules.records.show');
+
+    // Allocore Model Context Protocol (MCP) Endpoints
+    Route::post('/mcp/rpc', [McpController::class, 'handleRpc'])->name('api.mcp.rpc');
+    Route::get('/mcp/tools', [McpController::class, 'listTools'])->name('api.mcp.tools');
+    Route::get('/mcp/resources', [McpController::class, 'listResources'])->name('api.mcp.resources');
+    Route::get('/mcp/prompts', [McpController::class, 'listPrompts'])->name('api.mcp.prompts');
 });
+
