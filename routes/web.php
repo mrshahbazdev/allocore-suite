@@ -297,6 +297,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('modules', [AdminModuleController::class, 'index'])->name('modules.index');
     Route::post('modules/{name}/install', [AdminModuleController::class, 'install'])->name('modules.install');
     Route::patch('modules/{module}/toggle', [AdminModuleController::class, 'toggle'])->name('modules.toggle');
+    Route::patch('modules/{module}/toggle-pool', [AdminModuleController::class, 'togglePool'])->name('modules.toggle-pool');
+    Route::patch('modules/{module}/toggle-deprecate', [AdminModuleController::class, 'toggleDeprecate'])->name('modules.toggle-deprecate');
     Route::put('modules/{module}', [AdminModuleController::class, 'update'])->name('modules.update');
 
     Route::get('setup', [AdminSetupController::class, 'index'])->name('setup.index');
