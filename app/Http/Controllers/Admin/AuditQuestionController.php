@@ -12,6 +12,40 @@ use Modules\AuditPro\Models\AuditTemplate;
 
 class AuditQuestionController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = AuditQuestion::withoutGlobalScope('current_team')
+            ->with([
+                'pillar' => fn ($q) => $q->withoutGlobalScope('current_team'),
+                'template' => fn ($q) => $q->withoutGlobalScope('current_team'),
+                'recommendedBook',
+                'recommendedPost',
+            ]);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('question', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('failure_recommendation', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('pillar_id')) {
+            $query->where('pillar_id', $request->pillar_id);
+        }
+
+        if ($request->filled('template_id')) {
+            $query->where('template_id', $request->template_id);
+        }
+
+        $questions = $query->latest('id')->paginate(25)->withQueryString();
+        $pillars = AuditPillar::withoutGlobalScope('current_team')->orderBy('name')->get();
+        $templates = AuditTemplate::withoutGlobalScope('current_team')->orderBy('name')->get();
+
+        return view('admin.audits.questions.index', compact('questions', 'pillars', 'templates'));
+    }
+
     public function create(Request $request)
     {
         $templateId = $request->template_id;

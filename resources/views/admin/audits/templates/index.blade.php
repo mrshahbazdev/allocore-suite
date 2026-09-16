@@ -7,8 +7,9 @@
             <p class="text-sm text-slate-500">{{ __('admin.audit_templates.description') }}</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.audits.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Back to audits') }}</a>
-            <a href="{{ route('admin.audits.templates.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('admin.audit_templates.create_button') }}</a>
+            <a href="{{ route('admin.audits.questions.index') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700">🎯 {{ __('Fragen & Lösungen') }}</a>
+            <a href="{{ route('admin.audits.templates.create') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('admin.audit_templates.create_button') }}</a>
+            <a href="{{ route('admin.audits.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-800">{{ __('Back to audits') }}</a>
         </div>
     </div>
 

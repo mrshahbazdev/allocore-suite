@@ -336,6 +336,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::put('audits/pillars/{pillar}', [AdminAuditPillarController::class, 'update'])->name('audits.pillars.update');
     Route::delete('audits/pillars/{pillar}', [AdminAuditPillarController::class, 'destroy'])->name('audits.pillars.destroy');
 
+    Route::get('audits/questions', [AdminAuditQuestionController::class, 'index'])->name('audits.questions.index');
     Route::get('audits/questions/create', [AdminAuditQuestionController::class, 'create'])->name('audits.questions.create');
     Route::post('audits/questions', [AdminAuditQuestionController::class, 'store'])->name('audits.questions.store');
     Route::get('audits/questions/{question}/edit', [AdminAuditQuestionController::class, 'edit'])->name('audits.questions.edit');
