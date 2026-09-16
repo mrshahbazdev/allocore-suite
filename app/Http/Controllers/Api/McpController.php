@@ -34,7 +34,7 @@ class McpController extends Controller
     /**
      * Handle incoming MCP Requests (GET SSE/discovery, OPTIONS CORS, POST JSON-RPC).
      */
-    public function handle(Request $request): JsonResponse|Response
+    public function handle(Request $request): JsonResponse|Response|\Symfony\Component\HttpFoundation\StreamedResponse
     {
         // 1. Handle CORS Preflight
         if ($request->isMethod('OPTIONS')) {
@@ -212,19 +212,43 @@ class McpController extends Controller
     /**
      * Handle SSE Stream for Claude / MCP Remote Connectors.
      */
-    protected function handleSseStream(Request $request): Response
+    protected function handleSseStream(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $queryString = $request->getQueryString();
         $rpcUrl = url('/api/mcp/rpc').($queryString ? '?'.$queryString : '');
 
-        $body = "event: endpoint\ndata: ".$rpcUrl."\n\n";
-
-        return response($body, 200, array_merge($this->corsHeaders(), [
+        $headers = array_merge($this->corsHeaders(), [
             'Content-Type' => 'text/event-stream; charset=utf-8',
             'Cache-Control' => 'no-cache, no-transform',
             'Connection' => 'keep-alive',
             'X-Accel-Buffering' => 'no',
-        ]));
+        ]);
+
+        return response()->stream(function () use ($rpcUrl) {
+            // 1. Emit MCP endpoint event immediately
+            echo "event: endpoint\n";
+            echo "data: ".$rpcUrl."\n\n";
+
+            if (ob_get_level() > 0) {
+                @ob_flush();
+            }
+            @flush();
+
+            // 2. Keep stream open for Claude Web / MCP SSE listener
+            $start = time();
+            while (time() - $start < 25) {
+                if (connection_aborted()) {
+                    break;
+                }
+                sleep(2);
+                echo ": keepalive\n\n";
+
+                if (ob_get_level() > 0) {
+                    @ob_flush();
+                }
+                @flush();
+            }
+        }, 200, $headers);
     }
 
     /**

@@ -25,3 +25,9 @@
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
+<IfModule mod_deflate.c>
+    SetEnvIfNoCase Request_URI "^/api/mcp" no-gzip dont-vary
+    SetEnvIfNoCase Request_URI "^/mcp" no-gzip dont-vary
+</IfModule>
+
+
