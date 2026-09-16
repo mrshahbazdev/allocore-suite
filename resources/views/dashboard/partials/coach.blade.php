@@ -50,7 +50,7 @@
                     </div>
                     <p class="mt-2 text-sm font-medium text-rose-800">{{ __($allocoreCoach['problem']['pillar']) }} — {{ $allocoreCoach['problem']['score'] }}/100</p>
                     <p class="mt-1 text-sm font-semibold text-rose-900">{{ __($allocoreCoach['problem']['headline']) }}</p>
-                    <p class="mt-1 text-sm text-rose-700">{!! $allocoreCoach['problem']['solution'] !!}</p>
+                    <div class="mt-2 text-sm text-rose-700">{!! $allocoreCoach['problem']['solution'] !!}</div>
                 </div>
             @endif
 

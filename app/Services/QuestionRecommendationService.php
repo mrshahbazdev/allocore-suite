@@ -148,7 +148,7 @@ class QuestionRecommendationService
             $manual = __($manual);
         }
 
-        $manual = $this->glossaryService->linkTerms($manual);
+        $manual = $this->formatManualRecommendation($manual);
 
         $subscribed = $moduleKey && $user->hasModule($moduleKey);
 
@@ -292,5 +292,44 @@ class QuestionRecommendationService
             'better' => $diff > 0.01,
             'worse' => $diff < -0.01,
         ];
+    }
+
+    public function formatManualRecommendation(?string $manual): string
+    {
+        if (blank($manual)) {
+            return '';
+        }
+
+        // Standardize newlines and strip any existing raw <br> or &lt;br&gt; tags
+        $clean = str_replace(['<br>', '<br/>', '<br />', '&lt;br&gt;', '&lt;br/&gt;', '&lt;br /&gt;'], "\n", $manual);
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $clean)), fn ($l) => $l !== ''));
+
+        if (count($lines) === 0) {
+            return '';
+        }
+
+        // Check if it is a multi-step numbered list (e.g. "1. Step", "2. Step")
+        $isNumberedList = count($lines) > 1 && collect($lines)->every(fn ($l) => preg_match('/^\d+[\.\)]\s*/', $l));
+
+        if ($isNumberedList) {
+            $html = '<ol class="mt-2 space-y-1.5 list-none pl-0">';
+            foreach ($lines as $line) {
+                if (preg_match('/^(\d+)[\.\)]\s*(.*)$/u', $line, $matches)) {
+                    $num = $matches[1];
+                    $text = $matches[2];
+                    $linked = $this->glossaryService->linkTerms($text);
+                    $html .= '<li class="flex items-start gap-2 text-xs text-rose-800"><span class="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-rose-200 text-[10px] font-bold text-rose-900 mt-0.5">'.$num.'</span><span class="leading-relaxed">'.$linked.'</span></li>';
+                } else {
+                    $html .= '<li class="text-xs text-rose-800 leading-relaxed">'.$this->glossaryService->linkTerms($line).'</li>';
+                }
+            }
+            $html .= '</ol>';
+
+            return $html;
+        }
+
+        $formattedLines = array_map(fn ($l) => $this->glossaryService->linkTerms($l), $lines);
+
+        return implode('<br>', $formattedLines);
     }
 }
