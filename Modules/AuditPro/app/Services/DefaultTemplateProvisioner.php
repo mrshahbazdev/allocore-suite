@@ -86,8 +86,8 @@ class DefaultTemplateProvisioner
                         'question' => 'The required monthly revenue is defined and realistically planned.',
                         'description' => 'Viele Unternehmer kennen ihren bisherigen Umsatz, aber nicht den Umsatz, den ihr Unternehmen tatsächlich benötigt. Wenn Du Deinen erforderlichen Mindestumsatz kennst, kannst Du frühzeitig erkennen, ob Dein Unternehmen auf sicherem Kurs ist oder ob Handlungsbedarf besteht.',
                         'recommendation' => "1. Erfasse alle monatlichen Fixkosten.\n2. Ermittle die variablen Kosten Deiner Leistungen oder Produkte.\n3. Berücksichtige bekannte Kostensteigerungen.\n4. Berechne daraus den notwendigen Mindestumsatz.\n5. Plane diesen Umsatz auf Monate und Quartale.\n6. Vergleiche regelmäßig Planung und Realität.",
-                        'module_key' => 'cash-core',
-                        'knowledge_slug' => 'revenue',
+                        'module_key' => 'revenue-planner',
+                        'knowledge_slug' => 'fixkosten',
                     ],
                     [
                         'question' => 'Suitable prospects are reached continuously.',

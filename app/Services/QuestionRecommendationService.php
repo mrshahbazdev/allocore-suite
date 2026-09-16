@@ -188,8 +188,32 @@ class QuestionRecommendationService
             $term = GlossaryTerm::published()->where('slug', $question->knowledge_slug)->first();
         }
 
+        if (! $term) {
+            $matchingSlug = AuditQuestion::withoutGlobalScope('current_team')
+                ->where('question', $question->question)
+                ->whereNotNull('knowledge_slug')
+                ->value('knowledge_slug');
+
+            if ($matchingSlug) {
+                $term = GlossaryTerm::published()->where('slug', $matchingSlug)->first();
+            }
+        }
+
+        if (! $term) {
+            $guessedSlug = QuestionToolGuesser::guessKnowledgeSlug($question->question, $pillar);
+            if ($guessedSlug) {
+                $term = GlossaryTerm::published()->where('slug', $guessedSlug)->first();
+            }
+        }
+
         if (! $term && $moduleKey) {
             $term = $this->glossaryService->relatedForModule($moduleKey, 1)->first();
+        }
+
+        if (! $term) {
+            if (preg_match('/(fixkosten|fixed cost|kosten)/iu', $question->question)) {
+                $term = GlossaryTerm::published()->where('slug', 'like', '%fixkosten%')->orWhere('term', 'like', '%Fixkosten%')->first();
+            }
         }
 
         if (! $term) {
@@ -217,10 +241,18 @@ class QuestionRecommendationService
     {
         try {
             // 1. Direct Assignment from Question
-            if ($question->recommended_book_id && class_exists(\Modules\BookIntelligence\Models\Book::class)) {
+            $bookId = $question->recommended_book_id;
+            if (! $bookId) {
+                $bookId = AuditQuestion::withoutGlobalScope('current_team')
+                    ->where('question', $question->question)
+                    ->whereNotNull('recommended_book_id')
+                    ->value('recommended_book_id');
+            }
+
+            if ($bookId && class_exists(\Modules\BookIntelligence\Models\Book::class)) {
                 $book = \Modules\BookIntelligence\Models\Book::query()
                     ->with('author')
-                    ->find($question->recommended_book_id);
+                    ->find($bookId);
 
                 if ($book) {
                     return [
@@ -266,12 +298,28 @@ class QuestionRecommendationService
                 }
             }
 
-            // 3. Fallback to active library book
+            // 3. Keyword / Category search in Books
             if (class_exists(\Modules\BookIntelligence\Models\Book::class)) {
-                $book = \Modules\BookIntelligence\Models\Book::query()
-                    ->where('status', 'active')
-                    ->with('author')
-                    ->first();
+                $book = null;
+                if (preg_match('/(revenue|umsatz|monatlich|turnover|plan|businessplan)/iu', $question->question)) {
+                    $book = \Modules\BookIntelligence\Models\Book::query()
+                        ->with('author')
+                        ->where(function ($q) {
+                            $q->where('title', 'like', '%Business%')
+                              ->orWhere('title', 'like', '%Plan%')
+                              ->orWhere('title', 'like', '%Profit%')
+                              ->orWhere('title', 'like', '%Umsatz%')
+                              ->orWhere('description', 'like', '%Businessplan%');
+                        })
+                        ->first();
+                }
+
+                if (! $book) {
+                    $book = \Modules\BookIntelligence\Models\Book::query()
+                        ->where('status', 'active')
+                        ->with('author')
+                        ->first();
+                }
 
                 if ($book) {
                     return [
@@ -279,7 +327,7 @@ class QuestionRecommendationService
                         'title' => $book->title,
                         'author' => $book->author?->name ?? 'Autor',
                         'cover_url' => $book->cover_url,
-                        'why_recommended' => Str::limit($book->description, 150),
+                        'why_recommended' => Str::limit($book->description, 150) ?: __('Empfohlenes Fachbuch zur Unternehmensentwicklung.'),
                         'link' => route('bookintelligence.books.show', $book->id),
                         'affiliate_link' => $book->affiliate_link,
                     ];
@@ -296,10 +344,18 @@ class QuestionRecommendationService
     {
         try {
             // 1. Direct Assignment from Question
-            if ($question->recommended_post_id) {
+            $postId = $question->recommended_post_id;
+            if (! $postId) {
+                $postId = AuditQuestion::withoutGlobalScope('current_team')
+                    ->where('question', $question->question)
+                    ->whereNotNull('recommended_post_id')
+                    ->value('recommended_post_id');
+            }
+
+            if ($postId) {
                 $post = \App\Models\Post::query()
                     ->where('is_published', true)
-                    ->find($question->recommended_post_id);
+                    ->find($postId);
 
                 if ($post) {
                     return [
@@ -313,7 +369,33 @@ class QuestionRecommendationService
                 }
             }
 
-            // 2. Automatic fallback: latest published relevant article
+            // 2. Keyword matching on blog posts
+            if (preg_match('/(revenue|umsatz|monatlich|plan|kosten)/iu', $question->question)) {
+                $post = \App\Models\Post::query()
+                    ->where('is_published', true)
+                    ->where(function ($q) {
+                        $q->where('title', 'like', '%Umsatz%')
+                          ->orWhere('title', 'like', '%Plan%')
+                          ->orWhere('title', 'like', '%Finanz%')
+                          ->orWhere('title', 'like', '%Kosten%')
+                          ->orWhere('body', 'like', '%Umsatz%');
+                    })
+                    ->latest('published_at')
+                    ->first();
+
+                if ($post) {
+                    return [
+                        'id' => $post->id,
+                        'title' => $post->title,
+                        'slug' => $post->slug,
+                        'excerpt' => Str::limit(strip_tags($post->excerpt ?: $post->body), 160),
+                        'featured_image' => $post->featured_image,
+                        'link' => url('blog/'.$post->slug),
+                    ];
+                }
+            }
+
+            // 3. Automatic fallback: latest published relevant article
             $post = \App\Models\Post::query()
                 ->where('is_published', true)
                 ->latest('published_at')
