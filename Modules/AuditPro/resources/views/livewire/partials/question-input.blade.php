@@ -1,11 +1,16 @@
-<div class="mt-4">
+@php
+    $currentVal = $answers[$question->id]['value'] ?? null;
+@endphp
+
+<div class="mt-4" wire:key="q-input-{{ $question->id }}">
     @switch($question->question_type)
         @case('scale_1_to_5')
             <div class="grid grid-cols-5 gap-2" role="radiogroup">
                 @foreach (range(0, 4) as $score)
-                    <label class="cursor-pointer">
-                        <input wire:model="answers.{{ $question->id }}.value" name="question_scale_{{ $question->id }}" type="radio" value="{{ $score }}" class="peer sr-only">
-                        <span class="flex h-12 items-center justify-center rounded-xl border border-slate-300 font-bold text-sm text-slate-700 bg-white transition-all hover:bg-slate-50 peer-checked:border-orange-500 peer-checked:bg-orange-500 peer-checked:text-white shadow-sm">{{ $score }}</span>
+                    @php $isSelected = ($currentVal !== null && $currentVal !== '' && (string)$currentVal === (string)$score); @endphp
+                    <label class="cursor-pointer" wire:key="q-{{ $question->id }}-opt-{{ $score }}">
+                        <input wire:model.live="answers.{{ $question->id }}.value" name="question_scale_{{ $question->id }}" type="radio" value="{{ $score }}" class="peer sr-only">
+                        <span class="flex h-12 items-center justify-center rounded-xl font-black text-base transition-all duration-150 shadow-sm {{ $isSelected ? 'border-2 border-[#ff9200] bg-[#ff9200] text-white shadow-md ring-2 ring-orange-300' : 'border border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50' }} peer-checked:!border-[#ff9200] peer-checked:!bg-[#ff9200] peer-checked:!text-white peer-checked:!shadow-md peer-checked:!ring-2 peer-checked:!ring-orange-300">{{ $score }}</span>
                     </label>
                 @endforeach
             </div>
@@ -14,18 +19,19 @@
         @case('yes_no')
             <div class="flex gap-3" role="radiogroup">
                 @foreach ([1 => __('Yes'), 0 => __('No')] as $value => $label)
-                    <label class="cursor-pointer">
-                        <input wire:model="answers.{{ $question->id }}.value" name="question_yesno_{{ $question->id }}" type="radio" value="{{ $value }}" class="peer sr-only">
-                        <span class="inline-flex rounded-xl border border-slate-300 px-8 py-2.5 text-sm font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 peer-checked:border-orange-500 peer-checked:bg-orange-500 peer-checked:text-white shadow-sm">{{ $label }}</span>
+                    @php $isSelected = ($currentVal !== null && $currentVal !== '' && (string)$currentVal === (string)$value); @endphp
+                    <label class="cursor-pointer" wire:key="q-{{ $question->id }}-yn-{{ $value }}">
+                        <input wire:model.live="answers.{{ $question->id }}.value" name="question_yesno_{{ $question->id }}" type="radio" value="{{ $value }}" class="peer sr-only">
+                        <span class="inline-flex rounded-xl px-8 py-2.5 text-sm font-bold transition-all duration-150 shadow-sm {{ $isSelected ? 'border-2 border-[#ff9200] bg-[#ff9200] text-white shadow-md ring-2 ring-orange-300' : 'border border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50' }} peer-checked:!border-[#ff9200] peer-checked:!bg-[#ff9200] peer-checked:!text-white peer-checked:!shadow-md peer-checked:!ring-2 peer-checked:!ring-orange-300">{{ $label }}</span>
                     </label>
                 @endforeach
             </div>
             @break
         @case('text_input')
-            <textarea wire:model="answers.{{ $question->id }}.value" rows="3" class="w-full rounded-xl border-slate-300 shadow-sm focus:border-orange-500 focus:ring-orange-500" placeholder="{{ __('Your answer') }}"></textarea>
+            <textarea wire:model.blur="answers.{{ $question->id }}.value" rows="3" class="w-full rounded-xl border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]" placeholder="{{ __('Your answer') }}"></textarea>
             @break
         @case('select')
-            <select wire:model="answers.{{ $question->id }}.value" class="w-full rounded-xl border-slate-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+            <select wire:model.live="answers.{{ $question->id }}.value" class="w-full rounded-xl border-slate-300 shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
                 <option value="">{{ __('Select an option') }}</option>
                 @foreach ($question->options ?? [] as $option)<option value="{{ $option }}">{{ $option }}</option>@endforeach
             </select>
@@ -33,8 +39,9 @@
         @case('radio')
             <div class="space-y-2" role="radiogroup">
                 @foreach ($question->options ?? [] as $option)
-                    <label class="flex items-center gap-3 text-sm font-medium text-slate-700 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                        <input wire:model="answers.{{ $question->id }}.value" name="question_radio_{{ $question->id }}" type="radio" value="{{ $option }}" class="border-slate-300 text-orange-500 focus:ring-orange-500">
+                    @php $isSelected = ($currentVal !== null && $currentVal !== '' && (string)$currentVal === (string)$option); @endphp
+                    <label class="flex items-center gap-3 text-sm font-medium p-3 rounded-xl border transition-all cursor-pointer {{ $isSelected ? 'border-[#ff9200] bg-orange-50/70 text-orange-950 font-bold ring-1 ring-[#ff9200]' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' }}" wire:key="q-{{ $question->id }}-rad-{{ $loop->index }}">
+                        <input wire:model.live="answers.{{ $question->id }}.value" name="question_radio_{{ $question->id }}" type="radio" value="{{ $option }}" class="border-slate-300 text-[#ff9200] focus:ring-[#ff9200]">
                         <span>{{ $option }}</span>
                     </label>
                 @endforeach
@@ -43,8 +50,9 @@
         @case('checkbox')
             <div class="space-y-2">
                 @foreach ($question->options ?? [] as $option)
-                    <label class="flex items-center gap-3 text-sm font-medium text-slate-700 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                        <input wire:model="answers.{{ $question->id }}.value" type="checkbox" value="{{ $option }}" class="rounded border-slate-300 text-orange-500 focus:ring-orange-500">
+                    @php $isChecked = is_array($currentVal) && in_array($option, $currentVal, true); @endphp
+                    <label class="flex items-center gap-3 text-sm font-medium p-3 rounded-xl border transition-all cursor-pointer {{ $isChecked ? 'border-[#ff9200] bg-orange-50/70 text-orange-950 font-bold' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' }}" wire:key="q-{{ $question->id }}-chk-{{ $loop->index }}">
+                        <input wire:model.live="answers.{{ $question->id }}.value" type="checkbox" value="{{ $option }}" class="rounded border-slate-300 text-[#ff9200] focus:ring-[#ff9200]">
                         <span>{{ $option }}</span>
                     </label>
                 @endforeach
@@ -59,5 +67,5 @@
 
 <div class="mt-4">
     <label class="text-xs font-bold uppercase tracking-wider text-slate-500">{{ __('Optional note') }}</label>
-    <textarea wire:model="answers.{{ $question->id }}.comment" rows="2" class="mt-1 w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-orange-500 focus:ring-orange-500" placeholder="{{ __('Optional note') }}"></textarea>
+    <textarea wire:model.blur="answers.{{ $question->id }}.comment" rows="2" class="mt-1 w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-[#ff9200] focus:ring-[#ff9200]" placeholder="{{ __('Optional note') }}"></textarea>
 </div>
