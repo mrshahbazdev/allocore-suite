@@ -518,3 +518,10 @@ Route::get('blog/category/{category}', [BlogController::class, 'category'])->nam
 Route::get('blog/tag/{tag}', [BlogController::class, 'tag'])->name('blog.tag');
 Route::get('blog/{post}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('blog/{post}/comments', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+
+// Model Context Protocol (MCP) Web Endpoints Fallback
+Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.mcp');
+Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.mcp.rpc');
+Route::match(['GET', 'POST', 'OPTIONS'], '/api/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.api.mcp');
+Route::match(['GET', 'POST', 'OPTIONS'], '/api/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.api.mcp.rpc');
+
