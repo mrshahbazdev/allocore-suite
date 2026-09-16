@@ -19,9 +19,12 @@ Route::middleware('api-token')->group(function () {
 
 // Allocore Model Context Protocol (MCP) Endpoints (Open discovery + Bearer / Query Token authentication)
 Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [McpController::class, 'handle'])->name('api.mcp');
+Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/sse', [McpController::class, 'handle'])->name('api.mcp.sse');
+Route::match(['GET', 'POST', 'OPTIONS'], '/sse', [McpController::class, 'handle'])->name('api.sse');
 Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [McpController::class, 'handleRpc'])->name('api.mcp.rpc');
 Route::match(['GET', 'OPTIONS'], '/mcp/tools', [McpController::class, 'listTools'])->name('api.mcp.tools');
 Route::match(['GET', 'OPTIONS'], '/mcp/resources', [McpController::class, 'listResources'])->name('api.mcp.resources');
 Route::match(['GET', 'OPTIONS'], '/mcp/prompts', [McpController::class, 'listPrompts'])->name('api.mcp.prompts');
+
 
 

@@ -517,11 +517,18 @@ Route::get('blog/feed', [BlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
 Route::get('blog/tag/{tag}', [BlogController::class, 'tag'])->name('blog.tag');
 Route::get('blog/{post}', [BlogController::class, 'show'])->name('blog.show');
-Route::post('blog/{post}/comments', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+// Model Context Protocol (MCP) Web Endpoints Fallback (Strip web middlewares)
+Route::withoutMiddleware([
+    \App\Http\Middleware\EnsureInstalled::class,
+    \App\Http\Middleware\EnsureTwoFactor::class,
+    \App\Http\Middleware\EnsureSetup::class,
+    \App\Http\Middleware\EnsureOnboardingComplete::class,
+    \App\Http\Middleware\CheckMaintenanceMode::class,
+    \App\Http\Middleware\CookieConsentMiddleware::class,
+    \App\Http\Middleware\ResolveTeamBranding::class,
+])->group(function () {
+    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.mcp');
+    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.mcp.rpc');
+});
 
-// Model Context Protocol (MCP) Web Endpoints Fallback
-Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.mcp');
-Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.mcp.rpc');
-Route::match(['GET', 'POST', 'OPTIONS'], '/api/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.api.mcp');
-Route::match(['GET', 'POST', 'OPTIONS'], '/api/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.api.mcp.rpc');
 
