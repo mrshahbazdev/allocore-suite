@@ -35,6 +35,8 @@ class AllocoreCoachService
             'problem' => $focus ? $this->problemForQuestion($focus) : null,
             'tool' => $focus ? $this->toolForQuestion($focus) : null,
             'knowledge' => $focus ? $focus['knowledge'] : null,
+            'book' => $focus ? $focus['book'] : null,
+            'post' => $focus ? $focus['post'] : null,
             'history' => null,
             'all' => array_map(fn (array $q) => $this->buildImprovement($q), $questions),
         ];
@@ -135,6 +137,8 @@ class AllocoreCoachService
             'problem' => $this->problemForQuestion($question),
             'tool' => $this->toolForQuestion($question),
             'knowledge' => $question['knowledge'],
+            'book' => $question['book'] ?? null,
+            'post' => $question['post'] ?? null,
             'benchmark' => $question['benchmark'],
         ];
     }

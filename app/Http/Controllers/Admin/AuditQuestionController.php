@@ -19,8 +19,12 @@ class AuditQuestionController extends Controller
         $pillars = $template->pillars;
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
+        $books = class_exists(\Modules\BookIntelligence\Models\Book::class)
+            ? \Modules\BookIntelligence\Models\Book::query()->orderBy('title')->get()
+            : collect();
+        $posts = \App\Models\Post::query()->where('is_published', true)->orderBy('title')->get();
 
-        return view('admin.audits.questions.create', compact('template', 'pillar', 'pillars', 'modules', 'glossaryTerms'));
+        return view('admin.audits.questions.create', compact('template', 'pillar', 'pillars', 'modules', 'glossaryTerms', 'books', 'posts'));
     }
 
     public function store(Request $request)
@@ -36,6 +40,8 @@ class AuditQuestionController extends Controller
             'failure_recommendation' => 'nullable|string|max:2000',
             'recommended_module_key' => 'nullable|string|max:255',
             'knowledge_slug' => 'nullable|string|max:255',
+            'recommended_book_id' => 'nullable|integer',
+            'recommended_post_id' => 'nullable|integer',
             'options' => 'nullable|string|max:2000',
             'depends_on_question_id' => 'nullable|exists:auditpro_questions,id',
             'depends_on_answer' => 'nullable|string|max:255',
@@ -58,6 +64,8 @@ class AuditQuestionController extends Controller
             'failure_recommendation' => $validated['failure_recommendation'],
             'recommended_module_key' => $validated['recommended_module_key'] ?: null,
             'knowledge_slug' => $validated['knowledge_slug'] ?: null,
+            'recommended_book_id' => $validated['recommended_book_id'] ?: null,
+            'recommended_post_id' => $validated['recommended_post_id'] ?: null,
             'options' => $options,
             'depends_on_question_id' => $validated['depends_on_question_id'],
             'depends_on_answer' => $validated['depends_on_answer'],
@@ -74,8 +82,12 @@ class AuditQuestionController extends Controller
         $pillars = $template->pillars;
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
+        $books = class_exists(\Modules\BookIntelligence\Models\Book::class)
+            ? \Modules\BookIntelligence\Models\Book::query()->orderBy('title')->get()
+            : collect();
+        $posts = \App\Models\Post::query()->where('is_published', true)->orderBy('title')->get();
 
-        return view('admin.audits.questions.edit', compact('question', 'template', 'pillars', 'modules', 'glossaryTerms'));
+        return view('admin.audits.questions.edit', compact('question', 'template', 'pillars', 'modules', 'glossaryTerms', 'books', 'posts'));
     }
 
     public function update(Request $request, AuditQuestion $question)
@@ -90,6 +102,8 @@ class AuditQuestionController extends Controller
             'failure_recommendation' => 'nullable|string|max:2000',
             'recommended_module_key' => 'nullable|string|max:255',
             'knowledge_slug' => 'nullable|string|max:255',
+            'recommended_book_id' => 'nullable|integer',
+            'recommended_post_id' => 'nullable|integer',
             'options' => 'nullable|string|max:2000',
             'depends_on_question_id' => 'nullable|exists:auditpro_questions,id',
             'depends_on_answer' => 'nullable|string|max:255',
@@ -108,6 +122,8 @@ class AuditQuestionController extends Controller
             'failure_recommendation' => $validated['failure_recommendation'],
             'recommended_module_key' => $validated['recommended_module_key'] ?: null,
             'knowledge_slug' => $validated['knowledge_slug'] ?: null,
+            'recommended_book_id' => $validated['recommended_book_id'] ?: null,
+            'recommended_post_id' => $validated['recommended_post_id'] ?: null,
             'options' => $options,
             'depends_on_question_id' => $validated['depends_on_question_id'],
             'depends_on_answer' => $validated['depends_on_answer'],

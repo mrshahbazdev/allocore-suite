@@ -154,6 +154,7 @@ class QuestionRecommendationService
 
         $knowledge = $this->knowledgeForQuestion($question, $moduleKey, $pillar->name);
         $book = $this->bookForQuestion($question, $moduleKey, $pillar->name);
+        $post = $this->postForQuestion($question, $moduleKey, $pillar->name);
 
         return [
             'priority' => $priority,
@@ -173,6 +174,8 @@ class QuestionRecommendationService
             'subscribed' => $subscribed,
             'knowledge' => $knowledge,
             'book' => $book,
+            'post' => $post,
+            'article' => $post,
             'benchmark' => $this->questionBenchmark($score, $pillar->name),
         ];
     }
@@ -213,7 +216,26 @@ class QuestionRecommendationService
     protected function bookForQuestion(AuditQuestion $question, ?string $moduleKey, string $pillar): ?array
     {
         try {
-            // Check if QuestionMapping directly matches this audit question
+            // 1. Direct Assignment from Question
+            if ($question->recommended_book_id && class_exists(\Modules\BookIntelligence\Models\Book::class)) {
+                $book = \Modules\BookIntelligence\Models\Book::query()
+                    ->with('author')
+                    ->find($question->recommended_book_id);
+
+                if ($book) {
+                    return [
+                        'id' => $book->id,
+                        'title' => $book->title,
+                        'author' => $book->author?->name ?? 'Autor',
+                        'cover_url' => $book->cover_url,
+                        'why_recommended' => Str::limit($book->description, 150) ?: __('Empfohlenes Standardwerk für diese Audit-Aufgabe.'),
+                        'link' => route('bookintelligence.books.show', $book->id),
+                        'affiliate_link' => $book->affiliate_link,
+                    ];
+                }
+            }
+
+            // 2. QuestionMapping direct match
             if (class_exists(\Modules\BookIntelligence\Models\QuestionMapping::class)) {
                 $mapping = \Modules\BookIntelligence\Models\QuestionMapping::query()
                     ->active()
@@ -231,10 +253,11 @@ class QuestionRecommendationService
 
                 if ($mapping && $mapping->book) {
                     $b = $mapping->book;
+
                     return [
                         'id' => $b->id,
                         'title' => $b->title,
-                        'author' => $b->author?->name ?? 'Author',
+                        'author' => $b->author?->name ?? 'Autor',
                         'cover_url' => $b->cover_url,
                         'why_recommended' => $mapping->when_to_read_trigger ?: $mapping->problem_statement,
                         'link' => route('bookintelligence.books.show', $b->id),
@@ -243,7 +266,7 @@ class QuestionRecommendationService
                 }
             }
 
-            // Fallback to searching BookIntelligence books
+            // 3. Fallback to active library book
             if (class_exists(\Modules\BookIntelligence\Models\Book::class)) {
                 $book = \Modules\BookIntelligence\Models\Book::query()
                     ->where('status', 'active')
@@ -254,13 +277,57 @@ class QuestionRecommendationService
                     return [
                         'id' => $book->id,
                         'title' => $book->title,
-                        'author' => $book->author?->name ?? 'Author',
+                        'author' => $book->author?->name ?? 'Autor',
                         'cover_url' => $book->cover_url,
                         'why_recommended' => Str::limit($book->description, 150),
                         'link' => route('bookintelligence.books.show', $book->id),
                         'affiliate_link' => $book->affiliate_link,
                     ];
                 }
+            }
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return null;
+    }
+
+    protected function postForQuestion(AuditQuestion $question, ?string $moduleKey, string $pillar): ?array
+    {
+        try {
+            // 1. Direct Assignment from Question
+            if ($question->recommended_post_id) {
+                $post = \App\Models\Post::query()
+                    ->where('is_published', true)
+                    ->find($question->recommended_post_id);
+
+                if ($post) {
+                    return [
+                        'id' => $post->id,
+                        'title' => $post->title,
+                        'slug' => $post->slug,
+                        'excerpt' => Str::limit(strip_tags($post->excerpt ?: $post->body), 160),
+                        'featured_image' => $post->featured_image,
+                        'link' => url('blog/'.$post->slug),
+                    ];
+                }
+            }
+
+            // 2. Automatic fallback: latest published relevant article
+            $post = \App\Models\Post::query()
+                ->where('is_published', true)
+                ->latest('published_at')
+                ->first();
+
+            if ($post) {
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'excerpt' => Str::limit(strip_tags($post->excerpt ?: $post->body), 160),
+                    'featured_image' => $post->featured_image,
+                    'link' => url('blog/'.$post->slug),
+                ];
             }
         } catch (\Throwable) {
             return null;

@@ -61,6 +61,8 @@ class DefaultTemplateProvisioner
                         'failure_recommendation' => $questionData['recommendation'],
                         'recommended_module_key' => $questionData['module_key'] ?? QuestionToolGuesser::guess($questionData['question'], $pillarData['name']),
                         'knowledge_slug' => $questionData['knowledge_slug'] ?? QuestionToolGuesser::guessKnowledgeSlug($questionData['question'], $pillarData['name']),
+                        'recommended_book_id' => $questionData['book_id'] ?? null,
+                        'recommended_post_id' => $questionData['post_id'] ?? null,
                         'question_type' => 'scale_1_to_5',
                         'weight' => 1,
                         'is_required' => true,

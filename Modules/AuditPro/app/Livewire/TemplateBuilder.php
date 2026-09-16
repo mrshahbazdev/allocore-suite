@@ -50,6 +50,10 @@ class TemplateBuilder extends Component
 
     public ?string $questionKnowledgeSlug = null;
 
+    public ?int $questionRecommendedBookId = null;
+
+    public ?int $questionRecommendedPostId = null;
+
     public string $questionOptions = '';
 
     public ?int $questionDependsOnId = null;
@@ -144,6 +148,8 @@ class TemplateBuilder extends Component
         $this->questionFailureRecommendation = $question->failure_recommendation ?? '';
         $this->questionRecommendedModuleKey = $question->recommended_module_key;
         $this->questionKnowledgeSlug = $question->knowledge_slug;
+        $this->questionRecommendedBookId = $question->recommended_book_id;
+        $this->questionRecommendedPostId = $question->recommended_post_id;
         $this->questionOptions = implode(', ', $question->options ?? []);
         $this->questionDependsOnId = $question->depends_on_question_id;
         $this->questionDependsOnAnswer = $question->depends_on_answer ?? '';
@@ -176,6 +182,8 @@ class TemplateBuilder extends Component
             'questionFailureRecommendation' => ['nullable', 'string'],
             'questionRecommendedModuleKey' => ['nullable', 'string'],
             'questionKnowledgeSlug' => ['nullable', 'string'],
+            'questionRecommendedBookId' => ['nullable', 'integer'],
+            'questionRecommendedPostId' => ['nullable', 'integer'],
             'questionOptions' => ['nullable', 'string'],
             'questionDependsOnId' => [
                 'nullable',
@@ -202,6 +210,8 @@ class TemplateBuilder extends Component
             'failure_recommendation' => $validated['questionFailureRecommendation'],
             'recommended_module_key' => $validated['questionRecommendedModuleKey'] ?: null,
             'knowledge_slug' => $validated['questionKnowledgeSlug'] ?: null,
+            'recommended_book_id' => $validated['questionRecommendedBookId'] ?: null,
+            'recommended_post_id' => $validated['questionRecommendedPostId'] ?: null,
             'options' => $options ?: null,
             'depends_on_question_id' => $validated['questionDependsOnId'],
             'depends_on_answer' => $validated['questionDependsOnAnswer'] ?: null,
@@ -241,6 +251,8 @@ class TemplateBuilder extends Component
             'questionFailureRecommendation',
             'questionRecommendedModuleKey',
             'questionKnowledgeSlug',
+            'questionRecommendedBookId',
+            'questionRecommendedPostId',
             'questionOptions',
             'questionDependsOnId',
             'questionDependsOnAnswer',
@@ -257,7 +269,11 @@ class TemplateBuilder extends Component
         $dependencyQuestions = $this->template->questions()->orderBy('position')->get();
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
+        $books = class_exists(\Modules\BookIntelligence\Models\Book::class)
+            ? \Modules\BookIntelligence\Models\Book::query()->orderBy('title')->get()
+            : collect();
+        $posts = \App\Models\Post::query()->where('is_published', true)->orderBy('title')->get();
 
-        return view('auditpro::livewire.template-builder', compact('pillars', 'dependencyQuestions', 'modules', 'glossaryTerms'));
+        return view('auditpro::livewire.template-builder', compact('pillars', 'dependencyQuestions', 'modules', 'glossaryTerms', 'books', 'posts'));
     }
 }
