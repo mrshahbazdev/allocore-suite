@@ -43,7 +43,9 @@ class AuditPillarController extends Controller
 
     public function edit(AuditPillar $pillar)
     {
-        $pillar->load(['template.pillars', 'questions']);
+        $pillar = AuditPillar::withoutGlobalScope('current_team')->with('questions')->findOrFail($pillar->id);
+        $template = AuditTemplate::withoutGlobalScope('current_team')->find($pillar->template_id);
+        $pillar->setRelation('template', $template);
 
         return view('admin.audits.pillars.edit', compact('pillar'));
     }

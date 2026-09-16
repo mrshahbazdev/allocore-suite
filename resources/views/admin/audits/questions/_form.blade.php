@@ -114,7 +114,7 @@
         <label class="block text-sm font-medium text-slate-700">{{ __('admin.audit_questions.depends_on') }}</label>
         <select name="depends_on_question_id" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             <option value="">{{ __('admin.audit_questions.no_dependency') }}</option>
-            @foreach ($template->questions as $q)
+            @foreach (($template->questions ?? $templateQuestions ?? []) as $q)
                 <option value="{{ $q->id }}" @selected(old('depends_on_question_id', $question->depends_on_question_id ?? '') == $q->id)>{{ Str::limit($q->question, 60) }}</option>
             @endforeach
         </select>

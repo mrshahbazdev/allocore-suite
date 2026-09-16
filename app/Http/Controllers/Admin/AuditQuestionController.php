@@ -14,9 +14,20 @@ class AuditQuestionController extends Controller
 {
     public function create(Request $request)
     {
-        $template = AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->findOrFail($request->template_id);
-        $pillar = $request->pillar_id ? AuditPillar::withoutGlobalScope('current_team')->findOrFail($request->pillar_id) : null;
-        $pillars = $template->pillars;
+        $templateId = $request->template_id;
+        $pillar = $request->pillar_id ? AuditPillar::withoutGlobalScope('current_team')->find($request->pillar_id) : null;
+        if (! $templateId && $pillar?->template_id) {
+            $templateId = $pillar->template_id;
+        }
+
+        $template = $templateId ? AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->find($templateId) : null;
+        $pillars = $template
+            ? $template->pillars
+            : AuditPillar::withoutGlobalScope('current_team')->orderBy('position')->get();
+        $templateQuestions = $template
+            ? $template->questions
+            : AuditQuestion::withoutGlobalScope('current_team')->get();
+
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
         $books = class_exists(\Modules\BookIntelligence\Models\Book::class)
@@ -24,13 +35,13 @@ class AuditQuestionController extends Controller
             : collect();
         $posts = \App\Models\Post::query()->where('is_published', true)->orderBy('title')->get();
 
-        return view('admin.audits.questions.create', compact('template', 'pillar', 'pillars', 'modules', 'glossaryTerms', 'books', 'posts'));
+        return view('admin.audits.questions.create', compact('template', 'pillar', 'pillars', 'templateQuestions', 'modules', 'glossaryTerms', 'books', 'posts'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'template_id' => 'required|exists:auditpro_templates,id',
+            'template_id' => 'nullable|exists:auditpro_templates,id',
             'pillar_id' => 'required|exists:auditpro_pillars,id',
             'question' => 'required|string|max:1000',
             'description' => 'nullable|string|max:2000',
@@ -48,13 +59,16 @@ class AuditQuestionController extends Controller
             'position' => 'nullable|integer|min:0',
         ]);
 
-        $template = AuditTemplate::withoutGlobalScope('current_team')->findOrFail($validated['template_id']);
+        $pillar = AuditPillar::withoutGlobalScope('current_team')->findOrFail($validated['pillar_id']);
+        $templateId = $validated['template_id'] ?? $pillar->template_id;
+        $template = $templateId ? AuditTemplate::withoutGlobalScope('current_team')->find($templateId) : null;
+        $teamId = $template?->team_id ?? $pillar->team_id;
 
         $options = $this->parseOptions($validated['options'] ?? null);
 
         AuditQuestion::create([
-            'team_id' => $template->team_id,
-            'template_id' => $validated['template_id'],
+            'team_id' => $teamId,
+            'template_id' => $templateId,
             'pillar_id' => $validated['pillar_id'],
             'question' => $validated['question'],
             'description' => $validated['description'],
@@ -77,9 +91,25 @@ class AuditQuestionController extends Controller
 
     public function edit(AuditQuestion $question)
     {
-        $question->load(['template.pillars', 'template.questions', 'pillar.questions']);
-        $template = $question->template;
-        $pillars = $template->pillars;
+        $template = null;
+        if ($question->template_id) {
+            $template = AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->find($question->template_id);
+        }
+        if (! $template && $question->pillar_id) {
+            $pillar = AuditPillar::withoutGlobalScope('current_team')->find($question->pillar_id);
+            if ($pillar?->template_id) {
+                $template = AuditTemplate::withoutGlobalScope('current_team')->with(['pillars', 'questions'])->find($pillar->template_id);
+            }
+        }
+
+        $pillars = $template
+            ? $template->pillars
+            : AuditPillar::withoutGlobalScope('current_team')->orderBy('position')->get();
+
+        $templateQuestions = $template
+            ? $template->questions
+            : AuditQuestion::withoutGlobalScope('current_team')->get();
+
         $modules = Module::where('is_active', true)->orderBy('name')->get();
         $glossaryTerms = GlossaryTerm::published()->orderBy('term')->pluck('term', 'slug');
         $books = class_exists(\Modules\BookIntelligence\Models\Book::class)
@@ -87,7 +117,7 @@ class AuditQuestionController extends Controller
             : collect();
         $posts = \App\Models\Post::query()->where('is_published', true)->orderBy('title')->get();
 
-        return view('admin.audits.questions.edit', compact('question', 'template', 'pillars', 'modules', 'glossaryTerms', 'books', 'posts'));
+        return view('admin.audits.questions.edit', compact('question', 'template', 'pillars', 'templateQuestions', 'modules', 'glossaryTerms', 'books', 'posts'));
     }
 
     public function update(Request $request, AuditQuestion $question)

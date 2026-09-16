@@ -4,9 +4,11 @@
     <div class="mb-6 flex items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-slate-900">{{ __('admin.audit_pillars.edit_title', ['name' => $pillar->name]) }}</h1>
-            <p class="text-sm text-slate-500">{{ $pillar->template->name }}</p>
+            <p class="text-sm text-slate-500">{{ $pillar->template?->name }}</p>
         </div>
-        <a href="{{ route('admin.audits.templates.edit', $pillar->template) }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('admin.audit_pillars.back_to_template') }}</a>
+        @if ($pillar->template)
+            <a href="{{ route('admin.audits.templates.edit', $pillar->template) }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('admin.audit_pillars.back_to_template') }}</a>
+        @endif
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">

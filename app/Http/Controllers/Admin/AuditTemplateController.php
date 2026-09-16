@@ -52,23 +52,32 @@ class AuditTemplateController extends Controller
         return redirect()->route('admin.audits.templates.index')->with('success', __('admin.audit_templates.created'));
     }
 
-    public function show(AuditTemplate $template)
+    public function show($template)
     {
-        $template->load(['pillars.questions', 'team', 'creator']);
+        $templateId = $template instanceof AuditTemplate ? $template->id : $template;
+        $template = AuditTemplate::withoutGlobalScope('current_team')
+            ->with(['pillars.questions', 'team', 'creator'])
+            ->findOrFail($templateId);
 
         return view('admin.audits.templates.show', compact('template'));
     }
 
-    public function edit(AuditTemplate $template)
+    public function edit($template)
     {
-        $template->load('pillars.questions');
+        $templateId = $template instanceof AuditTemplate ? $template->id : $template;
+        $template = AuditTemplate::withoutGlobalScope('current_team')
+            ->with('pillars.questions')
+            ->findOrFail($templateId);
         $teams = Team::orderBy('name')->get();
 
         return view('admin.audits.templates.edit', compact('template', 'teams'));
     }
 
-    public function update(Request $request, AuditTemplate $template)
+    public function update(Request $request, $template)
     {
+        $templateId = $template instanceof AuditTemplate ? $template->id : $template;
+        $template = AuditTemplate::withoutGlobalScope('current_team')->findOrFail($templateId);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:auditpro_templates,slug,'.$template->id,
@@ -85,8 +94,10 @@ class AuditTemplateController extends Controller
         return redirect()->route('admin.audits.templates.index')->with('success', __('admin.audit_templates.updated'));
     }
 
-    public function destroy(AuditTemplate $template)
+    public function destroy($template)
     {
+        $templateId = $template instanceof AuditTemplate ? $template->id : $template;
+        $template = AuditTemplate::withoutGlobalScope('current_team')->findOrFail($templateId);
         $template->delete();
 
         return redirect()->route('admin.audits.templates.index')->with('success', __('admin.audit_templates.deleted'));
