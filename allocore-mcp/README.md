@@ -8,7 +8,7 @@ Enterprise Model Context Protocol (MCP) Server for **Allocore Suite**, optimized
 
 ### Mode A: Shared Hosting Native (Pure Laravel API)
 On your shared host, no background Python process is needed!
-The entire **64 autonomous tools** suite is served directly by Laravel via:
+The entire **65 autonomous tools** suite is served directly by Laravel via:
 - `POST https://allocore.de/api/mcp/rpc` (JSON-RPC 2.0 Protocol Handler)
 - `GET/POST https://allocore.de/api/mcp` (SSE Stream for Claude / MCP Remote Connectors)
 - `GET https://allocore.de/api/mcp/tools` (Dedicated HTTP Tool Discovery with CORS)
@@ -27,7 +27,7 @@ python server.py      # Direct DB & local execution
 
 ---
 
-## 🛠️ Complete 64 Tool Catalog
+## 🛠️ Complete 65 Tool Catalog
 
 1. **Audit Pro & Assessment**: `list_audit_questions`, `get_question_details`, `assign_question_solution`, `batch_auto_match_questions`, `list_audit_templates`, `create_or_update_question`, `create_client_audit`, `submit_audit_answers`, `list_recent_audits`, `get_audit_full_answers`.
 2. **Diagnostics & 5-Säulen Coach**: `diagnose_audit_gaps`, `calculate_pillar_scores`, `generate_action_plan`, `generate_audit_executive_summary`, `benchmark_audit_performance`.
@@ -47,7 +47,7 @@ python server.py      # Direct DB & local execution
 16. **BookIntelligence Catalog**: `search_books`, `get_book_details`, `create_or_update_book`, `repurpose_book_to_blog`.
 17. **Blog CMS & Thought Leadership**: `search_blog_posts`, `get_post_details`, `create_or_update_post`, `upload_post_image`, `batch_relink_glossary_in_posts`.
 18. **Case Studies & Success Stories**: `search_case_studies`, `get_case_study_details`, `create_or_update_case_study`.
-19. **Knowledge & Glossary (Lexikon)**: `search_glossary_terms`, `create_or_update_glossary_term`.
+19. **Knowledge & Glossary (Lexikon)**: `search_glossary_terms`, `create_or_update_glossary_term`, `delete_glossary_term`.
 20. **Tool Pool & Subscription Governance**: `list_all_modules`, `manage_tool_pool`, `deprecate_module`, `update_module_metadata`, `sync_subscription_plans`, `validate_tool_pool_integrity`.
 21. **User & Account Metrics**: `search_users_and_teams`, `get_user_subscription_status`, `get_platform_metrics`.
 22. **DevOps, Automation & Webhooks**: `run_allocore_artisan`, `get_system_health`, `list_activity_logs`, `export_platform_dataset`, `list_webhooks_and_integrations`.

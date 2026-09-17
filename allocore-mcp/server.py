@@ -27,7 +27,7 @@ from tools.book_tools import (
     search_books, get_book_details, create_or_update_book, map_book_to_audit_trigger
 )
 from tools.glossary_tools import (
-    search_glossary_terms, get_glossary_term, create_or_update_glossary_term, list_terms_by_pillar
+    search_glossary_terms, get_glossary_term, create_or_update_glossary_term, delete_glossary_term, list_terms_by_pillar
 )
 from tools.content_tools import (
     search_blog_posts, get_post_details, create_or_update_post, upload_post_image
@@ -93,6 +93,7 @@ mcp.tool()(map_book_to_audit_trigger)
 mcp.tool()(search_glossary_terms)
 mcp.tool()(get_glossary_term)
 mcp.tool()(create_or_update_glossary_term)
+mcp.tool()(delete_glossary_term)
 mcp.tool()(list_terms_by_pillar)
 
 # ----------------------------------------------------

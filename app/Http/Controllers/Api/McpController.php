@@ -596,19 +596,20 @@ class McpController extends Controller
                 // 5. Knowledge & Glossary
                 [
                     'name' => 'search_glossary_terms',
-                    'description' => 'Search business terms and explanations in the Allocore Glossary.',
+                    'description' => 'Search business terms and explanations in the Allocore Glossary by keyword, category, or pillar.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
                             'query' => ['type' => 'string'],
-                            'pillar' => ['type' => 'string'],
+                            'pillar' => ['type' => 'string', 'description' => 'Filter by pillar/category (e.g. Revenue, Profit, Order, Influence, Legacy)'],
+                            'category' => ['type' => 'string', 'description' => 'Filter by category name'],
                             'limit' => ['type' => 'integer', 'default' => 30],
                         ],
                     ],
                 ],
                 [
                     'name' => 'create_or_update_glossary_term',
-                    'description' => 'Create or update a business glossary term.',
+                    'description' => 'Create or update a business glossary term with German and simple definition, category/pillar, and published status.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -616,9 +617,22 @@ class McpController extends Controller
                             'slug' => ['type' => 'string'],
                             'definition' => ['type' => 'string'],
                             'simple_definition' => ['type' => 'string'],
-                            'pillar' => ['type' => 'string', 'default' => 'Revenue'],
+                            'category' => ['type' => 'string', 'description' => 'Category or Pillar name (e.g. Profit, Revenue, Order)'],
+                            'pillar' => ['type' => 'string', 'description' => 'Alias for category'],
+                            'is_published' => ['type' => 'boolean', 'default' => true],
                         ],
                         'required' => ['term', 'slug', 'definition'],
+                    ],
+                ],
+                [
+                    'name' => 'delete_glossary_term',
+                    'description' => 'Delete a duplicate or deprecated glossary term by its ID or slug.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'term_id' => ['type' => 'integer', 'description' => 'Glossary term ID to delete'],
+                            'slug' => ['type' => 'string', 'description' => 'Glossary term slug to delete'],
+                        ],
                     ],
                 ],
 
@@ -1343,6 +1357,7 @@ class McpController extends Controller
             'create_or_update_book' => $this->toolCreateOrUpdateBook($arguments),
             'search_glossary_terms' => $this->toolSearchGlossaryTerms($arguments),
             'create_or_update_glossary_term' => $this->toolCreateOrUpdateGlossaryTerm($arguments),
+            'delete_glossary_term' => $this->toolDeleteGlossaryTerm($arguments),
             'search_blog_posts' => $this->toolSearchBlogPosts($arguments),
             'get_post_details' => $this->toolGetPostDetails($arguments),
             'create_or_update_post' => $this->toolCreateOrUpdatePost($arguments),
@@ -1772,37 +1787,88 @@ class McpController extends Controller
 
     protected function toolSearchGlossaryTerms(array $args): array
     {
-        $q = GlossaryTerm::published();
+        $q = GlossaryTerm::query();
+        if (! isset($args['include_unpublished']) || ! $args['include_unpublished']) {
+            $q->where('is_published', true);
+        }
+
         if (! empty($args['query'])) {
             $s = $args['query'];
             $q->where(fn ($sub) => $sub->where('term', 'like', "%{$s}%")->orWhere('definition', 'like', "%{$s}%"));
         }
-        if (! empty($args['pillar'])) $q->where('pillar', $args['pillar']);
+
+        $category = $args['category'] ?? $args['pillar'] ?? null;
+        if (! empty($category)) {
+            $q->where('category', 'like', "%{$category}%");
+        }
 
         $terms = $q->limit($args['limit'] ?? 30)->get();
 
         return ['terms' => $terms->map(fn ($t) => [
+            'id' => $t->id,
             'slug' => $t->slug,
             'term' => $t->term,
-            'pillar' => $t->pillar,
+            'category' => $t->category,
+            'pillar' => $t->category,
+            'is_published' => (bool) $t->is_published,
             'simple_definition' => $t->simple_definition,
         ])];
     }
 
     protected function toolCreateOrUpdateGlossaryTerm(array $args): array
     {
+        $category = $args['category'] ?? $args['pillar'] ?? 'Revenue';
+        $isPublished = isset($args['is_published']) ? (bool) $args['is_published'] : true;
+
         $t = GlossaryTerm::updateOrCreate(
             ['slug' => $args['slug']],
             [
                 'term' => $args['term'],
                 'definition' => $args['definition'],
                 'simple_definition' => $args['simple_definition'] ?? null,
-                'pillar' => $args['pillar'] ?? 'Revenue',
-                'is_published' => true,
+                'category' => $category,
+                'is_published' => $isPublished,
             ]
         );
 
-        return ['status' => 'success', 'slug' => $t->slug, 'id' => $t->id];
+        return [
+            'status' => 'success',
+            'id' => $t->id,
+            'slug' => $t->slug,
+            'term' => $t->term,
+            'category' => $t->category,
+            'pillar' => $t->category,
+            'is_published' => (bool) $t->is_published,
+            'url' => url('/glossary/'.$t->slug),
+        ];
+    }
+
+    protected function toolDeleteGlossaryTerm(array $args): array
+    {
+        $term = null;
+        if (! empty($args['term_id'])) {
+            $term = GlossaryTerm::find($args['term_id']);
+        } elseif (! empty($args['slug'])) {
+            $term = GlossaryTerm::where('slug', $args['slug'])->first();
+        }
+
+        if (! $term) {
+            throw new \InvalidArgumentException('Glossary term not found with provided term_id or slug.');
+        }
+
+        $deletedInfo = [
+            'id' => $term->id,
+            'term' => $term->term,
+            'slug' => $term->slug,
+            'category' => $term->category,
+        ];
+
+        $term->delete();
+
+        return [
+            'status' => 'deleted',
+            'deleted_term' => $deletedInfo,
+        ];
     }
 
     protected function toolSearchBlogPosts(array $args): array
@@ -2683,7 +2749,7 @@ class McpController extends Controller
     {
         $postId = $args['post_id'] ?? null;
 
-        $terms = GlossaryTerm::published()->get(['term', 'slug', 'pillar']);
+        $terms = GlossaryTerm::published()->get(['id', 'term', 'slug', 'category']);
         $postsQuery = Post::query();
         if ($postId) {
             $postsQuery->where('id', $postId);
@@ -2704,7 +2770,7 @@ class McpController extends Controller
                     $matchedTerms[] = [
                         'term' => $termObj->term,
                         'slug' => $termObj->slug,
-                        'url' => url('/lexikon/'.$termObj->slug),
+                        'url' => url('/glossary/'.$termObj->slug),
                     ];
                 }
             }
@@ -3747,7 +3813,7 @@ class McpController extends Controller
             'allocore://audit/templates' => AuditTemplate::withoutGlobalScope('current_team')->with('pillars')->get()->toJson(JSON_PRETTY_PRINT),
             'allocore://recent-audits' => Audit::withoutGlobalScope('current_team')->latest()->limit(15)->get(['id', 'company_name', 'industry', 'status', 'created_at'])->toJson(JSON_PRETTY_PRINT),
             'allocore://modules/pool' => Module::inSubscriptionPool()->get(['key', 'name', 'category', 'route_prefix'])->toJson(JSON_PRETTY_PRINT),
-            'allocore://knowledge/terms' => GlossaryTerm::published()->get(['term', 'slug', 'pillar'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://knowledge/terms' => GlossaryTerm::published()->get(['id', 'term', 'slug', 'category'])->toJson(JSON_PRETTY_PRINT),
             'allocore://books/catalog' => class_exists(Book::class) ? Book::get(['id', 'title', 'cover_url', 'affiliate_link'])->toJson(JSON_PRETTY_PRINT) : '[]',
             'allocore://blog/posts' => Post::where('is_published', true)->get(['id', 'title', 'slug', 'featured_image'])->toJson(JSON_PRETTY_PRINT),
             'allocore://case-studies' => CaseStudy::where('is_published', true)->get(['id', 'title', 'slug', 'company', 'industry'])->toJson(JSON_PRETTY_PRINT),

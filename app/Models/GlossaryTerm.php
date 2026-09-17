@@ -12,11 +12,26 @@ class GlossaryTerm extends Model
         'definition',
         'simple_definition',
         'category',
+        'pillar',
         'related_modules',
         'is_published',
         'is_beginner_friendly',
         'sort_order',
     ];
+
+    protected $appends = [
+        'pillar',
+    ];
+
+    public function getPillarAttribute(): ?string
+    {
+        return $this->attributes['category'] ?? null;
+    }
+
+    public function setPillarAttribute(?string $value): void
+    {
+        $this->attributes['category'] = $value;
+    }
 
     protected function casts(): array
     {
