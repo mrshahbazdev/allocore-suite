@@ -662,7 +662,7 @@ class McpController extends Controller
                   ->whereNull('recommended_book_id');
         }
 
-        $limit = min(100, max(1, (int) ($args['limit'] ?? 50)));
+        $limit = min(500, max(1, (int) ($args['limit'] ?? 50)));
         $questions = $query->orderBy('id')->limit($limit)->get();
 
         return [
@@ -678,7 +678,7 @@ class McpController extends Controller
                 'recommended_post_id' => $q->recommended_post_id,
                 'knowledge_slug' => $q->knowledge_slug,
                 'failure_recommendation' => $q->failure_recommendation,
-                'is_active' => (bool) $q->is_active,
+                'is_active' => $q->is_active !== null ? (bool) $q->is_active : true,
             ]),
         ];
     }
