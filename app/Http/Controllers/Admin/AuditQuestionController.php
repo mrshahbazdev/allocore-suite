@@ -205,6 +205,18 @@ class AuditQuestionController extends Controller
             'position' => $validated['position'] ?? 0,
         ]);
 
+        // Propagate the recommendation assignments across all team instances of this question so dashboard & audits update globally
+        AuditQuestion::withoutGlobalScope('current_team')
+            ->where('question', $question->question)
+            ->where('id', '!=', $question->id)
+            ->update([
+                'failure_recommendation' => $validated['failure_recommendation'],
+                'recommended_module_key' => $validated['recommended_module_key'] ?: null,
+                'knowledge_slug' => $validated['knowledge_slug'] ?: null,
+                'recommended_book_id' => $validated['recommended_book_id'] ?: null,
+                'recommended_post_id' => $validated['recommended_post_id'] ?: null,
+            ]);
+
         return redirect()->route('admin.audits.pillars.edit', $question->pillar_id)->with('success', __('admin.audit_questions.updated'));
     }
 

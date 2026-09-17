@@ -46,7 +46,17 @@ class QuestionRecommendationService
                     continue;
                 }
 
-                $moduleKey = $question->recommended_module_key ?: QuestionToolGuesser::guess($question->question, $pillar->name);
+                $moduleKey = $question->recommended_module_key;
+                if (! $moduleKey) {
+                    $moduleKey = AuditQuestion::withoutGlobalScope('current_team')
+                        ->where('question', $question->question)
+                        ->whereNotNull('recommended_module_key')
+                        ->value('recommended_module_key');
+                }
+                if (! $moduleKey) {
+                    $moduleKey = QuestionToolGuesser::guess($question->question, $pillar->name);
+                }
+
                 $module = $modules->get($moduleKey);
 
                 $gaps[] = $this->buildItem(
@@ -62,6 +72,26 @@ class QuestionRecommendationService
                 );
             }
         }
+
+        // Sort gaps by severity (lowest score / largest gap first), then pyramid order
+        $order = array_flip($this->pyramidOrder);
+        usort($gaps, function ($a, $b) use ($order) {
+            if ($a['raw_score'] !== $b['raw_score']) {
+                return $a['raw_score'] <=> $b['raw_score'];
+            }
+            $pA = $order[$a['pillar']] ?? 999;
+            $pB = $order[$b['pillar']] ?? 999;
+            if ($pA !== $pB) {
+                return $pA <=> $pB;
+            }
+            return ($a['question_id'] ?? 0) <=> ($b['question_id'] ?? 0);
+        });
+
+        // Re-number priorities sequentially
+        foreach ($gaps as $idx => &$gap) {
+            $gap['priority'] = $idx + 1;
+        }
+        unset($gap);
 
         return $gaps;
     }
@@ -141,6 +171,13 @@ class QuestionRecommendationService
         int $priority,
     ): array {
         $manual = $question->failure_recommendation;
+
+        if (blank($manual)) {
+            $manual = AuditQuestion::withoutGlobalScope('current_team')
+                ->where('question', $question->question)
+                ->whereNotNull('failure_recommendation')
+                ->value('failure_recommendation');
+        }
 
         if (blank($manual)) {
             $manual = __('Use the recommended tool to make measurable progress on :pillar.', ['pillar' => __($pillar->name)]);
