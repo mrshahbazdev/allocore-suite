@@ -24,7 +24,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditAnswer;
@@ -178,6 +180,15 @@ class McpController extends Controller
                 'result' => $result,
             ], 200, $this->corsHeaders());
         } catch (\Throwable $e) {
+            Log::error('MCP RPC Execution Error: '.$e->getMessage(), [
+                'method' => $method,
+                'params' => $params,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $clientMessage = $this->sanitizeErrorMessage($e);
+
             if ($method === 'tools/call') {
                 return response()->json([
                     'jsonrpc' => '2.0',
@@ -186,7 +197,7 @@ class McpController extends Controller
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'Error executing tool: '.$e->getMessage(),
+                                'text' => 'Error executing tool: '.$clientMessage,
                             ],
                         ],
                         'isError' => true,
@@ -199,10 +210,33 @@ class McpController extends Controller
                 'id' => $id,
                 'error' => [
                     'code' => -32603,
-                    'message' => $e->getMessage(),
+                    'message' => $clientMessage,
                 ],
             ], 200, $this->corsHeaders());
         }
+    }
+
+    /**
+     * Sanitize exception messages to prevent internal database connection / host leakage.
+     */
+    protected function sanitizeErrorMessage(\Throwable $e): string
+    {
+        if ($e instanceof \InvalidArgumentException || $e instanceof \Illuminate\Validation\ValidationException) {
+            return $e->getMessage();
+        }
+
+        if ($e instanceof \Illuminate\Database\QueryException || $e instanceof \PDOException) {
+            return 'A database query error occurred while processing the request.';
+        }
+
+        $msg = $e->getMessage();
+        // Remove internal database connection string, host, user and database name disclosures
+        $msg = preg_replace('/\(Connection:.*?\)/i', '', $msg);
+        $msg = preg_replace('/Host:\s*\S+/i', '', $msg);
+        $msg = preg_replace('/Database:\s*\S+/i', '', $msg);
+        $msg = preg_replace('/SQLSTATE\[.*?\]:\s*/i', '', $msg);
+
+        return trim($msg) ?: 'An unexpected error occurred while executing the MCP request.';
     }
 
     /**
@@ -630,6 +664,19 @@ class McpController extends Controller
                             'is_published' => ['type' => 'boolean', 'default' => true],
                             'is_featured' => ['type' => 'boolean'],
                         ],
+                    ],
+                ],
+                [
+                    'name' => 'upload_post_image',
+                    'description' => 'Upload and store a post featured image or graphic (SVG, PNG, JPG, JPEG, WEBP) via base64, with sanitization and optional automatic post attachment.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'filename' => ['type' => 'string', 'description' => 'Target filename with extension (e.g. seo-guide.svg, header.png)'],
+                            'content_base64' => ['type' => 'string', 'description' => 'Base64 encoded binary/SVG image data string'],
+                            'post_id' => ['type' => 'integer', 'description' => 'Optional post ID to automatically attach this image as featured_image'],
+                        ],
+                        'required' => ['filename', 'content_base64'],
                     ],
                 ],
 
@@ -1299,6 +1346,7 @@ class McpController extends Controller
             'search_blog_posts' => $this->toolSearchBlogPosts($arguments),
             'get_post_details' => $this->toolGetPostDetails($arguments),
             'create_or_update_post' => $this->toolCreateOrUpdatePost($arguments),
+            'upload_post_image' => $this->toolUploadPostImage($arguments),
             'search_users_and_teams' => $this->toolSearchUsersAndTeams($arguments),
             'get_user_subscription_status' => $this->toolGetUserSubscriptionStatus($arguments),
             'get_platform_metrics' => $this->toolGetPlatformMetrics(),
@@ -1920,6 +1968,63 @@ class McpController extends Controller
         }
 
         return ['status' => 'created', 'post_id' => $p->id, 'slug' => $p->slug];
+    }
+
+    protected function toolUploadPostImage(array $args): array
+    {
+        if (empty($args['filename']) || empty($args['content_base64'])) {
+            throw new \InvalidArgumentException('Both filename and content_base64 parameters are required.');
+        }
+
+        $name = Str::slug(pathinfo($args['filename'], PATHINFO_FILENAME));
+        $ext = strtolower(pathinfo($args['filename'], PATHINFO_EXTENSION));
+
+        if (! in_array($ext, ['svg', 'png', 'jpg', 'jpeg', 'webp'], true)) {
+            throw new \InvalidArgumentException("Invalid file extension '.{$ext}'. Allowed: svg, png, jpg, jpeg, webp.");
+        }
+
+        $data = base64_decode($args['content_base64'], true);
+        if ($data === false) {
+            throw new \InvalidArgumentException('Invalid base64 encoded image content.');
+        }
+
+        if (strlen($data) > 5 * 1024 * 1024) {
+            throw new \InvalidArgumentException('File size exceeds the 5MB maximum limit.');
+        }
+
+        // SVG security inspection
+        if ($ext === 'svg' && preg_match('/<script|on\w+\s*=|javascript:/i', $data)) {
+            throw new \InvalidArgumentException('Unsafe SVG content detected. Embedded JavaScript and event handlers are prohibited.');
+        }
+
+        $dir = public_path('img/posts');
+        if (! File::exists($dir)) {
+            File::makeDirectory($dir, 0755, true);
+        }
+
+        $filename = ($name ?: 'post-graphic-'.time()).".{$ext}";
+        $relativePath = "img/posts/{$filename}";
+        $fullPath = public_path($relativePath);
+
+        File::put($fullPath, $data);
+
+        $postUpdated = false;
+        if (! empty($args['post_id'])) {
+            $post = Post::find($args['post_id']);
+            if ($post) {
+                $post->update(['featured_image' => '/'.$relativePath]);
+                $postUpdated = true;
+            }
+        }
+
+        return [
+            'status' => 'uploaded',
+            'filename' => $filename,
+            'relative_path' => '/'.$relativePath,
+            'url' => url($relativePath),
+            'size_bytes' => strlen($data),
+            'post_id_updated' => $postUpdated ? (int) $args['post_id'] : null,
+        ];
     }
 
     protected function toolSearchUsersAndTeams(array $args): array

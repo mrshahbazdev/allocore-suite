@@ -30,7 +30,7 @@ from tools.glossary_tools import (
     search_glossary_terms, get_glossary_term, create_or_update_glossary_term, list_terms_by_pillar
 )
 from tools.content_tools import (
-    search_blog_posts, get_post_details, create_or_update_post
+    search_blog_posts, get_post_details, create_or_update_post, upload_post_image
 )
 from tools.user_team_tools import (
     search_users_and_teams, get_user_subscription_status, grant_module_access, list_team_members
@@ -101,6 +101,7 @@ mcp.tool()(list_terms_by_pillar)
 mcp.tool()(search_blog_posts)
 mcp.tool()(get_post_details)
 mcp.tool()(create_or_update_post)
+mcp.tool()(upload_post_image)
 
 # ----------------------------------------------------
 # 7. Register User, Team & Subscription Tools

@@ -85,3 +85,46 @@ def create_or_update_post(
         """, (title, slug_val, body, excerpt, featured_image, meta_title or title, meta_description or excerpt, 1 if is_published else 0))
         return {"status": "created", "post_id": new_id, "slug": slug_val}
 
+def upload_post_image(filename: str, content_base64: str, post_id: Optional[int] = None) -> Dict[str, Any]:
+    """Upload and store a post featured image / graphic (SVG, PNG, JPG, JPEG, WEBP) with base64 data and optional post attachment."""
+    import base64
+    import os
+    import re
+    import time
+
+    if not filename or not content_base64:
+        return {"error": "Both 'filename' and 'content_base64' are required."}
+
+    name, ext = os.path.splitext(filename)
+    ext = ext.lstrip(".").lower()
+    if ext not in ["svg", "png", "jpg", "jpeg", "webp"]:
+        return {"error": f"Invalid file extension '.{ext}'. Allowed: svg, png, jpg, jpeg, webp."}
+
+    try:
+        data = base64.b64decode(content_base64)
+    except Exception as e:
+        return {"error": f"Invalid base64 encoding: {str(e)}"}
+
+    if len(data) > 5 * 1024 * 1024:
+        return {"error": "File size exceeds 5MB limit."}
+
+    if ext == "svg":
+        svg_text = data.decode("utf-8", errors="ignore")
+        if re.search(r"<script|on\w+\s*=|javascript:", svg_text, re.IGNORECASE):
+            return {"error": "Unsafe SVG content detected. Embedded JavaScript and event handlers are prohibited."}
+
+    clean_name = re.sub(r"[^a-zA-Z0-9_\-]", "-", name).strip("-").lower()
+    saved_filename = f"{clean_name}.{ext}" if clean_name else f"post-graphic-{int(time.time())}.{ext}"
+    rel_path = f"img/posts/{saved_filename}"
+
+    if post_id:
+        execute("UPDATE posts SET featured_image = %s, updated_at = NOW() WHERE id = %s", (f"/{rel_path}", post_id))
+
+    return {
+        "status": "uploaded",
+        "filename": saved_filename,
+        "relative_path": f"/{rel_path}",
+        "post_id_updated": post_id
+    }
+
+
