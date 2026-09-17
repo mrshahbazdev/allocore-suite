@@ -542,19 +542,33 @@ class McpController extends Controller
                     ],
                 ],
                 [
-                    'name' => 'create_or_update_post',
-                    'description' => 'Create or update a blog post for content marketing or audit recommendations.',
+                    'name' => 'get_post_details',
+                    'description' => 'Retrieve full content body, featured image, excerpt, and metadata of a specific blog post.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
+                            'post_id' => ['type' => 'integer', 'description' => 'ID of the blog post'],
+                        ],
+                        'required' => ['post_id'],
+                    ],
+                ],
+                [
+                    'name' => 'create_or_update_post',
+                    'description' => 'Create a new blog post or safely update specific fields of an existing post (e.g. featured_image, title, slug, body, excerpt) without wiping content.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'post_id' => ['type' => 'integer', 'description' => 'If provided, performs a safe partial update on this post'],
                             'title' => ['type' => 'string'],
                             'slug' => ['type' => 'string'],
                             'body' => ['type' => 'string'],
-                            'post_id' => ['type' => 'integer'],
                             'excerpt' => ['type' => 'string'],
+                            'featured_image' => ['type' => 'string', 'description' => 'URL or path to featured image graphic'],
+                            'meta_title' => ['type' => 'string'],
+                            'meta_description' => ['type' => 'string'],
                             'is_published' => ['type' => 'boolean', 'default' => true],
+                            'is_featured' => ['type' => 'boolean'],
                         ],
-                        'required' => ['title', 'slug', 'body'],
                     ],
                 ],
 
@@ -634,6 +648,7 @@ class McpController extends Controller
             'search_glossary_terms' => $this->toolSearchGlossaryTerms($arguments),
             'create_or_update_glossary_term' => $this->toolCreateOrUpdateGlossaryTerm($arguments),
             'search_blog_posts' => $this->toolSearchBlogPosts($arguments),
+            'get_post_details' => $this->toolGetPostDetails($arguments),
             'create_or_update_post' => $this->toolCreateOrUpdatePost($arguments),
             'search_users_and_teams' => $this->toolSearchUsersAndTeams($arguments),
             'get_user_subscription_status' => $this->toolGetUserSubscriptionStatus($arguments),
@@ -1065,27 +1080,71 @@ class McpController extends Controller
         ])];
     }
 
+    protected function toolGetPostDetails(array $args): array
+    {
+        $p = Post::with(['category', 'tags'])->findOrFail($args['post_id']);
+
+        return [
+            'id' => $p->id,
+            'title' => $p->title,
+            'slug' => $p->slug,
+            'excerpt' => $p->excerpt,
+            'body' => $p->body,
+            'featured_image' => $p->featured_image,
+            'is_published' => (bool) $p->is_published,
+            'is_featured' => (bool) $p->is_featured,
+            'meta_title' => $p->meta_title,
+            'meta_description' => $p->meta_description,
+            'category' => $p->category?->name,
+            'tags' => $p->tags->pluck('name'),
+            'published_at' => $p->published_at?->toIso8601String(),
+        ];
+    }
+
     protected function toolCreateOrUpdatePost(array $args): array
     {
         $id = $args['post_id'] ?? null;
-        $data = [
-            'title' => $args['title'],
-            'slug' => $args['slug'],
-            'body' => $args['body'],
-            'excerpt' => $args['excerpt'] ?? null,
-            'is_published' => $args['is_published'] ?? true,
-        ];
 
         if ($id) {
             $p = Post::findOrFail($id);
+            $fields = ['title', 'slug', 'body', 'excerpt', 'featured_image', 'meta_title', 'meta_description', 'is_published', 'is_featured', 'category_id'];
+            $data = [];
+            foreach ($fields as $f) {
+                if (array_key_exists($f, $args)) {
+                    $data[$f] = $args[$f];
+                }
+            }
             $p->update($data);
 
-            return ['status' => 'updated', 'post_id' => $p->id];
+            return [
+                'status' => 'updated',
+                'post_id' => $p->id,
+                'title' => $p->title,
+                'featured_image' => $p->featured_image,
+                'updated_fields' => array_keys($data),
+            ];
         }
 
-        $p = Post::create($data);
+        if (empty($args['title']) || empty($args['body'])) {
+            throw new \InvalidArgumentException("Both 'title' and 'body' are required when creating a new post.");
+        }
 
-        return ['status' => 'created', 'post_id' => $p->id];
+        $slug = $args['slug'] ?? Str::slug($args['title']);
+        $p = Post::create([
+            'title' => $args['title'],
+            'slug' => $slug,
+            'body' => $args['body'],
+            'excerpt' => $args['excerpt'] ?? Str::limit(strip_tags($args['body']), 160),
+            'featured_image' => $args['featured_image'] ?? null,
+            'meta_title' => $args['meta_title'] ?? $args['title'],
+            'meta_description' => $args['meta_description'] ?? ($args['excerpt'] ?? null),
+            'is_published' => $args['is_published'] ?? true,
+            'is_featured' => $args['is_featured'] ?? false,
+            'published_at' => ($args['is_published'] ?? true) ? now() : null,
+            'user_id' => Auth::id() ?? 1,
+        ]);
+
+        return ['status' => 'created', 'post_id' => $p->id, 'slug' => $p->slug];
     }
 
     protected function toolSearchUsersAndTeams(array $args): array
