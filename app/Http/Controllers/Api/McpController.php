@@ -1139,13 +1139,17 @@ class McpController extends Controller
 
             $p->update($data);
 
-            // Handle Tags
+            // Handle Tags with robust trimming and updateOrCreate
             if (isset($args['tags'])) {
-                $tagList = is_array($args['tags']) ? $args['tags'] : array_map('trim', explode(',', $args['tags']));
+                $rawTags = is_array($args['tags']) ? $args['tags'] : explode(',', (string) $args['tags']);
+                $tagNames = collect($rawTags)
+                    ->map(fn ($t) => trim(html_entity_decode((string) $t), " \t\n\r\0\x0B\"'[]{}"))
+                    ->filter(fn ($t) => ! empty($t))
+                    ->unique();
+
                 $tagIds = [];
-                foreach ($tagList as $tagName) {
-                    if (empty($tagName)) continue;
-                    $t = \App\Models\BlogTag::firstOrCreate(
+                foreach ($tagNames as $tagName) {
+                    $t = \App\Models\BlogTag::updateOrCreate(
                         ['slug' => Str::slug($tagName)],
                         ['name' => $tagName]
                     );
@@ -1197,11 +1201,15 @@ class McpController extends Controller
         ]);
 
         if (isset($args['tags'])) {
-            $tagList = is_array($args['tags']) ? $args['tags'] : array_map('trim', explode(',', $args['tags']));
+            $rawTags = is_array($args['tags']) ? $args['tags'] : explode(',', (string) $args['tags']);
+            $tagNames = collect($rawTags)
+                ->map(fn ($t) => trim(html_entity_decode((string) $t), " \t\n\r\0\x0B\"'[]{}"))
+                ->filter(fn ($t) => ! empty($t))
+                ->unique();
+
             $tagIds = [];
-            foreach ($tagList as $tagName) {
-                if (empty($tagName)) continue;
-                $t = \App\Models\BlogTag::firstOrCreate(
+            foreach ($tagNames as $tagName) {
+                $t = \App\Models\BlogTag::updateOrCreate(
                     ['slug' => Str::slug($tagName)],
                     ['name' => $tagName]
                 );
