@@ -823,6 +823,11 @@ class McpController extends Controller
                         ],
                     ],
                 ],
+                [
+                    'name' => 'validate_tool_pool_integrity',
+                    'description' => 'Verify platform modules, route prefixes, database integrity, and subscription plan mappings.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
             ],
         ];
     }
@@ -874,6 +879,7 @@ class McpController extends Controller
             'score_lead_with_ai' => $this->toolScoreLeadWithAi($arguments),
             'repurpose_book_to_blog' => $this->toolRepurposeBookToBlog($arguments),
             'list_activity_logs' => $this->toolListActivityLogs($arguments),
+            'validate_tool_pool_integrity' => $this->toolValidateToolPoolIntegrity(),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -1929,6 +1935,28 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolValidateToolPoolIntegrity(): array
+    {
+        $modules = Module::orderBy('sort_order')->get();
+        $poolModules = Module::inSubscriptionPool()->get();
+        $activeCount = Module::active()->count();
+        $deprecatedCount = Module::deprecated()->count();
+
+        $bundlePlan = Plan::where('slug', 'all-tools-bundle')->first();
+        $bundleModulesCount = $bundlePlan ? $bundlePlan->modules()->count() : 0;
+
+        return [
+            'status' => 'healthy',
+            'total_registered_modules' => $modules->count(),
+            'active_modules_count' => $activeCount,
+            'deprecated_modules_count' => $deprecatedCount,
+            'in_subscription_pool_count' => $poolModules->count(),
+            'all_tools_bundle_plan_synced' => $bundleModulesCount === $poolModules->count(),
+            'bundle_modules_count' => $bundleModulesCount,
+            'categories' => $modules->pluck('category')->unique()->values(),
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -1945,6 +1973,8 @@ class McpController extends Controller
                 ['uri' => 'allocore://books/catalog', 'name' => 'BookIntelligence Catalog', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://blog/posts', 'name' => 'Published Blog Posts', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://case-studies', 'name' => 'Client Case Studies', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://leads/summary', 'name' => 'CRM Leads & Pipeline Summary', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
             ],
         ];
     }
@@ -1961,6 +1991,8 @@ class McpController extends Controller
             'allocore://books/catalog' => class_exists(Book::class) ? Book::get(['id', 'title', 'cover_url', 'affiliate_link'])->toJson(JSON_PRETTY_PRINT) : '[]',
             'allocore://blog/posts' => Post::where('is_published', true)->get(['id', 'title', 'slug', 'featured_image'])->toJson(JSON_PRETTY_PRINT),
             'allocore://case-studies' => CaseStudy::where('is_published', true)->get(['id', 'title', 'slug', 'company', 'industry'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://leads/summary' => json_encode($this->toolSearchLeads(['limit' => 50]), JSON_PRETTY_PRINT),
+            'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
 
@@ -1994,6 +2026,21 @@ class McpController extends Controller
                     'arguments' => [['name' => 'lead_id', 'required' => true]],
                 ],
                 [
+                    'name' => 'kpi_cockpit_analyzer',
+                    'description' => 'Analyze company performance metrics across 5 Allocore pillars and recommend tool combinations.',
+                    'arguments' => [['name' => 'company_name', 'required' => true]],
+                ],
+                [
+                    'name' => 'sop_generator',
+                    'description' => 'Draft a clear, step-by-step Standard Operating Procedure (SOP) for a business workflow.',
+                    'arguments' => [['name' => 'process_name', 'required' => true], ['name' => 'role', 'required' => false]],
+                ],
+                [
+                    'name' => 'case_study_writer',
+                    'description' => 'Draft a compelling B2B transformation case study with quantifiable ROI metrics.',
+                    'arguments' => [['name' => 'client_name', 'required' => true], ['name' => 'industry', 'required' => true]],
+                ],
+                [
                     'name' => 'auto_link_audit_solutions',
                     'description' => 'Inspect unassigned questions and deduce optimal tools & books.',
                     'arguments' => [],
@@ -2008,6 +2055,9 @@ class McpController extends Controller
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
             'seo_content_creator' => "Erstellen Sie einen suchmaschinenoptimierten, 8-teiligen Fachartikel zum Thema '".($args['topic'] ?? 'Unternehmensführung')."'. Binden Sie passende Allocore-Tools sowie die Buchempfehlung Box (Buch ID #".($args['book_id'] ?? 451).") nahtlos ein.",
             'lead_nurture_strategy' => "Analysieren Sie das Profil und die Interaktionen von Lead #".($args['lead_id'] ?? 1)." und entwickeln Sie eine maßgeschneiderte B2B-Ansprachestrategie mit ROI-Fokus.",
+            'kpi_cockpit_analyzer' => "Untersuchen Sie die Kennzahlenlandschaft von '".($args['company_name'] ?? 'Unternehmen')."'. Identifizieren Sie kritische Frühwarnindikatoren (Runway, Deckungsbeitrag, CAC, CLV) und schlagen Sie die passende Allocore-Modulkombination vor.",
+            'sop_generator' => "Erstellen Sie eine präzise, fehlertolerante Standard Operating Procedure (SOP) für den Prozess '".($args['process_name'] ?? 'Auftragsannahme')."'. Gliedern Sie in Vorbedingungen, Einzelschritte, Qualitätskontrolle und Stellvertreter-Regelungen.",
+            'case_study_writer' => "Verfassen Sie eine überzeugende Erfolgsgeschichte (Case Study) für '".($args['client_name'] ?? 'Mittelständler')."' aus der Branche '".($args['industry'] ?? 'B2B')."'. Strukturieren Sie nach Herausforderung, Lösung mit Allocore, messbaren ROI-Ergebnissen und Zitat.",
             'auto_link_audit_solutions' => "Überprüfen Sie alle unvollständigen Fragen und weisen Sie passende Tools, Fachbücher und Fachbegriffe zu.",
             default => throw new \InvalidArgumentException("Prompt '{$name}' not found."),
         };
