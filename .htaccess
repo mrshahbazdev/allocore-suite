@@ -14,15 +14,5 @@
 # Disable directory browsing.
 Options -Indexes
 
-# LiteSpeed & ModSecurity rule bypass for API / MCP streaming
-<IfModule mod_security.c>
-    SecFilterEngine Off
-    SecFilterScanPOST Off
-</IfModule>
-
-<IfModule Litespeed>
-    RewriteRule .* - [E=noconntimeout:1]
-    RewriteRule .* - [E=noabort:1]
-</IfModule>
 
 
