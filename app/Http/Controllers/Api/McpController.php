@@ -34,6 +34,8 @@ use Modules\AuditPro\Models\AuditTemplate;
 use Modules\BookIntelligence\Models\Author;
 use Modules\BookIntelligence\Models\Book;
 use Modules\BookIntelligence\Models\QuestionMapping;
+use Modules\DentalTrack\Models\Order as DentalOrder;
+use Modules\DentalTrack\Models\ScanEvent;
 use Modules\FocusMatrix\Models\Delegation;
 use Modules\FocusMatrix\Models\Task as FocusTask;
 use Modules\InvoiceMaker\Models\Invoice;
@@ -41,8 +43,12 @@ use Modules\InvoiceMaker\Models\InvoiceItem;
 use Modules\LeadQuality\Models\Contact;
 use Modules\OrgMatrix\Models\Person;
 use Modules\OrgMatrix\Models\Role as OrgRole;
+use Modules\PlanHive\Models\Project as PlanProject;
 use Modules\SopBuilder\Models\Sop;
 use Modules\SopBuilder\Models\Step;
+use Modules\SweetSpot\Models\Customer as SweetSpotCustomer;
+use Modules\SweetSpot\Models\CustomerScore;
+use Modules\TimeButler\Models\TimeEntry;
 use Modules\VisionFlow\Models\StrategicGoal;
 use Modules\VisionFlow\Models\Vision;
 
@@ -1140,6 +1146,124 @@ class McpController extends Controller
                             'expected_outcome' => ['type' => 'string'],
                             'due_date' => ['type' => 'string'],
                         ],
+                [
+                    'name' => 'log_work_time_entry',
+                    'description' => 'Log or record a work time entry for a team member in TimeButler.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'date' => ['type' => 'string', 'description' => 'Work date (YYYY-MM-DD)'],
+                            'start_time' => ['type' => 'string', 'description' => 'Start time (HH:MM)'],
+                            'end_time' => ['type' => 'string', 'description' => 'End time (HH:MM)'],
+                            'break_minutes' => ['type' => 'integer', 'default' => 0],
+                            'notes' => ['type' => 'string'],
+                            'user_id' => ['type' => 'integer', 'description' => 'Optional user ID'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['date', 'start_time', 'end_time'],
+                    ],
+                ],
+                [
+                    'name' => 'get_team_workforce_summary',
+                    'description' => 'Get workforce time tracking stats, active hours, and employee summary from TimeButler.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'start_date' => ['type' => 'string', 'description' => 'Start date (YYYY-MM-DD)'],
+                            'end_date' => ['type' => 'string', 'description' => 'End date (YYYY-MM-DD)'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'score_customer_sweet_spot',
+                    'description' => 'Calculate or register a multi-factor Sweet Spot score for a customer/client.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string', 'description' => 'Client / Customer company name'],
+                            'industry' => ['type' => 'string'],
+                            'revenue' => ['type' => 'number', 'description' => 'Annual or project revenue (EUR)'],
+                            'profit_margin_eur' => ['type' => 'number', 'description' => 'Gross profit contribution (EUR)'],
+                            'effort_hours' => ['type' => 'number', 'description' => 'Total hours of effort spent'],
+                            'chemistry_score' => ['type' => 'integer', 'description' => 'Working chemistry (1-10)'],
+                            'growth_score' => ['type' => 'integer', 'description' => 'Growth & referral potential (1-10)'],
+                            'payment_willingness' => ['type' => 'integer', 'description' => 'Payment speed and terms adherence (1-10)'],
+                            'team_id' => ['type' => 'integer'],
+                        ],
+                        'required' => ['name', 'revenue', 'profit_margin_eur', 'effort_hours'],
+                    ],
+                ],
+                [
+                    'name' => 'list_sweet_spot_rankings',
+                    'description' => 'List and rank clients/customers by profitability, effort, and Sweet Spot score.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'top_only' => ['type' => 'boolean', 'default' => false],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                            'team_id' => ['type' => 'integer'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'create_project_milestone',
+                    'description' => 'Create a project goal or key milestone in PlanHive.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer'],
+                            'title' => ['type' => 'string'],
+                            'description' => ['type' => 'string'],
+                            'target_date' => ['type' => 'string', 'description' => 'YYYY-MM-DD'],
+                            'progress' => ['type' => 'integer', 'default' => 0],
+                            'status' => ['type' => 'string', 'default' => 'in_progress'],
+                            'team_id' => ['type' => 'integer'],
+                        ],
+                        'required' => ['project_id', 'title'],
+                    ],
+                ],
+                [
+                    'name' => 'get_project_portfolio_overview',
+                    'description' => 'Retrieve an executive overview of all projects, statuses, and goal progress from PlanHive.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'status' => ['type' => 'string'],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                            'team_id' => ['type' => 'integer'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'track_production_order_status',
+                    'description' => 'Track dental / lab production order status, step progress, and estimated delivery from DentalTrack.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'order_id' => ['type' => 'integer'],
+                            'tracking_code' => ['type' => 'string'],
+                            'qr_code' => ['type' => 'string'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'log_workstation_scan_event',
+                    'description' => 'Log a barcode/QR workstation scan event for a production order in DentalTrack.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'order_id' => ['type' => 'integer'],
+                            'workstation_id' => ['type' => 'integer'],
+                            'order_step_id' => ['type' => 'integer'],
+                            'event_type' => ['type' => 'string', 'enum' => ['start', 'complete', 'pause', 'transfer_to_waiting'], 'default' => 'start'],
+                            'notes' => ['type' => 'string'],
+                            'duration_seconds' => ['type' => 'integer'],
+                            'team_id' => ['type' => 'integer'],
+                        ],
+                        'required' => ['order_id'],
+                    ],
+                ],
                         'required' => ['title', 'assigned_to'],
                     ],
                 ],
@@ -1217,6 +1341,14 @@ class McpController extends Controller
             'create_strategic_goal' => $this->toolCreateStrategicGoal($arguments),
             'analyze_eisenhower_tasks' => $this->toolAnalyzeEisenhowerTasks($arguments),
             'create_delegation_task' => $this->toolCreateDelegationTask($arguments),
+            'log_work_time_entry' => $this->toolLogWorkTimeEntry($arguments),
+            'get_team_workforce_summary' => $this->toolGetTeamWorkforceSummary($arguments),
+            'score_customer_sweet_spot' => $this->toolScoreCustomerSweetSpot($arguments),
+            'list_sweet_spot_rankings' => $this->toolListSweetSpotRankings($arguments),
+            'create_project_milestone' => $this->toolCreateProjectMilestone($arguments),
+            'get_project_portfolio_overview' => $this->toolGetProjectPortfolioOverview($arguments),
+            'track_production_order_status' => $this->toolTrackProductionOrderStatus($arguments),
+            'log_workstation_scan_event' => $this->toolLogWorkstationScanEvent($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -3113,6 +3245,360 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolLogWorkTimeEntry(array $args): array
+    {
+        $userId = $args['user_id'] ?? Auth::id() ?? 1;
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $date = $args['date'] ?? date('Y-m-d');
+        $startTime = $args['start_time'] ?? '09:00';
+        $endTime = $args['end_time'] ?? '17:00';
+        $breakMinutes = (int) ($args['break_minutes'] ?? 0);
+        $notes = $args['notes'] ?? null;
+
+        $start = \Carbon\Carbon::parse("$date $startTime");
+        $end = \Carbon\Carbon::parse("$date $endTime");
+        $durationMinutes = max(0, $end->diffInMinutes($start) - $breakMinutes);
+        $durationHours = round($durationMinutes / 60, 2);
+
+        $entry = TimeEntry::withoutGlobalScopes()->create([
+            'team_id' => $teamId,
+            'user_id' => $userId,
+            'date' => $date,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'break_minutes' => $breakMinutes,
+            'notes' => $notes,
+        ]);
+
+        return [
+            'status' => 'time_logged',
+            'entry_id' => $entry->id,
+            'user_id' => $userId,
+            'date' => $date,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'break_minutes' => $breakMinutes,
+            'logged_hours' => $durationHours,
+            'notes' => $notes,
+            'tool_route' => '/app/timebutler',
+        ];
+    }
+
+    protected function toolGetTeamWorkforceSummary(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $query = TimeEntry::withoutGlobalScopes()->where('team_id', $teamId);
+
+        if (! empty($args['start_date'])) {
+            $query->where('date', '>=', $args['start_date']);
+        }
+        if (! empty($args['end_date'])) {
+            $query->where('date', '<=', $args['end_date']);
+        }
+
+        $entries = $query->with('user')->latest('date')->limit(100)->get();
+
+        $totalMinutes = 0;
+        $userBreakdown = [];
+
+        foreach ($entries as $entry) {
+            $mins = $entry->durationMinutes() ?? 0;
+            $totalMinutes += $mins;
+            $userName = $entry->user?->name ?? "User #{$entry->user_id}";
+            if (! isset($userBreakdown[$userName])) {
+                $userBreakdown[$userName] = ['entries_count' => 0, 'total_hours' => 0];
+            }
+            $userBreakdown[$userName]['entries_count']++;
+            $userBreakdown[$userName]['total_hours'] += round($mins / 60, 2);
+        }
+
+        return [
+            'team_id' => $teamId,
+            'total_entries' => $entries->count(),
+            'total_hours' => round($totalMinutes / 60, 2),
+            'user_breakdown' => $userBreakdown,
+            'recent_entries' => $entries->take(15)->map(fn ($e) => [
+                'id' => $e->id,
+                'user' => $e->user?->name ?? "#{$e->user_id}",
+                'date' => $e->date?->format('Y-m-d') ?? (string) $e->date,
+                'hours' => round(($e->durationMinutes() ?? 0) / 60, 2),
+                'notes' => $e->notes,
+            ]),
+        ];
+    }
+
+    protected function toolScoreCustomerSweetSpot(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $userId = Auth::id() ?? 1;
+
+        $name = $args['name'];
+        $industry = $args['industry'] ?? 'B2B';
+        $revenue = (float) $args['revenue'];
+        $profitMarginEur = (float) $args['profit_margin_eur'];
+        $effortHours = max(0.5, (float) $args['effort_hours']);
+        $chemistryScore = (int) ($args['chemistry_score'] ?? 7);
+        $growthScore = (int) ($args['growth_score'] ?? 7);
+        $paymentWillingness = (int) ($args['payment_willingness'] ?? 8);
+
+        $marginPercent = $revenue > 0 ? round(($profitMarginEur / $revenue) * 100, 2) : 0;
+        $marginPerHour = round($profitMarginEur / $effortHours, 2);
+
+        // Calculate Multi-Factor Sweet Spot Score (0-100)
+        $profitScore = min(100, max(0, ($marginPerHour / 150) * 100));
+        $chemScoreNorm = $chemistryScore * 10;
+        $growthScoreNorm = $growthScore * 10;
+        $paymentScoreNorm = $paymentWillingness * 10;
+        $totalScore = round(($profitScore * 0.4) + ($chemScoreNorm * 0.2) + ($growthScoreNorm * 0.2) + ($paymentScoreNorm * 0.2), 1);
+        $isTop = $totalScore >= 75.0;
+
+        $customer = SweetSpotCustomer::withoutGlobalScopes()->updateOrCreate(
+            ['team_id' => $teamId, 'name' => $name],
+            [
+                'user_id' => $userId,
+                'industry' => $industry,
+                'revenue' => $revenue,
+                'profit_margin_eur' => $profitMarginEur,
+                'margin_percent' => $marginPercent,
+                'effort_hours' => $effortHours,
+                'chemistry_score' => $chemistryScore,
+                'growth_score' => $growthScore,
+                'payment_willingness' => $paymentWillingness,
+            ]
+        );
+
+        CustomerScore::withoutGlobalScopes()->updateOrCreate(
+            ['customer_id' => $customer->id, 'team_id' => $teamId],
+            [
+                'margin_per_hour' => $marginPerHour,
+                'profitability_score' => round($profitScore, 1),
+                'chemistry_score' => $chemScoreNorm,
+                'growth_score' => $growthScoreNorm,
+                'payment_score' => $paymentScoreNorm,
+                'total_score' => $totalScore,
+                'top_flag' => $isTop,
+                'calculated_at' => now(),
+            ]
+        );
+
+        return [
+            'status' => 'customer_scored',
+            'customer_id' => $customer->id,
+            'customer_name' => $name,
+            'margin_per_hour' => $marginPerHour,
+            'margin_percent' => $marginPercent,
+            'sweet_spot_score' => $totalScore,
+            'is_sweet_spot_client' => $isTop,
+            'recommendation' => $isTop ? 'Klasse-A Sweet Spot Kunde: Priorisieren & Ausbauen.' : 'Klasse-B/C Kunde: Aufwand reduzieren oder Preise nachverhandeln.',
+            'tool_route' => '/app/sweet-spot',
+        ];
+    }
+
+    protected function toolListSweetSpotRankings(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $query = SweetSpotCustomer::withoutGlobalScopes()->where('team_id', $teamId)->with('score');
+
+        if (! empty($args['top_only'])) {
+            $query->whereHas('score', fn ($q) => $q->where('top_flag', true));
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 20)));
+        $customers = $query->limit($limit)->get();
+
+        $ranked = $customers->map(function ($c) {
+            $score = $c->score;
+            return [
+                'id' => $c->id,
+                'name' => $c->name,
+                'industry' => $c->industry,
+                'revenue' => (float) $c->revenue,
+                'profit_margin_eur' => (float) $c->profit_margin_eur,
+                'effort_hours' => (float) $c->effort_hours,
+                'margin_per_hour' => (float) ($score?->margin_per_hour ?? 0),
+                'sweet_spot_score' => (float) ($score?->total_score ?? 0),
+                'is_sweet_spot' => (bool) ($score?->top_flag ?? false),
+            ];
+        })->sortByDesc('sweet_spot_score')->values()->all();
+
+        return [
+            'team_id' => $teamId,
+            'total_clients' => count($ranked),
+            'sweet_spot_count' => collect($ranked)->where('is_sweet_spot', true)->count(),
+            'clients' => $ranked,
+        ];
+    }
+
+    protected function toolCreateProjectMilestone(array $args): array
+    {
+        $projectId = (int) $args['project_id'];
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $userId = Auth::id() ?? 1;
+
+        $project = PlanProject::withoutGlobalScopes()->find($projectId);
+        if (! $project) {
+            throw new \InvalidArgumentException("Project ID #{$projectId} not found.");
+        }
+
+        $goal = Goal::withoutGlobalScopes()->create([
+            'team_id' => $teamId,
+            'project_id' => $projectId,
+            'user_id' => $userId,
+            'title' => $args['title'],
+            'description' => $args['description'] ?? null,
+            'target_date' => $args['target_date'] ?? null,
+            'progress' => (int) ($args['progress'] ?? 0),
+            'status' => $args['status'] ?? 'in_progress',
+        ]);
+
+        return [
+            'status' => 'milestone_created',
+            'goal_id' => $goal->id,
+            'project_id' => $projectId,
+            'project_name' => $project->name,
+            'title' => $goal->title,
+            'target_date' => $goal->target_date?->format('Y-m-d'),
+            'progress' => $goal->progress,
+            'tool_route' => "/app/planhive/projects/{$projectId}",
+        ];
+    }
+
+    protected function toolGetProjectPortfolioOverview(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $query = PlanProject::withoutGlobalScopes()->where('team_id', $teamId)->with(['goals', 'tasks']);
+
+        if (! empty($args['status'])) {
+            $query->where('status', $args['status']);
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 20)));
+        $projects = $query->latest()->limit($limit)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total_projects' => $projects->count(),
+            'projects' => $projects->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'status' => $p->status,
+                'start_date' => $p->start_date?->format('Y-m-d'),
+                'end_date' => $p->end_date?->format('Y-m-d'),
+                'goals_count' => $p->goals->count(),
+                'avg_goal_progress' => $p->goals->count() > 0 ? round($p->goals->avg('progress'), 1) : 0,
+                'tasks_count' => $p->tasks->count(),
+                'tasks_done' => $p->tasks->where('status', 'done')->count(),
+            ]),
+        ];
+    }
+
+    protected function toolTrackProductionOrderStatus(array $args): array
+    {
+        $query = DentalOrder::withoutGlobalScopes()->with(['steps', 'scanEvents.workstation', 'company', 'productType']);
+
+        if (! empty($args['order_id'])) {
+            $query->where('id', $args['order_id']);
+        } elseif (! empty($args['tracking_code'])) {
+            $query->where('tracking_code', $args['tracking_code']);
+        } elseif (! empty($args['qr_code'])) {
+            $query->where('qr_code', $args['qr_code']);
+        } else {
+            $orders = $query->latest()->limit(15)->get();
+            return [
+                'total_orders' => $orders->count(),
+                'orders' => $orders->map(fn ($o) => [
+                    'id' => $o->id,
+                    'patient_ref' => $o->patient_ref,
+                    'doctor_name' => $o->doctor_name,
+                    'tracking_code' => $o->tracking_code,
+                    'status' => $o->status?->value ?? (string) $o->status,
+                    'priority' => $o->priority?->value ?? (string) $o->priority,
+                    'progress_percent' => $o->progressPercentage(),
+                    'due_date' => $o->due_date?->format('Y-m-d'),
+                    'is_overdue' => $o->isOverdue(),
+                ]),
+            ];
+        }
+
+        $order = $query->first();
+        if (! $order) {
+            throw new \InvalidArgumentException('Dental production order not found with provided identifiers.');
+        }
+
+        return [
+            'id' => $order->id,
+            'patient_ref' => $order->patient_ref,
+            'doctor_name' => $order->doctor_name,
+            'tracking_code' => $order->tracking_code,
+            'qr_code' => $order->qr_code,
+            'status' => $order->status?->value ?? (string) $order->status,
+            'priority' => $order->priority?->value ?? (string) $order->priority,
+            'due_date' => $order->due_date?->format('Y-m-d'),
+            'is_overdue' => $order->isOverdue(),
+            'progress_percent' => $order->progressPercentage(),
+            'total_steps' => $order->totalStepsCount(),
+            'completed_steps' => $order->completedStepsCount(),
+            'steps' => $order->steps->map(fn ($s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+                'status' => $s->status?->value ?? (string) $s->status,
+                'sort_order' => $s->sort_order,
+            ]),
+            'latest_scans' => $order->scanEvents->take(5)->map(fn ($se) => [
+                'scanned_at' => $se->scanned_at?->toIso8601String(),
+                'event_type' => $se->event_type?->value ?? (string) $se->event_type,
+                'workstation' => $se->workstation?->name ?? 'Mobile Terminal',
+                'duration' => $se->formattedDuration(),
+            ]),
+        ];
+    }
+
+    protected function toolLogWorkstationScanEvent(array $args): array
+    {
+        $orderId = (int) $args['order_id'];
+        $order = DentalOrder::withoutGlobalScopes()->find($orderId);
+        if (! $order) {
+            throw new \InvalidArgumentException("Dental order ID #{$orderId} not found.");
+        }
+
+        $teamId = $args['team_id'] ?? $order->team_id ?? (Auth::user()?->current_team_id ?? 1);
+        $userId = Auth::id() ?? 1;
+        $workstationId = $args['workstation_id'] ?? null;
+        $orderStepId = $args['order_step_id'] ?? null;
+        $eventTypeStr = $args['event_type'] ?? 'start';
+        $notes = $args['notes'] ?? null;
+        $durationSeconds = isset($args['duration_seconds']) ? (int) $args['duration_seconds'] : null;
+
+        $eventType = match ($eventTypeStr) {
+            'complete' => \Modules\DentalTrack\Enums\ScanEventType::Complete,
+            'pause' => \Modules\DentalTrack\Enums\ScanEventType::Pause,
+            'transfer_to_waiting' => \Modules\DentalTrack\Enums\ScanEventType::TransferToWaiting,
+            default => \Modules\DentalTrack\Enums\ScanEventType::Start,
+        };
+
+        $scan = ScanEvent::withoutGlobalScopes()->create([
+            'team_id' => $teamId,
+            'dentaltrack_order_id' => $orderId,
+            'dentaltrack_order_step_id' => $orderStepId,
+            'dentaltrack_workstation_id' => $workstationId,
+            'user_id' => $userId,
+            'event_type' => $eventType,
+            'scanned_at' => now(),
+            'duration_seconds' => $durationSeconds,
+            'notes' => $notes,
+        ]);
+
+        return [
+            'status' => 'scan_event_recorded',
+            'scan_event_id' => $scan->id,
+            'order_id' => $orderId,
+            'tracking_code' => $order->tracking_code,
+            'event_type' => $eventTypeStr,
+            'scanned_at' => $scan->scanned_at->toIso8601String(),
+            'tool_route' => "/dentaltrack/admin/orders/{$orderId}",
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -3138,6 +3624,10 @@ class McpController extends Controller
                 ['uri' => 'allocore://org/chart', 'name' => 'Company Roles & Organization Chart', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://strategy/goals', 'name' => 'Strategic Goals & Vision Statement', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://tasks/focus-matrix', 'name' => 'Eisenhower Priority Tasks Matrix', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://workforce/times', 'name' => 'TimeButler Workforce & Time Entries', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://customers/sweet-spot', 'name' => 'SweetSpot Customer Profitability Matrix', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://projects/portfolio', 'name' => 'PlanHive Project Portfolio & Goal Progress', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://production/orders', 'name' => 'DentalTrack Production Orders & Workstations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://integrations/status', 'name' => 'Webhooks & Third-Party Integrations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
             ],
@@ -3165,6 +3655,10 @@ class McpController extends Controller
             'allocore://org/chart' => json_encode($this->toolGetOrganizationChart([]), JSON_PRETTY_PRINT),
             'allocore://strategy/goals' => json_encode($this->toolGetStrategicVisionAndGoals([]), JSON_PRETTY_PRINT),
             'allocore://tasks/focus-matrix' => json_encode($this->toolAnalyzeEisenhowerTasks([]), JSON_PRETTY_PRINT),
+            'allocore://workforce/times' => json_encode($this->toolGetTeamWorkforceSummary([]), JSON_PRETTY_PRINT),
+            'allocore://customers/sweet-spot' => json_encode($this->toolListSweetSpotRankings([]), JSON_PRETTY_PRINT),
+            'allocore://projects/portfolio' => json_encode($this->toolGetProjectPortfolioOverview([]), JSON_PRETTY_PRINT),
+            'allocore://production/orders' => json_encode($this->toolTrackProductionOrderStatus([]), JSON_PRETTY_PRINT),
             'allocore://integrations/status' => json_encode($this->toolListWebhooksAndIntegrations([]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
@@ -3265,6 +3759,21 @@ class McpController extends Controller
                     'arguments' => [['name' => 'client_name', 'required' => true], ['name' => 'industry', 'required' => true]],
                 ],
                 [
+                    'name' => 'icp_customer_analyzer',
+                    'description' => 'Analyze client portfolio with Sweet Spot profitability matrix to isolate Ideal Customer Profile (ICP).',
+                    'arguments' => [['name' => 'customer_id', 'required' => false], ['name' => 'industry', 'required' => false]],
+                ],
+                [
+                    'name' => 'project_risk_assessor',
+                    'description' => 'Assess milestone bottlenecks, delayed project goals, and resource constraints in PlanHive.',
+                    'arguments' => [['name' => 'project_id', 'required' => true]],
+                ],
+                [
+                    'name' => 'workforce_capacity_planner',
+                    'description' => 'Evaluate logged workforce hours, overtime patterns, and team capacity from TimeButler.',
+                    'arguments' => [['name' => 'team_id', 'required' => false]],
+                ],
+                [
                     'name' => 'auto_link_audit_solutions',
                     'description' => 'Inspect unassigned questions and deduce optimal tools & books.',
                     'arguments' => [],
@@ -3292,6 +3801,9 @@ class McpController extends Controller
             'kpi_cockpit_analyzer' => "Untersuchen Sie die Kennzahlenlandschaft von '".($args['company_name'] ?? 'Unternehmen')."'. Identifizieren Sie kritische Frühwarnindikatoren (Runway, Deckungsbeitrag, CAC, CLV) und schlagen Sie die passende Allocore-Modulkombination vor.",
             'sop_generator' => "Erstellen Sie eine präzise, fehlertolerante Standard Operating Procedure (SOP) für den Prozess '".($args['process_name'] ?? 'Auftragsannahme')."'. Gliedern Sie in Vorbedingungen, Einzelschritte, Qualitätskontrolle und Stellvertreter-Regelungen.",
             'case_study_writer' => "Verfassen Sie eine überzeugende Erfolgsgeschichte (Case Study) für '".($args['client_name'] ?? 'Mittelständler')."' aus der Branche '".($args['industry'] ?? 'B2B')."'. Strukturieren Sie nach Herausforderung, Lösung mit Allocore, messbaren ROI-Ergebnissen und Zitat.",
+            'icp_customer_analyzer' => "Analysieren Sie das Kundenportfolio anhand der Sweet-Spot-Matrix (Deckungsbeitrag pro Arbeitsstunde, Harmonie, Weiterempfehlung). Identifizieren Sie Klasse-A Wunschkunden und formulieren Sie klare Kriterien zur Neukundengewinnung.",
+            'project_risk_assessor' => "Führen Sie eine strukturierte Risiko- und Engpassanalyse für Projekt #".($args['project_id'] ?? 1).". Prüfen Sie Meilenstein-Fortschritte, offene Aufgaben und formulieren Sie Präventivmaßnahmen gegen Verzug.",
+            'workforce_capacity_planner' => "Analysieren Sie die Arbeitszeiterfassung und Teamauslastung. Identifizieren Sie Überstundenrisiken, Kapazitätsengpässe und Optimierungspotenziale bei der Schicht- und Ressourcenplanung.",
             'auto_link_audit_solutions' => "Überprüfen Sie alle unvollständigen Fragen und weisen Sie passende Tools, Fachbücher und Fachbegriffe zu.",
             default => throw new \InvalidArgumentException("Prompt '{$name}' not found."),
         };
