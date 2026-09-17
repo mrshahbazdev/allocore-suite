@@ -29,6 +29,8 @@ def create_or_update_post(
     body: Optional[str] = None,
     excerpt: Optional[str] = None,
     featured_image: Optional[str] = None,
+    category: Optional[str] = None,
+    tags: Optional[List[str]] = None,
     meta_title: Optional[str] = None,
     meta_description: Optional[str] = None,
     is_published: bool = True

@@ -564,6 +564,8 @@ class McpController extends Controller
                             'body' => ['type' => 'string'],
                             'excerpt' => ['type' => 'string'],
                             'featured_image' => ['type' => 'string', 'description' => 'URL or path to featured image graphic'],
+                            'category' => ['type' => 'string', 'description' => 'Category name, e.g. Methodik & Strategie, Performance Marketing, SEO'],
+                            'tags' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'Array of tag strings e.g. ["SEO", "SEA", "Growth"]'],
                             'meta_title' => ['type' => 'string'],
                             'meta_description' => ['type' => 'string'],
                             'is_published' => ['type' => 'boolean', 'default' => true],
@@ -1114,12 +1116,51 @@ class McpController extends Controller
                     $data[$f] = $args[$f];
                 }
             }
+
+            // Handle Category by Name
+            if (! empty($args['category']) || ! empty($args['category_name'])) {
+                $catName = $args['category'] ?? $args['category_name'];
+                $cat = \App\Models\BlogCategory::firstOrCreate(
+                    ['slug' => Str::slug($catName)],
+                    ['name' => $catName, 'is_active' => true]
+                );
+                $data['category_id'] = $cat->id;
+            }
+
+            // Clean excerpt if present
+            if (isset($data['excerpt'])) {
+                $data['excerpt'] = trim(preg_replace('/\s+/', ' ', $data['excerpt']));
+            }
+
+            // Set published_at if publishing
+            if (($args['is_published'] ?? $p->is_published) && empty($p->published_at)) {
+                $data['published_at'] = now();
+            }
+
             $p->update($data);
+
+            // Handle Tags
+            if (isset($args['tags'])) {
+                $tagList = is_array($args['tags']) ? $args['tags'] : array_map('trim', explode(',', $args['tags']));
+                $tagIds = [];
+                foreach ($tagList as $tagName) {
+                    if (empty($tagName)) continue;
+                    $t = \App\Models\BlogTag::firstOrCreate(
+                        ['slug' => Str::slug($tagName)],
+                        ['name' => $tagName]
+                    );
+                    $tagIds[] = $t->id;
+                }
+                $p->tags()->sync($tagIds);
+            }
 
             return [
                 'status' => 'updated',
                 'post_id' => $p->id,
                 'title' => $p->title,
+                'category' => $p->fresh()->category?->name,
+                'tags' => $p->fresh()->tags->pluck('name'),
+                'published_at' => $p->published_at?->toIso8601String(),
                 'featured_image' => $p->featured_image,
                 'updated_fields' => array_keys($data),
             ];
@@ -1130,12 +1171,23 @@ class McpController extends Controller
         }
 
         $slug = $args['slug'] ?? Str::slug($args['title']);
+        $catId = null;
+        if (! empty($args['category']) || ! empty($args['category_name'])) {
+            $catName = $args['category'] ?? $args['category_name'];
+            $cat = \App\Models\BlogCategory::firstOrCreate(
+                ['slug' => Str::slug($catName)],
+                ['name' => $catName, 'is_active' => true]
+            );
+            $catId = $cat->id;
+        }
+
         $p = Post::create([
             'title' => $args['title'],
             'slug' => $slug,
             'body' => $args['body'],
             'excerpt' => $args['excerpt'] ?? Str::limit(strip_tags($args['body']), 160),
             'featured_image' => $args['featured_image'] ?? null,
+            'category_id' => $catId,
             'meta_title' => $args['meta_title'] ?? $args['title'],
             'meta_description' => $args['meta_description'] ?? ($args['excerpt'] ?? null),
             'is_published' => $args['is_published'] ?? true,
@@ -1143,6 +1195,20 @@ class McpController extends Controller
             'published_at' => ($args['is_published'] ?? true) ? now() : null,
             'user_id' => Auth::id() ?? 1,
         ]);
+
+        if (isset($args['tags'])) {
+            $tagList = is_array($args['tags']) ? $args['tags'] : array_map('trim', explode(',', $args['tags']));
+            $tagIds = [];
+            foreach ($tagList as $tagName) {
+                if (empty($tagName)) continue;
+                $t = \App\Models\BlogTag::firstOrCreate(
+                    ['slug' => Str::slug($tagName)],
+                    ['name' => $tagName]
+                );
+                $tagIds[] = $t->id;
+            }
+            $p->tags()->sync($tagIds);
+        }
 
         return ['status' => 'created', 'post_id' => $p->id, 'slug' => $p->slug];
     }
