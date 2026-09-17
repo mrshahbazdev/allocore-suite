@@ -1158,6 +1158,14 @@ class McpController extends Controller
                 $p->tags()->sync($tagIds);
             }
 
+            $updatedFields = array_keys($data);
+            if (isset($args['tags'])) {
+                $updatedFields[] = 'tags';
+            }
+            if (isset($args['category']) || isset($args['category_name'])) {
+                $updatedFields[] = 'category';
+            }
+
             return [
                 'status' => 'updated',
                 'post_id' => $p->id,
@@ -1166,7 +1174,7 @@ class McpController extends Controller
                 'tags' => $p->fresh()->tags->pluck('name'),
                 'published_at' => $p->published_at?->toIso8601String(),
                 'featured_image' => $p->featured_image,
-                'updated_fields' => array_keys($data),
+                'updated_fields' => array_values(array_unique($updatedFields)),
             ];
         }
 
