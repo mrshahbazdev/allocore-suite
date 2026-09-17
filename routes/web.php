@@ -512,6 +512,21 @@ require __DIR__.'/auth.php';
 
 Route::get('pages/{slug}', [PageController::class, 'show'])->name('page.show');
 
+// 301 Permanent Redirects for legacy blog slugs
+Route::permanentRedirect(
+    '/blog/seo-und-sea-im-doppelpack-wie-sie-mit-google-ads-ihre-organischen-rankings-pushen-oqzd6',
+    '/blog/seo-sea-doppelpack-google-ads-rankings'
+);
+Route::permanentRedirect(
+    '/blog/synergie-von-seo-und-sea-wie-sie-daten-silos-aufbrechen-und-maximale-sichtbarkeit-erreichen-85L4V',
+    '/blog/sea-daten-attribution-budgetsteuerung'
+);
+
+// Public Book Affiliate Redirect & Alias (100% public, no auth required)
+Route::get('books/affiliate/redirect/{book}', [\Modules\BookIntelligence\Http\Controllers\AffiliateController::class, 'redirect'])
+    ->name('bookintelligence.affiliate.public_redirect');
+Route::permanentRedirect('/app/books/affiliate/redirect/{book}', '/books/affiliate/redirect/{book}');
+
 Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('blog/feed', [BlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');

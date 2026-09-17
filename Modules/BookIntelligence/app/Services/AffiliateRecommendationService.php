@@ -17,7 +17,7 @@ class AffiliateRecommendationService
         $authorName = e($book->author?->name ?? 'Autor');
         $coverUrl = $book->cover_url ?: asset('images/book-placeholder.png');
         $explanation = e($whyRecommended ?: ($book->analysis?->short_summary ?? $book->description ?? 'Dringend empfohlene Lektüre für unternehmerische Exzellenz.'));
-        $trackUrl = route('bookintelligence.affiliate.redirect', ['book' => $book->id, 'source' => 'blog']);
+        $trackUrl = route('bookintelligence.affiliate.public_redirect', ['book' => $book->id, 'source' => 'blog']);
 
         return <<<HTML
 <div class="allocore-book-recommendation-box my-10 p-6 sm:p-8 rounded-3xl border-2 border-amber-200 bg-gradient-to-br from-amber-50/70 via-orange-50/40 to-white shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -59,7 +59,14 @@ HTML;
             'commission_amount' => 0.00,
         ]);
 
-        return $book->affiliate_link ?: route('bookintelligence.books.show', $book->id);
+        if (! empty($book->affiliate_link)) {
+            return $book->affiliate_link;
+        }
+
+        // Graceful fallback to Amazon search for the book so visitors never encounter broken or auth-walled routes
+        $searchTerms = trim($book->title.' '.($book->author?->name ?? ''));
+
+        return 'https://www.amazon.de/s?k='.urlencode($searchTerms).'&tag=allocore-21';
     }
 
     /**
