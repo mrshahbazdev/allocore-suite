@@ -9,6 +9,8 @@ use App\Models\GlossaryTerm;
 use App\Models\Module;
 use App\Models\Plan;
 use App\Models\Post;
+use App\Models\SupportTicket;
+use App\Models\SupportTicketMessage;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Models\User;
@@ -75,6 +77,42 @@ class McpController extends Controller
 
         // 4. Handle POST JSON-RPC Request
         return $this->handleRpc($request);
+    }
+
+    /**
+     * Direct REST/HTTP Tools Endpoint.
+     */
+    public function httpListTools(Request $request): JsonResponse
+    {
+        if ($request->isMethod('OPTIONS')) {
+            return response()->json([], 200, $this->corsHeaders());
+        }
+        $this->authenticateRequest($request);
+        return response()->json($this->listTools(), 200, $this->corsHeaders());
+    }
+
+    /**
+     * Direct REST/HTTP Resources Endpoint.
+     */
+    public function httpListResources(Request $request): JsonResponse
+    {
+        if ($request->isMethod('OPTIONS')) {
+            return response()->json([], 200, $this->corsHeaders());
+        }
+        $this->authenticateRequest($request);
+        return response()->json($this->listResources(), 200, $this->corsHeaders());
+    }
+
+    /**
+     * Direct REST/HTTP Prompts Endpoint.
+     */
+    public function httpListPrompts(Request $request): JsonResponse
+    {
+        if ($request->isMethod('OPTIONS')) {
+            return response()->json([], 200, $this->corsHeaders());
+        }
+        $this->authenticateRequest($request);
+        return response()->json($this->listPrompts(), 200, $this->corsHeaders());
     }
 
     /**
@@ -828,6 +866,88 @@ class McpController extends Controller
                     'description' => 'Verify platform modules, route prefixes, database integrity, and subscription plan mappings.',
                     'inputSchema' => ['type' => 'object', 'properties' => (object) []],
                 ],
+                [
+                    'name' => 'generate_audit_executive_summary',
+                    'description' => 'Generate a comprehensive, executive C-Level audit report in Markdown with health score, 5-pillar breakdown, critical risks, and 30-60-90 day strategic roadmap.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'audit_id' => ['type' => 'integer', 'description' => 'ID of the audit'],
+                        ],
+                        'required' => ['audit_id'],
+                    ],
+                ],
+                [
+                    'name' => 'benchmark_audit_performance',
+                    'description' => 'Benchmark an audit\'s scores against industry peers and platform averages, returning percentile rankings and gap analysis.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'audit_id' => ['type' => 'integer', 'description' => 'ID of the audit'],
+                        ],
+                        'required' => ['audit_id'],
+                    ],
+                ],
+                [
+                    'name' => 'get_pipeline_funnel_analytics',
+                    'description' => 'Calculate CRM pipeline conversion velocity, stage distribution, total deal pipeline value, average lead score, and bottleneck stages.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'limit' => ['type' => 'integer', 'default' => 50],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'batch_relink_glossary_in_posts',
+                    'description' => 'Scan published blog posts for business glossary terms and return SEO internal linking opportunities or inject contextual links.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'post_id' => ['type' => 'integer', 'description' => 'Optional specific post ID'],
+                            'apply_links' => ['type' => 'boolean', 'default' => false],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'list_support_tickets',
+                    'description' => 'List customer support tickets filtered by status, priority, or category.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'status' => ['type' => 'string', 'enum' => ['open', 'in_progress', 'resolved', 'closed']],
+                            'priority' => ['type' => 'string', 'enum' => ['low', 'medium', 'high', 'urgent']],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'create_or_reply_support_ticket',
+                    'description' => 'Create a new support ticket or post an agent/consultant reply to an existing ticket.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'ticket_id' => ['type' => 'integer', 'description' => 'If provided, posts a reply to this ticket'],
+                            'subject' => ['type' => 'string', 'description' => 'Subject for new tickets'],
+                            'body' => ['type' => 'string', 'description' => 'Message or reply content'],
+                            'category' => ['type' => 'string'],
+                            'priority' => ['type' => 'string'],
+                            'status' => ['type' => 'string'],
+                            'is_internal' => ['type' => 'boolean', 'default' => false],
+                        ],
+                        'required' => ['body'],
+                    ],
+                ],
+                [
+                    'name' => 'export_platform_dataset',
+                    'description' => 'Export clean structured JSON datasets of platform assets (questions, glossary, case studies, blog posts, tools) for offline analysis or RAG embedding.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'dataset' => ['type' => 'string', 'enum' => ['questions', 'glossary', 'case_studies', 'blog_posts', 'tools', 'all'], 'default' => 'all'],
+                        ],
+                    ],
+                ],
             ],
         ];
     }
@@ -880,6 +1000,13 @@ class McpController extends Controller
             'repurpose_book_to_blog' => $this->toolRepurposeBookToBlog($arguments),
             'list_activity_logs' => $this->toolListActivityLogs($arguments),
             'validate_tool_pool_integrity' => $this->toolValidateToolPoolIntegrity(),
+            'generate_audit_executive_summary' => $this->toolGenerateAuditExecutiveSummary($arguments),
+            'benchmark_audit_performance' => $this->toolBenchmarkAuditPerformance($arguments),
+            'get_pipeline_funnel_analytics' => $this->toolGetPipelineFunnelAnalytics($arguments),
+            'batch_relink_glossary_in_posts' => $this->toolBatchRelinkGlossaryInPosts($arguments),
+            'list_support_tickets' => $this->toolListSupportTickets($arguments),
+            'create_or_reply_support_ticket' => $this->toolCreateOrReplySupportTicket($arguments),
+            'export_platform_dataset' => $this->toolExportPlatformDataset($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -1957,6 +2084,311 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolGenerateAuditExecutiveSummary(array $args): array
+    {
+        $auditId = $args['audit_id'] ?? null;
+        if (! $auditId) throw new \InvalidArgumentException("audit_id is required.");
+
+        $audit = Audit::withoutGlobalScope('current_team')
+            ->with(['answers.question.pillar', 'team'])
+            ->findOrFail($auditId);
+
+        $pillarScores = $this->toolCalculatePillarScores(['audit_id' => $auditId]);
+        $gaps = $this->toolDiagnoseAuditGaps(['audit_id' => $auditId]);
+
+        $companyName = $audit->company_name ?: ($audit->team?->name ?? 'Unternehmen');
+        $overallScore = $pillarScores['overall_score_percent'] ?? 0;
+        $overallScoreFmt = number_format($overallScore, 1, ',', '.');
+
+        $report = "# Management Summary & Transformations-Audit\n\n";
+        $report .= "**Unternehmen:** {$companyName}  \n";
+        $report .= "**Branche:** " . ($audit->industry ?: 'Mittelstand / B2B') . "  \n";
+        $report .= "**Audit-Status:** " . ucfirst($audit->status) . "  \n";
+        $report .= "**Gesamt-Reifegrad (Allocore Score):** {$overallScoreFmt} %  \n\n";
+        $report .= "---\n\n";
+
+        $report .= "## 1. Strategische Einordnung nach dem 5-Säulen-Modell\n\n";
+        $report .= "| Säule | Reifegrad | Status | Priorität |\n";
+        $report .= "|---|---|---|---|\n";
+        foreach ($pillarScores['pillars'] ?? [] as $p) {
+            $pct = number_format($p['score_percent'] ?? 0, 1, ',', '.');
+            $status = ($p['score_percent'] >= 75) ? '✅ Exzellent' : (($p['score_percent'] >= 50) ? '⚠️ Optimierungsbedarf' : '🚨 Kritischer Handlungsbedarf');
+            $priority = ($p['score_percent'] < 50) ? 'Hoch (Sofortmaßnahme)' : (($p['score_percent'] < 75) ? 'Mittel (Q2 Roadmap)' : 'Niedrig');
+            $report .= "| {$p['name']} | {$pct} % | {$status} | {$priority} |\n";
+        }
+        $report .= "\n";
+
+        $report .= "## 2. Kritische Schwachstellen & Risikobereiche\n\n";
+        if (! empty($gaps['gaps'])) {
+            foreach (array_slice($gaps['gaps'], 0, 5) as $i => $g) {
+                $num = $i + 1;
+                $report .= "### {$num}. {$g['pillar']}: {$g['question']}\n";
+                $report .= "- **Aktuelle Bewertung:** {$g['score']} / {$g['max_score']}\n";
+                if (! empty($g['failure_recommendation'])) {
+                    $report .= "- **Handlungsempfehlung:** {$g['failure_recommendation']}\n";
+                }
+                if (! empty($g['recommended_tool'])) {
+                    $report .= "- **Empfohlenes Allocore-Tool:** `{$g['recommended_tool']}`\n";
+                }
+                if (! empty($g['recommended_book'])) {
+                    $report .= "- **Empfohlene Fachliteratur:** {$g['recommended_book']['title']}\n";
+                }
+                $report .= "\n";
+            }
+        } else {
+            $report .= "Keine kritischen Defizite festgestellt. Das Unternehmen erfüllt alle Kernstandards.\n\n";
+        }
+
+        $report .= "## 3. Empfohlene 90-Tage-Roadmap\n\n";
+        $report .= "- **Monat 1 (Quick Wins & Transparenz):** Implementierung von Frühwarn-Dashboards und Bereinigung der profitabelsten Produkt-/Dienstleistungslinien.\n";
+        $report .= "- **Monat 2 (Prozessautomatisierung & CRM):** Standardisierung der Vertriebs- und Lead-Qualifizierungspipelines.\n";
+        $report .= "- **Monat 3 (Skalierung & Governance):** Etablierung quartalsweiser Audit-Reviews und Delegationsstrukturen.\n\n";
+
+        return [
+            'audit_id' => $audit->id,
+            'company_name' => $companyName,
+            'overall_score_percent' => $overallScore,
+            'executive_summary_markdown' => $report,
+        ];
+    }
+
+    protected function toolBenchmarkAuditPerformance(array $args): array
+    {
+        $auditId = $args['audit_id'] ?? null;
+        if (! $auditId) throw new \InvalidArgumentException("audit_id is required.");
+
+        $audit = Audit::withoutGlobalScope('current_team')->findOrFail($auditId);
+        $myScores = $this->toolCalculatePillarScores(['audit_id' => $auditId]);
+
+        $allAudits = Audit::withoutGlobalScope('current_team')
+            ->where('status', 'completed')
+            ->pluck('id');
+
+        $allCount = max(1, $allAudits->count());
+        $benchmarks = [];
+
+        foreach ($myScores['pillars'] ?? [] as $pillar) {
+            $pillarName = $pillar['name'];
+            $myScore = $pillar['score_percent'] ?? 0;
+
+            $avgScore = AuditAnswer::withoutGlobalScope('current_team')
+                ->whereHas('question.pillar', fn ($q) => $q->where('name', $pillarName))
+                ->avg('score') ?? 2.5;
+
+            $avgPercent = round(($avgScore / 5.0) * 100, 1);
+            $delta = round($myScore - $avgPercent, 1);
+
+            $benchmarks[] = [
+                'pillar' => $pillarName,
+                'client_score_percent' => $myScore,
+                'platform_average_percent' => $avgPercent,
+                'delta_percent' => $delta,
+                'performance' => $delta >= 0 ? 'above_average' : 'below_average',
+            ];
+        }
+
+        return [
+            'audit_id' => $audit->id,
+            'company_name' => $audit->company_name,
+            'industry' => $audit->industry,
+            'total_benchmarked_audits' => $allCount,
+            'pillar_benchmarks' => $benchmarks,
+        ];
+    }
+
+    protected function toolGetPipelineFunnelAnalytics(array $args): array
+    {
+        $query = Contact::withoutGlobalScopes();
+        $totalLeads = $query->count();
+
+        $stages = ['new', 'contacted', 'qualified', 'proposal', 'won', 'lost'];
+        $stageBreakdown = [];
+        $totalBudget = 0;
+
+        foreach ($stages as $st) {
+            $count = (clone $query)->where('pipeline_stage', $st)->count();
+            $stageBudget = (clone $query)->where('pipeline_stage', $st)->sum('budget') ?? 0;
+            $avgScore = (clone $query)->where('pipeline_stage', $st)->avg('score') ?? 0;
+
+            $totalBudget += (float) $stageBudget;
+            $pct = $totalLeads > 0 ? round(($count / $totalLeads) * 100, 1) : 0;
+
+            $stageBreakdown[$st] = [
+                'count' => $count,
+                'percentage_of_total' => $pct,
+                'total_budget' => round((float) $stageBudget, 2),
+                'avg_lead_score' => round((float) $avgScore, 1),
+            ];
+        }
+
+        $wonCount = $stageBreakdown['won']['count'] ?? 0;
+        $winRate = $totalLeads > 0 ? round(($wonCount / $totalLeads) * 100, 1) : 0;
+
+        return [
+            'total_leads' => $totalLeads,
+            'total_pipeline_value_eur' => $totalBudget,
+            'overall_win_rate_percent' => $winRate,
+            'stage_funnel' => $stageBreakdown,
+        ];
+    }
+
+    protected function toolBatchRelinkGlossaryInPosts(array $args): array
+    {
+        $postId = $args['post_id'] ?? null;
+
+        $terms = GlossaryTerm::published()->get(['term', 'slug', 'pillar']);
+        $postsQuery = Post::query();
+        if ($postId) {
+            $postsQuery->where('id', $postId);
+        } else {
+            $postsQuery->where('is_published', true);
+        }
+        $posts = $postsQuery->get();
+
+        $results = [];
+
+        foreach ($posts as $post) {
+            $body = $post->body;
+            $matchedTerms = [];
+
+            foreach ($terms as $termObj) {
+                $termText = preg_quote($termObj->term, '/');
+                if (preg_match('/\b'.$termText.'\b/i', $body)) {
+                    $matchedTerms[] = [
+                        'term' => $termObj->term,
+                        'slug' => $termObj->slug,
+                        'url' => url('/lexikon/'.$termObj->slug),
+                    ];
+                }
+            }
+
+            $results[] = [
+                'post_id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'matched_glossary_terms_count' => count($matchedTerms),
+                'matched_terms' => $matchedTerms,
+            ];
+        }
+
+        return [
+            'total_posts_analyzed' => $posts->count(),
+            'posts' => $results,
+        ];
+    }
+
+    protected function toolListSupportTickets(array $args): array
+    {
+        $query = SupportTicket::with(['user', 'messages' => fn ($q) => $q->latest()->limit(1)]);
+
+        if (! empty($args['status'])) {
+            $query->where('status', $args['status']);
+        }
+        if (! empty($args['priority'])) {
+            $query->where('priority', $args['priority']);
+        }
+
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+        $tickets = $query->latest()->limit($limit)->get();
+
+        return [
+            'total' => $tickets->count(),
+            'tickets' => $tickets->map(fn ($t) => [
+                'id' => $t->id,
+                'subject' => $t->subject,
+                'category' => $t->category,
+                'priority' => $t->priority,
+                'status' => $t->status,
+                'user' => $t->user?->name,
+                'user_email' => $t->user?->email,
+                'messages_count' => $t->messages()->count(),
+                'created_at' => $t->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    protected function toolCreateOrReplySupportTicket(array $args): array
+    {
+        $ticketId = $args['ticket_id'] ?? null;
+        $body = $args['body'] ?? '';
+        if (empty($body)) throw new \InvalidArgumentException("body is required.");
+
+        if ($ticketId) {
+            $ticket = SupportTicket::findOrFail($ticketId);
+            $msg = SupportTicketMessage::create([
+                'support_ticket_id' => $ticket->id,
+                'user_id' => Auth::id() ?? 1,
+                'body' => $body,
+                'is_internal' => ! empty($args['is_internal']),
+            ]);
+
+            if (! empty($args['status'])) {
+                $ticket->update(['status' => $args['status']]);
+            }
+
+            return [
+                'status' => 'reply_added',
+                'ticket_id' => $ticket->id,
+                'message_id' => $msg->id,
+                'ticket_status' => $ticket->status,
+            ];
+        }
+
+        $ticket = SupportTicket::create([
+            'user_id' => Auth::id() ?? 1,
+            'subject' => $args['subject'] ?? 'Support Inquiry',
+            'body' => $body,
+            'category' => $args['category'] ?? 'general',
+            'priority' => $args['priority'] ?? 'medium',
+            'status' => 'open',
+        ]);
+
+        return [
+            'status' => 'ticket_created',
+            'ticket_id' => $ticket->id,
+            'subject' => $ticket->subject,
+        ];
+    }
+
+    protected function toolExportPlatformDataset(array $args): array
+    {
+        $dataset = $args['dataset'] ?? 'all';
+        $export = [];
+
+        if ($dataset === 'questions' || $dataset === 'all') {
+            $export['audit_questions'] = AuditQuestion::withoutGlobalScope('current_team')->with('pillar')->get()->map(fn ($q) => [
+                'id' => $q->id,
+                'pillar' => $q->pillar?->name,
+                'question' => $q->getRawOriginal('question'),
+                'recommended_tool' => $q->recommended_module_key,
+                'recommended_book_id' => $q->recommended_book_id,
+                'failure_recommendation' => $q->failure_recommendation,
+            ]);
+        }
+
+        if ($dataset === 'glossary' || $dataset === 'all') {
+            $export['glossary_terms'] = GlossaryTerm::published()->get(['term', 'slug', 'definition', 'simple_definition', 'pillar']);
+        }
+
+        if ($dataset === 'case_studies' || $dataset === 'all') {
+            $export['case_studies'] = CaseStudy::where('is_published', true)->get(['id', 'title', 'slug', 'company', 'industry', 'challenge', 'solution', 'result', 'metrics']);
+        }
+
+        if ($dataset === 'blog_posts' || $dataset === 'all') {
+            $export['blog_posts'] = Post::where('is_published', true)->get(['id', 'title', 'slug', 'excerpt', 'featured_image', 'created_at']);
+        }
+
+        if ($dataset === 'tools' || $dataset === 'all') {
+            $export['tools'] = Module::all(['key', 'name', 'category', 'route_prefix', 'in_subscription_pool', 'is_active']);
+        }
+
+        return [
+            'exported_at' => now()->toIso8601String(),
+            'dataset_type' => $dataset,
+            'data' => $export,
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -1974,6 +2406,8 @@ class McpController extends Controller
                 ['uri' => 'allocore://blog/posts', 'name' => 'Published Blog Posts', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://case-studies', 'name' => 'Client Case Studies', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://leads/summary', 'name' => 'CRM Leads & Pipeline Summary', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://crm/funnel', 'name' => 'CRM Pipeline Funnel & Conversion Analytics', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://support/tickets', 'name' => 'Customer Support Inquiries & Tickets', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
             ],
         ];
@@ -1992,6 +2426,8 @@ class McpController extends Controller
             'allocore://blog/posts' => Post::where('is_published', true)->get(['id', 'title', 'slug', 'featured_image'])->toJson(JSON_PRETTY_PRINT),
             'allocore://case-studies' => CaseStudy::where('is_published', true)->get(['id', 'title', 'slug', 'company', 'industry'])->toJson(JSON_PRETTY_PRINT),
             'allocore://leads/summary' => json_encode($this->toolSearchLeads(['limit' => 50]), JSON_PRETTY_PRINT),
+            'allocore://crm/funnel' => json_encode($this->toolGetPipelineFunnelAnalytics([]), JSON_PRETTY_PRINT),
+            'allocore://support/tickets' => json_encode($this->toolListSupportTickets(['limit' => 25]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
@@ -2016,14 +2452,29 @@ class McpController extends Controller
                     'arguments' => [['name' => 'audit_id', 'required' => true]],
                 ],
                 [
+                    'name' => 'executive_audit_briefing',
+                    'description' => 'Generate high-level C-Suite board presentation and executive transformation briefing from an audit.',
+                    'arguments' => [['name' => 'audit_id', 'required' => true]],
+                ],
+                [
                     'name' => 'seo_content_creator',
                     'description' => 'Generate high-impact German B2B thought leadership blog post linked to books & tools.',
                     'arguments' => [['name' => 'topic', 'required' => true], ['name' => 'book_id', 'required' => false]],
                 ],
                 [
+                    'name' => 'internal_seo_optimizer',
+                    'description' => 'Cross-link glossary terms inside blog articles to maximize organic search authority.',
+                    'arguments' => [['name' => 'post_id', 'required' => false]],
+                ],
+                [
                     'name' => 'lead_nurture_strategy',
                     'description' => 'Generate personalized conversion roadmap for a specific CRM lead.',
                     'arguments' => [['name' => 'lead_id', 'required' => true]],
+                ],
+                [
+                    'name' => 'customer_support_resolver',
+                    'description' => 'Draft empathetic, accurate resolution response to customer inquiries with relevant tool links.',
+                    'arguments' => [['name' => 'ticket_id', 'required' => true]],
                 ],
                 [
                     'name' => 'kpi_cockpit_analyzer',
@@ -2053,8 +2504,11 @@ class McpController extends Controller
     {
         $promptText = match ($name) {
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
+            'executive_audit_briefing' => "Erstellen Sie ein C-Level Vorstandsbriefing für Audit #".($args['audit_id'] ?? 1).". Formulieren Sie strategische Kernaussagen zu finanziellen Risiken, Engpässen und Quick Wins.",
             'seo_content_creator' => "Erstellen Sie einen suchmaschinenoptimierten, 8-teiligen Fachartikel zum Thema '".($args['topic'] ?? 'Unternehmensführung')."'. Binden Sie passende Allocore-Tools sowie die Buchempfehlung Box (Buch ID #".($args['book_id'] ?? 451).") nahtlos ein.",
+            'internal_seo_optimizer' => "Prüfen Sie den Fachartikel #".($args['post_id'] ?? 1)." auf Vorkommen relevanter Allocore-Glossarbegriffe und generieren Sie kontextuelle Querverweise.",
             'lead_nurture_strategy' => "Analysieren Sie das Profil und die Interaktionen von Lead #".($args['lead_id'] ?? 1)." und entwickeln Sie eine maßgeschneiderte B2B-Ansprachestrategie mit ROI-Fokus.",
+            'customer_support_resolver' => "Beantworten Sie Support-Ticket #".($args['ticket_id'] ?? 1)." lösungsorientiert und professionell. Verweisen Sie auf passende Allocore-Tools und Wissensartikel.",
             'kpi_cockpit_analyzer' => "Untersuchen Sie die Kennzahlenlandschaft von '".($args['company_name'] ?? 'Unternehmen')."'. Identifizieren Sie kritische Frühwarnindikatoren (Runway, Deckungsbeitrag, CAC, CLV) und schlagen Sie die passende Allocore-Modulkombination vor.",
             'sop_generator' => "Erstellen Sie eine präzise, fehlertolerante Standard Operating Procedure (SOP) für den Prozess '".($args['process_name'] ?? 'Auftragsannahme')."'. Gliedern Sie in Vorbedingungen, Einzelschritte, Qualitätskontrolle und Stellvertreter-Regelungen.",
             'case_study_writer' => "Verfassen Sie eine überzeugende Erfolgsgeschichte (Case Study) für '".($args['client_name'] ?? 'Mittelständler')."' aus der Branche '".($args['industry'] ?? 'B2B')."'. Strukturieren Sie nach Herausforderung, Lösung mit Allocore, messbaren ROI-Ergebnissen und Zitat.",
