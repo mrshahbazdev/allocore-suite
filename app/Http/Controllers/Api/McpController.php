@@ -34,9 +34,17 @@ use Modules\AuditPro\Models\AuditTemplate;
 use Modules\BookIntelligence\Models\Author;
 use Modules\BookIntelligence\Models\Book;
 use Modules\BookIntelligence\Models\QuestionMapping;
+use Modules\FocusMatrix\Models\Delegation;
+use Modules\FocusMatrix\Models\Task as FocusTask;
+use Modules\InvoiceMaker\Models\Invoice;
+use Modules\InvoiceMaker\Models\InvoiceItem;
 use Modules\LeadQuality\Models\Contact;
+use Modules\OrgMatrix\Models\Person;
+use Modules\OrgMatrix\Models\Role as OrgRole;
 use Modules\SopBuilder\Models\Sop;
 use Modules\SopBuilder\Models\Step;
+use Modules\VisionFlow\Models\StrategicGoal;
+use Modules\VisionFlow\Models\Vision;
 
 class McpController extends Controller
 {
@@ -1039,6 +1047,102 @@ class McpController extends Controller
                     'description' => 'List registered outbound webhooks, event subscriptions, and third-party integration statuses.',
                     'inputSchema' => ['type' => 'object', 'properties' => (object) []],
                 ],
+                [
+                    'name' => 'create_or_preview_invoice',
+                    'description' => 'Draft a legally compliant B2B invoice or quotation with client info, line items, VAT calculations, and payment terms.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'client_name' => ['type' => 'string'],
+                            'client_email' => ['type' => 'string'],
+                            'items' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'description' => ['type' => 'string'],
+                                        'quantity' => ['type' => 'number'],
+                                        'unit_price' => ['type' => 'number'],
+                                    ],
+                                    'required' => ['description', 'unit_price'],
+                                ],
+                            ],
+                            'tax_rate' => ['type' => 'number', 'default' => 19.0],
+                            'due_in_days' => ['type' => 'integer', 'default' => 14],
+                            'preview_only' => ['type' => 'boolean', 'default' => false],
+                        ],
+                        'required' => ['client_name'],
+                    ],
+                ],
+                [
+                    'name' => 'list_invoices_and_receivables',
+                    'description' => 'List invoices, outstanding accounts receivable balance, and payment status breakdown from InvoiceMaker.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'status' => ['type' => 'string', 'enum' => ['draft', 'sent', 'paid', 'unpaid', 'overdue']],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'get_organization_chart',
+                    'description' => 'Retrieve company organizational structure, departments, roles, and assigned personnel from OrgMatrix.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'create_or_update_org_role',
+                    'description' => 'Define or update an organizational role, department, and job description.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'role_id' => ['type' => 'integer', 'description' => 'Optional ID for updating existing role'],
+                            'name' => ['type' => 'string'],
+                            'department' => ['type' => 'string'],
+                            'description' => ['type' => 'string'],
+                        ],
+                        'required' => ['name'],
+                    ],
+                ],
+                [
+                    'name' => 'get_strategic_vision_and_goals',
+                    'description' => 'Retrieve company vision statement, mission, and strategic OKR goals from VisionFlow.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'create_strategic_goal',
+                    'description' => 'Define a strategic OKR goal with target metrics, deadline, and Allocore pillar alignment.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string'],
+                            'description' => ['type' => 'string'],
+                            'pillar' => ['type' => 'string', 'enum' => ['Revenue', 'Profit', 'Order', 'Influence', 'Legacy']],
+                            'target_value' => ['type' => 'number'],
+                            'deadline' => ['type' => 'string', 'description' => 'YYYY-MM-DD format'],
+                        ],
+                        'required' => ['title'],
+                    ],
+                ],
+                [
+                    'name' => 'analyze_eisenhower_tasks',
+                    'description' => 'Analyze active company tasks categorized into Eisenhower quadrants (Do Now, Plan, Delegate, Eliminate).',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'create_delegation_task',
+                    'description' => 'Create a delegated executive task with expected outcome, assignee, and target deadline.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string'],
+                            'assigned_to' => ['type' => 'string'],
+                            'expected_outcome' => ['type' => 'string'],
+                            'due_date' => ['type' => 'string'],
+                        ],
+                        'required' => ['title', 'assigned_to'],
+                    ],
+                ],
             ],
         ];
     }
@@ -1105,6 +1209,14 @@ class McpController extends Controller
             'evaluate_kpi_health' => $this->toolEvaluateKpiHealth($arguments),
             'score_account_health' => $this->toolScoreAccountHealth($arguments),
             'list_webhooks_and_integrations' => $this->toolListWebhooksAndIntegrations($arguments),
+            'create_or_preview_invoice' => $this->toolCreateOrPreviewInvoice($arguments),
+            'list_invoices_and_receivables' => $this->toolListInvoicesAndReceivables($arguments),
+            'get_organization_chart' => $this->toolGetOrganizationChart($arguments),
+            'create_or_update_org_role' => $this->toolCreateOrUpdateOrgRole($arguments),
+            'get_strategic_vision_and_goals' => $this->toolGetStrategicVisionAndGoals($arguments),
+            'create_strategic_goal' => $this->toolCreateStrategicGoal($arguments),
+            'analyze_eisenhower_tasks' => $this->toolAnalyzeEisenhowerTasks($arguments),
+            'create_delegation_task' => $this->toolCreateDelegationTask($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -2744,6 +2856,263 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolCreateOrPreviewInvoice(array $args): array
+    {
+        $clientName = $args['client_name'] ?? 'Musterkunde GmbH';
+        $clientEmail = $args['client_email'] ?? 'rechnung@musterkunde.de';
+        $items = $args['items'] ?? [
+            ['description' => 'Allocore Unternehmens-Audit & Beratung', 'quantity' => 1, 'unit_price' => 1500.00],
+        ];
+        $taxRate = (float) ($args['tax_rate'] ?? 19.0);
+        $dueDays = (int) ($args['due_in_days'] ?? 14);
+        $isDraftOnly = ! empty($args['preview_only']);
+
+        $netTotal = 0.0;
+        $calculatedItems = [];
+        foreach ($items as $it) {
+            $qty = (float) ($it['quantity'] ?? 1);
+            $price = (float) ($it['unit_price'] ?? 0);
+            $total = $qty * $price;
+            $netTotal += $total;
+            $calculatedItems[] = [
+                'description' => $it['description'] ?? 'Position',
+                'quantity' => $qty,
+                'unit_price' => $price,
+                'total' => round($total, 2),
+            ];
+        }
+
+        $taxAmount = round($netTotal * ($taxRate / 100.0), 2);
+        $grossTotal = round($netTotal + $taxAmount, 2);
+        $invoiceNumber = 'INV-'.date('Y').'-'.rand(1000, 9999);
+        $dueDate = now()->addDays($dueDays)->format('d.m.Y');
+
+        $invoiceId = null;
+        if (! $isDraftOnly && class_exists(Invoice::class)) {
+            $inv = Invoice::withoutGlobalScope('current_team')->create([
+                'user_id' => Auth::id() ?? 1,
+                'invoice_number' => $invoiceNumber,
+                'status' => 'draft',
+                'net_amount' => $netTotal,
+                'tax_amount' => $taxAmount,
+                'total_amount' => $grossTotal,
+                'due_date' => now()->addDays($dueDays),
+            ]);
+            $invoiceId = $inv->id;
+        }
+
+        return [
+            'status' => $isDraftOnly ? 'preview_generated' : 'invoice_created',
+            'invoice_id' => $invoiceId,
+            'invoice_number' => $invoiceNumber,
+            'client' => ['name' => $clientName, 'email' => $clientEmail],
+            'items' => $calculatedItems,
+            'financials' => [
+                'net_total_eur' => round($netTotal, 2),
+                'tax_rate_percent' => $taxRate,
+                'tax_amount_eur' => $taxAmount,
+                'gross_total_eur' => $grossTotal,
+                'due_date' => $dueDate,
+                'payment_terms' => "Zahlbar innerhalb von {$dueDays} Tagen ohne Abzug.",
+            ],
+            'tool_route' => '/app/invoice-maker',
+        ];
+    }
+
+    protected function toolListInvoicesAndReceivables(array $args): array
+    {
+        if (! class_exists(Invoice::class)) return ['total' => 0, 'invoices' => []];
+
+        $query = Invoice::withoutGlobalScope('current_team');
+        if (! empty($args['status'])) $query->where('status', $args['status']);
+
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+        $invoices = $query->latest()->limit($limit)->get();
+
+        $openTotal = Invoice::withoutGlobalScope('current_team')->whereIn('status', ['sent', 'unpaid', 'overdue'])->sum('total_amount') ?? 0;
+        $paidTotal = Invoice::withoutGlobalScope('current_team')->where('status', 'paid')->sum('total_amount') ?? 0;
+
+        return [
+            'total' => $invoices->count(),
+            'open_receivables_total_eur' => round((float) $openTotal, 2),
+            'paid_revenue_total_eur' => round((float) $paidTotal, 2),
+            'invoices' => $invoices->map(fn ($i) => [
+                'id' => $i->id,
+                'invoice_number' => $i->invoice_number,
+                'status' => $i->status,
+                'total_amount' => (float) $i->total_amount,
+                'due_date' => $i->due_date?->toIso8601String(),
+                'created_at' => $i->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    protected function toolGetOrganizationChart(array $args): array
+    {
+        if (! class_exists(OrgRole::class)) return ['roles' => [], 'people' => []];
+
+        $roles = OrgRole::withoutGlobalScope('current_team')->get();
+        $people = class_exists(Person::class) ? Person::withoutGlobalScope('current_team')->with('roles')->get() : collect();
+
+        return [
+            'total_roles' => $roles->count(),
+            'total_people' => $people->count(),
+            'roles' => $roles->map(fn ($r) => [
+                'id' => $r->id,
+                'name' => $r->name,
+                'department' => $r->department ?? 'General',
+                'description' => $r->description,
+                'parent_role_id' => $r->parent_id ?? null,
+            ]),
+            'people' => $people->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'email' => $p->email,
+                'assigned_roles' => $p->roles->pluck('name'),
+            ]),
+            'tool_route' => '/app/org-matrix',
+        ];
+    }
+
+    protected function toolCreateOrUpdateOrgRole(array $args): array
+    {
+        if (! class_exists(OrgRole::class)) return ['error' => 'OrgMatrix module not found.'];
+
+        $roleId = $args['role_id'] ?? null;
+        $data = [
+            'name' => $args['name'],
+            'department' => $args['department'] ?? 'Operations',
+            'description' => $args['description'] ?? null,
+        ];
+
+        if ($roleId) {
+            $role = OrgRole::withoutGlobalScope('current_team')->findOrFail($roleId);
+            $role->update($data);
+
+            return ['status' => 'role_updated', 'role_id' => $role->id];
+        }
+
+        $role = OrgRole::withoutGlobalScope('current_team')->create($data);
+
+        return ['status' => 'role_created', 'role_id' => $role->id];
+    }
+
+    protected function toolGetStrategicVisionAndGoals(array $args): array
+    {
+        $vision = class_exists(Vision::class) ? Vision::withoutGlobalScope('current_team')->first() : null;
+        $goals = class_exists(StrategicGoal::class) ? StrategicGoal::withoutGlobalScope('current_team')->get() : collect();
+
+        return [
+            'vision' => $vision ? [
+                'title' => $vision->title,
+                'statement' => $vision->statement ?? $vision->description,
+                'target_year' => $vision->target_year ?? 2027,
+            ] : null,
+            'total_strategic_goals' => $goals->count(),
+            'goals' => $goals->map(fn ($g) => [
+                'id' => $g->id,
+                'title' => $g->title,
+                'pillar' => $g->pillar ?? 'Revenue',
+                'target_value' => $g->target_value,
+                'current_value' => $g->current_value,
+                'deadline' => $g->deadline?->toIso8601String(),
+                'progress_percent' => $g->progress ?? 0,
+            ]),
+            'tool_route' => '/app/vision-flow',
+        ];
+    }
+
+    protected function toolCreateStrategicGoal(array $args): array
+    {
+        if (! class_exists(StrategicGoal::class)) return ['error' => 'VisionFlow module not available.'];
+
+        $goal = StrategicGoal::withoutGlobalScope('current_team')->create([
+            'user_id' => Auth::id() ?? 1,
+            'title' => $args['title'],
+            'description' => $args['description'] ?? null,
+            'pillar' => $args['pillar'] ?? 'Revenue',
+            'target_value' => $args['target_value'] ?? 100,
+            'current_value' => 0,
+            'deadline' => ! empty($args['deadline']) ? $args['deadline'] : now()->addMonths(6),
+        ]);
+
+        return [
+            'status' => 'goal_created',
+            'goal_id' => $goal->id,
+            'title' => $goal->title,
+            'pillar' => $goal->pillar,
+        ];
+    }
+
+    protected function toolAnalyzeEisenhowerTasks(array $args): array
+    {
+        if (! class_exists(FocusTask::class)) return ['q1_do' => [], 'q2_plan' => [], 'q3_delegate' => [], 'q4_eliminate' => []];
+
+        $tasks = FocusTask::withoutGlobalScope('current_team')->where('is_completed', false)->get();
+
+        $q1 = [];
+        $q2 = [];
+        $q3 = [];
+        $q4 = [];
+
+        foreach ($tasks as $t) {
+            $urgent = (bool) ($t->is_urgent ?? false);
+            $important = (bool) ($t->is_important ?? true);
+
+            $item = ['id' => $t->id, 'title' => $t->title, 'due_date' => $t->due_date?->toIso8601String()];
+
+            if ($urgent && $important) $q1[] = $item;
+            elseif (! $urgent && $important) $q2[] = $item;
+            elseif ($urgent && ! $important) $q3[] = $item;
+            else $q4[] = $item;
+        }
+
+        return [
+            'summary' => [
+                'q1_do_now_count' => count($q1),
+                'q2_plan_strategically_count' => count($q2),
+                'q3_delegate_count' => count($q3),
+                'q4_eliminate_kill_count' => count($q4),
+            ],
+            'q1_urgent_and_important' => $q1,
+            'q2_important_not_urgent' => $q2,
+            'q3_urgent_not_important' => $q3,
+            'q4_not_urgent_not_important' => $q4,
+            'recommended_tool' => 'focus-matrix',
+        ];
+    }
+
+    protected function toolCreateDelegationTask(array $args): array
+    {
+        $title = $args['title'] ?? 'Delegierte Aufgabe';
+        $assignee = $args['assigned_to'] ?? 'Mitarbeiter';
+        $expectedOutcome = $args['expected_outcome'] ?? '';
+        $dueDate = $args['due_date'] ?? now()->addDays(7)->format('Y-m-d');
+
+        $delegationId = null;
+        if (class_exists(Delegation::class)) {
+            $del = Delegation::withoutGlobalScope('current_team')->create([
+                'user_id' => Auth::id() ?? 1,
+                'title' => $title,
+                'assigned_to' => $assignee,
+                'outcome' => $expectedOutcome,
+                'due_date' => $dueDate,
+                'status' => 'pending',
+            ]);
+            $delegationId = $del->id;
+        }
+
+        return [
+            'status' => 'task_delegated',
+            'delegation_id' => $delegationId,
+            'title' => $title,
+            'assigned_to' => $assignee,
+            'expected_outcome' => $expectedOutcome,
+            'due_date' => $dueDate,
+            'tool_route' => '/app/focus-matrix',
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -2765,6 +3134,10 @@ class McpController extends Controller
                 ['uri' => 'allocore://support/tickets', 'name' => 'Customer Support Inquiries & Tickets', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://sops/library', 'name' => 'Corporate SOP & Process Playbook Library', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://kpis/benchmarks', 'name' => 'Mittelstand Standard KPI Reference Benchmarks', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://invoices/summary', 'name' => 'Open Receivables & Invoices Summary', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://org/chart', 'name' => 'Company Roles & Organization Chart', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://strategy/goals', 'name' => 'Strategic Goals & Vision Statement', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://tasks/focus-matrix', 'name' => 'Eisenhower Priority Tasks Matrix', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://integrations/status', 'name' => 'Webhooks & Third-Party Integrations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
             ],
@@ -2788,6 +3161,10 @@ class McpController extends Controller
             'allocore://support/tickets' => json_encode($this->toolListSupportTickets(['limit' => 25]), JSON_PRETTY_PRINT),
             'allocore://sops/library' => json_encode($this->toolListStoredSops(['limit' => 30]), JSON_PRETTY_PRINT),
             'allocore://kpis/benchmarks' => json_encode($this->toolEvaluateKpiHealth(['metrics' => ['ebitda_margin' => 15, 'net_profit_margin' => 8, 'dso_days' => 35, 'annual_churn_rate' => 5]]), JSON_PRETTY_PRINT),
+            'allocore://invoices/summary' => json_encode($this->toolListInvoicesAndReceivables(['limit' => 30]), JSON_PRETTY_PRINT),
+            'allocore://org/chart' => json_encode($this->toolGetOrganizationChart([]), JSON_PRETTY_PRINT),
+            'allocore://strategy/goals' => json_encode($this->toolGetStrategicVisionAndGoals([]), JSON_PRETTY_PRINT),
+            'allocore://tasks/focus-matrix' => json_encode($this->toolAnalyzeEisenhowerTasks([]), JSON_PRETTY_PRINT),
             'allocore://integrations/status' => json_encode($this->toolListWebhooksAndIntegrations([]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
@@ -2816,6 +3193,26 @@ class McpController extends Controller
                     'name' => 'executive_audit_briefing',
                     'description' => 'Generate high-level C-Suite board presentation and executive transformation briefing from an audit.',
                     'arguments' => [['name' => 'audit_id', 'required' => true]],
+                ],
+                [
+                    'name' => 'okr_strategy_planner',
+                    'description' => 'Formulate high-leverage quarterly OKRs aligned with the 5 Allocore pillars and vision statement.',
+                    'arguments' => [['name' => 'target_pillar', 'required' => true]],
+                ],
+                [
+                    'name' => 'eisenhower_task_triager',
+                    'description' => 'Triage overwhelming task backlog into actionable delegation and priority focus.',
+                    'arguments' => [],
+                ],
+                [
+                    'name' => 'invoice_dunning_generator',
+                    'description' => 'Draft polite and legally structured German payment reminder / dunning notices.',
+                    'arguments' => [['name' => 'invoice_id', 'required' => true], ['name' => 'dunning_level', 'required' => false]],
+                ],
+                [
+                    'name' => 'job_description_architect',
+                    'description' => 'Generate complete German B2B job description and RACI role profile.',
+                    'arguments' => [['name' => 'role_title', 'required' => true], ['name' => 'department', 'required' => false]],
                 ],
                 [
                     'name' => 'cashflow_runway_optimizer',
@@ -2881,6 +3278,10 @@ class McpController extends Controller
         $promptText = match ($name) {
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
             'executive_audit_briefing' => "Erstellen Sie ein C-Level Vorstandsbriefing für Audit #".($args['audit_id'] ?? 1).". Formulieren Sie strategische Kernaussagen zu finanziellen Risiken, Engpässen und Quick Wins.",
+            'okr_strategy_planner' => "Formulieren Sie ambitionierte, messbare Quartals-OKRs für den Fokusbereich '".($args['target_pillar'] ?? 'Revenue')."'. Gliedern Sie in 3 Objectives und jeweils 3 quantifizierbare Key Results.",
+            'eisenhower_task_triager' => "Analysieren Sie die aktuelle Aufgabenlandschaft. Sortieren Sie Aufgaben nach Dringlichkeit und Wichtigkeit und erstellen Sie klare Delegationsaufträge für Quadrant 3.",
+            'invoice_dunning_generator' => "Verfassen Sie eine professionelle Zahlungserinnerung / Mahnung (Stufe: ".($args['dunning_level'] ?? '1').") für Rechnung #".($args['invoice_id'] ?? 'INV-2026-001').". Wahren Sie einen partnerschaftlichen, aber verbindlichen Ton.",
+            'job_description_architect' => "Erstellen Sie ein vollständiges Anforderungsprofil und eine Stellenbeschreibung für die Rolle '".($args['role_title'] ?? 'Betriebsleiter')."' in der Abteilung '".($args['department'] ?? 'Operations')."'.",
             'cashflow_runway_optimizer' => "Entwickeln Sie einen defensiven Liquiditäts- und Kostenreduktionsplan bei aktuellen Barreserven von ".($args['cash_on_hand'] ?? '50.000')." EUR und einem monatlichen Burn von ".($args['monthly_burn'] ?? '5.000')." EUR. Priorisieren Sie Working Capital Optimierung und Cash-Core Hebel.",
             'unit_economics_advisor' => "Untersuchen Sie die Wirtschaftlichkeit (Unit Economics) bei CAC von ".($args['cac'] ?? '1.000')." EUR und CLV von ".($args['clv'] ?? '4.000')." EUR. Geben Sie konkrete Skalierungs- und Preisempfehlungen.",
             'account_retention_strategist' => "Analysieren Sie das Account-Signalprofil von Team #".($args['team_id'] ?? 1)." und entwickeln Sie einen strukturierten Churn-Präventionsplan.",
