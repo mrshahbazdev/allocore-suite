@@ -103,14 +103,14 @@ class McpController extends Controller
 
                 // MCP Protocol Core
                 'tools/list' => $this->listTools(),
-                'tools/call' => $this->callTool($params['name'] ?? '', $params['arguments'] ?? []),
+                'tools/call' => $this->formatToolCallResponse($this->callTool($params['name'] ?? '', $params['arguments'] ?? [])),
                 'resources/list' => $this->listResources(),
                 'resources/read' => $this->readResource($params['uri'] ?? ''),
                 'prompts/list' => $this->listPrompts(),
                 'prompts/get' => $this->getPrompt($params['name'] ?? '', $params['arguments'] ?? []),
 
                 // Direct tool execution fallback
-                default => $this->callTool($method ?? '', $params),
+                default => $this->formatToolCallResponse($this->callTool($method ?? '', $params)),
             };
 
             return response()->json([
@@ -119,6 +119,22 @@ class McpController extends Controller
                 'result' => $result,
             ], 200, $this->corsHeaders());
         } catch (\Throwable $e) {
+            if ($method === 'tools/call') {
+                return response()->json([
+                    'jsonrpc' => '2.0',
+                    'id' => $id,
+                    'result' => [
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => 'Error executing tool: '.$e->getMessage(),
+                            ],
+                        ],
+                        'isError' => true,
+                    ],
+                ], 200, $this->corsHeaders());
+            }
+
             return response()->json([
                 'jsonrpc' => '2.0',
                 'id' => $id,
@@ -128,6 +144,24 @@ class McpController extends Controller
                 ],
             ], 200, $this->corsHeaders());
         }
+    }
+
+    /**
+     * Format tool execution output into official MCP standard content envelope.
+     */
+    protected function formatToolCallResponse(mixed $output): array
+    {
+        $text = is_string($output) ? $output : json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return [
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => $text,
+                ],
+            ],
+            'isError' => false,
+        ];
     }
 
     /**
@@ -629,7 +663,7 @@ class McpController extends Controller
         }
 
         $limit = min(100, max(1, (int) ($args['limit'] ?? 50)));
-        $questions = $query->orderBy('sort_order')->limit($limit)->get();
+        $questions = $query->orderBy('id')->limit($limit)->get();
 
         return [
             'total' => $questions->count(),

@@ -1,5 +1,10 @@
 import asyncio
+import os
 import sys
+
+# Ensure server directory is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from mcp.server.fastmcp import FastMCP
 
 # Initialize FastMCP Server
