@@ -39,7 +39,7 @@ def forward_rpc_request(payload: dict) -> dict | None:
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "User-Agent": "Allocore-MCP-Desktop-Bridge/1.0 (Windows)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 AllocoreBridge/2.0",
     }
     if ALLOCORE_API_TOKEN:
         headers["Authorization"] = f"Bearer {ALLOCORE_API_TOKEN}"
