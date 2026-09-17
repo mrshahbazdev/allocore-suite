@@ -749,6 +749,80 @@ class McpController extends Controller
                     'description' => 'Retrieve financial overview, active subscription plans breakdown, and customer metrics.',
                     'inputSchema' => ['type' => 'object', 'properties' => (object) []],
                 ],
+
+                // 13. Advanced AI Automation & Live Audit Execution
+                [
+                    'name' => 'create_client_audit',
+                    'description' => 'Initialize a new client audit assessment for a company.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'company_name' => ['type' => 'string', 'description' => 'Name of the company/client'],
+                            'industry' => ['type' => 'string'],
+                            'template_id' => ['type' => 'integer', 'description' => 'Optional template ID (defaults to 1)'],
+                            'size' => ['type' => 'string', 'description' => 'e.g. 1-10, 11-50, 51-250'],
+                            'focus_pillar' => ['type' => 'string', 'description' => 'e.g. Revenue, Profit, Order'],
+                        ],
+                        'required' => ['company_name'],
+                    ],
+                ],
+                [
+                    'name' => 'submit_audit_answers',
+                    'description' => 'Submit answers for an audit, calculate 5-pillar scores, and complete the assessment.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'audit_id' => ['type' => 'integer'],
+                            'answers' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'question_id' => ['type' => 'integer'],
+                                        'value' => ['type' => 'number', 'description' => 'Rating scale (1-5) or 1/0 for yes/no'],
+                                        'comment' => ['type' => 'string'],
+                                    ],
+                                    'required' => ['question_id', 'value'],
+                                ],
+                            ],
+                            'mark_completed' => ['type' => 'boolean', 'default' => true],
+                        ],
+                        'required' => ['audit_id', 'answers'],
+                    ],
+                ],
+                [
+                    'name' => 'score_lead_with_ai',
+                    'description' => 'Run AI qualification heuristics on a CRM lead and update its priority and pipeline stage.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'lead_id' => ['type' => 'integer'],
+                        ],
+                        'required' => ['lead_id'],
+                    ],
+                ],
+                [
+                    'name' => 'repurpose_book_to_blog',
+                    'description' => 'Extract business book core principles from library and generate a draft thought leadership blog post.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'book_id' => ['type' => 'integer'],
+                            'target_pillar' => ['type' => 'string'],
+                        ],
+                        'required' => ['book_id'],
+                    ],
+                ],
+                [
+                    'name' => 'list_activity_logs',
+                    'description' => 'Retrieve recent platform activity logs and audit trails.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
             ],
         ];
     }
@@ -795,6 +869,11 @@ class McpController extends Controller
             'get_case_study_details' => $this->toolGetCaseStudyDetails($arguments),
             'create_or_update_case_study' => $this->toolCreateOrUpdateCaseStudy($arguments),
             'get_financial_summary' => $this->toolGetFinancialSummary(),
+            'create_client_audit' => $this->toolCreateClientAudit($arguments),
+            'submit_audit_answers' => $this->toolSubmitAuditAnswers($arguments),
+            'score_lead_with_ai' => $this->toolScoreLeadWithAi($arguments),
+            'repurpose_book_to_blog' => $this->toolRepurposeBookToBlog($arguments),
+            'list_activity_logs' => $this->toolListActivityLogs($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -1050,15 +1129,16 @@ class McpController extends Controller
 
     protected function toolDiagnoseAuditGaps(array $args): array
     {
-        $audit = Audit::with(['answers', 'template.pillars.questions', 'user'])->findOrFail($args['audit_id']);
+        $audit = Audit::withoutGlobalScope('current_team')->with(['answers', 'template.pillars.questions', 'creator'])->findOrFail($args['audit_id']);
         $service = app(QuestionRecommendationService::class);
-        $score = $audit->allocoreScore ?: new \App\Models\AllocoreScore(['audit_id' => $audit->id]);
+        $score = \App\Models\AllocoreScore::where('audit_id', $audit->id)->first() ?: new \App\Models\AllocoreScore(['audit_id' => $audit->id]);
 
-        $gaps = $service->gapsForScore($score, $audit->user ?? new User);
+        $gaps = $service->gapsForScore($score, $audit->creator ?? new User);
 
         return [
             'audit_id' => $audit->id,
-            'user' => $audit->user?->name,
+            'company_name' => $audit->company_name,
+            'user' => $audit->creator?->name,
             'total_gaps' => count($gaps),
             'top_gap' => $gaps[0] ?? null,
             'all_gaps' => array_slice($gaps, 0, 10),
@@ -1067,12 +1147,12 @@ class McpController extends Controller
 
     protected function toolCalculatePillarScores(array $args): array
     {
-        $audit = Audit::with(['answers', 'template.pillars.questions'])->findOrFail($args['audit_id']);
+        $audit = Audit::withoutGlobalScope('current_team')->with(['answers', 'template.pillars.questions'])->findOrFail($args['audit_id']);
         $scores = [];
         foreach ($audit->template?->pillars ?? [] as $pillar) {
             $totalQ = $pillar->questions->count();
             $answers = $audit->answers->whereIn('question_id', $pillar->questions->pluck('id'));
-            $pts = $answers->sum(fn ($a) => is_numeric($a->value['answer'] ?? 0) ? (float) $a->value['answer'] : 0);
+            $pts = $answers->sum(fn ($a) => is_numeric($a->value['answer'] ?? ($a->value ?? 0)) ? (float) ($a->value['answer'] ?? $a->value) : 0);
             $maxPts = $totalQ * 4;
             $pct = $maxPts > 0 ? round(($pts / $maxPts) * 100, 1) : 0;
             $scores[$pillar->name] = [
@@ -1081,7 +1161,7 @@ class McpController extends Controller
             ];
         }
 
-        return ['audit_id' => $audit->id, 'pillar_scores' => $scores];
+        return ['audit_id' => $audit->id, 'company_name' => $audit->company_name, 'pillar_scores' => $scores];
     }
 
     protected function toolGenerateActionPlan(array $args): array
@@ -1688,6 +1768,163 @@ class McpController extends Controller
                 'price' => $p->price,
                 'billing_period' => $p->billing_period,
                 'active_subscribers' => $p->subscriptions_count,
+            ]),
+        ];
+    }
+
+    protected function toolCreateClientAudit(array $args): array
+    {
+        $templateId = $args['template_id'] ?? 1;
+        $audit = Audit::create([
+            'team_id' => Auth::user()?->current_team_id ?? Team::first()?->id,
+            'created_by' => Auth::id(),
+            'template_id' => $templateId,
+            'company_name' => $args['company_name'],
+            'industry' => $args['industry'] ?? null,
+            'size' => $args['size'] ?? '11-50',
+            'focus_pillar' => $args['focus_pillar'] ?? 'Revenue',
+            'status' => 'in_progress',
+        ]);
+
+        return [
+            'status' => 'created',
+            'audit_id' => $audit->id,
+            'company_name' => $audit->company_name,
+            'template_id' => $audit->template_id,
+            'audit_status' => $audit->status,
+        ];
+    }
+
+    protected function toolSubmitAuditAnswers(array $args): array
+    {
+        $audit = Audit::withoutGlobalScope('current_team')->findOrFail($args['audit_id']);
+        $savedCount = 0;
+
+        foreach ($args['answers'] as $ans) {
+            $qId = (int) $ans['question_id'];
+            $val = $ans['value'];
+            $comment = $ans['comment'] ?? null;
+
+            AuditAnswer::withoutGlobalScope('current_team')->updateOrCreate(
+                ['audit_id' => $audit->id, 'question_id' => $qId],
+                [
+                    'team_id' => $audit->team_id,
+                    'value' => is_array($val) ? $val : ['answer' => $val],
+                    'comment' => $comment,
+                ]
+            );
+            $savedCount++;
+        }
+
+        if (! empty($args['mark_completed'])) {
+            $audit->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+        }
+
+        $scores = $this->toolCalculatePillarScores(['audit_id' => $audit->id]);
+
+        return [
+            'status' => 'success',
+            'audit_id' => $audit->id,
+            'saved_answers_count' => $savedCount,
+            'audit_status' => $audit->status,
+            'pillar_scores' => $scores['pillar_scores'] ?? [],
+        ];
+    }
+
+    protected function toolScoreLeadWithAi(array $args): array
+    {
+        $leadClass = class_exists(Contact::class) ? Contact::class : (class_exists(\Modules\FinancialPlatform\Models\Lead::class) ? \Modules\FinancialPlatform\Models\Lead::class : null);
+        if (! $leadClass) {
+            return ['error' => 'Lead/CRM module tables not present.'];
+        }
+
+        $lead = $leadClass::withoutGlobalScope('current_team')->findOrFail($args['lead_id']);
+
+        $score = 50;
+        if (! empty($lead->email) && ! str_contains($lead->email, 'gmail.com') && ! str_contains($lead->email, 'yahoo.com')) {
+            $score += 15;
+        }
+        if (! empty($lead->position) && (str_contains(strtolower($lead->position), 'ceo') || str_contains(strtolower($lead->position), 'geschäftsführer') || str_contains(strtolower($lead->position), 'leiter') || str_contains(strtolower($lead->position), 'head'))) {
+            $score += 20;
+        }
+        if (! empty($lead->budget) && (float) $lead->budget > 5000) {
+            $score += 15;
+        }
+
+        $priority = $score >= 80 ? 1 : ($score >= 60 ? 2 : 3);
+        $stage = $score >= 80 ? 'qualified' : ($score >= 60 ? 'contacted' : 'nurturing');
+
+        $lead->update([
+            'score' => min(100, $score),
+            'priority' => $priority,
+            'pipeline_stage' => $stage,
+        ]);
+
+        return [
+            'status' => 'scored',
+            'lead_id' => $lead->id,
+            'name' => $lead->name,
+            'company' => $lead->company ?? $lead->company_name ?? null,
+            'calculated_score' => $score,
+            'priority' => $priority,
+            'pipeline_stage' => $stage,
+            'recommended_action' => $score >= 80 ? 'Direkten Strategie-Call vereinbaren' : 'Allocore Reifegrad-Audit Beispiel zusenden',
+        ];
+    }
+
+    protected function toolRepurposeBookToBlog(array $args): array
+    {
+        if (! class_exists(Book::class)) return ['error' => 'Book module not installed.'];
+        $b = Book::with(['author', 'questionMappings.question'])->findOrFail($args['book_id']);
+
+        $authorName = $b->author?->name ?? 'Fachautor';
+        $title = "Erfolgsfaktor {$b->title}: Was mittelständische Entscheider von {$authorName} lernen können";
+        $slug = Str::slug($b->title.'-praxisleitfaden');
+
+        $outline = [
+            'title' => $title,
+            'slug' => $slug,
+            'suggested_category' => 'Methodik & Strategie',
+            'suggested_tags' => ['Buchtipp', 'Unternehmensführung', 'Mittelstand', 'Wachstum'],
+            'book' => [
+                'id' => $b->id,
+                'title' => $b->title,
+                'author' => $authorName,
+                'affiliate_link' => $b->affiliate_link,
+            ],
+            'sections' => [
+                '1. Die zentrale Herausforderung in der Praxis',
+                '2. Kernprinzipien aus dem Buch: '.$b->title,
+                '3. Typische Umsetzungsfallen im Betrieb',
+                '4. Schritt-für-Schritt-Implementierung mit passenden Plattform-Tools',
+                '5. Exklusive Buchempfehlung (Widget Section 8)',
+                '6. Fazit und nächste Handlungsschritte',
+            ],
+        ];
+
+        return [
+            'status' => 'draft_outline_generated',
+            'book_id' => $b->id,
+            'article_plan' => $outline,
+        ];
+    }
+
+    protected function toolListActivityLogs(array $args): array
+    {
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+        $logs = \App\Models\ActivityLog::latest()->limit($limit)->get();
+
+        return [
+            'total' => $logs->count(),
+            'logs' => $logs->map(fn ($l) => [
+                'id' => $l->id,
+                'log_name' => $l->log_name,
+                'description' => $l->description,
+                'created_at' => $l->created_at?->toIso8601String(),
+                'properties' => $l->properties,
             ]),
         ];
     }
