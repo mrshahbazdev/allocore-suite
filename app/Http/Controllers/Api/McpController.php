@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ApiToken;
 use App\Models\CaseStudy;
 use App\Models\GlossaryTerm;
+use App\Models\Integration;
 use App\Models\Module;
 use App\Models\Plan;
 use App\Models\Post;
@@ -14,6 +15,7 @@ use App\Models\SupportTicketMessage;
 use App\Models\Team;
 use App\Models\ToolSubscription;
 use App\Models\User;
+use App\Models\Webhook;
 use App\Services\QuestionRecommendationService;
 use App\Services\QuestionToolGuesser;
 use Illuminate\Http\JsonResponse;
@@ -33,6 +35,8 @@ use Modules\BookIntelligence\Models\Author;
 use Modules\BookIntelligence\Models\Book;
 use Modules\BookIntelligence\Models\QuestionMapping;
 use Modules\LeadQuality\Models\Contact;
+use Modules\SopBuilder\Models\Sop;
+use Modules\SopBuilder\Models\Step;
 
 class McpController extends Controller
 {
@@ -948,6 +952,93 @@ class McpController extends Controller
                         ],
                     ],
                 ],
+                [
+                    'name' => 'simulate_cashflow_runway',
+                    'description' => 'Calculate runway months, monthly net burn rate, breakeven revenue, and safety buffer based on cost structures and monthly revenue inputs.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'cash_on_hand' => ['type' => 'number', 'description' => 'Current cash reserves (EUR)'],
+                            'monthly_revenue' => ['type' => 'number', 'description' => 'Average monthly revenue (EUR)'],
+                            'monthly_fixed_costs' => ['type' => 'number', 'description' => 'Fixed overhead and operational costs (EUR)'],
+                            'variable_cost_percentage' => ['type' => 'number', 'description' => 'Variable costs as % of revenue (default 30)'],
+                        ],
+                        'required' => ['cash_on_hand', 'monthly_revenue', 'monthly_fixed_costs'],
+                    ],
+                ],
+                [
+                    'name' => 'calculate_unit_economics',
+                    'description' => 'Calculate Customer Acquisition Cost (CAC), Customer Lifetime Value (CLV), CLV:CAC ratio, and payback period in months.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'sales_marketing_cost' => ['type' => 'number'],
+                            'new_customers_acquired' => ['type' => 'integer'],
+                            'average_revenue_per_user' => ['type' => 'number'],
+                            'gross_margin_percentage' => ['type' => 'number', 'default' => 75],
+                            'monthly_churn_percentage' => ['type' => 'number', 'default' => 3],
+                        ],
+                        'required' => ['sales_marketing_cost', 'new_customers_acquired', 'average_revenue_per_user'],
+                    ],
+                ],
+                [
+                    'name' => 'generate_and_store_sop',
+                    'description' => 'Generate and persist a standardized corporate Standard Operating Procedure (SOP) with role responsibility and step-by-step instructions into the platform.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string'],
+                            'description' => ['type' => 'string'],
+                            'role' => ['type' => 'string'],
+                            'steps' => [
+                                'type' => 'array',
+                                'items' => ['type' => 'string'],
+                                'description' => 'Ordered list of step instructions',
+                            ],
+                        ],
+                        'required' => ['title', 'steps'],
+                    ],
+                ],
+                [
+                    'name' => 'list_stored_sops',
+                    'description' => 'Search and retrieve corporate SOPs and process playbooks from SopBuilder.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'search' => ['type' => 'string'],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'evaluate_kpi_health',
+                    'description' => 'Evaluate key company metrics (EBITDA margin, net margin, DSO, churn) against standard German SME benchmarks.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'metrics' => [
+                                'type' => 'object',
+                                'description' => 'Key-value map of KPI names and values, e.g. {"ebitda_margin": 16.5, "dso_days": 28}',
+                            ],
+                        ],
+                        'required' => ['metrics'],
+                    ],
+                ],
+                [
+                    'name' => 'score_account_health',
+                    'description' => 'Calculate Account Engagement & Retention Health Score (0-100) and identify churn risks for an account/team.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional specific team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'list_webhooks_and_integrations',
+                    'description' => 'List registered outbound webhooks, event subscriptions, and third-party integration statuses.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
             ],
         ];
     }
@@ -1007,6 +1098,13 @@ class McpController extends Controller
             'list_support_tickets' => $this->toolListSupportTickets($arguments),
             'create_or_reply_support_ticket' => $this->toolCreateOrReplySupportTicket($arguments),
             'export_platform_dataset' => $this->toolExportPlatformDataset($arguments),
+            'simulate_cashflow_runway' => $this->toolSimulateCashflowRunway($arguments),
+            'calculate_unit_economics' => $this->toolCalculateUnitEconomics($arguments),
+            'generate_and_store_sop' => $this->toolGenerateAndStoreSop($arguments),
+            'list_stored_sops' => $this->toolListStoredSops($arguments),
+            'evaluate_kpi_health' => $this->toolEvaluateKpiHealth($arguments),
+            'score_account_health' => $this->toolScoreAccountHealth($arguments),
+            'list_webhooks_and_integrations' => $this->toolListWebhooksAndIntegrations($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -2389,6 +2487,263 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolSimulateCashflowRunway(array $args): array
+    {
+        $cash = (float) ($args['cash_on_hand'] ?? 50000);
+        $monthlyRevenue = (float) ($args['monthly_revenue'] ?? 20000);
+        $fixedCosts = (float) ($args['monthly_fixed_costs'] ?? 15000);
+        $variableCostRate = (float) ($args['variable_cost_percentage'] ?? 30) / 100.0;
+
+        $variableCosts = $monthlyRevenue * $variableCostRate;
+        $totalMonthlyCosts = $fixedCosts + $variableCosts;
+        $monthlyNetCashflow = $monthlyRevenue - $totalMonthlyCosts;
+
+        $contributionMarginRatio = 1.0 - $variableCostRate;
+        $breakevenRevenue = $contributionMarginRatio > 0 ? round($fixedCosts / $contributionMarginRatio, 2) : 0;
+
+        $runwayMonths = null;
+        $isBurnMode = $monthlyNetCashflow < 0;
+
+        if ($isBurnMode) {
+            $monthlyBurn = abs($monthlyNetCashflow);
+            $runwayMonths = $monthlyBurn > 0 ? round($cash / $monthlyBurn, 1) : 0;
+        }
+
+        $recommendedBuffer = round($fixedCosts * 3, 2);
+        $safetyStatus = ($cash >= $recommendedBuffer) ? 'secure' : (($cash >= $fixedCosts) ? 'warning' : 'critical');
+
+        return [
+            'inputs' => [
+                'cash_on_hand' => $cash,
+                'monthly_revenue' => $monthlyRevenue,
+                'monthly_fixed_costs' => $fixedCosts,
+                'variable_cost_percentage' => ($variableCostRate * 100),
+            ],
+            'monthly_metrics' => [
+                'total_monthly_costs' => round($totalMonthlyCosts, 2),
+                'net_cashflow_eur' => round($monthlyNetCashflow, 2),
+                'breakeven_revenue_eur' => $breakevenRevenue,
+                'is_burn_mode' => $isBurnMode,
+                'runway_months' => $runwayMonths,
+            ],
+            'liquidity_assessment' => [
+                'safety_status' => $safetyStatus,
+                'recommended_3_month_buffer_eur' => $recommendedBuffer,
+                'buffer_coverage_percent' => $recommendedBuffer > 0 ? round(($cash / $recommendedBuffer) * 100, 1) : 100,
+                'recommended_tool' => 'cash-core',
+                'action_advice' => $isBurnMode
+                    ? "Dringende Ausgabenbereinigung erforderlich. Mit aktuellen Parametern reicht die Liquidität für ca. {$runwayMonths} Monate."
+                    : 'Positiver operativer Cashflow. Überschüsse in Wachstumsinitiativen oder Rücklagen allozieren.',
+            ],
+        ];
+    }
+
+    protected function toolCalculateUnitEconomics(array $args): array
+    {
+        $salesMarketingCost = (float) ($args['sales_marketing_cost'] ?? 10000);
+        $newCustomers = max(1, (int) ($args['new_customers_acquired'] ?? 10));
+        $arpu = (float) ($args['average_revenue_per_user'] ?? 200);
+        $grossMarginPct = (float) ($args['gross_margin_percentage'] ?? 75) / 100.0;
+        $monthlyChurnPct = max(0.01, (float) ($args['monthly_churn_percentage'] ?? 3)) / 100.0;
+
+        $cac = round($salesMarketingCost / $newCustomers, 2);
+        $averageCustomerLifespanMonths = round(1.0 / $monthlyChurnPct, 1);
+        $clv = round(($arpu * $grossMarginPct) / $monthlyChurnPct, 2);
+        $clvCacRatio = $cac > 0 ? round($clv / $cac, 2) : 0;
+        $paybackMonths = ($arpu * $grossMarginPct) > 0 ? round($cac / ($arpu * $grossMarginPct), 1) : 0;
+
+        $rating = ($clvCacRatio >= 3.0 && $paybackMonths <= 12) ? 'Exzellent' : (($clvCacRatio >= 2.0) ? 'Gesund' : 'Kritisch (Überarbeitung Akquisekosten/Preise nötig)');
+
+        return [
+            'cac_eur' => $cac,
+            'clv_eur' => $clv,
+            'clv_cac_ratio' => $clvCacRatio,
+            'cac_payback_months' => $paybackMonths,
+            'average_customer_lifespan_months' => $averageCustomerLifespanMonths,
+            'unit_economics_health' => $rating,
+            'benchmark_advice' => $clvCacRatio >= 3.0
+                ? 'Top B2B-Mittelstandswert (CLV:CAC > 3:1). Akquisebudgets können skaliert werden.'
+                : 'Optimierungsbedarf bei Churn-Reduktion oder Vertriebseffizienz.',
+            'recommended_tool' => 'revenue-planner',
+        ];
+    }
+
+    protected function toolGenerateAndStoreSop(array $args): array
+    {
+        $title = $args['title'] ?? 'Standard Operating Procedure';
+        $description = $args['description'] ?? null;
+        $role = $args['role'] ?? 'Mitarbeiter';
+        $stepsInput = $args['steps'] ?? [];
+
+        $sop = null;
+        if (class_exists(Sop::class)) {
+            $sop = Sop::withoutGlobalScope('current_team')->create([
+                'user_id' => Auth::id() ?? 1,
+                'title' => $title,
+                'description' => $description,
+                'status' => 'published',
+                'version' => 1,
+                'published_at' => now(),
+            ]);
+
+            if (class_exists(Step::class) && is_array($stepsInput)) {
+                foreach ($stepsInput as $idx => $st) {
+                    Step::create([
+                        'sop_id' => $sop->id,
+                        'title' => is_string($st) ? $st : ($st['title'] ?? 'Schritt '.($idx + 1)),
+                        'content' => is_array($st) ? ($st['content'] ?? '') : '',
+                        'sort_order' => $idx + 1,
+                    ]);
+                }
+            }
+        }
+
+        return [
+            'status' => 'sop_created',
+            'sop_id' => $sop?->id,
+            'title' => $title,
+            'role' => $role,
+            'steps_count' => count($stepsInput),
+            'tool_route' => '/app/sop-builder',
+        ];
+    }
+
+    protected function toolListStoredSops(array $args): array
+    {
+        if (! class_exists(Sop::class)) return ['total' => 0, 'sops' => []];
+
+        $query = Sop::withoutGlobalScope('current_team')->with(['steps']);
+        if (! empty($args['search'])) {
+            $s = $args['search'];
+            $query->where(fn ($q) => $q->where('title', 'like', "%{$s}%")->orWhere('description', 'like', "%{$s}%"));
+        }
+
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+        $sops = $query->latest()->limit($limit)->get();
+
+        return [
+            'total' => $sops->count(),
+            'sops' => $sops->map(fn ($s) => [
+                'id' => $s->id,
+                'title' => $s->title,
+                'description' => $s->description,
+                'version' => $s->version,
+                'status' => $s->status,
+                'steps_count' => $s->steps->count(),
+                'steps' => $s->steps->map(fn ($st) => [
+                    'order' => $st->sort_order,
+                    'title' => $st->title,
+                ]),
+                'published_at' => $s->published_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    protected function toolEvaluateKpiHealth(array $args): array
+    {
+        $metrics = $args['metrics'] ?? [];
+        $evaluations = [];
+
+        $benchmarks = [
+            'ebitda_margin' => ['name' => 'EBITDA-Marge', 'target' => 15.0, 'unit' => '%', 'higher_is_better' => true],
+            'net_profit_margin' => ['name' => 'Nettoumsatzrendite', 'target' => 8.0, 'unit' => '%', 'higher_is_better' => true],
+            'dso_days' => ['name' => 'Forderungslaufzeit (DSO)', 'target' => 35.0, 'unit' => 'Tage', 'higher_is_better' => false],
+            'annual_churn_rate' => ['name' => 'Jährliche Kundenabwanderung', 'target' => 5.0, 'unit' => '%', 'higher_is_better' => false],
+            'employee_turnover' => ['name' => 'Mitarbeiterfluktuation', 'target' => 10.0, 'unit' => '%', 'higher_is_better' => false],
+            'gross_margin' => ['name' => 'Rohertragsmarge', 'target' => 60.0, 'unit' => '%', 'higher_is_better' => true],
+        ];
+
+        foreach ($metrics as $key => $val) {
+            $val = (float) $val;
+            if (isset($benchmarks[$key])) {
+                $bm = $benchmarks[$key];
+                $isGood = $bm['higher_is_better'] ? ($val >= $bm['target']) : ($val <= $bm['target']);
+                $evaluations[] = [
+                    'kpi' => $key,
+                    'label' => $bm['name'],
+                    'current_value' => $val,
+                    'benchmark_target' => $bm['target'],
+                    'unit' => $bm['unit'],
+                    'status' => $isGood ? 'healthy' : 'warning',
+                    'badge' => $isGood ? '✅ Im Zielbereich' : '⚠️ Handlungsbedarf',
+                ];
+            } else {
+                $evaluations[] = [
+                    'kpi' => $key,
+                    'current_value' => $val,
+                    'status' => 'custom',
+                ];
+            }
+        }
+
+        return [
+            'evaluated_kpis_count' => count($evaluations),
+            'results' => $evaluations,
+            'recommended_tool' => 'smart-kpi',
+        ];
+    }
+
+    protected function toolScoreAccountHealth(array $args): array
+    {
+        $teamId = $args['team_id'] ?? null;
+        $team = $teamId ? Team::find($teamId) : Team::first();
+
+        if (! $team) return ['error' => 'No team or account found.'];
+
+        $auditsCount = Audit::withoutGlobalScope('current_team')->where('team_id', $team->id)->count();
+        $completedAuditsCount = Audit::withoutGlobalScope('current_team')->where('team_id', $team->id)->where('status', 'completed')->count();
+        $contactsCount = Contact::withoutGlobalScopes()->where('team_id', $team->id)->count();
+        $ticketsCount = SupportTicket::where('team_id', $team->id)->whereIn('status', ['open', 'in_progress'])->count();
+
+        $healthScore = 50;
+        if ($completedAuditsCount > 0) $healthScore += 25;
+        if ($contactsCount >= 5) $healthScore += 15;
+        if ($ticketsCount === 0) $healthScore += 10;
+        if ($ticketsCount > 2) $healthScore -= 20;
+
+        $healthScore = max(0, min(100, $healthScore));
+        $riskLevel = ($healthScore >= 75) ? 'Low (High Retention)' : (($healthScore >= 50) ? 'Medium (Engagement Needed)' : 'High (Churn Risk)');
+
+        return [
+            'team_id' => $team->id,
+            'account_name' => $team->name,
+            'health_score' => $healthScore,
+            'retention_risk_level' => $riskLevel,
+            'signals' => [
+                'total_audits' => $auditsCount,
+                'completed_audits' => $completedAuditsCount,
+                'active_crm_leads' => $contactsCount,
+                'open_support_tickets' => $ticketsCount,
+            ],
+            'recommended_retention_action' => $healthScore < 60 ? 'Proaktiven Check-in Call durch Account Manager vereinbaren' : 'Feature-Update & Erweiterung vorstellen',
+        ];
+    }
+
+    protected function toolListWebhooksAndIntegrations(array $args): array
+    {
+        $webhooks = Webhook::with(['integration', 'calls' => fn ($q) => $q->latest()->limit(1)])->get();
+        $integrations = Integration::all();
+
+        return [
+            'total_webhooks' => $webhooks->count(),
+            'webhooks' => $webhooks->map(fn ($w) => [
+                'id' => $w->id,
+                'name' => $w->name,
+                'url' => $w->url,
+                'events' => $w->events,
+                'is_active' => (bool) $w->is_active,
+                'last_sent_at' => $w->last_sent_at?->toIso8601String(),
+            ]),
+            'total_integrations' => $integrations->count(),
+            'integrations' => $integrations->map(fn ($i) => [
+                'id' => $i->id,
+                'name' => $i->name,
+                'provider' => $i->provider ?? null,
+                'is_active' => (bool) $i->is_active,
+            ]),
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -2408,6 +2763,9 @@ class McpController extends Controller
                 ['uri' => 'allocore://leads/summary', 'name' => 'CRM Leads & Pipeline Summary', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://crm/funnel', 'name' => 'CRM Pipeline Funnel & Conversion Analytics', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://support/tickets', 'name' => 'Customer Support Inquiries & Tickets', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://sops/library', 'name' => 'Corporate SOP & Process Playbook Library', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://kpis/benchmarks', 'name' => 'Mittelstand Standard KPI Reference Benchmarks', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://integrations/status', 'name' => 'Webhooks & Third-Party Integrations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
             ],
         ];
@@ -2428,6 +2786,9 @@ class McpController extends Controller
             'allocore://leads/summary' => json_encode($this->toolSearchLeads(['limit' => 50]), JSON_PRETTY_PRINT),
             'allocore://crm/funnel' => json_encode($this->toolGetPipelineFunnelAnalytics([]), JSON_PRETTY_PRINT),
             'allocore://support/tickets' => json_encode($this->toolListSupportTickets(['limit' => 25]), JSON_PRETTY_PRINT),
+            'allocore://sops/library' => json_encode($this->toolListStoredSops(['limit' => 30]), JSON_PRETTY_PRINT),
+            'allocore://kpis/benchmarks' => json_encode($this->toolEvaluateKpiHealth(['metrics' => ['ebitda_margin' => 15, 'net_profit_margin' => 8, 'dso_days' => 35, 'annual_churn_rate' => 5]]), JSON_PRETTY_PRINT),
+            'allocore://integrations/status' => json_encode($this->toolListWebhooksAndIntegrations([]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
@@ -2455,6 +2816,21 @@ class McpController extends Controller
                     'name' => 'executive_audit_briefing',
                     'description' => 'Generate high-level C-Suite board presentation and executive transformation briefing from an audit.',
                     'arguments' => [['name' => 'audit_id', 'required' => true]],
+                ],
+                [
+                    'name' => 'cashflow_runway_optimizer',
+                    'description' => 'Formulate a strict liquidity defense plan, burn rate compression, and runway extension strategy.',
+                    'arguments' => [['name' => 'cash_on_hand', 'required' => true], ['name' => 'monthly_burn', 'required' => true]],
+                ],
+                [
+                    'name' => 'unit_economics_advisor',
+                    'description' => 'Analyze CAC, CLV, and gross margin economics to optimize customer acquisition profitability.',
+                    'arguments' => [['name' => 'cac', 'required' => true], ['name' => 'clv', 'required' => true]],
+                ],
+                [
+                    'name' => 'account_retention_strategist',
+                    'description' => 'Generate proactive retention and engagement roadmap for at-risk client accounts.',
+                    'arguments' => [['name' => 'team_id', 'required' => true]],
                 ],
                 [
                     'name' => 'seo_content_creator',
@@ -2505,6 +2881,9 @@ class McpController extends Controller
         $promptText = match ($name) {
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
             'executive_audit_briefing' => "Erstellen Sie ein C-Level Vorstandsbriefing für Audit #".($args['audit_id'] ?? 1).". Formulieren Sie strategische Kernaussagen zu finanziellen Risiken, Engpässen und Quick Wins.",
+            'cashflow_runway_optimizer' => "Entwickeln Sie einen defensiven Liquiditäts- und Kostenreduktionsplan bei aktuellen Barreserven von ".($args['cash_on_hand'] ?? '50.000')." EUR und einem monatlichen Burn von ".($args['monthly_burn'] ?? '5.000')." EUR. Priorisieren Sie Working Capital Optimierung und Cash-Core Hebel.",
+            'unit_economics_advisor' => "Untersuchen Sie die Wirtschaftlichkeit (Unit Economics) bei CAC von ".($args['cac'] ?? '1.000')." EUR und CLV von ".($args['clv'] ?? '4.000')." EUR. Geben Sie konkrete Skalierungs- und Preisempfehlungen.",
+            'account_retention_strategist' => "Analysieren Sie das Account-Signalprofil von Team #".($args['team_id'] ?? 1)." und entwickeln Sie einen strukturierten Churn-Präventionsplan.",
             'seo_content_creator' => "Erstellen Sie einen suchmaschinenoptimierten, 8-teiligen Fachartikel zum Thema '".($args['topic'] ?? 'Unternehmensführung')."'. Binden Sie passende Allocore-Tools sowie die Buchempfehlung Box (Buch ID #".($args['book_id'] ?? 451).") nahtlos ein.",
             'internal_seo_optimizer' => "Prüfen Sie den Fachartikel #".($args['post_id'] ?? 1)." auf Vorkommen relevanter Allocore-Glossarbegriffe und generieren Sie kontextuelle Querverweise.",
             'lead_nurture_strategy' => "Analysieren Sie das Profil und die Interaktionen von Lead #".($args['lead_id'] ?? 1)." und entwickeln Sie eine maßgeschneiderte B2B-Ansprachestrategie mit ROI-Fokus.",

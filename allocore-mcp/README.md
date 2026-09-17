@@ -8,7 +8,7 @@ Enterprise Model Context Protocol (MCP) Server for **Allocore Suite**, optimized
 
 ### Mode A: Shared Hosting Native (Pure Laravel API)
 On your shared host, no background Python process is needed!
-The entire **40 autonomous tools** suite is served directly by Laravel via:
+The entire **47 autonomous tools** suite is served directly by Laravel via:
 - `POST https://allocore.de/api/mcp/rpc` (JSON-RPC 2.0 Protocol Handler)
 - `GET/POST https://allocore.de/api/mcp` (SSE Stream for Claude / MCP Remote Connectors)
 - `GET https://allocore.de/api/mcp/tools` (Dedicated HTTP Tool Discovery with CORS)
@@ -27,19 +27,22 @@ python server.py      # Direct DB & local execution
 
 ---
 
-## 🛠️ Complete 40 Tool Catalog
+## 🛠️ Complete 47 Tool Catalog
 
 1. **Audit Pro & Assessment**: `list_audit_questions`, `get_question_details`, `assign_question_solution`, `batch_auto_match_questions`, `list_audit_templates`, `create_or_update_question`, `create_client_audit`, `submit_audit_answers`, `list_recent_audits`, `get_audit_full_answers`.
 2. **Diagnostics & 5-Säulen Coach**: `diagnose_audit_gaps`, `calculate_pillar_scores`, `generate_action_plan`, `generate_audit_executive_summary`, `benchmark_audit_performance`.
-3. **CRM, Funnel & Leads (LeadQuality)**: `search_leads`, `get_lead_details`, `create_or_update_lead`, `score_lead_with_ai`, `get_pipeline_funnel_analytics`.
-4. **Customer Support & Ticketing**: `list_support_tickets`, `create_or_reply_support_ticket`.
-5. **BookIntelligence Catalog**: `search_books`, `get_book_details`, `create_or_update_book`, `repurpose_book_to_blog`.
-6. **Blog CMS & Thought Leadership**: `search_blog_posts`, `get_post_details`, `create_or_update_post`, `batch_relink_glossary_in_posts`.
-7. **Case Studies & Success Stories**: `search_case_studies`, `get_case_study_details`, `create_or_update_case_study`.
-8. **Knowledge & Glossary (Lexikon)**: `search_glossary_terms`, `create_or_update_glossary_term`.
-9. **Tool Pool & Subscription Governance**: `list_all_modules`, `manage_tool_pool`, `deprecate_module`, `update_module_metadata`, `sync_subscription_plans`, `validate_tool_pool_integrity`.
-10. **Financial & User Metrics**: `search_users_and_teams`, `get_user_subscription_status`, `get_financial_summary`, `get_platform_metrics`.
-11. **DevOps, Data Export & Audit Trails**: `run_allocore_artisan`, `get_system_health`, `list_activity_logs`, `export_platform_dataset`.
+3. **Cash & Financial Intelligence**: `simulate_cashflow_runway`, `calculate_unit_economics`, `get_financial_summary`.
+4. **CRM, Funnel & Leads (LeadQuality)**: `search_leads`, `get_lead_details`, `create_or_update_lead`, `score_lead_with_ai`, `get_pipeline_funnel_analytics`, `score_account_health`.
+5. **Process & SOP Engineering (SopBuilder)**: `generate_and_store_sop`, `list_stored_sops`.
+6. **KPI Engine & Smart Monitoring (SmartKpi)**: `evaluate_kpi_health`.
+7. **Customer Support & Ticketing**: `list_support_tickets`, `create_or_reply_support_ticket`.
+8. **BookIntelligence Catalog**: `search_books`, `get_book_details`, `create_or_update_book`, `repurpose_book_to_blog`.
+9. **Blog CMS & Thought Leadership**: `search_blog_posts`, `get_post_details`, `create_or_update_post`, `batch_relink_glossary_in_posts`.
+10. **Case Studies & Success Stories**: `search_case_studies`, `get_case_study_details`, `create_or_update_case_study`.
+11. **Knowledge & Glossary (Lexikon)**: `search_glossary_terms`, `create_or_update_glossary_term`.
+12. **Tool Pool & Subscription Governance**: `list_all_modules`, `manage_tool_pool`, `deprecate_module`, `update_module_metadata`, `sync_subscription_plans`, `validate_tool_pool_integrity`.
+13. **User & Account Metrics**: `search_users_and_teams`, `get_user_subscription_status`, `get_platform_metrics`.
+14. **DevOps, Automation & Webhooks**: `run_allocore_artisan`, `get_system_health`, `list_activity_logs`, `export_platform_dataset`, `list_webhooks_and_integrations`.
 
 ---
 
@@ -57,6 +60,9 @@ python server.py      # Direct DB & local execution
 - `allocore://leads/summary`: CRM leads and contact distribution.
 - `allocore://crm/funnel`: Live pipeline conversion stages and opportunity value.
 - `allocore://support/tickets`: Customer support inquiries and status.
+- `allocore://sops/library`: Corporate SOP & process playbook library.
+- `allocore://kpis/benchmarks`: Mittelstand standard KPI reference benchmarks.
+- `allocore://integrations/status`: Webhooks & third-party integrations.
 - `allocore://financial/summary`: MRR and subscriber breakdown.
 
 ---
@@ -65,6 +71,9 @@ python server.py      # Direct DB & local execution
 
 - `audit_consultant`: 5-Säulen executive diagnosis & 90-day action plan.
 - `executive_audit_briefing`: High-level C-Suite board presentation and risk briefing.
+- `cashflow_runway_optimizer`: Defensive liquidity and cost reduction strategy.
+- `unit_economics_advisor`: Unit economics (CAC, CLV, Gross Margin) optimization.
+- `account_retention_strategist`: Proactive retention roadmap for at-risk accounts.
 - `seo_content_creator`: 8-section German thought leadership blog post with book CTA widget.
 - `internal_seo_optimizer`: Automatic cross-linking of glossary terms in articles.
 - `lead_nurture_strategy`: Personalized high-probability conversion roadmap.
