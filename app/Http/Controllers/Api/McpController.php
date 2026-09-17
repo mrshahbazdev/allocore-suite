@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApiToken;
+use App\Models\CaseStudy;
 use App\Models\GlossaryTerm;
 use App\Models\Module;
 use App\Models\Plan;
 use App\Models\Post;
 use App\Models\Team;
+use App\Models\ToolSubscription;
 use App\Models\User;
 use App\Services\QuestionRecommendationService;
 use App\Services\QuestionToolGuesser;
@@ -28,6 +30,7 @@ use Modules\AuditPro\Models\AuditTemplate;
 use Modules\BookIntelligence\Models\Author;
 use Modules\BookIntelligence\Models\Book;
 use Modules\BookIntelligence\Models\QuestionMapping;
+use Modules\LeadQuality\Models\Contact;
 
 class McpController extends Controller
 {
@@ -620,6 +623,132 @@ class McpController extends Controller
                     'description' => 'Check system health, database connection, and PHP runtime environment.',
                     'inputSchema' => ['type' => 'object', 'properties' => (object) []],
                 ],
+
+                // 9. Client Audits & Answers
+                [
+                    'name' => 'list_recent_audits',
+                    'description' => 'List completed and in-progress client audits with scores, company name, industry, and status.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'status' => ['type' => 'string', 'enum' => ['draft', 'in_progress', 'completed', 'archived']],
+                            'industry' => ['type' => 'string'],
+                            'search' => ['type' => 'string', 'description' => 'Search by company name or focus pillar'],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'get_audit_full_answers',
+                    'description' => 'Retrieve all question responses, scores, user comments, and failure recommendations for an audit.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'audit_id' => ['type' => 'integer', 'description' => 'ID of the audit'],
+                        ],
+                        'required' => ['audit_id'],
+                    ],
+                ],
+
+                // 10. Leads & CRM (LeadQuality)
+                [
+                    'name' => 'search_leads',
+                    'description' => 'Search and filter CRM leads, diagnostic contacts, and company prospects.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'query' => ['type' => 'string', 'description' => 'Search by name, email, or company'],
+                            'status' => ['type' => 'string'],
+                            'pipeline_stage' => ['type' => 'string'],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'get_lead_details',
+                    'description' => 'Retrieve full lead profile, contact info, notes, score, and interaction history.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'lead_id' => ['type' => 'integer'],
+                        ],
+                        'required' => ['lead_id'],
+                    ],
+                ],
+                [
+                    'name' => 'create_or_update_lead',
+                    'description' => 'Create a new CRM lead or update status, pipeline stage, notes, and score.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'lead_id' => ['type' => 'integer'],
+                            'name' => ['type' => 'string'],
+                            'email' => ['type' => 'string'],
+                            'company' => ['type' => 'string'],
+                            'position' => ['type' => 'string'],
+                            'status' => ['type' => 'string'],
+                            'pipeline_stage' => ['type' => 'string'],
+                            'notes' => ['type' => 'string'],
+                            'score' => ['type' => 'integer'],
+                            'budget' => ['type' => 'number'],
+                        ],
+                        'required' => ['name', 'email'],
+                    ],
+                ],
+
+                // 11. Case Studies
+                [
+                    'name' => 'search_case_studies',
+                    'description' => 'Search published and draft client case studies and transformation stories.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'query' => ['type' => 'string'],
+                            'industry' => ['type' => 'string'],
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'get_case_study_details',
+                    'description' => 'Retrieve complete case study content, challenge, solution, result, and metric KPIs.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'integer'],
+                            'slug' => ['type' => 'string'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'create_or_update_case_study',
+                    'description' => 'Create or update a case study with challenge, solution, quantifiable results, and metrics.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'integer'],
+                            'title' => ['type' => 'string'],
+                            'slug' => ['type' => 'string'],
+                            'company' => ['type' => 'string'],
+                            'industry' => ['type' => 'string'],
+                            'challenge' => ['type' => 'string'],
+                            'solution' => ['type' => 'string'],
+                            'result' => ['type' => 'string'],
+                            'metrics' => ['type' => 'array'],
+                            'image' => ['type' => 'string'],
+                            'is_published' => ['type' => 'boolean'],
+                            'sort_order' => ['type' => 'integer'],
+                        ],
+                        'required' => ['title'],
+                    ],
+                ],
+
+                // 12. Financial & Revenue
+                [
+                    'name' => 'get_financial_summary',
+                    'description' => 'Retrieve financial overview, active subscription plans breakdown, and customer metrics.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
             ],
         ];
     }
@@ -657,6 +786,15 @@ class McpController extends Controller
             'get_platform_metrics' => $this->toolGetPlatformMetrics(),
             'run_allocore_artisan' => $this->toolRunAllocoreArtisan($arguments),
             'get_system_health' => $this->toolGetSystemHealth(),
+            'list_recent_audits' => $this->toolListRecentAudits($arguments),
+            'get_audit_full_answers' => $this->toolGetAuditFullAnswers($arguments),
+            'search_leads' => $this->toolSearchLeads($arguments),
+            'get_lead_details' => $this->toolGetLeadDetails($arguments),
+            'create_or_update_lead' => $this->toolCreateOrUpdateLead($arguments),
+            'search_case_studies' => $this->toolSearchCaseStudies($arguments),
+            'get_case_study_details' => $this->toolGetCaseStudyDetails($arguments),
+            'create_or_update_case_study' => $this->toolCreateOrUpdateCaseStudy($arguments),
+            'get_financial_summary' => $this->toolGetFinancialSummary(),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -1299,6 +1437,261 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolListRecentAudits(array $args): array
+    {
+        $query = Audit::withoutGlobalScope('current_team')->with(['template', 'creator']);
+        if (! empty($args['status'])) {
+            $query->where('status', $args['status']);
+        }
+        if (! empty($args['industry'])) {
+            $query->where('industry', 'like', "%{$args['industry']}%");
+        }
+        if (! empty($args['search'])) {
+            $s = $args['search'];
+            $query->where(fn ($q) => $q->where('company_name', 'like', "%{$s}%")->orWhere('focus_pillar', 'like', "%{$s}%"));
+        }
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 20)));
+        $audits = $query->latest()->limit($limit)->get();
+
+        return [
+            'total' => $audits->count(),
+            'audits' => $audits->map(fn ($a) => [
+                'id' => $a->id,
+                'company_name' => $a->company_name,
+                'industry' => $a->industry,
+                'size' => $a->size,
+                'status' => $a->status,
+                'template' => $a->template?->name,
+                'creator' => $a->creator?->name,
+                'answers_count' => $a->answers()->count(),
+                'completed_at' => $a->completed_at?->toIso8601String(),
+                'created_at' => $a->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    protected function toolGetAuditFullAnswers(array $args): array
+    {
+        $audit = Audit::withoutGlobalScope('current_team')->with(['template', 'results.pillar'])->findOrFail($args['audit_id']);
+        $answers = AuditAnswer::withoutGlobalScope('current_team')
+            ->with(['question.pillar'])
+            ->where('audit_id', $audit->id)
+            ->get();
+
+        return [
+            'audit_id' => $audit->id,
+            'company_name' => $audit->company_name,
+            'industry' => $audit->industry,
+            'status' => $audit->status,
+            'template' => $audit->template?->name,
+            'pillar_results' => $audit->results->map(fn ($r) => [
+                'pillar' => $r->pillar?->name,
+                'score' => $r->average_score,
+                'maturity_level' => $r->maturity_level,
+            ]),
+            'total_answers' => $answers->count(),
+            'answers' => $answers->map(fn ($ans) => [
+                'question_id' => $ans->question_id,
+                'pillar' => $ans->question?->pillar?->name,
+                'question' => $ans->question?->getRawOriginal('question'),
+                'type' => $ans->question?->question_type,
+                'value' => $ans->value,
+                'comment' => $ans->comment,
+                'failure_recommendation' => $ans->question?->failure_recommendation,
+                'recommended_tool' => $ans->question?->recommended_module_key,
+                'recommended_book_id' => $ans->question?->recommended_book_id,
+            ]),
+        ];
+    }
+
+    protected function toolSearchLeads(array $args): array
+    {
+        $leadClass = class_exists(Contact::class) ? Contact::class : (class_exists(\Modules\FinancialPlatform\Models\Lead::class) ? \Modules\FinancialPlatform\Models\Lead::class : null);
+        if (! $leadClass) {
+            return ['total' => 0, 'leads' => [], 'note' => 'Lead/CRM module tables not present.'];
+        }
+
+        $q = $leadClass::withoutGlobalScope('current_team');
+        if (! empty($args['query'])) {
+            $s = $args['query'];
+            $q->where(fn ($sub) => $sub->where('name', 'like', "%{$s}%")
+                ->orWhere('email', 'like', "%{$s}%")
+                ->orWhere('company', 'like', "%{$s}%"));
+        }
+        if (! empty($args['status'])) {
+            $q->where('status', $args['status']);
+        }
+        if (! empty($args['pipeline_stage'])) {
+            $q->where('pipeline_stage', $args['pipeline_stage']);
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 20)));
+        $leads = $q->latest()->limit($limit)->get();
+
+        return [
+            'total' => $leads->count(),
+            'leads' => $leads->map(fn ($l) => [
+                'id' => $l->id,
+                'name' => $l->name,
+                'email' => $l->email,
+                'company' => $l->company ?? $l->company_name ?? null,
+                'position' => $l->position,
+                'status' => $l->status,
+                'pipeline_stage' => $l->pipeline_stage ?? 'new',
+                'score' => $l->score ?? null,
+                'created_at' => $l->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    protected function toolGetLeadDetails(array $args): array
+    {
+        $leadClass = class_exists(Contact::class) ? Contact::class : (class_exists(\Modules\FinancialPlatform\Models\Lead::class) ? \Modules\FinancialPlatform\Models\Lead::class : null);
+        if (! $leadClass) {
+            return ['error' => 'Lead/CRM module tables not present.'];
+        }
+
+        $lead = $leadClass::withoutGlobalScope('current_team')->findOrFail($args['lead_id']);
+
+        return [
+            'id' => $lead->id,
+            'name' => $lead->name,
+            'email' => $lead->email,
+            'phone' => $lead->phone ?? null,
+            'company' => $lead->company ?? $lead->company_name ?? null,
+            'position' => $lead->position,
+            'website' => $lead->website,
+            'linkedin' => $lead->linkedin,
+            'status' => $lead->status,
+            'pipeline_stage' => $lead->pipeline_stage ?? null,
+            'score' => $lead->score ?? null,
+            'budget' => $lead->budget,
+            'notes' => $lead->notes,
+            'created_at' => $lead->created_at?->toIso8601String(),
+        ];
+    }
+
+    protected function toolCreateOrUpdateLead(array $args): array
+    {
+        $leadClass = class_exists(Contact::class) ? Contact::class : (class_exists(\Modules\FinancialPlatform\Models\Lead::class) ? \Modules\FinancialPlatform\Models\Lead::class : null);
+        if (! $leadClass) {
+            return ['error' => 'Lead/CRM module tables not present.'];
+        }
+
+        $id = $args['lead_id'] ?? null;
+        $fields = ['name', 'email', 'company', 'position', 'status', 'pipeline_stage', 'notes', 'score', 'budget'];
+        $data = [];
+        foreach ($fields as $f) {
+            if (array_key_exists($f, $args)) {
+                $data[$f] = $args[$f];
+            }
+        }
+
+        if ($id) {
+            $lead = $leadClass::withoutGlobalScope('current_team')->findOrFail($id);
+            $lead->update($data);
+            return ['status' => 'updated', 'lead_id' => $lead->id];
+        }
+
+        $lead = $leadClass::create($data);
+        return ['status' => 'created', 'lead_id' => $lead->id];
+    }
+
+    protected function toolSearchCaseStudies(array $args): array
+    {
+        $q = CaseStudy::query();
+        if (! empty($args['query'])) {
+            $s = $args['query'];
+            $q->where(fn ($sub) => $sub->where('title', 'like', "%{$s}%")
+                ->orWhere('company', 'like', "%{$s}%")
+                ->orWhere('challenge', 'like', "%{$s}%")
+                ->orWhere('solution', 'like', "%{$s}%"));
+        }
+        if (! empty($args['industry'])) {
+            $q->where('industry', $args['industry']);
+        }
+
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+        $studies = $q->orderBy('sort_order')->limit($limit)->get();
+
+        return [
+            'total' => $studies->count(),
+            'case_studies' => $studies->map(fn ($c) => [
+                'id' => $c->id,
+                'title' => $c->title,
+                'slug' => $c->slug,
+                'company' => $c->company,
+                'industry' => $c->industry,
+                'metrics' => $c->metrics,
+                'is_published' => (bool) $c->is_published,
+            ]),
+        ];
+    }
+
+    protected function toolGetCaseStudyDetails(array $args): array
+    {
+        $cs = ! empty($args['id']) ? CaseStudy::findOrFail($args['id']) : CaseStudy::where('slug', $args['slug'])->firstOrFail();
+
+        return [
+            'id' => $cs->id,
+            'title' => $cs->title,
+            'slug' => $cs->slug,
+            'company' => $cs->company,
+            'industry' => $cs->industry,
+            'challenge' => $cs->challenge,
+            'solution' => $cs->solution,
+            'result' => $cs->result,
+            'metrics' => $cs->metrics,
+            'image' => $cs->image,
+            'is_published' => (bool) $cs->is_published,
+        ];
+    }
+
+    protected function toolCreateOrUpdateCaseStudy(array $args): array
+    {
+        $id = $args['id'] ?? null;
+        $fields = ['title', 'slug', 'company', 'industry', 'challenge', 'solution', 'result', 'metrics', 'image', 'is_published', 'sort_order'];
+        $data = [];
+        foreach ($fields as $f) {
+            if (array_key_exists($f, $args)) {
+                $data[$f] = $args[$f];
+            }
+        }
+        if (empty($data['slug']) && ! empty($data['title'])) {
+            $data['slug'] = Str::slug($data['title']);
+        }
+
+        if ($id) {
+            $cs = CaseStudy::findOrFail($id);
+            $cs->update($data);
+            return ['status' => 'updated', 'id' => $cs->id, 'slug' => $cs->slug];
+        }
+
+        $cs = CaseStudy::create($data);
+        return ['status' => 'created', 'id' => $cs->id, 'slug' => $cs->slug];
+    }
+
+    protected function toolGetFinancialSummary(): array
+    {
+        $totalUsers = User::count();
+        $totalTeams = Team::count();
+        $activeSubscriptions = class_exists(ToolSubscription::class) ? ToolSubscription::where('status', 'active')->count() : 0;
+        $plans = Plan::withCount('subscriptions')->get();
+
+        return [
+            'total_registered_users' => $totalUsers,
+            'total_teams' => $totalTeams,
+            'active_subscriptions_count' => $activeSubscriptions,
+            'plans_breakdown' => $plans->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'price' => $p->price,
+                'billing_period' => $p->billing_period,
+                'active_subscribers' => $p->subscriptions_count,
+            ]),
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -1306,10 +1699,15 @@ class McpController extends Controller
     {
         return [
             'resources' => [
+                ['uri' => 'allocore://platform-overview', 'name' => 'Platform Metrics & Live Counts', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://audit/questions', 'name' => 'All Platform Audit Questions', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://audit/templates', 'name' => 'Audit Templates & Pillars', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://recent-audits', 'name' => 'Recent Completed Audits', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://modules/pool', 'name' => 'Subscription Tool Pool', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://knowledge/terms', 'name' => 'Business Glossary Terms', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://books/catalog', 'name' => 'BookIntelligence Catalog', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://blog/posts', 'name' => 'Published Blog Posts', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://case-studies', 'name' => 'Client Case Studies', 'mimeType' => 'application/json'],
             ],
         ];
     }
@@ -1317,10 +1715,15 @@ class McpController extends Controller
     public function readResource(string $uri): array
     {
         $content = match ($uri) {
+            'allocore://platform-overview' => json_encode($this->toolGetPlatformMetrics(), JSON_PRETTY_PRINT),
             'allocore://audit/questions' => AuditQuestion::withoutGlobalScope('current_team')->get(['id', 'question', 'recommended_module_key', 'recommended_book_id'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://audit/templates' => AuditTemplate::withoutGlobalScope('current_team')->with('pillars')->get()->toJson(JSON_PRETTY_PRINT),
+            'allocore://recent-audits' => Audit::withoutGlobalScope('current_team')->latest()->limit(15)->get(['id', 'company_name', 'industry', 'status', 'created_at'])->toJson(JSON_PRETTY_PRINT),
             'allocore://modules/pool' => Module::inSubscriptionPool()->get(['key', 'name', 'category', 'route_prefix'])->toJson(JSON_PRETTY_PRINT),
             'allocore://knowledge/terms' => GlossaryTerm::published()->get(['term', 'slug', 'pillar'])->toJson(JSON_PRETTY_PRINT),
-            'allocore://books/catalog' => class_exists(Book::class) ? Book::get(['id', 'title', 'cover_url'])->toJson(JSON_PRETTY_PRINT) : '[]',
+            'allocore://books/catalog' => class_exists(Book::class) ? Book::get(['id', 'title', 'cover_url', 'affiliate_link'])->toJson(JSON_PRETTY_PRINT) : '[]',
+            'allocore://blog/posts' => Post::where('is_published', true)->get(['id', 'title', 'slug', 'featured_image'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://case-studies' => CaseStudy::where('is_published', true)->get(['id', 'title', 'slug', 'company', 'industry'])->toJson(JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
 
@@ -1339,9 +1742,19 @@ class McpController extends Controller
         return [
             'prompts' => [
                 [
-                    'name' => 'diagnose_audit_gaps',
-                    'description' => 'Run comprehensive AI audit diagnosis and 90-day action plan.',
+                    'name' => 'audit_consultant',
+                    'description' => 'Run comprehensive AI audit diagnosis and 90-day action plan for a client audit.',
                     'arguments' => [['name' => 'audit_id', 'required' => true]],
+                ],
+                [
+                    'name' => 'seo_content_creator',
+                    'description' => 'Generate high-impact German B2B thought leadership blog post linked to books & tools.',
+                    'arguments' => [['name' => 'topic', 'required' => true], ['name' => 'book_id', 'required' => false]],
+                ],
+                [
+                    'name' => 'lead_nurture_strategy',
+                    'description' => 'Generate personalized conversion roadmap for a specific CRM lead.',
+                    'arguments' => [['name' => 'lead_id', 'required' => true]],
                 ],
                 [
                     'name' => 'auto_link_audit_solutions',
@@ -1355,7 +1768,9 @@ class McpController extends Controller
     public function getPrompt(string $name, array $args): array
     {
         $promptText = match ($name) {
-            'diagnose_audit_gaps' => "Sie sind der Allocore Unternehmens-Coach. Bitte analysieren Sie Audit #".($args['audit_id'] ?? 1)." und erstellen Sie einen 5-Säulen-Aktionsplan.",
+            'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
+            'seo_content_creator' => "Erstellen Sie einen suchmaschinenoptimierten, 8-teiligen Fachartikel zum Thema '".($args['topic'] ?? 'Unternehmensführung')."'. Binden Sie passende Allocore-Tools sowie die Buchempfehlung Box (Buch ID #".($args['book_id'] ?? 451).") nahtlos ein.",
+            'lead_nurture_strategy' => "Analysieren Sie das Profil und die Interaktionen von Lead #".($args['lead_id'] ?? 1)." und entwickeln Sie eine maßgeschneiderte B2B-Ansprachestrategie mit ROI-Fokus.",
             'auto_link_audit_solutions' => "Überprüfen Sie alle unvollständigen Fragen und weisen Sie passende Tools, Fachbücher und Fachbegriffe zu.",
             default => throw new \InvalidArgumentException("Prompt '{$name}' not found."),
         };
