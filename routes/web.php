@@ -517,6 +517,8 @@ Route::get('blog/feed', [BlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
 Route::get('blog/tag/{tag}', [BlogController::class, 'tag'])->name('blog.tag');
 Route::get('blog/{post}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('blog/{post}/comments', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+
 // Model Context Protocol (MCP) Web Endpoints Fallback (Strip web middlewares)
 Route::withoutMiddleware([
     \App\Http\Middleware\EnsureInstalled::class,
