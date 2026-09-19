@@ -42,5 +42,7 @@
         @include('customersuccess::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @elseif (request()->is('app/books*'))
         @include('bookintelligence::partials.nav', ['layout' => $layout ?? 'horizontal'])
+    @elseif (request()->is('app/snowball*'))
+        @include('debtsnowballtracker::partials.nav', ['layout' => $layout ?? 'horizontal'])
     @endif
 @endif

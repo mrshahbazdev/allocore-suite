@@ -1,0 +1,22 @@
+﻿{
+    "name": "allocore/debtsnowballtracker",
+    "description": "Debt Snowball & Avalanche Payoff Tracker Module",
+    "authors": [
+        {
+            "name": "Allocore Team",
+            "email": "info@allocore.de"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\DebtSnowballTracker\\app\\Providers\\DebtSnowballTrackerServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\DebtSnowballTracker\\": ""
+        }
+    }
+}

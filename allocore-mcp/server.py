@@ -41,11 +41,15 @@ from tools.analytics_tools import (
 from tools.ops_tools import (
     run_allocore_artisan, get_system_health
 )
+from tools.snowball_tools import (
+    list_snowball_debts, create_or_update_snowball_debt, log_snowball_payment,
+    calculate_snowball_payoff_plan, get_snowball_financial_summary
+)
 
 # Import Resources & Prompts
 from resources.dynamic_resources import (
     resource_audit_questions, resource_subscription_pool,
-    resource_knowledge_terms, resource_books_catalog
+    resource_knowledge_terms, resource_books_catalog, resource_snowball_debts
 )
 from prompts.prompt_templates import (
     prompt_diagnose_audit_gaps, prompt_auto_link_audit_solutions
@@ -125,6 +129,15 @@ mcp.tool()(run_allocore_artisan)
 mcp.tool()(get_system_health)
 
 # ----------------------------------------------------
+# 10. Register Debt Snowball & Avalanche Tools
+# ----------------------------------------------------
+mcp.tool()(list_snowball_debts)
+mcp.tool()(create_or_update_snowball_debt)
+mcp.tool()(log_snowball_payment)
+mcp.tool()(calculate_snowball_payoff_plan)
+mcp.tool()(get_snowball_financial_summary)
+
+# ----------------------------------------------------
 # Register Dynamic Resources
 # ----------------------------------------------------
 @mcp.resource("allocore://audit/questions")
@@ -146,6 +159,11 @@ def get_knowledge_terms_resource() -> str:
 def get_books_catalog_resource() -> str:
     """Live stream of business books catalog."""
     return resource_books_catalog()
+
+@mcp.resource("allocore://debts/snowball")
+def get_debts_snowball_resource() -> str:
+    """Live stream of Debt Snowball & Avalanche payoff status and summary."""
+    return resource_snowball_debts()
 
 # ----------------------------------------------------
 # Register Prompts

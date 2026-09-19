@@ -1,0 +1,11 @@
+﻿{
+    "name": "DebtSnowballTracker",
+    "alias": "debtsnowballtracker",
+    "description": "Debt Snowball & Avalanche Payoff Accelerator for Allocore Suite",
+    "keywords": ["debt", "snowball", "avalanche", "finance", "profit", "cashflow"],
+    "priority": 0,
+    "providers": [
+        "Modules\\DebtSnowballTracker\\app\\Providers\\DebtSnowballTrackerServiceProvider"
+    ],
+    "files": []
+}

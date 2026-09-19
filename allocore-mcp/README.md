@@ -8,7 +8,7 @@ Enterprise Model Context Protocol (MCP) Server for **Allocore Suite**, optimized
 
 ### Mode A: Shared Hosting Native (Pure Laravel API)
 On your shared host, no background Python process is needed!
-The entire **65 autonomous tools** suite is served directly by Laravel via:
+The entire **70 autonomous tools** suite is served directly by Laravel via:
 - `POST https://allocore.de/api/mcp/rpc` (JSON-RPC 2.0 Protocol Handler)
 - `GET/POST https://allocore.de/api/mcp` (SSE Stream for Claude / MCP Remote Connectors)
 - `GET https://allocore.de/api/mcp/tools` (Dedicated HTTP Tool Discovery with CORS)
@@ -27,30 +27,31 @@ python server.py      # Direct DB & local execution
 
 ---
 
-## 🛠️ Complete 65 Tool Catalog
+## 🛠️ Complete 70 Tool Catalog
 
 1. **Audit Pro & Assessment**: `list_audit_questions`, `get_question_details`, `assign_question_solution`, `batch_auto_match_questions`, `list_audit_templates`, `create_or_update_question`, `create_client_audit`, `submit_audit_answers`, `list_recent_audits`, `get_audit_full_answers`.
 2. **Diagnostics & 5-Säulen Coach**: `diagnose_audit_gaps`, `calculate_pillar_scores`, `generate_action_plan`, `generate_audit_executive_summary`, `benchmark_audit_performance`.
-3. **Cash & Financial Intelligence**: `simulate_cashflow_runway`, `calculate_unit_economics`, `get_financial_summary`.
-4. **Billing & Invoicing (InvoiceMaker)**: `create_or_preview_invoice`, `list_invoices_and_receivables`.
-5. **Organizational Architecture (OrgMatrix)**: `get_organization_chart`, `create_or_update_org_role`.
-6. **Vision & Strategic OKRs (VisionFlow)**: `get_strategic_vision_and_goals`, `create_strategic_goal`.
-7. **Task & Priority Matrix (FocusMatrix)**: `analyze_eisenhower_tasks`, `create_delegation_task`.
-8. **Workforce & Time Tracking (TimeButler)**: `log_work_time_entry`, `get_team_workforce_summary`.
-9. **Client Matrix & ICP Scoring (SweetSpot)**: `score_customer_sweet_spot`, `list_sweet_spot_rankings`.
-10. **Project Portfolio & Goal Milestones (PlanHive)**: `create_project_milestone`, `get_project_portfolio_overview`.
-11. **Production Tracking & Barcode Scans (DentalTrack)**: `track_production_order_status`, `log_workstation_scan_event`.
-12. **CRM, Funnel & Leads (LeadQuality)**: `search_leads`, `get_lead_details`, `create_or_update_lead`, `score_lead_with_ai`, `get_pipeline_funnel_analytics`, `score_account_health`.
-13. **Process & SOP Engineering (SopBuilder)**: `generate_and_store_sop`, `list_stored_sops`.
-14. **KPI Engine & Smart Monitoring (SmartKpi)**: `evaluate_kpi_health`.
-15. **Customer Support & Ticketing**: `list_support_tickets`, `create_or_reply_support_ticket`.
-16. **BookIntelligence Catalog**: `search_books`, `get_book_details`, `create_or_update_book`, `repurpose_book_to_blog`.
-17. **Blog CMS & Thought Leadership**: `search_blog_posts`, `get_post_details`, `create_or_update_post`, `upload_post_image`, `batch_relink_glossary_in_posts`.
-18. **Case Studies & Success Stories**: `search_case_studies`, `get_case_study_details`, `create_or_update_case_study`.
-19. **Knowledge & Glossary (Lexikon)**: `search_glossary_terms`, `create_or_update_glossary_term`, `delete_glossary_term`.
-20. **Tool Pool & Subscription Governance**: `list_all_modules`, `manage_tool_pool`, `deprecate_module`, `update_module_metadata`, `sync_subscription_plans`, `validate_tool_pool_integrity`.
-21. **User & Account Metrics**: `search_users_and_teams`, `get_user_subscription_status`, `get_platform_metrics`.
-22. **DevOps, Automation & Webhooks**: `run_allocore_artisan`, `get_system_health`, `list_activity_logs`, `export_platform_dataset`, `list_webhooks_and_integrations`.
+3. **Debt Snowball & Avalanche (DebtSnowballTracker)**: `list_snowball_debts`, `create_or_update_snowball_debt`, `log_snowball_payment`, `calculate_snowball_payoff_plan`, `get_snowball_financial_summary`.
+4. **Cash & Financial Intelligence**: `simulate_cashflow_runway`, `calculate_unit_economics`, `get_financial_summary`.
+5. **Billing & Invoicing (InvoiceMaker)**: `create_or_preview_invoice`, `list_invoices_and_receivables`.
+6. **Organizational Architecture (OrgMatrix)**: `get_organization_chart`, `create_or_update_org_role`.
+7. **Vision & Strategic OKRs (VisionFlow)**: `get_strategic_vision_and_goals`, `create_strategic_goal`.
+8. **Task & Priority Matrix (FocusMatrix)**: `analyze_eisenhower_tasks`, `create_delegation_task`.
+9. **Workforce & Time Tracking (TimeButler)**: `log_work_time_entry`, `get_team_workforce_summary`.
+10. **Client Matrix & ICP Scoring (SweetSpot)**: `score_customer_sweet_spot`, `list_sweet_spot_rankings`.
+11. **Project Portfolio & Goal Milestones (PlanHive)**: `create_project_milestone`, `get_project_portfolio_overview`.
+12. **Production Tracking & Barcode Scans (DentalTrack)**: `track_production_order_status`, `log_workstation_scan_event`.
+13. **CRM, Funnel & Leads (LeadQuality)**: `search_leads`, `get_lead_details`, `create_or_update_lead`, `score_lead_with_ai`, `get_pipeline_funnel_analytics`, `score_account_health`.
+14. **Process & SOP Engineering (SopBuilder)**: `generate_and_store_sop`, `list_stored_sops`.
+15. **KPI Engine & Smart Monitoring (SmartKpi)**: `evaluate_kpi_health`.
+16. **Customer Support & Ticketing**: `list_support_tickets`, `create_or_reply_support_ticket`.
+17. **BookIntelligence Catalog**: `search_books`, `get_book_details`, `create_or_update_book`, `repurpose_book_to_blog`.
+18. **Blog CMS & Thought Leadership**: `search_blog_posts`, `get_post_details`, `create_or_update_post`, `upload_post_image`, `batch_relink_glossary_in_posts`.
+19. **Case Studies & Success Stories**: `search_case_studies`, `get_case_study_details`, `create_or_update_case_study`.
+20. **Knowledge & Glossary (Lexikon)**: `search_glossary_terms`, `create_or_update_glossary_term`, `delete_glossary_term`.
+21. **Tool Pool & Subscription Governance**: `list_all_modules`, `manage_tool_pool`, `deprecate_module`, `update_module_metadata`, `sync_subscription_plans`, `validate_tool_pool_integrity`.
+22. **User & Account Metrics**: `search_users_and_teams`, `get_user_subscription_status`, `get_platform_metrics`.
+23. **DevOps, Automation & Webhooks**: `run_allocore_artisan`, `get_system_health`, `list_activity_logs`, `export_platform_dataset`, `list_webhooks_and_integrations`.
 
 ---
 
@@ -58,6 +59,7 @@ python server.py      # Direct DB & local execution
 
 - `allocore://platform-overview`: Live aggregate counters and health status.
 - `allocore://audit/questions`: Master question library.
+- `allocore://debts/snowball`: Debt Snowball & Avalanche Payoff Overview & Cashflow Analysis.
 - `allocore://audit/templates`: 5-pillar assessment blueprints.
 - `allocore://recent-audits`: Live client audit completions.
 - `allocore://modules/pool`: Active subscription tools.

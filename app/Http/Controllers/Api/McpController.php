@@ -53,6 +53,11 @@ use Modules\SweetSpot\Models\CustomerScore;
 use Modules\TimeButler\Models\TimeEntry;
 use Modules\VisionFlow\Models\StrategicGoal;
 use Modules\VisionFlow\Models\Vision;
+use Modules\DebtSnowballTracker\Models\Debt as SnowballDebt;
+use Modules\DebtSnowballTracker\Models\Payment as SnowballPayment;
+use Modules\DebtSnowballTracker\Models\Cashflow as SnowballCashflow;
+use Modules\DebtSnowballTracker\Models\DebtSetting as SnowballDebtSetting;
+use Modules\DebtSnowballTracker\Services\SnowballCalculatorService;
 
 class McpController extends Controller
 {
@@ -1207,6 +1212,9 @@ class McpController extends Controller
                             'expected_outcome' => ['type' => 'string'],
                             'due_date' => ['type' => 'string'],
                         ],
+                        'required' => ['title', 'assigned_to'],
+                    ],
+                ],
                 [
                     'name' => 'log_work_time_entry',
                     'description' => 'Log or record a work time entry for a team member in TimeButler.',
@@ -1325,7 +1333,73 @@ class McpController extends Controller
                         'required' => ['order_id'],
                     ],
                 ],
-                        'required' => ['title', 'assigned_to'],
+                [
+                    'name' => 'list_snowball_debts',
+                    'description' => 'List all debts and liabilities for the current team or company, including balance, APR, minimum payments, and payoff status.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'status' => ['type' => 'string', 'enum' => ['active', 'paid', 'all'], 'default' => 'active'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'default' => 50],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'create_or_update_snowball_debt',
+                    'description' => 'Create a new debt entry or update existing balance, APR, minimum payment, or creditor.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'integer', 'description' => 'Optional debt ID for updates'],
+                            'name' => ['type' => 'string', 'description' => 'Debt / loan name'],
+                            'creditor' => ['type' => 'string', 'description' => 'Bank / Creditor name'],
+                            'original_balance' => ['type' => 'number', 'description' => 'Original debt amount in EUR'],
+                            'current_balance' => ['type' => 'number', 'description' => 'Current outstanding balance in EUR'],
+                            'interest_rate' => ['type' => 'number', 'description' => 'Annual interest rate APR (%)'],
+                            'minimum_payment' => ['type' => 'number', 'description' => 'Minimum monthly payment in EUR'],
+                            'due_day' => ['type' => 'integer', 'description' => 'Monthly due day (1-31)'],
+                            'category' => ['type' => 'string', 'description' => 'Category (loan, credit_card, tax, supplier, other)'],
+                            'notes' => ['type' => 'string'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['name', 'current_balance', 'minimum_payment'],
+                    ],
+                ],
+                [
+                    'name' => 'log_snowball_payment',
+                    'description' => 'Log an extra or regular debt payment towards a specific debt, automatically recalculating balance and payoff.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'debt_id' => ['type' => 'integer', 'description' => 'Target debt ID'],
+                            'amount' => ['type' => 'number', 'description' => 'Payment amount in EUR'],
+                            'payment_date' => ['type' => 'string', 'description' => 'Payment date (YYYY-MM-DD)'],
+                            'note' => ['type' => 'string'],
+                        ],
+                        'required' => ['debt_id', 'amount'],
+                    ],
+                ],
+                [
+                    'name' => 'calculate_snowball_payoff_plan',
+                    'description' => 'Simulate and compare Debt Snowball (lowest balance first) vs Debt Avalanche (highest APR first) payoff schedules with amortization and interest savings.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'strategy' => ['type' => 'string', 'enum' => ['snowball', 'avalanche', 'custom'], 'default' => 'snowball'],
+                            'extra_monthly_budget' => ['type' => 'number', 'description' => 'Extra monthly cashflow allocated to accelerated debt payoff in EUR', 'default' => 0],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'get_snowball_financial_summary',
+                    'description' => 'Retrieve high-level debt payoff KPIs, total liability, monthly debt service, estimated debt-free date, total interest savings, and cashflow surplus.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
                     ],
                 ],
             ],
@@ -1412,6 +1486,11 @@ class McpController extends Controller
             'get_project_portfolio_overview' => $this->toolGetProjectPortfolioOverview($arguments),
             'track_production_order_status' => $this->toolTrackProductionOrderStatus($arguments),
             'log_workstation_scan_event' => $this->toolLogWorkstationScanEvent($arguments),
+            'list_snowball_debts' => $this->toolListSnowballDebts($arguments),
+            'create_or_update_snowball_debt' => $this->toolCreateOrUpdateSnowballDebt($arguments),
+            'log_snowball_payment' => $this->toolLogSnowballPayment($arguments),
+            'calculate_snowball_payoff_plan' => $this->toolCalculateSnowballPayoffPlan($arguments),
+            'get_snowball_financial_summary' => $this->toolGetSnowballFinancialSummary($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -3770,6 +3849,236 @@ class McpController extends Controller
         ];
     }
 
+    protected function toolListSnowballDebts(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $status = $args['status'] ?? 'active';
+        $limit = min(200, max(1, (int) ($args['limit'] ?? 50)));
+
+        $query = SnowballDebt::withoutGlobalScopes()->where('team_id', $teamId);
+        if ($status === 'active') {
+            $query->where('is_paid', false);
+        } elseif ($status === 'paid') {
+            $query->where('is_paid', true);
+        }
+
+        $debts = $query->orderBy('current_balance', 'asc')->limit($limit)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total_debts' => $debts->count(),
+            'debts' => $debts->map(fn ($d) => [
+                'id' => $d->id,
+                'name' => $d->name,
+                'creditor' => $d->creditor,
+                'original_balance' => (float) $d->original_balance,
+                'current_balance' => (float) $d->current_balance,
+                'interest_rate' => (float) $d->interest_rate,
+                'minimum_payment' => (float) $d->minimum_payment,
+                'monthly_interest' => (float) $d->monthlyInterestAmount(),
+                'progress_percent' => (float) $d->progressPercent(),
+                'total_paid' => (float) $d->totalPaidAmount(),
+                'due_day' => $d->due_day,
+                'category' => $d->category,
+                'is_paid' => (bool) $d->is_paid,
+                'paid_at' => $d->paid_at?->format('Y-m-d'),
+                'notes' => $d->notes,
+            ]),
+        ];
+    }
+
+    protected function toolCreateOrUpdateSnowballDebt(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+
+        $id = $args['id'] ?? null;
+        $debt = $id ? SnowballDebt::withoutGlobalScopes()->where('team_id', $teamId)->find($id) : new SnowballDebt();
+
+        if ($id && ! $debt) {
+            throw new \InvalidArgumentException("Debt ID #{$id} not found for current team.");
+        }
+
+        $debt->team_id = $teamId;
+        if (! empty($args['name'])) $debt->name = $args['name'];
+        if (isset($args['creditor'])) $debt->creditor = $args['creditor'];
+        if (isset($args['original_balance'])) $debt->original_balance = (float) $args['original_balance'];
+        if (isset($args['current_balance'])) {
+            $debt->current_balance = (float) $args['current_balance'];
+            if (! $debt->original_balance) {
+                $debt->original_balance = $debt->current_balance;
+            }
+        }
+        if (isset($args['interest_rate'])) $debt->interest_rate = (float) $args['interest_rate'];
+        if (isset($args['minimum_payment'])) $debt->minimum_payment = (float) $args['minimum_payment'];
+        if (isset($args['due_day'])) $debt->due_day = (int) $args['due_day'];
+        if (isset($args['category'])) $debt->category = $args['category'];
+        if (isset($args['notes'])) $debt->notes = $args['notes'];
+
+        $debt->save();
+
+        return [
+            'status' => $id ? 'debt_updated' : 'debt_created',
+            'debt' => [
+                'id' => $debt->id,
+                'name' => $debt->name,
+                'creditor' => $debt->creditor,
+                'current_balance' => (float) $debt->current_balance,
+                'interest_rate' => (float) $debt->interest_rate,
+                'minimum_payment' => (float) $debt->minimum_payment,
+                'is_paid' => (bool) $debt->is_paid,
+            ],
+            'module_route' => '/app/snowball/debts',
+        ];
+    }
+
+    protected function toolLogSnowballPayment(array $args): array
+    {
+        $debtId = (int) $args['debt_id'];
+        $debt = SnowballDebt::withoutGlobalScopes()->find($debtId);
+        if (! $debt) {
+            throw new \InvalidArgumentException("Debt ID #{$debtId} not found.");
+        }
+
+        $amount = (float) $args['amount'];
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException("Payment amount must be greater than 0.");
+        }
+
+        $payment = SnowballPayment::withoutGlobalScopes()->create([
+            'team_id' => $debt->team_id,
+            'debt_id' => $debtId,
+            'amount' => $amount,
+            'payment_date' => $args['payment_date'] ?? now()->toDateString(),
+            'note' => $args['note'] ?? 'Logged via MCP Tool',
+        ]);
+
+        $debt->refresh();
+
+        return [
+            'status' => 'payment_recorded',
+            'payment_id' => $payment->id,
+            'debt_id' => $debtId,
+            'debt_name' => $debt->name,
+            'payment_amount' => $amount,
+            'remaining_balance' => (float) $debt->current_balance,
+            'is_paid_off' => (bool) $debt->is_paid,
+            'module_route' => '/app/snowball/payments',
+        ];
+    }
+
+    protected function toolCalculateSnowballPayoffPlan(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+        $strategy = $args['strategy'] ?? 'snowball';
+        $extraBudget = isset($args['extra_monthly_budget']) ? (float) $args['extra_monthly_budget'] : null;
+
+        $debts = SnowballDebt::withoutGlobalScopes()
+            ->where('team_id', $teamId)
+            ->where('is_paid', false)
+            ->get();
+
+        if ($debts->isEmpty()) {
+            return [
+                'status' => 'no_debts',
+                'message' => 'No active debts found. Company is completely debt-free!',
+                'total_balance' => 0,
+            ];
+        }
+
+        $setting = SnowballDebtSetting::withoutGlobalScopes()->where('team_id', $teamId)->first();
+        if ($extraBudget === null) {
+            $extraBudget = $setting ? (float) $setting->monthly_extra_budget : 0.0;
+        }
+
+        $calc = new SnowballCalculatorService();
+        $comparison = $calc->compareStrategies($debts, $extraBudget);
+        $plan = $calc->calculatePlan($debts, $strategy, $extraBudget);
+
+        return [
+            'team_id' => $teamId,
+            'chosen_strategy' => $strategy,
+            'extra_monthly_budget' => $extraBudget,
+            'total_starting_balance' => (float) $debts->sum('current_balance'),
+            'total_monthly_minimum' => (float) $debts->sum('minimum_payment'),
+            'summary' => [
+                'debt_free_date' => $plan['debt_free_date']?->format('F Y'),
+                'total_months' => $plan['total_months'],
+                'total_interest_paid' => $plan['total_interest'],
+                'total_amount_paid' => $plan['total_paid'],
+            ],
+            'strategy_comparison' => [
+                'snowball' => [
+                    'months' => $comparison['snowball']['total_months'],
+                    'debt_free_date' => $comparison['snowball']['debt_free_date']?->format('F Y'),
+                    'interest_paid' => $comparison['snowball']['total_interest'],
+                ],
+                'avalanche' => [
+                    'months' => $comparison['avalanche']['total_months'],
+                    'debt_free_date' => $comparison['avalanche']['debt_free_date']?->format('F Y'),
+                    'interest_paid' => $comparison['avalanche']['total_interest'],
+                ],
+                'interest_saved_with_avalanche' => $comparison['interest_saved_with_avalanche'],
+                'months_saved_with_avalanche' => $comparison['months_saved_with_avalanche'],
+            ],
+            'payoff_order' => collect($plan['schedule'])->pluck('debt_name')->unique()->values()->all(),
+            'module_route' => '/app/snowball/plan',
+        ];
+    }
+
+    protected function toolGetSnowballFinancialSummary(array $args): array
+    {
+        $teamId = $args['team_id'] ?? (Auth::user()?->current_team_id ?? 1);
+
+        $debts = SnowballDebt::withoutGlobalScopes()->where('team_id', $teamId)->get();
+        $activeDebts = $debts->where('is_paid', false);
+        $paidDebts = $debts->where('is_paid', true);
+
+        $totalOriginal = (float) $debts->sum('original_balance');
+        $totalCurrent = (float) $activeDebts->sum('current_balance');
+        $totalMinPayment = (float) $activeDebts->sum('minimum_payment');
+        $totalPaid = (float) $debts->sum(fn ($d) => $d->totalPaidAmount());
+        $monthlyInterest = (float) $activeDebts->sum(fn ($d) => $d->monthlyInterestAmount());
+
+        $cashflows = SnowballCashflow::withoutGlobalScopes()->where('team_id', $teamId)->get();
+        $monthlyIncome = (float) $cashflows->where('type', 'income')->sum(fn ($c) => $c->monthlyNormalizedAmount());
+        $monthlyExpenses = (float) $cashflows->where('type', 'expense')->sum(fn ($c) => $c->monthlyNormalizedAmount());
+        $cashflowSurplus = max(0, $monthlyIncome - $monthlyExpenses - $totalMinPayment);
+
+        $setting = SnowballDebtSetting::withoutGlobalScopes()->where('team_id', $teamId)->first();
+        $extraBudget = $setting ? (float) $setting->monthly_extra_budget : 0.0;
+        $activeStrategy = $setting ? $setting->strategy : 'snowball';
+
+        $calc = new SnowballCalculatorService();
+        $plan = $activeDebts->isNotEmpty() ? $calc->calculatePlan($activeDebts, $activeStrategy, $extraBudget) : null;
+
+        return [
+            'team_id' => $teamId,
+            'kpis' => [
+                'total_current_debt_eur' => $totalCurrent,
+                'total_original_debt_eur' => $totalOriginal,
+                'total_debt_paid_eur' => $totalPaid,
+                'progress_percent' => $totalOriginal > 0 ? round((($totalOriginal - $totalCurrent) / $totalOriginal) * 100, 1) : 100.0,
+                'monthly_debt_service_eur' => $totalMinPayment,
+                'estimated_monthly_interest_eur' => round($monthlyInterest, 2),
+                'active_debts_count' => $activeDebts->count(),
+                'paid_debts_count' => $paidDebts->count(),
+            ],
+            'payoff_outlook' => [
+                'strategy' => $activeStrategy,
+                'extra_monthly_budget' => $extraBudget,
+                'estimated_debt_free_date' => $plan ? $plan['debt_free_date']?->format('F Y') : 'Immediately (Debt Free)',
+                'months_to_debt_free' => $plan ? $plan['total_months'] : 0,
+                'projected_interest_to_pay' => $plan ? $plan['total_interest'] : 0.0,
+            ],
+            'cashflow_surplus_analysis' => [
+                'monthly_income_eur' => $monthlyIncome,
+                'monthly_expenses_eur' => $monthlyExpenses,
+                'unallocated_surplus_eur' => round($cashflowSurplus, 2),
+            ],
+            'module_route' => '/app/snowball',
+        ];
+    }
+
     /**
      * MCP Resources.
      */
@@ -3799,6 +4108,7 @@ class McpController extends Controller
                 ['uri' => 'allocore://customers/sweet-spot', 'name' => 'SweetSpot Customer Profitability Matrix', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://projects/portfolio', 'name' => 'PlanHive Project Portfolio & Goal Progress', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://production/orders', 'name' => 'DentalTrack Production Orders & Workstations', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://debts/snowball', 'name' => 'Debt Snowball & Avalanche Payoff Overview', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://integrations/status', 'name' => 'Webhooks & Third-Party Integrations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
             ],
@@ -3830,6 +4140,7 @@ class McpController extends Controller
             'allocore://customers/sweet-spot' => json_encode($this->toolListSweetSpotRankings([]), JSON_PRETTY_PRINT),
             'allocore://projects/portfolio' => json_encode($this->toolGetProjectPortfolioOverview([]), JSON_PRETTY_PRINT),
             'allocore://production/orders' => json_encode($this->toolTrackProductionOrderStatus([]), JSON_PRETTY_PRINT),
+            'allocore://debts/snowball' => json_encode($this->toolGetSnowballFinancialSummary([]), JSON_PRETTY_PRINT),
             'allocore://integrations/status' => json_encode($this->toolListWebhooksAndIntegrations([]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
@@ -3849,6 +4160,15 @@ class McpController extends Controller
     {
         return [
             'prompts' => [
+                [
+                    'name' => 'debt_payoff_strategist',
+                    'description' => 'Analyze company liabilities, compare Debt Snowball vs Debt Avalanche payoff timelines, and formulate an accelerated debt-free roadmap.',
+                    'arguments' => [
+                        ['name' => 'extra_monthly_budget', 'required' => false],
+                        ['name' => 'strategy', 'required' => false],
+                        ['name' => 'team_id', 'required' => false],
+                    ],
+                ],
                 [
                     'name' => 'audit_consultant',
                     'description' => 'Run comprehensive AI audit diagnosis and 90-day action plan for a client audit.',
@@ -3956,6 +4276,7 @@ class McpController extends Controller
     public function getPrompt(string $name, array $args): array
     {
         $promptText = match ($name) {
+            'debt_payoff_strategist' => "Sie sind der Allocore Senior Corporate Finance & Debt Strategist. Analysieren Sie die Verbindlichkeiten und Schulden des Unternehmens. Vergleichen Sie die Schneeball-Methode (Snowball: kleinste Salden zuerst für schnelle psychologische und operative Siege) mit der Lawinen-Methode (Avalanche: höchste Zinssätze zuerst zur Zinsminimierung). Bei einem monatlichen Zusatztilgungsbudget von ".($args['extra_monthly_budget'] ?? '500')." EUR: Erstellen Sie einen monatlichen Tilgungsplan, berechnen Sie das exakte Entschuldungsdatum (Debt-Free Date) und heben Sie die Gesamtzinsersparnis hervor.",
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
             'executive_audit_briefing' => "Erstellen Sie ein C-Level Vorstandsbriefing für Audit #".($args['audit_id'] ?? 1).". Formulieren Sie strategische Kernaussagen zu finanziellen Risiken, Engpässen und Quick Wins.",
             'okr_strategy_planner' => "Formulieren Sie ambitionierte, messbare Quartals-OKRs für den Fokusbereich '".($args['target_pillar'] ?? 'Revenue')."'. Gliedern Sie in 3 Objectives und jeweils 3 quantifizierbare Key Results.",

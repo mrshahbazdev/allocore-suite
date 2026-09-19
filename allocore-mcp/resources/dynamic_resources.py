@@ -89,3 +89,8 @@ def resource_support_tickets() -> str:
     """)
     return json.dumps(tickets, indent=2, ensure_ascii=False)
 
+def resource_snowball_debts() -> str:
+    """Resource provider for allocore://debts/snowball"""
+    from tools.snowball_tools import get_snowball_financial_summary
+    return json.dumps(get_snowball_financial_summary(), indent=2, ensure_ascii=False)
+
