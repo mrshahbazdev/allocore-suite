@@ -55,6 +55,7 @@ class ApiTokenController extends Controller
         return redirect()->route('admin.api-tokens.index')->with([
             'success' => __('admin.api_tokens.created'),
             'plain_token' => $plainToken,
+            'token_name' => $validated['name'],
         ]);
     }
 

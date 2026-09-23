@@ -10,10 +10,10 @@
     </div>
 
     @if (session('plain_token'))
-        <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-            <p class="font-medium">{{ __('admin.api_tokens.plain_token_message') }}</p>
-            <code class="mt-2 block select-all rounded-lg bg-white p-2 font-mono text-slate-700">{{ session('plain_token') }}</code>
-        </div>
+        @include('partials.mcp-token-banner', [
+            'token' => session('plain_token'),
+            'tokenName' => session('token_name', 'Admin Token'),
+        ])
     @endif
 
     <div class="mb-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
