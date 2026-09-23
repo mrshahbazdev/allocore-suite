@@ -8,11 +8,35 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/views/**/*.php',
+        './resources/js/**/*.{js,ts,jsx,tsx,vue}',
+        './app/**/*.php',
         './Modules/**/resources/views/**/*.blade.php',
+        './Modules/**/resources/views/**/*.php',
+        './Modules/**/resources/assets/**/*.{js,ts,jsx,tsx,vue}',
+        './Modules/**/app/**/*.php',
+    ],
+
+    safelist: [
+        {
+            pattern: /badge-(green|yellow|red|gray|blue|purple|orange|emerald|amber|rose|admin|user|owner|member|success|warning|danger|info|primary|secondary)/,
+        },
+        {
+            pattern: /bg-(emerald|amber|rose|slate|sky|indigo|purple|orange|blue|green|red|yellow)-(50|100|200|500|600|700)/,
+        },
+        {
+            pattern: /text-(emerald|amber|rose|slate|sky|indigo|purple|orange|blue|green|red|yellow)-(600|700|800)/,
+        },
+        {
+            pattern: /border-(emerald|amber|rose|slate|sky|indigo|purple|orange|blue|green|red|yellow)-(200|300|400)/,
+        },
     ],
 
     theme: {
         extend: {
+            boxShadow: {
+                xs: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },

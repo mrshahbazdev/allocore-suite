@@ -92,20 +92,41 @@
     .btn-success:hover {
         @apply bg-emerald-700;
     }
+    .btn-info {
+        @apply bg-sky-600 text-white;
+    }
+    .btn-info:hover {
+        @apply bg-sky-700;
+    }
+    .btn-warning {
+        @apply bg-amber-500 text-white;
+    }
+    .btn-warning:hover {
+        @apply bg-amber-600;
+    }
     .badge {
         @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
     }
-    .badge-green {
+    .badge-green, .badge-emerald {
         @apply bg-emerald-100 text-emerald-700;
     }
-    .badge-yellow {
+    .badge-yellow, .badge-amber {
         @apply bg-amber-100 text-amber-700;
     }
-    .badge-red {
+    .badge-red, .badge-rose {
         @apply bg-rose-100 text-rose-700;
     }
-    .badge-gray {
+    .badge-gray, .badge-slate {
         @apply bg-slate-100 text-slate-600;
+    }
+    .badge-blue, .badge-sky {
+        @apply bg-sky-100 text-sky-700;
+    }
+    .badge-orange {
+        @apply bg-orange-100 text-orange-700;
+    }
+    .badge-purple {
+        @apply bg-purple-100 text-purple-700;
     }
     .badge-admin {
         @apply bg-purple-100 text-purple-700;
@@ -118,6 +139,24 @@
     }
     .badge-member {
         @apply bg-emerald-100 text-emerald-700;
+    }
+    .badge-success {
+        @apply bg-emerald-100 text-emerald-700;
+    }
+    .badge-warning {
+        @apply bg-amber-100 text-amber-700;
+    }
+    .badge-danger {
+        @apply bg-rose-100 text-rose-700;
+    }
+    .badge-info {
+        @apply bg-sky-100 text-sky-700;
+    }
+    .badge-primary {
+        @apply bg-[#ffe6cc] text-[#bf6d00];
+    }
+    .badge-secondary {
+        @apply bg-slate-100 text-slate-700;
     }
     .data-table {
         @apply min-w-full divide-y divide-slate-200 text-sm;
