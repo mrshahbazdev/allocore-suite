@@ -27,6 +27,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\Announcement;
+use App\Models\Backup;
+use App\Models\Coupon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Facades\Module as ModuleFacade;
 use Modules\AuditPro\Models\Audit;
@@ -59,6 +63,12 @@ use Modules\DebtSnowballTracker\Models\Payment as SnowballPayment;
 use Modules\DebtSnowballTracker\Models\Cashflow as SnowballCashflow;
 use Modules\DebtSnowballTracker\Models\DebtSetting as SnowballDebtSetting;
 use Modules\DebtSnowballTracker\Services\SnowballCalculatorService;
+use Modules\ClusterForge\Models\Project as ClusterForgeProject;
+use Modules\DevManager\Models\UserStory as DevUserStory;
+use Modules\DevManager\Models\Milestone as DevMilestone;
+use Modules\LoopEngine\Models\Process as LoopProcess;
+use Modules\LoopEngine\Models\ProcessRun as LoopProcessRun;
+use Modules\CustomerSuccess\Models\Inquiry as CustomerSuccessInquiry;
 
 class McpController extends Controller
 {
@@ -1634,6 +1644,264 @@ class McpController extends Controller
                         ],
                     ],
                 ],
+
+                // 11. Admin Coupons & Discounts
+                [
+                    'name' => 'admin_list_coupons',
+                    'description' => '(Admin Only) List promotional and discount coupons with redemption counts and expiry dates.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'only_active' => ['type' => 'boolean', 'description' => 'Filter only active coupons'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_create_coupon',
+                    'description' => '(Admin Only) Create a promotional discount coupon (percentage or fixed discount).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'code' => ['type' => 'string', 'description' => 'Coupon code (e.g. SUMMER2026, WELCOME10)'],
+                            'type' => ['type' => 'string', 'enum' => ['percent', 'fixed'], 'default' => 'percent'],
+                            'value' => ['type' => 'number', 'description' => 'Discount percentage or fixed amount in EUR'],
+                            'max_uses' => ['type' => 'integer', 'description' => 'Maximum allowed redemptions (null for unlimited)'],
+                            'description' => ['type' => 'string', 'description' => 'Internal or promo description'],
+                            'is_active' => ['type' => 'boolean', 'default' => true],
+                            'expires_at' => ['type' => 'string', 'description' => 'Expiry datetime (YYYY-MM-DD or ISO 8601)'],
+                        ],
+                        'required' => ['code', 'value'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_coupon',
+                    'description' => '(Admin Only) Delete or remove a discount coupon.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'code' => ['type' => 'string', 'description' => 'Coupon code or ID to delete'],
+                        ],
+                        'required' => ['code'],
+                    ],
+                ],
+
+                // 12. Admin Maintenance, Backups & System Logs
+                [
+                    'name' => 'admin_create_backup',
+                    'description' => '(Admin Only) Trigger and create a database SQL dump backup.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'disk' => ['type' => 'string', 'enum' => ['local', 's3'], 'default' => 'local'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_list_backups',
+                    'description' => '(Admin Only) List all database and system backup snapshots.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'admin_read_error_logs',
+                    'description' => '(Admin Only) Read recent application error logs from storage/logs/laravel.log.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'lines' => ['type' => 'integer', 'default' => 50, 'description' => 'Number of tail lines to retrieve (10-150)'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_list_failed_jobs',
+                    'description' => '(Admin Only) List failed background queue worker jobs.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_retry_failed_job',
+                    'description' => '(Admin Only) Retry one or all failed queue jobs.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'string', 'default' => 'all', 'description' => 'Job ID or "all" to retry all failed jobs'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_toggle_maintenance',
+                    'description' => '(Admin Only) Put the application into or out of maintenance mode (artisan down/up).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'enable' => ['type' => 'boolean', 'description' => 'True to enable maintenance mode (offline), false to make live'],
+                            'secret' => ['type' => 'string', 'description' => 'Optional bypass secret token for maintenance mode'],
+                        ],
+                        'required' => ['enable'],
+                    ],
+                ],
+
+                // 13. Admin Announcements & Settings
+                [
+                    'name' => 'admin_list_announcements',
+                    'description' => '(Admin Only) List site-wide dashboard notifications and banner announcements.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'admin_create_announcement',
+                    'description' => '(Admin Only) Create a dashboard announcement banner for platform users.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string', 'description' => 'Announcement headline'],
+                            'body' => ['type' => 'string', 'description' => 'Announcement text or message'],
+                            'type' => ['type' => 'string', 'enum' => ['info', 'warning', 'success', 'danger'], 'default' => 'info'],
+                            'is_active' => ['type' => 'boolean', 'default' => true],
+                            'starts_at' => ['type' => 'string', 'description' => 'Optional start datetime'],
+                            'ends_at' => ['type' => 'string', 'description' => 'Optional expiry datetime'],
+                        ],
+                        'required' => ['title', 'body'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_announcement',
+                    'description' => '(Admin Only) Delete an announcement by ID.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'integer', 'description' => 'Announcement ID'],
+                        ],
+                        'required' => ['id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_get_settings',
+                    'description' => '(Admin Only) Retrieve general system environment, active modules count, and platform statistics.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+
+                // 14. ClusterForge (SEO & Keyword Topic Clusters)
+                [
+                    'name' => 'clusterforge_list_projects',
+                    'description' => 'List SEO keyword and topic cluster projects from ClusterForge.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_create_project',
+                    'description' => 'Create a new AI-driven SEO topic cluster project.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'topic' => ['type' => 'string', 'description' => 'Core topic or seed keyword'],
+                            'website' => ['type' => 'string', 'description' => 'Target website URL'],
+                            'language' => ['type' => 'string', 'enum' => ['de', 'en'], 'default' => 'de'],
+                            'pillar_title' => ['type' => 'string', 'description' => 'Optional title for the pillar page'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['topic'],
+                    ],
+                ],
+
+                // 15. DevManager (Agile/Scrum Backlog & Roadmaps)
+                [
+                    'name' => 'devmanager_list_user_stories',
+                    'description' => 'List agile development user stories, story points, and backlog items from DevManager.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'devmanager_create_user_story',
+                    'description' => 'Create a user story or backlog item in DevManager.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string', 'description' => 'User story title'],
+                            'description' => ['type' => 'string', 'description' => 'Detailed acceptance criteria or user story text'],
+                            'status' => ['type' => 'string', 'enum' => ['backlog', 'todo', 'in_progress', 'done'], 'default' => 'backlog'],
+                            'priority' => ['type' => 'string', 'enum' => ['low', 'medium', 'high', 'urgent'], 'default' => 'medium'],
+                            'story_points' => ['type' => 'integer', 'default' => 3],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['title'],
+                    ],
+                ],
+                [
+                    'name' => 'devmanager_list_milestones',
+                    'description' => 'List development milestones, releases, and roadmap target dates.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+
+                // 16. LoopEngine (Automated Process Orchestration)
+                [
+                    'name' => 'loopengine_list_processes',
+                    'description' => 'List automated multi-step business processes and workflow templates from LoopEngine.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'loopengine_trigger_process_run',
+                    'description' => 'Trigger an automated workflow execution run for a business process.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'process_id' => ['type' => 'integer', 'description' => 'Process ID to execute'],
+                            'input_data' => ['type' => 'object', 'description' => 'Input payload parameters for the process run'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['process_id'],
+                    ],
+                ],
+
+                // 17. CustomerSuccess (Root Cause & Retention Intelligence)
+                [
+                    'name' => 'customersuccess_list_inquiries',
+                    'description' => 'List diagnosed customer success inquiries, problems, and prioritized retention cases.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'customersuccess_diagnose_inquiry',
+                    'description' => 'Log and structure a customer success issue with root cause analysis, consequences, and recommended action steps.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'question' => ['type' => 'string', 'description' => 'Client inquiry or presenting question'],
+                            'problem' => ['type' => 'string', 'description' => 'Diagnosed core underlying problem'],
+                            'root_cause' => ['type' => 'string', 'description' => 'Identified root cause'],
+                            'consequences' => ['type' => 'string', 'description' => 'Business consequences if unresolved'],
+                            'recommended_actions' => ['type' => 'string', 'description' => 'Actionable step-by-step resolution plan'],
+                            'priority' => ['type' => 'string', 'enum' => ['low', 'medium', 'high', 'critical'], 'default' => 'medium'],
+                            'module_key' => ['type' => 'string', 'description' => 'Associated Allocore module key'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['question', 'problem'],
+                    ],
+                ],
             ],
         ];
     }
@@ -1736,6 +2004,42 @@ class McpController extends Controller
             'log_snowball_payment' => $this->toolLogSnowballPayment($arguments),
             'calculate_snowball_payoff_plan' => $this->toolCalculateSnowballPayoffPlan($arguments),
             'get_snowball_financial_summary' => $this->toolGetSnowballFinancialSummary($arguments),
+
+            // Admin Coupons
+            'admin_list_coupons', 'list_coupons' => $this->toolAdminListCoupons($arguments),
+            'admin_create_coupon', 'create_coupon' => $this->toolAdminCreateCoupon($arguments),
+            'admin_delete_coupon', 'delete_coupon' => $this->toolAdminDeleteCoupon($arguments),
+
+            // Admin System, Backups & Maintenance
+            'admin_create_backup', 'create_backup' => $this->toolAdminCreateBackup($arguments),
+            'admin_list_backups', 'list_backups' => $this->toolAdminListBackups(),
+            'admin_read_error_logs', 'read_error_logs' => $this->toolAdminReadErrorLogs($arguments),
+            'admin_list_failed_jobs', 'list_failed_jobs' => $this->toolAdminListFailedJobs($arguments),
+            'admin_retry_failed_job', 'retry_failed_job' => $this->toolAdminRetryFailedJob($arguments),
+            'admin_toggle_maintenance', 'toggle_maintenance' => $this->toolAdminToggleMaintenance($arguments),
+
+            // Admin Announcements & Settings
+            'admin_list_announcements', 'list_announcements' => $this->toolAdminListAnnouncements(),
+            'admin_create_announcement', 'create_announcement' => $this->toolAdminCreateAnnouncement($arguments),
+            'admin_delete_announcement', 'delete_announcement' => $this->toolAdminDeleteAnnouncement($arguments),
+            'admin_get_settings', 'get_settings' => $this->toolAdminGetSettings(),
+
+            // ClusterForge Tools
+            'clusterforge_list_projects' => $this->toolClusterforgeListProjects($arguments),
+            'clusterforge_create_project' => $this->toolClusterforgeCreateProject($arguments),
+
+            // DevManager Tools
+            'devmanager_list_user_stories' => $this->toolDevmanagerListUserStories($arguments),
+            'devmanager_create_user_story' => $this->toolDevmanagerCreateUserStory($arguments),
+            'devmanager_list_milestones' => $this->toolDevmanagerListMilestones($arguments),
+
+            // LoopEngine Tools
+            'loopengine_list_processes' => $this->toolLoopengineListProcesses($arguments),
+            'loopengine_trigger_process_run' => $this->toolLoopengineTriggerProcessRun($arguments),
+
+            // CustomerSuccess Tools
+            'customersuccess_list_inquiries' => $this->toolCustomersuccessListInquiries($arguments),
+            'customersuccess_diagnose_inquiry' => $this->toolCustomersuccessDiagnoseInquiry($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -5143,6 +5447,697 @@ class McpController extends Controller
     }
 
     /**
+     * Resolve team ID from arguments or authenticated user context.
+     */
+    protected function resolveTeamId(array $args): int
+    {
+        if (! empty($args['team_id'])) {
+            return (int) $args['team_id'];
+        }
+
+        $user = Auth::user();
+        if ($user && $user->current_team_id) {
+            return (int) $user->current_team_id;
+        }
+
+        return (int) (Team::first()?->id ?? 1);
+    }
+
+    // --- Admin Coupons & Discounts ---
+
+    /**
+     * (Admin Only) List all promotional and discount coupons.
+     */
+    protected function toolAdminListCoupons(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $query = Coupon::query();
+        if (isset($args['only_active']) && $args['only_active']) {
+            $query->where('is_active', true);
+        }
+
+        $coupons = $query->orderBy('created_at', 'desc')->get();
+
+        return [
+            'total' => $coupons->count(),
+            'coupons' => $coupons->map(fn ($c) => [
+                'id' => $c->id,
+                'code' => $c->code,
+                'type' => $c->type,
+                'value' => (float) $c->value,
+                'max_uses' => $c->max_uses,
+                'used_count' => $c->used_count,
+                'is_active' => (bool) $c->is_active,
+                'is_valid_now' => $c->isValid(),
+                'starts_at' => $c->starts_at?->toIso8601String(),
+                'expires_at' => $c->expires_at?->toIso8601String(),
+                'description' => $c->description,
+                'created_at' => $c->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (Admin Only) Create a promotional discount coupon.
+     */
+    protected function toolAdminCreateCoupon(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $code = strtoupper(trim($args['code'] ?? ''));
+        if (empty($code)) {
+            throw new \InvalidArgumentException('code is required.');
+        }
+
+        if (Coupon::where('code', $code)->exists()) {
+            throw new \InvalidArgumentException("Coupon with code '{$code}' already exists.");
+        }
+
+        $type = in_array($args['type'] ?? '', ['percent', 'fixed'], true) ? $args['type'] : 'percent';
+        $value = (float) ($args['value'] ?? 10);
+        $maxUses = isset($args['max_uses']) ? (int) $args['max_uses'] : null;
+        $description = trim($args['description'] ?? '');
+        $isActive = isset($args['is_active']) ? (bool) $args['is_active'] : true;
+
+        $startsAt = ! empty($args['starts_at']) ? \Carbon\Carbon::parse($args['starts_at']) : now();
+        $expiresAt = ! empty($args['expires_at']) ? \Carbon\Carbon::parse($args['expires_at']) : null;
+
+        $coupon = Coupon::create([
+            'code' => $code,
+            'type' => $type,
+            'value' => $value,
+            'max_uses' => $maxUses,
+            'used_count' => 0,
+            'starts_at' => $startsAt,
+            'expires_at' => $expiresAt,
+            'is_active' => $isActive,
+            'description' => $description,
+        ]);
+
+        return [
+            'status' => 'created',
+            'coupon' => [
+                'id' => $coupon->id,
+                'code' => $coupon->code,
+                'type' => $coupon->type,
+                'value' => (float) $coupon->value,
+                'is_active' => (bool) $coupon->is_active,
+                'expires_at' => $coupon->expires_at?->toIso8601String(),
+            ],
+            'message' => "Coupon '{$code}' created successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete or remove a discount coupon.
+     */
+    protected function toolAdminDeleteCoupon(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $codeOrId = $args['code'] ?? ($args['id'] ?? null);
+        if (! $codeOrId) {
+            throw new \InvalidArgumentException('code or id is required.');
+        }
+
+        $coupon = is_numeric($codeOrId) ? Coupon::find($codeOrId) : Coupon::where('code', strtoupper($codeOrId))->first();
+        if (! $coupon) {
+            throw new \InvalidArgumentException("Coupon '{$codeOrId}' not found.");
+        }
+
+        $code = $coupon->code;
+        $coupon->delete();
+
+        return [
+            'status' => 'deleted',
+            'code' => $code,
+            'message' => "Coupon '{$code}' was successfully deleted.",
+        ];
+    }
+
+    // --- Admin Maintenance, Backups & System Logs ---
+
+    /**
+     * (Admin Only) Create a database SQL dump backup.
+     */
+    protected function toolAdminCreateBackup(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $disk = $args['disk'] ?? 'local';
+        if (! in_array($disk, ['local', 's3'], true)) {
+            $disk = 'local';
+        }
+
+        $fileName = 'backup_' . now()->format('Ymd_His') . '.sql';
+        $path = 'backups/' . $fileName;
+        $tempPath = storage_path('app/private/' . $path);
+
+        if (! is_dir(dirname($tempPath))) {
+            mkdir(dirname($tempPath), 0755, true);
+        }
+
+        $command = sprintf(
+            'mysqldump --host=%s --port=%s --user=%s --password=%s %s > %s 2>/dev/null || sqlite3 %s .dump > %s',
+            escapeshellarg(config('database.connections.mysql.host', 'localhost')),
+            escapeshellarg(config('database.connections.mysql.port', '3306')),
+            escapeshellarg(config('database.connections.mysql.username', 'root')),
+            escapeshellarg(config('database.connections.mysql.password', '')),
+            escapeshellarg(config('database.connections.mysql.database', '')),
+            escapeshellarg($tempPath),
+            escapeshellarg(config('database.connections.sqlite.database', '')),
+            escapeshellarg($tempPath)
+        );
+
+        exec($command);
+
+        $contents = file_exists($tempPath) ? file_get_contents($tempPath) : '';
+        $size = strlen($contents);
+
+        if ($size > 0) {
+            Storage::disk($disk)->put($path, $contents);
+        }
+
+        if (file_exists($tempPath)) {
+            unlink($tempPath);
+        }
+
+        $backup = Backup::create([
+            'name' => $fileName,
+            'path' => $path,
+            'disk' => $disk,
+            'type' => 'database',
+            'size' => $size,
+            'completed_at' => now(),
+        ]);
+
+        return [
+            'status' => 'success',
+            'backup' => [
+                'id' => $backup->id,
+                'name' => $backup->name,
+                'disk' => $backup->disk,
+                'size_bytes' => $backup->size,
+                'size_human' => round($backup->size / 1024 / 1024, 2) . ' MB',
+                'completed_at' => $backup->completed_at?->toIso8601String(),
+            ],
+            'message' => "Database backup '{$fileName}' created successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) List available database and system backups.
+     */
+    protected function toolAdminListBackups(): array
+    {
+        $this->ensureAdmin();
+
+        $backups = Backup::latest()->limit(25)->get();
+
+        return [
+            'total' => $backups->count(),
+            'backups' => $backups->map(fn ($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'disk' => $b->disk,
+                'type' => $b->type,
+                'size' => $b->size,
+                'size_formatted' => round($b->size / 1024 / 1024, 2) . ' MB',
+                'completed_at' => $b->completed_at?->toIso8601String(),
+                'created_at' => $b->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (Admin Only) Read recent application error logs from storage/logs/laravel.log.
+     */
+    protected function toolAdminReadErrorLogs(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $linesCount = min(150, max(10, (int) ($args['lines'] ?? 50)));
+        $logPath = storage_path('logs/laravel.log');
+
+        if (! file_exists($logPath)) {
+            return [
+                'exists' => false,
+                'message' => 'No laravel.log file found in storage/logs.',
+                'lines' => [],
+            ];
+        }
+
+        $file = file($logPath);
+        $totalLines = count($file);
+        $tail = array_slice($file, -$linesCount);
+
+        return [
+            'exists' => true,
+            'total_file_lines' => $totalLines,
+            'retrieved_lines' => count($tail),
+            'log_content' => implode('', $tail),
+        ];
+    }
+
+    /**
+     * (Admin Only) List failed background queue worker jobs.
+     */
+    protected function toolAdminListFailedJobs(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+
+        try {
+            $failed = DB::table('failed_jobs')->latest()->limit($limit)->get();
+            return [
+                'total_failed' => $failed->count(),
+                'jobs' => $failed->map(fn ($j) => [
+                    'id' => $j->id,
+                    'uuid' => $j->uuid ?? null,
+                    'connection' => $j->connection,
+                    'queue' => $j->queue,
+                    'failed_at' => $j->failed_at,
+                    'exception_summary' => Str::limit($j->exception, 300),
+                ]),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'total_failed' => 0,
+                'jobs' => [],
+                'message' => 'failed_jobs table not accessible or empty: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * (Admin Only) Retry a failed queue job.
+     */
+    protected function toolAdminRetryFailedJob(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $id = $args['id'] ?? 'all';
+        Artisan::call('queue:retry', ['id' => [(string) $id]]);
+        $output = trim(Artisan::output());
+
+        return [
+            'status' => 'executed',
+            'job_id' => $id,
+            'output' => $output,
+        ];
+    }
+
+    /**
+     * (Admin Only) Put the application into or out of maintenance mode.
+     */
+    protected function toolAdminToggleMaintenance(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $enable = (bool) ($args['enable'] ?? false);
+        $secret = $args['secret'] ?? null;
+
+        if ($enable) {
+            $params = [];
+            if ($secret) $params['--secret'] = $secret;
+            Artisan::call('down', $params);
+            $msg = 'Application is now in maintenance mode (offline).';
+        } else {
+            Artisan::call('up');
+            $msg = 'Application is now live (maintenance mode disabled).';
+        }
+
+        return [
+            'status' => 'success',
+            'maintenance_mode' => $enable,
+            'output' => trim(Artisan::output()),
+            'message' => $msg,
+        ];
+    }
+
+    // --- Admin Announcements & Platform Settings ---
+
+    /**
+     * (Admin Only) List site-wide dashboard announcements.
+     */
+    protected function toolAdminListAnnouncements(): array
+    {
+        $this->ensureAdmin();
+
+        $announcements = Announcement::orderBy('created_at', 'desc')->get();
+
+        return [
+            'total' => $announcements->count(),
+            'announcements' => $announcements->map(fn ($a) => [
+                'id' => $a->id,
+                'title' => $a->title,
+                'body' => $a->body,
+                'type' => $a->type,
+                'is_active' => (bool) $a->is_active,
+                'starts_at' => $a->starts_at?->toIso8601String(),
+                'ends_at' => $a->ends_at?->toIso8601String(),
+                'created_at' => $a->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (Admin Only) Create a dashboard banner announcement.
+     */
+    protected function toolAdminCreateAnnouncement(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $title = trim($args['title'] ?? '');
+        $body = trim($args['body'] ?? '');
+
+        if (empty($title) || empty($body)) {
+            throw new \InvalidArgumentException('title and body are required.');
+        }
+
+        $type = in_array($args['type'] ?? '', ['info', 'warning', 'success', 'danger'], true) ? $args['type'] : 'info';
+        $isActive = isset($args['is_active']) ? (bool) $args['is_active'] : true;
+        $startsAt = ! empty($args['starts_at']) ? \Carbon\Carbon::parse($args['starts_at']) : now();
+        $endsAt = ! empty($args['ends_at']) ? \Carbon\Carbon::parse($args['ends_at']) : null;
+
+        $announcement = Announcement::create([
+            'title' => $title,
+            'body' => $body,
+            'type' => $type,
+            'is_active' => $isActive,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+        ]);
+
+        return [
+            'status' => 'created',
+            'announcement' => [
+                'id' => $announcement->id,
+                'title' => $announcement->title,
+                'type' => $announcement->type,
+                'is_active' => (bool) $announcement->is_active,
+            ],
+            'message' => "Announcement '{$title}' created successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete an announcement.
+     */
+    protected function toolAdminDeleteAnnouncement(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $id = (int) ($args['id'] ?? 0);
+        $announcement = Announcement::findOrFail($id);
+        $title = $announcement->title;
+        $announcement->delete();
+
+        return [
+            'status' => 'deleted',
+            'id' => $id,
+            'message' => "Announcement '{$title}' deleted successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Get general platform and environment settings.
+     */
+    protected function toolAdminGetSettings(): array
+    {
+        $this->ensureAdmin();
+
+        return [
+            'app_name' => config('app.name'),
+            'app_env' => config('app.env'),
+            'app_url' => config('app.url'),
+            'app_locale' => config('app.locale'),
+            'app_timezone' => config('app.timezone'),
+            'mail_mailer' => config('mail.default'),
+            'queue_connection' => config('queue.default'),
+            'session_driver' => config('session.driver'),
+            'database_default' => config('database.default'),
+            'active_modules_count' => Module::active()->count(),
+            'total_users' => User::count(),
+            'total_teams' => Team::count(),
+        ];
+    }
+
+    // --- Module Tools: ClusterForge ---
+
+    /**
+     * (ClusterForge) List SEO keyword and topic cluster projects.
+     */
+    protected function toolClusterforgeListProjects(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $projects = ClusterForgeProject::withoutGlobalScope('current_team')->where('team_id', $teamId)->latest()->limit(25)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $projects->count(),
+            'projects' => $projects->map(fn ($p) => [
+                'id' => $p->id,
+                'topic' => $p->topic,
+                'website' => $p->website,
+                'language' => $p->language,
+                'status' => $p->status,
+                'pillar_title' => $p->pillar_title,
+                'created_at' => $p->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Create an AI SEO keyword clustering project.
+     */
+    protected function toolClusterforgeCreateProject(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $user = Auth::user();
+
+        $topic = trim($args['topic'] ?? '');
+        if (empty($topic)) {
+            throw new \InvalidArgumentException('topic is required for ClusterForge project.');
+        }
+
+        $project = ClusterForgeProject::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'user_id' => $user?->id ?? 1,
+            'topic' => $topic,
+            'website' => $args['website'] ?? null,
+            'language' => in_array($args['language'] ?? 'de', ['de', 'en'], true) ? $args['language'] : 'de',
+            'status' => ClusterForgeProject::STATUS_PENDING,
+            'pillar_title' => $args['pillar_title'] ?? $topic,
+        ]);
+
+        return [
+            'status' => 'created',
+            'project' => [
+                'id' => $project->id,
+                'topic' => $project->topic,
+                'status' => $project->status,
+                'language' => $project->language,
+            ],
+            'message' => "ClusterForge project for '{$topic}' created successfully.",
+        ];
+    }
+
+    // --- Module Tools: DevManager ---
+
+    /**
+     * (DevManager) List development user stories and backlog items.
+     */
+    protected function toolDevmanagerListUserStories(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $stories = DevUserStory::withoutGlobalScope('current_team')->where('team_id', $teamId)->latest()->limit(50)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $stories->count(),
+            'stories' => $stories->map(fn ($s) => [
+                'id' => $s->id,
+                'title' => $s->title,
+                'description' => $s->description,
+                'status' => $s->status,
+                'priority' => $s->priority,
+                'story_points' => $s->story_points,
+                'created_at' => $s->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (DevManager) Create or update a developer user story / backlog item.
+     */
+    protected function toolDevmanagerCreateUserStory(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $user = Auth::user();
+
+        $title = trim($args['title'] ?? '');
+        if (empty($title)) {
+            throw new \InvalidArgumentException('title is required.');
+        }
+
+        $story = DevUserStory::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'user_id' => $user?->id ?? 1,
+            'title' => $title,
+            'description' => $args['description'] ?? '',
+            'status' => $args['status'] ?? 'backlog',
+            'priority' => $args['priority'] ?? 'medium',
+            'story_points' => isset($args['story_points']) ? (int) $args['story_points'] : 3,
+        ]);
+
+        return [
+            'status' => 'created',
+            'story' => [
+                'id' => $story->id,
+                'title' => $story->title,
+                'status' => $story->status,
+                'story_points' => $story->story_points,
+            ],
+            'message' => "DevManager user story '{$title}' created.",
+        ];
+    }
+
+    /**
+     * (DevManager) List development milestones and releases.
+     */
+    protected function toolDevmanagerListMilestones(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $milestones = DevMilestone::withoutGlobalScope('current_team')->where('team_id', $teamId)->orderBy('due_date', 'asc')->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $milestones->count(),
+            'milestones' => $milestones->map(fn ($m) => [
+                'id' => $m->id,
+                'title' => $m->title,
+                'status' => $m->status,
+                'due_date' => $m->due_date?->toDateString(),
+            ]),
+        ];
+    }
+
+    // --- Module Tools: LoopEngine ---
+
+    /**
+     * (LoopEngine) List automated business processes and workflows.
+     */
+    protected function toolLoopengineListProcesses(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $processes = LoopProcess::withoutGlobalScope('current_team')->where('team_id', $teamId)->with('steps')->latest()->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $processes->count(),
+            'processes' => $processes->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name_de ?: $p->name_en,
+                'category' => $p->category,
+                'status' => $p->status,
+                'version' => $p->version,
+                'steps_count' => $p->steps->count(),
+                'created_at' => $p->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (LoopEngine) Trigger an execution run for an automated process.
+     */
+    protected function toolLoopengineTriggerProcessRun(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $user = Auth::user();
+
+        $processId = (int) ($args['process_id'] ?? 0);
+        $process = LoopProcess::withoutGlobalScope('current_team')->where('team_id', $teamId)->findOrFail($processId);
+
+        $run = LoopProcessRun::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'process_id' => $process->id,
+            'user_id' => $user?->id ?? 1,
+            'status' => 'running',
+            'started_at' => now(),
+            'input_data' => $args['input_data'] ?? [],
+        ]);
+
+        return [
+            'status' => 'started',
+            'run_id' => $run->id,
+            'process_name' => $process->name_de ?: $process->name_en,
+            'message' => "Process run #{$run->id} triggered successfully.",
+        ];
+    }
+
+    // --- Module Tools: CustomerSuccess ---
+
+    /**
+     * (CustomerSuccess) List customer success inquiries and problem diagnoses.
+     */
+    protected function toolCustomersuccessListInquiries(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $inquiries = CustomerSuccessInquiry::withoutGlobalScope('current_team')->where('team_id', $teamId)->latest()->limit(30)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $inquiries->count(),
+            'inquiries' => $inquiries->map(fn ($i) => [
+                'id' => $i->id,
+                'question' => $i->question,
+                'problem' => $i->problem,
+                'priority' => $i->priority,
+                'created_at' => $i->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (CustomerSuccess) Diagnose a customer success problem with root cause and recommended actions.
+     */
+    protected function toolCustomersuccessDiagnoseInquiry(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+
+        $question = trim($args['question'] ?? '');
+        $problem = trim($args['problem'] ?? '');
+
+        if (empty($question) || empty($problem)) {
+            throw new \InvalidArgumentException('question and problem are required.');
+        }
+
+        $inquiry = CustomerSuccessInquiry::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'question' => $question,
+            'answer' => $args['answer'] ?? null,
+            'problem' => $problem,
+            'root_cause' => $args['root_cause'] ?? null,
+            'consequences' => $args['consequences'] ?? null,
+            'recommended_actions' => $args['recommended_actions'] ?? null,
+            'priority' => $args['priority'] ?? 'medium',
+            'estimated_cost' => $args['estimated_cost'] ?? null,
+            'expected_benefit' => $args['expected_benefit'] ?? null,
+            'module_key' => $args['module_key'] ?? null,
+        ]);
+
+        return [
+            'status' => 'created',
+            'inquiry_id' => $inquiry->id,
+            'priority' => $inquiry->priority,
+            'message' => "Customer success case #{$inquiry->id} diagnosed and stored.",
+        ];
+    }
+
+    /**
      * MCP Resources.
      */
     public function listResources(): array
@@ -5174,6 +6169,8 @@ class McpController extends Controller
                 ['uri' => 'allocore://debts/snowball', 'name' => 'Debt Snowball & Avalanche Payoff Overview', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://integrations/status', 'name' => 'Webhooks & Third-Party Integrations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://admin/announcements', 'name' => 'Active Platform Dashboard Announcements', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://admin/coupons', 'name' => 'Active Promo & Discount Coupons', 'mimeType' => 'application/json'],
             ],
         ];
     }
@@ -5206,6 +6203,8 @@ class McpController extends Controller
             'allocore://debts/snowball' => json_encode($this->toolGetSnowballFinancialSummary([]), JSON_PRETTY_PRINT),
             'allocore://integrations/status' => json_encode($this->toolListWebhooksAndIntegrations([]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
+            'allocore://admin/announcements' => Announcement::active()->get(['id', 'title', 'body', 'type', 'starts_at', 'ends_at'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://admin/coupons' => Coupon::where('is_active', true)->get(['id', 'code', 'type', 'value', 'max_uses', 'used_count', 'expires_at'])->toJson(JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
 

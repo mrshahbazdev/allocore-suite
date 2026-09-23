@@ -42,7 +42,10 @@ from tools.analytics_tools import (
     get_platform_metrics, get_audit_completion_stats
 )
 from tools.ops_tools import (
-    run_allocore_artisan, get_system_health
+    run_allocore_artisan, get_system_health,
+    admin_list_coupons, admin_create_coupon, admin_delete_coupon,
+    admin_list_backups, admin_read_error_logs,
+    admin_list_announcements, admin_create_announcement, admin_get_settings
 )
 from tools.snowball_tools import (
     list_snowball_debts, create_or_update_snowball_debt, log_snowball_payment,
@@ -139,6 +142,14 @@ mcp.tool()(get_audit_completion_stats)
 # ----------------------------------------------------
 mcp.tool()(run_allocore_artisan)
 mcp.tool()(get_system_health)
+mcp.tool()(admin_list_coupons)
+mcp.tool()(admin_create_coupon)
+mcp.tool()(admin_delete_coupon)
+mcp.tool()(admin_list_backups)
+mcp.tool()(admin_read_error_logs)
+mcp.tool()(admin_list_announcements)
+mcp.tool()(admin_create_announcement)
+mcp.tool()(admin_get_settings)
 
 # ----------------------------------------------------
 # 10. Register Debt Snowball & Avalanche Tools
