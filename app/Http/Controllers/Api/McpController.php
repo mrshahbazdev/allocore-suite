@@ -5663,6 +5663,39 @@ class McpController extends Controller
         return (int) (Team::first()?->id ?? 1);
     }
 
+    /**
+     * Check if the authenticated user has access to a specific team ID.
+     */
+    protected function userCanAccessTeam(?int $teamId): bool
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if (! $teamId) {
+            return false;
+        }
+
+        if ((int) $user->current_team_id === (int) $teamId) {
+            return true;
+        }
+
+        if ($user->teams()->where('teams.id', $teamId)->exists()) {
+            return true;
+        }
+
+        if (method_exists($user, 'ownedTeams') && $user->ownedTeams()->where('id', $teamId)->exists()) {
+            return true;
+        }
+
+        return false;
+    }
+
     // --- Admin Coupons & Discounts ---
 
     /**
@@ -6158,16 +6191,12 @@ class McpController extends Controller
     protected function toolClusterforgeGetProject(array $args): array
     {
         $projectId = (int) ($args['project_id'] ?? 0);
-        $user = Auth::user();
-        $query = ClusterForgeProject::withoutGlobalScope('current_team')->with(['subtopics.questions']);
+        $project = ClusterForgeProject::withoutGlobalScopes()->with(['subtopics.questions'])->findOrFail($projectId);
 
-        if (! empty($args['team_id'])) {
-            $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->isAdmin())) {
-            $query->where('team_id', $this->resolveTeamId($args));
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
         }
 
-        $project = $query->findOrFail($projectId);
         $includeContent = (bool) ($args['include_content'] ?? false);
 
         return [
@@ -6266,17 +6295,17 @@ class McpController extends Controller
     protected function toolClusterforgeGetSubtopic(array $args): array
     {
         $subtopicId = (int) ($args['subtopic_id'] ?? 0);
-        $user = Auth::user();
-        $query = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
-            $q->withoutGlobalScope('current_team');
-            if (! empty($args['team_id'])) {
-                $q->where('team_id', (int) $args['team_id']);
-            } elseif (! ($user && $user->isAdmin())) {
-                $q->where('team_id', $this->resolveTeamId($args));
-            }
-        })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team'), 'questions']);
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes(), 'questions'])
+            ->findOrFail($subtopicId);
 
-        $subtopic = $query->findOrFail($subtopicId);
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
 
         return [
             'subtopic' => [
@@ -6396,17 +6425,12 @@ class McpController extends Controller
      */
     protected function toolClusterforgeRetryProject(array $args): array
     {
-        $user = Auth::user();
         $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
 
-        $query = ClusterForgeProject::withoutGlobalScope('current_team');
-        if (! empty($args['team_id'])) {
-            $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->isAdmin())) {
-            $query->where('team_id', $this->resolveTeamId($args));
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
         }
-
-        $project = $query->findOrFail($projectId);
 
         if ($project->isInProgress()) {
             return [
@@ -6436,18 +6460,14 @@ class McpController extends Controller
      */
     protected function toolClusterforgeExportContent(array $args): array
     {
-        $user = Auth::user();
         $projectId = (int) ($args['project_id'] ?? 0);
         $type = $args['type'] ?? 'pillar';
 
-        $query = ClusterForgeProject::withoutGlobalScope('current_team');
-        if (! empty($args['team_id'])) {
-            $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->isAdmin())) {
-            $query->where('team_id', $this->resolveTeamId($args));
-        }
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
 
-        $project = $query->findOrFail($projectId);
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
 
         if ($type === 'cluster') {
             $subtopicId = (int) ($args['subtopic_id'] ?? 0);
@@ -6497,17 +6517,13 @@ class McpController extends Controller
      */
     protected function toolClusterforgeDeleteProject(array $args): array
     {
-        $user = Auth::user();
         $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
 
-        $query = ClusterForgeProject::withoutGlobalScope('current_team');
-        if (! empty($args['team_id'])) {
-            $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->isAdmin())) {
-            $query->where('team_id', $this->resolveTeamId($args));
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
         }
 
-        $project = $query->findOrFail($projectId);
         $topic = $project->topic;
         $project->delete();
 
@@ -6523,14 +6539,12 @@ class McpController extends Controller
      */
     protected function toolClusterforgeSaveSubtopics(array $args): array
     {
-        $user = Auth::user();
         $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
 
-        $query = ClusterForgeProject::withoutGlobalScope('current_team');
-        if (! ($user && $user->isAdmin())) {
-            $query->where('team_id', $this->resolveTeamId($args));
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
         }
-        $project = $query->findOrFail($projectId);
 
         $subtopics = $args['subtopics'] ?? [];
         if (empty($subtopics) || ! is_array($subtopics)) {
@@ -6569,15 +6583,19 @@ class McpController extends Controller
      */
     protected function toolClusterforgeSaveQuestions(array $args): array
     {
-        $user = Auth::user();
         $subtopicId = (int) ($args['subtopic_id'] ?? 0);
 
-        $subtopic = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
-            $q->withoutGlobalScope('current_team');
-            if (! ($user && $user->isAdmin())) {
-                $q->where('team_id', $this->resolveTeamId($args));
-            }
-        })->findOrFail($subtopicId);
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes()])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
 
         $questions = array_values(array_filter($args['questions'] ?? [], fn ($q) => is_string($q) && trim($q) !== ''));
         if (empty($questions)) {
@@ -6608,15 +6626,19 @@ class McpController extends Controller
      */
     protected function toolClusterforgeSaveAnswers(array $args): array
     {
-        $user = Auth::user();
         $subtopicId = (int) ($args['subtopic_id'] ?? 0);
 
-        $subtopic = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
-            $q->withoutGlobalScope('current_team');
-            if (! ($user && $user->isAdmin())) {
-                $q->where('team_id', $this->resolveTeamId($args));
-            }
-        })->with('questions')->findOrFail($subtopicId);
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes(), 'questions'])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
 
         $answers = $args['answers'] ?? [];
         if (empty($answers) || ! is_array($answers)) {
@@ -6649,15 +6671,19 @@ class McpController extends Controller
      */
     protected function toolClusterforgeSaveClusterContent(array $args): array
     {
-        $user = Auth::user();
         $subtopicId = (int) ($args['subtopic_id'] ?? 0);
 
-        $subtopic = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
-            $q->withoutGlobalScope('current_team');
-            if (! ($user && $user->isAdmin())) {
-                $q->where('team_id', $this->resolveTeamId($args));
-            }
-        })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team'), 'questions'])->findOrFail($subtopicId);
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes(), 'questions'])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
 
         $title = trim($args['title'] ?? '');
         if (empty($title)) {
@@ -6667,8 +6693,7 @@ class McpController extends Controller
         $intro = trim($args['introduction_markdown'] ?? '');
 
         // Build the same cluster_content format as KeywordClusterGenerator::generateClusterPage
-        $project = $subtopic->project;
-        $faqHeading = ($project && $project->language === 'de') ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions';
+        $faqHeading = ($project->language === 'de') ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions';
         $body = "# {$title}\n\n{$intro}\n\n## {$faqHeading}\n\n";
         foreach ($subtopic->questions()->orderBy('sort_order')->get() as $q) {
             $body .= "### {$q->question}\n\n" . ($q->answer ?? '_Noch keine Antwort generiert._') . "\n\n";
@@ -6695,14 +6720,12 @@ class McpController extends Controller
      */
     protected function toolClusterforgeSavePillarContent(array $args): array
     {
-        $user = Auth::user();
         $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
 
-        $query = ClusterForgeProject::withoutGlobalScope('current_team');
-        if (! ($user && $user->isAdmin())) {
-            $query->where('team_id', $this->resolveTeamId($args));
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
         }
-        $project = $query->findOrFail($projectId);
 
         $title = trim($args['title'] ?? '');
         if (empty($title)) {
