@@ -51,6 +51,11 @@ from tools.snowball_tools import (
     list_snowball_debts, create_or_update_snowball_debt, log_snowball_payment,
     calculate_snowball_payoff_plan, get_snowball_financial_summary
 )
+from tools.clusterforge_tools import (
+    clusterforge_list_projects, clusterforge_get_project, clusterforge_search_keywords,
+    clusterforge_get_subtopic, clusterforge_search_questions, clusterforge_create_project,
+    clusterforge_export_content, clusterforge_delete_project
+)
 
 # Import Resources & Prompts
 from resources.dynamic_resources import (
@@ -159,6 +164,18 @@ mcp.tool()(create_or_update_snowball_debt)
 mcp.tool()(log_snowball_payment)
 mcp.tool()(calculate_snowball_payoff_plan)
 mcp.tool()(get_snowball_financial_summary)
+
+# ----------------------------------------------------
+# 11. Register ClusterForge (SEO & Topics) Tools
+# ----------------------------------------------------
+mcp.tool()(clusterforge_list_projects)
+mcp.tool()(clusterforge_get_project)
+mcp.tool()(clusterforge_search_keywords)
+mcp.tool()(clusterforge_get_subtopic)
+mcp.tool()(clusterforge_search_questions)
+mcp.tool()(clusterforge_create_project)
+mcp.tool()(clusterforge_export_content)
+mcp.tool()(clusterforge_delete_project)
 
 # ----------------------------------------------------
 # Register Dynamic Resources

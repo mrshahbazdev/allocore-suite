@@ -64,6 +64,9 @@ use Modules\DebtSnowballTracker\Models\Cashflow as SnowballCashflow;
 use Modules\DebtSnowballTracker\Models\DebtSetting as SnowballDebtSetting;
 use Modules\DebtSnowballTracker\Services\SnowballCalculatorService;
 use Modules\ClusterForge\Models\Project as ClusterForgeProject;
+use Modules\ClusterForge\Models\Subtopic as ClusterForgeSubtopic;
+use Modules\ClusterForge\Models\Question as ClusterForgeQuestion;
+use Modules\ClusterForge\Jobs\GenerateProjectJob as ClusterForgeGenerateProjectJob;
 use Modules\DevManager\Models\UserStory as DevUserStory;
 use Modules\DevManager\Models\Milestone as DevMilestone;
 use Modules\LoopEngine\Models\Process as LoopProcess;
@@ -1786,17 +1789,74 @@ class McpController extends Controller
                 // 14. ClusterForge (SEO & Keyword Topic Clusters)
                 [
                     'name' => 'clusterforge_list_projects',
-                    'description' => 'List SEO keyword and topic cluster projects from ClusterForge.',
+                    'description' => 'List and search SEO keyword and topic cluster projects with progress and status filters.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
+                            'search' => ['type' => 'string', 'description' => 'Search projects by topic, website or pillar title'],
+                            'status' => ['type' => 'string', 'description' => 'Optional status filter (e.g. pending, completed, failed)'],
                             'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'description' => 'Max number of results (default 25)'],
                         ],
                     ],
                 ],
                 [
+                    'name' => 'clusterforge_get_project',
+                    'description' => 'Retrieve detailed information, subtopics, keyword metrics, and questions for a ClusterForge project.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'The ID of the ClusterForge project'],
+                            'include_content' => ['type' => 'boolean', 'description' => 'Whether to include the full pillar page markdown content'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_search_keywords',
+                    'description' => 'Search subtopics, long-tail keywords, search volumes, and CPC across ClusterForge projects.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'query' => ['type' => 'string', 'description' => 'Keyword term, phrase, or title to search for'],
+                            'project_id' => ['type' => 'integer', 'description' => 'Filter by specific project ID'],
+                            'min_volume' => ['type' => 'integer', 'description' => 'Minimum monthly search volume'],
+                            'max_cpc' => ['type' => 'number', 'description' => 'Maximum CPC limit'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'description' => 'Max number of keywords to return (default 30)'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_get_subtopic',
+                    'description' => 'Retrieve full cluster details for a specific subtopic, including long-tail keyword, questions, and full cluster article content.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_search_questions',
+                    'description' => 'Search through all AI-generated SEO research questions and answers within ClusterForge topic clusters.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'query' => ['type' => 'string', 'description' => 'Search term matching question or answer text'],
+                            'project_id' => ['type' => 'integer', 'description' => 'Filter by specific project ID'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'description' => 'Max results to return (default 25)'],
+                        ],
+                        'required' => ['query'],
+                    ],
+                ],
+                [
                     'name' => 'clusterforge_create_project',
-                    'description' => 'Create a new AI-driven SEO topic cluster project.',
+                    'description' => 'Create a new AI-driven SEO topic cluster project and optionally queue cluster generation immediately.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -1804,9 +1864,48 @@ class McpController extends Controller
                             'website' => ['type' => 'string', 'description' => 'Target website URL'],
                             'language' => ['type' => 'string', 'enum' => ['de', 'en'], 'default' => 'de'],
                             'pillar_title' => ['type' => 'string', 'description' => 'Optional title for the pillar page'],
+                            'start_generation' => ['type' => 'boolean', 'default' => true, 'description' => 'Automatically dispatch AI cluster generation job in background'],
                             'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
                         ],
                         'required' => ['topic'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_retry_project',
+                    'description' => 'Retry or restart generation for a pending or failed ClusterForge topic cluster project.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'Project ID to restart'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_export_content',
+                    'description' => 'Export full markdown content (with frontmatter metadata) for a pillar page or subtopic cluster page.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'Project ID'],
+                            'type' => ['type' => 'string', 'enum' => ['pillar', 'cluster'], 'default' => 'pillar', 'description' => 'Export type: pillar page or cluster subtopic page'],
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'Required if type is cluster'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_delete_project',
+                    'description' => 'Delete an SEO topic cluster project and its associated subtopics and questions.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'Project ID to delete'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
                     ],
                 ],
 
@@ -2026,7 +2125,14 @@ class McpController extends Controller
 
             // ClusterForge Tools
             'clusterforge_list_projects' => $this->toolClusterforgeListProjects($arguments),
+            'clusterforge_get_project' => $this->toolClusterforgeGetProject($arguments),
+            'clusterforge_search_keywords' => $this->toolClusterforgeSearchKeywords($arguments),
+            'clusterforge_get_subtopic' => $this->toolClusterforgeGetSubtopic($arguments),
+            'clusterforge_search_questions' => $this->toolClusterforgeSearchQuestions($arguments),
             'clusterforge_create_project' => $this->toolClusterforgeCreateProject($arguments),
+            'clusterforge_retry_project' => $this->toolClusterforgeRetryProject($arguments),
+            'clusterforge_export_content' => $this->toolClusterforgeExportContent($arguments),
+            'clusterforge_delete_project' => $this->toolClusterforgeDeleteProject($arguments),
 
             // DevManager Tools
             'devmanager_list_user_stories' => $this->toolDevmanagerListUserStories($arguments),
@@ -5888,24 +5994,263 @@ class McpController extends Controller
     // --- Module Tools: ClusterForge ---
 
     /**
-     * (ClusterForge) List SEO keyword and topic cluster projects.
+     * (ClusterForge) List and search SEO keyword and topic cluster projects.
      */
     protected function toolClusterforgeListProjects(array $args): array
     {
-        $teamId = $this->resolveTeamId($args);
-        $projects = ClusterForgeProject::withoutGlobalScope('current_team')->where('team_id', $teamId)->latest()->limit(25)->get();
+        $user = Auth::user();
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+
+        if (! empty($args['team_id'])) {
+            $query->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->is_admin)) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+
+        if (! empty($args['search'])) {
+            $s = trim($args['search']);
+            $query->where(function ($q) use ($s) {
+                $q->where('topic', 'like', "%{$s}%")
+                  ->orWhere('website', 'like', "%{$s}%")
+                  ->orWhere('pillar_title', 'like', "%{$s}%");
+            });
+        }
+
+        if (! empty($args['status'])) {
+            $query->where('status', $args['status']);
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 25)));
+        $total = (clone $query)->count();
+        $projects = $query->withCount(['subtopics', 'questions'])->latest()->limit($limit)->get();
+
+        $statsQuery = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! empty($args['team_id'])) {
+            $statsQuery->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->is_admin)) {
+            $statsQuery->where('team_id', $this->resolveTeamId($args));
+        }
+
+        $stats = [
+            'total' => (clone $statsQuery)->count(),
+            'completed' => (clone $statsQuery)->where('status', ClusterForgeProject::STATUS_COMPLETED)->count(),
+            'processing' => (clone $statsQuery)->processing()->count(),
+            'failed' => (clone $statsQuery)->where('status', ClusterForgeProject::STATUS_FAILED)->count(),
+        ];
 
         return [
-            'team_id' => $teamId,
-            'total' => $projects->count(),
+            'total' => $total,
+            'stats' => $stats,
             'projects' => $projects->map(fn ($p) => [
                 'id' => $p->id,
+                'team_id' => $p->team_id,
                 'topic' => $p->topic,
                 'website' => $p->website,
                 'language' => $p->language,
                 'status' => $p->status,
+                'status_label' => $p->statusLabel(),
+                'progress_percent' => $p->progressPercent(),
+                'subtopics_count' => $p->subtopics_count,
+                'questions_count' => $p->questions_count,
                 'pillar_title' => $p->pillar_title,
                 'created_at' => $p->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Get complete details of a specific project with subtopics and keywords.
+     */
+    protected function toolClusterforgeGetProject(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $user = Auth::user();
+        $query = ClusterForgeProject::withoutGlobalScope('current_team')->with(['subtopics.questions']);
+
+        if (! empty($args['team_id'])) {
+            $query->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->is_admin)) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+
+        $project = $query->findOrFail($projectId);
+        $includeContent = (bool) ($args['include_content'] ?? false);
+
+        return [
+            'project' => [
+                'id' => $project->id,
+                'team_id' => $project->team_id,
+                'topic' => $project->topic,
+                'website' => $project->website,
+                'language' => $project->language,
+                'status' => $project->status,
+                'status_label' => $project->statusLabel(),
+                'progress_percent' => $project->progressPercent(),
+                'error' => $project->error,
+                'pillar_title' => $project->pillar_title,
+                'pillar_meta_description' => $project->pillar_meta_description,
+                'pillar_content' => $includeContent ? $project->pillar_content : ($project->pillar_content ? Str::limit($project->pillar_content, 400) : null),
+                'subtopics_count' => $project->subtopics->count(),
+                'questions_count' => $project->subtopics->sum(fn ($s) => $s->questions->count()),
+                'created_at' => $project->created_at?->toIso8601String(),
+                'subtopics' => $project->subtopics->map(fn ($s) => [
+                    'id' => $s->id,
+                    'title' => $s->title,
+                    'long_tail_keyword' => $s->long_tail_keyword,
+                    'search_volume' => $s->search_volume,
+                    'cpc' => $s->cpc,
+                    'competition' => $s->competition,
+                    'competition_index' => $s->competition_index,
+                    'cluster_title' => $s->cluster_title,
+                    'questions_count' => $s->questions->count(),
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * (ClusterForge) Search keywords and subtopics across ClusterForge projects.
+     */
+    protected function toolClusterforgeSearchKeywords(array $args): array
+    {
+        $user = Auth::user();
+        $query = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! empty($args['team_id'])) {
+                $q->where('team_id', (int) $args['team_id']);
+            } elseif (! ($user && $user->is_admin)) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team')]);
+
+        if (! empty($args['project_id'])) {
+            $query->where('project_id', (int) $args['project_id']);
+        }
+
+        if (! empty($args['query'])) {
+            $term = trim($args['query']);
+            $query->where(function ($q) use ($term) {
+                $q->where('long_tail_keyword', 'like', "%{$term}%")
+                  ->orWhere('title', 'like', "%{$term}%")
+                  ->orWhere('description', 'like', "%{$term}%")
+                  ->orWhere('cluster_title', 'like', "%{$term}%");
+            });
+        }
+
+        if (isset($args['min_volume']) && is_numeric($args['min_volume'])) {
+            $query->where('search_volume', '>=', (int) $args['min_volume']);
+        }
+
+        if (isset($args['max_cpc']) && is_numeric($args['max_cpc'])) {
+            $query->where('cpc', '<=', (float) $args['max_cpc']);
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 30)));
+        $subtopics = $query->orderByDesc('search_volume')->limit($limit)->get();
+
+        return [
+            'total' => $subtopics->count(),
+            'keywords' => $subtopics->map(fn ($s) => [
+                'subtopic_id' => $s->id,
+                'project_id' => $s->project_id,
+                'project_topic' => $s->project?->topic,
+                'keyword' => $s->long_tail_keyword ?: $s->title,
+                'title' => $s->title,
+                'description' => $s->description,
+                'search_volume' => $s->search_volume,
+                'cpc' => $s->cpc,
+                'competition' => $s->competition,
+                'competition_index' => $s->competition_index,
+                'cluster_title' => $s->cluster_title,
+            ]),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Retrieve full cluster details and Q&A content for a subtopic.
+     */
+    protected function toolClusterforgeGetSubtopic(array $args): array
+    {
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+        $user = Auth::user();
+        $query = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! empty($args['team_id'])) {
+                $q->where('team_id', (int) $args['team_id']);
+            } elseif (! ($user && $user->is_admin)) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team'), 'questions']);
+
+        $subtopic = $query->findOrFail($subtopicId);
+
+        return [
+            'subtopic' => [
+                'id' => $subtopic->id,
+                'project_id' => $subtopic->project_id,
+                'project_topic' => $subtopic->project?->topic,
+                'title' => $subtopic->title,
+                'description' => $subtopic->description,
+                'long_tail_keyword' => $subtopic->long_tail_keyword,
+                'search_volume' => $subtopic->search_volume,
+                'cpc' => $subtopic->cpc,
+                'competition' => $subtopic->competition,
+                'competition_index' => $subtopic->competition_index,
+                'low_bid' => $subtopic->low_bid,
+                'high_bid' => $subtopic->high_bid,
+                'cluster_title' => $subtopic->cluster_title,
+                'cluster_meta_description' => $subtopic->cluster_meta_description,
+                'cluster_content' => $subtopic->cluster_content,
+                'questions' => $subtopic->questions->map(fn ($q) => [
+                    'id' => $q->id,
+                    'question' => $q->question,
+                    'answer' => $q->answer,
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * (ClusterForge) Search SEO questions and answers across topic clusters.
+     */
+    protected function toolClusterforgeSearchQuestions(array $args): array
+    {
+        $user = Auth::user();
+        $query = ClusterForgeQuestion::whereHas('subtopic.project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! empty($args['team_id'])) {
+                $q->where('team_id', (int) $args['team_id']);
+            } elseif (! ($user && $user->is_admin)) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with(['subtopic.project' => fn ($q) => $q->withoutGlobalScope('current_team')]);
+
+        if (! empty($args['project_id'])) {
+            $query->whereHas('subtopic', fn ($q) => $q->where('project_id', (int) $args['project_id']));
+        }
+
+        if (! empty($args['query'])) {
+            $term = trim($args['query']);
+            $query->where(function ($q) use ($term) {
+                $q->where('question', 'like', "%{$term}%")
+                  ->orWhere('answer', 'like', "%{$term}%");
+            });
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 25)));
+        $questions = $query->limit($limit)->get();
+
+        return [
+            'total' => $questions->count(),
+            'questions' => $questions->map(fn ($q) => [
+                'id' => $q->id,
+                'subtopic_id' => $q->subtopic_id,
+                'subtopic_title' => $q->subtopic?->title,
+                'keyword' => $q->subtopic?->long_tail_keyword,
+                'project_id' => $q->subtopic?->project_id,
+                'project_topic' => $q->subtopic?->project?->topic,
+                'question' => $q->question,
+                'answer' => $q->answer,
             ]),
         ];
     }
@@ -5933,15 +6278,149 @@ class McpController extends Controller
             'pillar_title' => $args['pillar_title'] ?? $topic,
         ]);
 
+        $startGeneration = $args['start_generation'] ?? true;
+        if ($startGeneration) {
+            ClusterForgeGenerateProjectJob::dispatch($project->id);
+        }
+
         return [
             'status' => 'created',
+            'generation_queued' => (bool) $startGeneration,
             'project' => [
                 'id' => $project->id,
                 'topic' => $project->topic,
                 'status' => $project->status,
                 'language' => $project->language,
+                'pillar_title' => $project->pillar_title,
             ],
-            'message' => "ClusterForge project for '{$topic}' created successfully.",
+            'message' => "ClusterForge project for '{$topic}' created successfully." . ($startGeneration ? ' AI topic generation queued.' : ''),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Retry cluster generation for a failed or pending project.
+     */
+    protected function toolClusterforgeRetryProject(array $args): array
+    {
+        $user = Auth::user();
+        $projectId = (int) ($args['project_id'] ?? 0);
+
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! empty($args['team_id'])) {
+            $query->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->is_admin)) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+
+        $project = $query->findOrFail($projectId);
+
+        if ($project->isInProgress()) {
+            return [
+                'status' => 'already_running',
+                'project_id' => $project->id,
+                'current_status' => $project->status,
+                'message' => 'This project is already being generated.',
+            ];
+        }
+
+        $project->update([
+            'status' => ClusterForgeProject::STATUS_PENDING,
+            'error' => null,
+        ]);
+
+        ClusterForgeGenerateProjectJob::dispatch($project->id);
+
+        return [
+            'status' => 'queued',
+            'project_id' => $project->id,
+            'message' => "ClusterForge project #{$project->id} ('{$project->topic}') generation restarted.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Export markdown content for a pillar page or cluster subtopic page.
+     */
+    protected function toolClusterforgeExportContent(array $args): array
+    {
+        $user = Auth::user();
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $type = $args['type'] ?? 'pillar';
+
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! empty($args['team_id'])) {
+            $query->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->is_admin)) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+
+        $project = $query->findOrFail($projectId);
+
+        if ($type === 'cluster') {
+            $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+            $sub = $project->subtopics()->findOrFail($subtopicId);
+
+            $filename = sprintf('cluster-%s.md', Str::slug($sub->long_tail_keyword ?: $sub->title ?: 'page'));
+            $body = sprintf(
+                "<!--\nTitle: %s\nMeta Description: %s\nLong-tail keyword: %s\n-->\n\n%s\n",
+                $sub->cluster_title ?? '',
+                $sub->cluster_meta_description ?? '',
+                $sub->long_tail_keyword ?? '',
+                $sub->cluster_content ?? ''
+            );
+
+            return [
+                'type' => 'cluster',
+                'project_id' => $project->id,
+                'subtopic_id' => $sub->id,
+                'filename' => $filename,
+                'title' => $sub->cluster_title,
+                'meta_description' => $sub->cluster_meta_description,
+                'long_tail_keyword' => $sub->long_tail_keyword,
+                'content' => $body,
+            ];
+        }
+
+        $filename = sprintf('pillar-%s.md', Str::slug($project->topic ?: 'page'));
+        $body = sprintf(
+            "<!--\nTitle: %s\nMeta Description: %s\n-->\n\n%s\n",
+            $project->pillar_title ?? '',
+            $project->pillar_meta_description ?? '',
+            $project->pillar_content ?? ''
+        );
+
+        return [
+            'type' => 'pillar',
+            'project_id' => $project->id,
+            'filename' => $filename,
+            'title' => $project->pillar_title,
+            'meta_description' => $project->pillar_meta_description,
+            'content' => $body,
+        ];
+    }
+
+    /**
+     * (ClusterForge) Delete an SEO topic cluster project.
+     */
+    protected function toolClusterforgeDeleteProject(array $args): array
+    {
+        $user = Auth::user();
+        $projectId = (int) ($args['project_id'] ?? 0);
+
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! empty($args['team_id'])) {
+            $query->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->is_admin)) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+
+        $project = $query->findOrFail($projectId);
+        $topic = $project->topic;
+        $project->delete();
+
+        return [
+            'status' => 'deleted',
+            'project_id' => $projectId,
+            'message' => "ClusterForge project '{$topic}' deleted successfully.",
         ];
     }
 
@@ -6171,6 +6650,7 @@ class McpController extends Controller
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://admin/announcements', 'name' => 'Active Platform Dashboard Announcements', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://admin/coupons', 'name' => 'Active Promo & Discount Coupons', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://clusterforge/projects', 'name' => 'ClusterForge SEO Topic Clusters', 'mimeType' => 'application/json'],
             ],
         ];
     }
@@ -6205,6 +6685,7 @@ class McpController extends Controller
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
             'allocore://admin/announcements' => Announcement::active()->get(['id', 'title', 'body', 'type', 'starts_at', 'ends_at'])->toJson(JSON_PRETTY_PRINT),
             'allocore://admin/coupons' => Coupon::where('is_active', true)->get(['id', 'code', 'type', 'value', 'max_uses', 'used_count', 'expires_at'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://clusterforge/projects' => json_encode($this->toolClusterforgeListProjects([]), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
 
@@ -6331,6 +6812,14 @@ class McpController extends Controller
                     'description' => 'Inspect unassigned questions and deduce optimal tools & books.',
                     'arguments' => [],
                 ],
+                [
+                    'name' => 'clusterforge_seo_architect',
+                    'description' => 'Analyze SEO keyword clusters, search volumes, and outline a complete content silo architecture.',
+                    'arguments' => [
+                        ['name' => 'topic', 'required' => false],
+                        ['name' => 'project_id', 'required' => false],
+                    ],
+                ],
             ],
         ];
     }
@@ -6338,6 +6827,7 @@ class McpController extends Controller
     public function getPrompt(string $name, array $args): array
     {
         $promptText = match ($name) {
+            'clusterforge_seo_architect' => "Sie sind der Allocore Senior SEO & Content Strategy Director. Analysieren Sie das Keyword-Cluster und die Themenarchitektur für das Thema/Projekt '".($args['topic'] ?? 'SEO Strategie')."'. Strukturieren Sie eine hochkonvertierende Content-Silo-Architektur: 1) Pillar Page (Cornerstone Content), 2) Subtopic Cluster Pages mit Fokus auf High-Intent Long-Tail Keywords, 3) Interne Verlinkungsstruktur (Internal Linking Hub & Spoke), 4) Relevante W-Fragen für Featured Snippets.",
             'debt_payoff_strategist' => "Sie sind der Allocore Senior Corporate Finance & Debt Strategist. Analysieren Sie die Verbindlichkeiten und Schulden des Unternehmens. Vergleichen Sie die Schneeball-Methode (Snowball: kleinste Salden zuerst für schnelle psychologische und operative Siege) mit der Lawinen-Methode (Avalanche: höchste Zinssätze zuerst zur Zinsminimierung). Bei einem monatlichen Zusatztilgungsbudget von ".($args['extra_monthly_budget'] ?? '500')." EUR: Erstellen Sie einen monatlichen Tilgungsplan, berechnen Sie das exakte Entschuldungsdatum (Debt-Free Date) und heben Sie die Gesamtzinsersparnis hervor.",
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
             'executive_audit_briefing' => "Erstellen Sie ein C-Level Vorstandsbriefing für Audit #".($args['audit_id'] ?? 1).". Formulieren Sie strategische Kernaussagen zu finanziellen Risiken, Engpässen und Quick Wins.",
