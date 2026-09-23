@@ -17,7 +17,10 @@ from tools.audit_tools import (
 )
 from tools.module_tools import (
     list_all_modules, manage_tool_pool, deprecate_module,
-    update_module_metadata, sync_subscription_plans
+    update_module_metadata, sync_subscription_plans,
+    admin_list_modules, admin_get_module_details, admin_install_module,
+    admin_update_module, admin_toggle_module, admin_toggle_module_pool,
+    admin_deprecate_module, admin_delete_module, admin_sync_module_plans
 )
 from tools.coach_tools import (
     diagnose_audit_gaps, calculate_pillar_scores, simulate_audit_recommendations,
@@ -73,6 +76,15 @@ mcp.tool()(manage_tool_pool)
 mcp.tool()(deprecate_module)
 mcp.tool()(update_module_metadata)
 mcp.tool()(sync_subscription_plans)
+mcp.tool()(admin_list_modules)
+mcp.tool()(admin_get_module_details)
+mcp.tool()(admin_install_module)
+mcp.tool()(admin_update_module)
+mcp.tool()(admin_toggle_module)
+mcp.tool()(admin_toggle_module_pool)
+mcp.tool()(admin_deprecate_module)
+mcp.tool()(admin_delete_module)
+mcp.tool()(admin_sync_module_plans)
 
 # ----------------------------------------------------
 # 3. Register Coach & Gap Analysis Tools

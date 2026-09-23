@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Facades\Module as ModuleFacade;
 use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditAnswer;
 use Modules\AuditPro\Models\AuditPillar;
@@ -463,7 +464,7 @@ class McpController extends Controller
                     ],
                 ],
 
-                // 2. Module & Tool Pool Governance
+                // 2. Module & Tool Pool Governance (Admin Only Operations)
                 [
                     'name' => 'list_all_modules',
                     'description' => 'List all platform modules with tool pool status, categories, icons, and route prefixes.',
@@ -477,8 +478,126 @@ class McpController extends Controller
                     ],
                 ],
                 [
+                    'name' => 'admin_list_modules',
+                    'description' => '(Admin Only) List all system tools/modules, including database records, subscription pool status, allowed roles, and available disk modules.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'category' => ['type' => 'string', 'description' => 'Filter by category'],
+                            'only_pool' => ['type' => 'boolean', 'description' => 'Filter only subscription pool tools'],
+                            'only_active' => ['type' => 'boolean', 'description' => 'Filter only active tools'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_get_module_details',
+                    'description' => '(Admin Only) Get comprehensive configuration, subscription pool status, allowed roles, linked plans, and disk module info for a tool.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key, ID, or disk name (e.g. "invoice-maker", "AuditPro")'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_install_module',
+                    'description' => '(Admin Only) Install and activate a disk module, run database migrations and optional seeders, and sync it to the All Tools Bundle plan.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string', 'description' => 'Disk module name (e.g. "InvoiceMaker", "AuditPro") or kebab key'],
+                            'category' => ['type' => 'string', 'description' => 'Category e.g. "Produktivität & Prozesse", "Finanzen"'],
+                            'icon' => ['type' => 'string', 'description' => 'Icon identifier or SVG name'],
+                            'in_subscription_pool' => ['type' => 'boolean', 'default' => true, 'description' => 'Whether to add module to customer subscription pool'],
+                            'run_migrations' => ['type' => 'boolean', 'default' => true, 'description' => 'Run module:migrate --force'],
+                            'run_seeders' => ['type' => 'boolean', 'default' => false, 'description' => 'Run module:seed --force'],
+                        ],
+                        'required' => ['name'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_update_module',
+                    'description' => '(Admin Only) Update full tool metadata: display name, description, category, icon, badge, sort order, route prefix, allowed roles, active status, pool inclusion, or deprecated flag.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key or ID to update'],
+                            'name' => ['type' => 'string', 'description' => 'Display name for the module'],
+                            'description' => ['type' => 'string', 'description' => 'Detailed description of the tool'],
+                            'category' => ['type' => 'string', 'description' => 'Tool category (e.g. Finanzen, Produktivität & Prozesse)'],
+                            'icon' => ['type' => 'string', 'description' => 'Icon name or SVG identifier'],
+                            'route_prefix' => ['type' => 'string', 'description' => 'Web route prefix for the tool'],
+                            'badge_text' => ['type' => 'string', 'description' => 'Badge text e.g. "NEW", "PRO", "BETA"'],
+                            'sort_order' => ['type' => 'integer', 'description' => 'Sorting priority order'],
+                            'allowed_roles' => [
+                                'type' => 'array',
+                                'items' => ['type' => 'string'],
+                                'description' => 'Array of role names permitted to access this module (e.g. ["admin", "manager"])',
+                            ],
+                            'is_active' => ['type' => 'boolean', 'description' => 'Enable or disable the module'],
+                            'in_subscription_pool' => ['type' => 'boolean', 'description' => 'Include in subscription pool bundle'],
+                            'is_deprecated' => ['type' => 'boolean', 'description' => 'Mark as deprecated or archived'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_toggle_module',
+                    'description' => '(Admin Only) Toggle or explicitly set active/inactive status for a tool/module.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key to toggle'],
+                            'is_active' => ['type' => 'boolean', 'description' => 'Explicit active state (optional, toggles if omitted)'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_toggle_module_pool',
+                    'description' => '(Admin Only) Toggle or set whether a tool/module is included in the customer subscription pool.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key'],
+                            'in_pool' => ['type' => 'boolean', 'description' => 'True to include in pool, false to exclude (optional, toggles if omitted)'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_deprecate_module',
+                    'description' => '(Admin Only) Mark a module as deprecated/archived or restore it to active status.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key'],
+                            'is_deprecated' => ['type' => 'boolean', 'default' => true, 'description' => 'True to archive/deprecate, false to restore'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_module',
+                    'description' => '(Admin Only) Detach plans and remove a tool/module registration record from the system database.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key or ID to delete'],
+                            'force' => ['type' => 'boolean', 'default' => false, 'description' => 'Confirm deletion'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_sync_module_plans',
+                    'description' => '(Admin Only) Synchronize all active pool tools to the All Tools Bundle plan.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
                     'name' => 'manage_tool_pool',
-                    'description' => 'Add or remove a module from the customer subscription tool pool.',
+                    'description' => '(Admin Only) Add or remove a module from the customer subscription tool pool.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -490,7 +609,7 @@ class McpController extends Controller
                 ],
                 [
                     'name' => 'deprecate_module',
-                    'description' => 'Mark a module as deprecated/archived or restore it to active status.',
+                    'description' => '(Admin Only) Mark a module as deprecated/archived or restore it to active status.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -502,7 +621,7 @@ class McpController extends Controller
                 ],
                 [
                     'name' => 'update_module_metadata',
-                    'description' => 'Update display name, description, category, modern icon, badge, or sort order of a tool.',
+                    'description' => '(Admin Only) Update display name, description, category, modern icon, badge, or sort order of a tool.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -519,7 +638,7 @@ class McpController extends Controller
                 ],
                 [
                     'name' => 'sync_subscription_plans',
-                    'description' => 'Synchronize all active pool tools to the All Tools Bundle plan.',
+                    'description' => '(Admin Only) Synchronize all active pool tools to the All Tools Bundle plan.',
                     'inputSchema' => ['type' => 'object', 'properties' => (object) []],
                 ],
 
@@ -1532,10 +1651,15 @@ class McpController extends Controller
             'list_audit_templates' => $this->toolListAuditTemplates(),
             'create_or_update_question' => $this->toolCreateOrUpdateQuestion($arguments),
             'list_all_modules' => $this->toolListAllModules($arguments),
-            'manage_tool_pool' => $this->toolManageToolPool($arguments),
-            'deprecate_module' => $this->toolDeprecateModule($arguments),
-            'update_module_metadata' => $this->toolUpdateModuleMetadata($arguments),
-            'sync_subscription_plans' => $this->toolSyncSubscriptionPlans(),
+            'admin_list_modules' => $this->toolAdminListModules($arguments),
+            'admin_get_module_details', 'get_module_details' => $this->toolAdminGetModuleDetails($arguments),
+            'admin_install_module', 'install_module' => $this->toolAdminInstallModule($arguments),
+            'admin_update_module', 'update_module_metadata' => $this->toolAdminUpdateModule($arguments),
+            'admin_toggle_module', 'toggle_module' => $this->toolAdminToggleModule($arguments),
+            'admin_toggle_module_pool', 'manage_tool_pool' => $this->toolAdminToggleModulePool($arguments),
+            'admin_deprecate_module', 'deprecate_module' => $this->toolAdminDeprecateModule($arguments),
+            'admin_delete_module', 'delete_module' => $this->toolAdminDeleteModule($arguments),
+            'admin_sync_module_plans', 'sync_subscription_plans' => $this->toolAdminSyncModulePlans(),
             'diagnose_audit_gaps' => $this->toolDiagnoseAuditGaps($arguments),
             'calculate_pillar_scores' => $this->toolCalculatePillarScores($arguments),
             'generate_action_plan' => $this->toolGenerateActionPlan($arguments),
@@ -1796,11 +1920,12 @@ class McpController extends Controller
         if (! empty($args['only_pool'])) $query->inSubscriptionPool();
         if (! empty($args['only_active'])) $query->active();
 
-        $modules = $query->orderBy('sort_order')->get();
+        $modules = $query->orderBy('sort_order')->orderBy('name')->get();
 
         return [
             'total' => $modules->count(),
             'modules' => $modules->map(fn ($m) => [
+                'id' => $m->id,
                 'key' => $m->key,
                 'name' => $m->getRawOriginal('name'),
                 'description' => $m->getRawOriginal('description'),
@@ -1816,53 +1941,468 @@ class McpController extends Controller
         ];
     }
 
+    /**
+     * (Admin Only) List all modules with full admin metadata and disk detection.
+     */
+    protected function toolAdminListModules(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $query = Module::with(['plans:id,name,slug']);
+        if (! empty($args['category'])) $query->where('category', $args['category']);
+        if (! empty($args['only_pool'])) $query->inSubscriptionPool();
+        if (! empty($args['only_active'])) $query->active();
+
+        $modules = $query->orderBy('sort_order')->orderBy('name')->get();
+
+        // Scan disk modules
+        $diskModules = [];
+        $uninstalledDiskModules = [];
+        try {
+            $installedKeys = $modules->pluck('key')->all();
+            foreach (ModuleFacade::all() as $dm) {
+                $k = Str::kebab($dm->getName());
+                $isInstalled = in_array($k, $installedKeys, true);
+                $dData = [
+                    'name' => $dm->getName(),
+                    'key' => $k,
+                    'alias' => $dm->get('alias', $k),
+                    'description' => $dm->get('description', ''),
+                    'path' => $dm->getPath(),
+                    'is_enabled_on_disk' => $dm->isEnabled(),
+                    'is_installed_in_db' => $isInstalled,
+                ];
+                $diskModules[] = $dData;
+                if (! $isInstalled) {
+                    $uninstalledDiskModules[] = $dData;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore disk scan error
+        }
+
+        return [
+            'total_installed' => $modules->count(),
+            'total_disk_modules' => count($diskModules),
+            'active_count' => Module::where('is_active', true)->where('is_deprecated', false)->count(),
+            'pool_count' => Module::inSubscriptionPool()->count(),
+            'deprecated_count' => Module::where('is_deprecated', true)->count(),
+            'modules' => $modules->map(fn ($m) => [
+                'id' => $m->id,
+                'key' => $m->key,
+                'name' => $m->getRawOriginal('name'),
+                'description' => $m->getRawOriginal('description'),
+                'category' => $m->category,
+                'icon' => $m->icon,
+                'route_prefix' => $m->route_prefix,
+                'in_subscription_pool' => (bool) $m->in_subscription_pool,
+                'is_active' => (bool) $m->is_active,
+                'is_deprecated' => (bool) $m->is_deprecated,
+                'badge_text' => $m->badge_text,
+                'sort_order' => $m->sort_order,
+                'allowed_roles' => $m->allowed_roles ?? [],
+                'plans' => $m->plans->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'slug' => $p->slug]),
+            ]),
+            'uninstalled_disk_modules' => $uninstalledDiskModules,
+        ];
+    }
+
+    /**
+     * (Admin Only) Get complete details for a module/tool.
+     */
+    protected function toolAdminGetModuleDetails(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $keyOrId = $args['module_key'] ?? ($args['id'] ?? null);
+        if (! $keyOrId) {
+            throw new \InvalidArgumentException('module_key or id is required.');
+        }
+
+        $module = is_numeric($keyOrId)
+            ? Module::with('plans')->find($keyOrId)
+            : Module::with('plans')->where('key', $keyOrId)->first();
+
+        $diskInfo = null;
+        try {
+            $lookup = $module ? $module->name : $keyOrId;
+            $dm = ModuleFacade::find($lookup) ?? ModuleFacade::find(Str::studly($lookup)) ?? ModuleFacade::find(Str::kebab($lookup));
+            if (! $dm) {
+                foreach (ModuleFacade::all() as $m) {
+                    if (Str::kebab($m->getName()) === Str::kebab($keyOrId)) {
+                        $dm = $m;
+                        break;
+                    }
+                }
+            }
+            if ($dm) {
+                $diskInfo = [
+                    'name' => $dm->getName(),
+                    'alias' => $dm->get('alias', Str::kebab($dm->getName())),
+                    'description' => $dm->get('description', ''),
+                    'path' => $dm->getPath(),
+                    'is_enabled' => $dm->isEnabled(),
+                ];
+            }
+        } catch (\Throwable $e) {
+        }
+
+        if (! $module && ! $diskInfo) {
+            throw new \InvalidArgumentException("Module '{$keyOrId}' not found in database or disk.");
+        }
+
+        return [
+            'is_installed' => (bool) $module,
+            'module' => $module ? [
+                'id' => $module->id,
+                'key' => $module->key,
+                'name' => $module->getRawOriginal('name'),
+                'description' => $module->getRawOriginal('description'),
+                'category' => $module->category,
+                'icon' => $module->icon,
+                'route_prefix' => $module->route_prefix,
+                'in_subscription_pool' => (bool) $module->in_subscription_pool,
+                'is_active' => (bool) $module->is_active,
+                'is_deprecated' => (bool) $module->is_deprecated,
+                'badge_text' => $module->badge_text,
+                'sort_order' => $module->sort_order,
+                'allowed_roles' => $module->allowed_roles ?? [],
+                'plans' => $module->plans->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'slug' => $p->slug]),
+                'created_at' => $module->created_at?->toIso8601String(),
+                'updated_at' => $module->updated_at?->toIso8601String(),
+            ] : null,
+            'disk_module' => $diskInfo,
+        ];
+    }
+
+    /**
+     * (Admin Only) Install and activate a module from disk.
+     */
+    protected function toolAdminInstallModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $name = trim($args['name'] ?? ($args['module_key'] ?? ''));
+        if (empty($name)) {
+            throw new \InvalidArgumentException('name (disk module name or key) is required to install.');
+        }
+
+        // Try exact match, studly, or kebab
+        $diskModule = ModuleFacade::find($name)
+            ?? ModuleFacade::find(Str::studly($name))
+            ?? ModuleFacade::find(Str::kebab($name));
+
+        if (! $diskModule) {
+            // Find by matching kebab
+            foreach (ModuleFacade::all() as $m) {
+                if (Str::kebab($m->getName()) === Str::kebab($name)) {
+                    $diskModule = $m;
+                    break;
+                }
+            }
+        }
+
+        if (! $diskModule) {
+            $available = collect(ModuleFacade::all())->map(fn ($m) => $m->getName())->values()->all();
+            throw new \InvalidArgumentException("Module '{$name}' not found on disk. Available disk modules: " . implode(', ', $available));
+        }
+
+        $key = Str::kebab($diskModule->getName());
+        $record = Module::where('key', $key)->first();
+
+        if (! $record) {
+            $record = Module::create([
+                'key' => $key,
+                'name' => $args['name'] ?? $diskModule->getName(),
+                'description' => $args['description'] ?? $diskModule->get('description', ''),
+                'icon' => $args['icon'] ?? 'sparkles',
+                'category' => $args['category'] ?? 'Produktivität & Prozesse',
+                'route_prefix' => $args['route_prefix'] ?? $diskModule->get('alias', $key),
+                'in_subscription_pool' => isset($args['in_subscription_pool']) ? (bool) $args['in_subscription_pool'] : true,
+                'is_deprecated' => false,
+                'is_active' => true,
+            ]);
+        } else {
+            $record->update(['is_active' => true]);
+        }
+
+        $runMigrations = $args['run_migrations'] ?? true;
+        $migrationOutput = null;
+        if ($runMigrations) {
+            try {
+                Artisan::call('module:migrate', ['module' => $diskModule->getName(), '--force' => true]);
+                $migrationOutput = trim(Artisan::output());
+            } catch (\Throwable $e) {
+                Log::warning("Module migration failed for {$diskModule->getName()}: " . $e->getMessage());
+                $migrationOutput = 'Error: ' . $e->getMessage();
+            }
+        }
+
+        $runSeeders = $args['run_seeders'] ?? false;
+        if ($runSeeders) {
+            try {
+                Artisan::call('module:seed', ['module' => $diskModule->getName(), '--force' => true]);
+            } catch (\Throwable $e) {
+                // Optional
+            }
+        }
+
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'installed',
+            'module' => [
+                'id' => $record->id,
+                'key' => $record->key,
+                'name' => $record->getRawOriginal('name'),
+                'category' => $record->category,
+                'is_active' => (bool) $record->is_active,
+                'in_subscription_pool' => (bool) $record->in_subscription_pool,
+            ],
+            'migration_output' => $migrationOutput,
+            'message' => "Module '{$diskModule->getName()}' installed and activated successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Update full tool/module metadata, roles, pool, and status.
+     */
+    protected function toolAdminUpdateModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $keyOrId = $args['module_key'] ?? ($args['id'] ?? null);
+        if (! $keyOrId) {
+            throw new \InvalidArgumentException('module_key is required.');
+        }
+
+        $module = is_numeric($keyOrId) ? Module::find($keyOrId) : Module::byKey($keyOrId);
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$keyOrId}' not found.");
+        }
+
+        $fields = [
+            'name', 'description', 'category', 'icon', 'route_prefix',
+            'badge_text', 'sort_order', 'allowed_roles',
+            'is_active', 'in_subscription_pool', 'is_deprecated',
+        ];
+
+        $data = [];
+        foreach ($fields as $f) {
+            if (array_key_exists($f, $args)) {
+                $val = $args[$f];
+                if (in_array($f, ['is_active', 'in_subscription_pool', 'is_deprecated'], true)) {
+                    $val = (bool) $val;
+                } elseif ($f === 'sort_order') {
+                    $val = (int) $val;
+                } elseif ($f === 'allowed_roles') {
+                    if (is_string($val)) {
+                        $val = array_filter(array_map('trim', explode(',', $val)));
+                    }
+                }
+                $data[$f] = $val;
+            }
+        }
+
+        if (! empty($data)) {
+            $module->update($data);
+            $this->syncAllToolsPlan();
+        }
+
+        return [
+            'status' => 'success',
+            'module' => [
+                'id' => $module->id,
+                'key' => $module->key,
+                'name' => $module->getRawOriginal('name'),
+                'description' => $module->getRawOriginal('description'),
+                'category' => $module->category,
+                'icon' => $module->icon,
+                'route_prefix' => $module->route_prefix,
+                'in_subscription_pool' => (bool) $module->in_subscription_pool,
+                'is_active' => (bool) $module->is_active,
+                'is_deprecated' => (bool) $module->is_deprecated,
+                'badge_text' => $module->badge_text,
+                'sort_order' => $module->sort_order,
+                'allowed_roles' => $module->allowed_roles ?? [],
+            ],
+            'updated_fields' => array_keys($data),
+            'message' => "Module '{$module->key}' was successfully updated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Toggle active status of a module.
+     */
+    protected function toolAdminToggleModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $module = Module::byKey($args['module_key'] ?? '');
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        }
+
+        $newState = array_key_exists('is_active', $args) ? (bool) $args['is_active'] : ! $module->is_active;
+        $module->update(['is_active' => $newState]);
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'success',
+            'module_key' => $module->key,
+            'is_active' => $module->is_active,
+            'message' => $module->is_active ? "Module '{$module->key}' activated." : "Module '{$module->key}' deactivated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Toggle or set subscription pool status.
+     */
+    protected function toolAdminToggleModulePool(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $module = Module::byKey($args['module_key'] ?? '');
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        }
+
+        $newPool = array_key_exists('in_pool', $args)
+            ? (bool) $args['in_pool']
+            : (array_key_exists('in_subscription_pool', $args) ? (bool) $args['in_subscription_pool'] : ! $module->in_subscription_pool);
+
+        $module->update(['in_subscription_pool' => $newPool]);
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'success',
+            'module_key' => $module->key,
+            'in_subscription_pool' => (bool) $module->in_subscription_pool,
+            'message' => $module->in_subscription_pool
+                ? "Module '{$module->key}' added to the customer subscription pool."
+                : "Module '{$module->key}' removed from the customer subscription pool.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Deprecate or un-deprecate a module.
+     */
+    protected function toolAdminDeprecateModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $module = Module::byKey($args['module_key'] ?? '');
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        }
+
+        $isDeprecated = array_key_exists('is_deprecated', $args) ? (bool) $args['is_deprecated'] : true;
+        $module->update(['is_deprecated' => $isDeprecated]);
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'success',
+            'module_key' => $module->key,
+            'is_deprecated' => (bool) $module->is_deprecated,
+            'message' => $module->is_deprecated
+                ? "Module '{$module->key}' marked as deprecated/archived."
+                : "Module '{$module->key}' restored from archive.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete/uninstall a module registration record.
+     */
+    protected function toolAdminDeleteModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $keyOrId = $args['module_key'] ?? ($args['id'] ?? null);
+        if (! $keyOrId) {
+            throw new \InvalidArgumentException('module_key is required.');
+        }
+
+        $module = is_numeric($keyOrId) ? Module::find($keyOrId) : Module::byKey($keyOrId);
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$keyOrId}' not found.");
+        }
+
+        $key = $module->key;
+        $name = $module->getRawOriginal('name');
+
+        // Detach from plans
+        $module->plans()->detach();
+        $module->delete();
+
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'deleted',
+            'module_key' => $key,
+            'name' => $name,
+            'message' => "Module '{$name}' ({$key}) registration was successfully deleted from database.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Synchronize active in-pool modules with the All Tools Bundle plan.
+     */
+    protected function toolAdminSyncModulePlans(): array
+    {
+        $this->ensureAdmin();
+
+        return $this->syncAllToolsPlan();
+    }
+
+    protected function syncAllToolsPlan(): array
+    {
+        $plan = Plan::where('slug', 'all-tools')->orWhere('slug', 'bundle')->first();
+        if (! $plan) {
+            return ['status' => 'skipped', 'message' => 'All Tools Bundle plan not found.'];
+        }
+
+        $poolModuleIds = Module::where('in_subscription_pool', true)
+            ->where('is_active', true)
+            ->where('is_deprecated', false)
+            ->pluck('id')
+            ->all();
+
+        $plan->modules()->sync($poolModuleIds);
+
+        return [
+            'status' => 'synced',
+            'plan_id' => $plan->id,
+            'plan_name' => $plan->name,
+            'synced_modules_count' => count($poolModuleIds),
+        ];
+    }
+
     protected function toolManageToolPool(array $args): array
     {
-        $module = Module::byKey($args['module_key']);
-        if (! $module) throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        $this->ensureAdmin();
 
-        $module->update(['in_subscription_pool' => (bool) $args['in_pool']]);
-        $this->toolSyncSubscriptionPlans();
-
-        return ['status' => 'success', 'module' => $module->key, 'in_subscription_pool' => $module->in_subscription_pool];
+        return $this->toolAdminToggleModulePool($args);
     }
 
     protected function toolDeprecateModule(array $args): array
     {
-        $module = Module::byKey($args['module_key']);
-        if (! $module) throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        $this->ensureAdmin();
 
-        $module->update(['is_deprecated' => (bool) ($args['is_deprecated'] ?? true)]);
-        $this->toolSyncSubscriptionPlans();
-
-        return ['status' => 'success', 'module' => $module->key, 'is_deprecated' => $module->is_deprecated];
+        return $this->toolAdminDeprecateModule($args);
     }
 
     protected function toolUpdateModuleMetadata(array $args): array
     {
-        $module = Module::byKey($args['module_key']);
-        if (! $module) throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        $this->ensureAdmin();
 
-        $fields = ['name', 'description', 'category', 'icon', 'badge_text', 'sort_order'];
-        $data = [];
-        foreach ($fields as $f) {
-            if (array_key_exists($f, $args)) $data[$f] = $args[$f];
-        }
-
-        $module->update($data);
-
-        return ['status' => 'success', 'module' => $module->key, 'updated' => $data];
+        return $this->toolAdminUpdateModule($args);
     }
 
     protected function toolSyncSubscriptionPlans(): array
     {
-        $plan = Plan::where('slug', 'all-tools')->orWhere('slug', 'bundle')->first();
-        if (! $plan) return ['status' => 'skipped', 'message' => 'Bundle plan not found.'];
+        $this->ensureAdmin();
 
-        $poolModuleIds = Module::where('in_subscription_pool', true)->where('is_active', true)->where('is_deprecated', false)->pluck('id')->all();
-        $plan->modules()->sync($poolModuleIds);
-
-        return ['status' => 'synced', 'plan' => $plan->name, 'synced_modules_count' => count($poolModuleIds)];
+        return $this->toolAdminSyncModulePlans();
     }
 
     protected function toolDiagnoseAuditGaps(array $args): array
