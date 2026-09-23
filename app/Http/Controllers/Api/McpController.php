@@ -1908,6 +1908,95 @@ class McpController extends Controller
                         'required' => ['project_id'],
                     ],
                 ],
+                [
+                    'name' => 'clusterforge_save_subtopics',
+                    'description' => 'Save externally generated subtopics for a ClusterForge project (bypasses Gemini). Use this after you have generated the subtopic list yourself. Sets project status to generating_questions.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'The ClusterForge project ID'],
+                            'subtopics' => [
+                                'type' => 'array',
+                                'description' => 'Array of subtopic objects to save',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'title' => ['type' => 'string', 'description' => 'Subtopic title'],
+                                        'long_tail_keyword' => ['type' => 'string', 'description' => 'Long-tail keyword'],
+                                        'description' => ['type' => 'string', 'description' => 'Short description of the subtopic'],
+                                    ],
+                                    'required' => ['title'],
+                                ],
+                            ],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id', 'subtopics'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_questions',
+                    'description' => 'Save externally generated questions for a specific ClusterForge subtopic (bypasses Gemini). Replaces any existing questions for that subtopic.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID to save questions for'],
+                            'questions' => [
+                                'type' => 'array',
+                                'description' => 'Array of question strings (up to 10)',
+                                'items' => ['type' => 'string'],
+                            ],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id', 'questions'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_answers',
+                    'description' => 'Save externally generated answers for all questions in a ClusterForge subtopic (bypasses Gemini). answers array must match question order.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID'],
+                            'answers' => [
+                                'type' => 'array',
+                                'description' => 'Array of answer strings in the same order as the subtopic questions',
+                                'items' => ['type' => 'string'],
+                            ],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id', 'answers'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_cluster_content',
+                    'description' => 'Save externally generated cluster page content (title, meta, intro markdown) for a subtopic (bypasses Gemini). Full cluster_content is auto-assembled from title + intro + Q&A.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID'],
+                            'title' => ['type' => 'string', 'description' => 'H1 page title for the cluster page'],
+                            'meta_description' => ['type' => 'string', 'description' => 'SEO meta description (150-160 chars)'],
+                            'introduction_markdown' => ['type' => 'string', 'description' => 'Introduction section markdown (200-350 words)'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id', 'title'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_pillar_content',
+                    'description' => 'Save externally generated pillar page content (title, meta, full markdown body) for a ClusterForge project and mark it completed (bypasses Gemini).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'The ClusterForge project ID'],
+                            'title' => ['type' => 'string', 'description' => 'H1 pillar page title'],
+                            'meta_description' => ['type' => 'string', 'description' => 'SEO meta description for the pillar page'],
+                            'content_markdown' => ['type' => 'string', 'description' => 'Full pillar page body in Markdown (~700-1100 words)'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id', 'title', 'content_markdown'],
+                    ],
+                ],
 
                 // 15. DevManager (Agile/Scrum Backlog & Roadmaps)
                 [
@@ -2133,6 +2222,11 @@ class McpController extends Controller
             'clusterforge_retry_project' => $this->toolClusterforgeRetryProject($arguments),
             'clusterforge_export_content' => $this->toolClusterforgeExportContent($arguments),
             'clusterforge_delete_project' => $this->toolClusterforgeDeleteProject($arguments),
+            'clusterforge_save_subtopics' => $this->toolClusterforgeSaveSubtopics($arguments),
+            'clusterforge_save_questions' => $this->toolClusterforgeSaveQuestions($arguments),
+            'clusterforge_save_answers' => $this->toolClusterforgeSaveAnswers($arguments),
+            'clusterforge_save_cluster_content' => $this->toolClusterforgeSaveClusterContent($arguments),
+            'clusterforge_save_pillar_content' => $this->toolClusterforgeSavePillarContent($arguments),
 
             // DevManager Tools
             'devmanager_list_user_stories' => $this->toolDevmanagerListUserStories($arguments),
@@ -6421,6 +6515,220 @@ class McpController extends Controller
             'status' => 'deleted',
             'project_id' => $projectId,
             'message' => "ClusterForge project '{$topic}' deleted successfully.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated subtopics — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveSubtopics(array $args): array
+    {
+        $user = Auth::user();
+        $projectId = (int) ($args['project_id'] ?? 0);
+
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! ($user && $user->isAdmin())) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+        $project = $query->findOrFail($projectId);
+
+        $subtopics = $args['subtopics'] ?? [];
+        if (empty($subtopics) || ! is_array($subtopics)) {
+            throw new \InvalidArgumentException('subtopics array is required and must not be empty.');
+        }
+
+        DB::transaction(function () use ($project, $subtopics) {
+            $project->subtopics()->delete();
+            foreach (array_slice($subtopics, 0, 5) as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $project->subtopics()->create([
+                    'title'             => (string) ($row['title'] ?? ('Subtopic ' . ($i + 1))),
+                    'long_tail_keyword' => isset($row['long_tail_keyword']) ? (string) $row['long_tail_keyword'] : null,
+                    'description'       => isset($row['description']) ? (string) $row['description'] : null,
+                    'sort_order'        => $i,
+                ]);
+            }
+        });
+
+        $project->update(['status' => ClusterForgeProject::STATUS_GENERATING_QUESTIONS, 'error' => null]);
+
+        return [
+            'status'           => 'saved',
+            'project_id'       => $project->id,
+            'subtopics_saved'  => $project->subtopics()->count(),
+            'project_status'   => $project->fresh()->status,
+            'subtopics'        => $project->subtopics()->get(['id', 'title', 'long_tail_keyword', 'sort_order']),
+            'message'          => "Subtopics saved for project #{$project->id} ('{$project->topic}'). Next: call clusterforge_save_questions for each subtopic_id.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated questions for a subtopic — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveQuestions(array $args): array
+    {
+        $user = Auth::user();
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+
+        $subtopic = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! ($user && $user->isAdmin())) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->findOrFail($subtopicId);
+
+        $questions = array_values(array_filter($args['questions'] ?? [], fn ($q) => is_string($q) && trim($q) !== ''));
+        if (empty($questions)) {
+            throw new \InvalidArgumentException('questions array must contain at least one non-empty string.');
+        }
+
+        DB::transaction(function () use ($subtopic, $questions) {
+            $subtopic->questions()->delete();
+            foreach (array_slice($questions, 0, 10) as $i => $text) {
+                $subtopic->questions()->create([
+                    'question'   => trim($text),
+                    'sort_order' => $i,
+                ]);
+            }
+        });
+
+        return [
+            'status'          => 'saved',
+            'subtopic_id'     => $subtopic->id,
+            'subtopic_title'  => $subtopic->title,
+            'questions_saved' => count(array_slice($questions, 0, 10)),
+            'message'         => "Questions saved for subtopic #{$subtopic->id}. Next: call clusterforge_save_answers with subtopic_id={$subtopic->id}.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated answers for a subtopic's questions — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveAnswers(array $args): array
+    {
+        $user = Auth::user();
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+
+        $subtopic = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! ($user && $user->isAdmin())) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with('questions')->findOrFail($subtopicId);
+
+        $answers = $args['answers'] ?? [];
+        if (empty($answers) || ! is_array($answers)) {
+            throw new \InvalidArgumentException('answers array is required.');
+        }
+
+        $questions = $subtopic->questions()->orderBy('sort_order')->get();
+        if ($questions->isEmpty()) {
+            throw new \InvalidArgumentException("Subtopic #{$subtopicId} has no questions. Save questions first.");
+        }
+
+        DB::transaction(function () use ($questions, $answers) {
+            foreach ($questions as $i => $question) {
+                $answer = $answers[$i] ?? null;
+                $question->update(['answer' => ($answer !== null && trim((string) $answer) !== '') ? trim((string) $answer) : null]);
+            }
+        });
+
+        return [
+            'status'         => 'saved',
+            'subtopic_id'    => $subtopic->id,
+            'subtopic_title' => $subtopic->title,
+            'answers_saved'  => $questions->count(),
+            'message'        => "Answers saved for subtopic #{$subtopic->id}. Next: call clusterforge_save_cluster_content with subtopic_id={$subtopic->id}.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated cluster page content for a subtopic — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveClusterContent(array $args): array
+    {
+        $user = Auth::user();
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+
+        $subtopic = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! ($user && $user->isAdmin())) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team'), 'questions'])->findOrFail($subtopicId);
+
+        $title = trim($args['title'] ?? '');
+        if (empty($title)) {
+            throw new \InvalidArgumentException('title is required.');
+        }
+        $meta  = mb_substr(trim($args['meta_description'] ?? ''), 0, 320);
+        $intro = trim($args['introduction_markdown'] ?? '');
+
+        // Build the same cluster_content format as KeywordClusterGenerator::generateClusterPage
+        $project = $subtopic->project;
+        $faqHeading = ($project && $project->language === 'de') ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions';
+        $body = "# {$title}\n\n{$intro}\n\n## {$faqHeading}\n\n";
+        foreach ($subtopic->questions()->orderBy('sort_order')->get() as $q) {
+            $body .= "### {$q->question}\n\n" . ($q->answer ?? '_Noch keine Antwort generiert._') . "\n\n";
+        }
+
+        $subtopic->update([
+            'cluster_title'            => $title,
+            'cluster_meta_description' => $meta,
+            'cluster_content'          => $body,
+        ]);
+
+        return [
+            'status'              => 'saved',
+            'subtopic_id'         => $subtopic->id,
+            'subtopic_title'      => $subtopic->title,
+            'cluster_title'       => $title,
+            'cluster_content_len' => mb_strlen($body),
+            'message'             => "Cluster page saved for subtopic #{$subtopic->id} ('{$subtopic->title}').",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated pillar page content and mark project completed — Gemini bypass.
+     */
+    protected function toolClusterforgeSavePillarContent(array $args): array
+    {
+        $user = Auth::user();
+        $projectId = (int) ($args['project_id'] ?? 0);
+
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! ($user && $user->isAdmin())) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+        $project = $query->findOrFail($projectId);
+
+        $title = trim($args['title'] ?? '');
+        if (empty($title)) {
+            throw new \InvalidArgumentException('title is required for pillar page.');
+        }
+        $meta    = mb_substr(trim($args['meta_description'] ?? ''), 0, 320);
+        $content = trim($args['content_markdown'] ?? '');
+        if (empty($content)) {
+            throw new \InvalidArgumentException('content_markdown is required.');
+        }
+
+        $project->update([
+            'pillar_title'            => $title,
+            'pillar_meta_description' => $meta,
+            'pillar_content'          => $content,
+            'status'                  => ClusterForgeProject::STATUS_COMPLETED,
+            'error'                   => null,
+        ]);
+
+        return [
+            'status'          => 'completed',
+            'project_id'      => $project->id,
+            'topic'           => $project->topic,
+            'pillar_title'    => $title,
+            'content_length'  => mb_strlen($content),
+            'message'         => "Pillar page saved and project #{$project->id} ('{$project->topic}') marked as completed.",
         ];
     }
 
