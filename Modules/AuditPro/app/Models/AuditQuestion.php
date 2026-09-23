@@ -26,6 +26,8 @@ class AuditQuestion extends Model
         'failure_recommendation',
         'recommended_module_key',
         'knowledge_slug',
+        'recommended_book_id',
+        'recommended_post_id',
         'options',
         'depends_on_question_id',
         'depends_on_answer',
@@ -38,6 +40,8 @@ class AuditQuestion extends Model
             'weight' => 'decimal:2',
             'is_required' => 'boolean',
             'options' => 'array',
+            'recommended_book_id' => 'integer',
+            'recommended_post_id' => 'integer',
         ];
     }
 
@@ -69,5 +73,15 @@ class AuditQuestion extends Model
     public function dependents(): HasMany
     {
         return $this->hasMany(self::class, 'depends_on_question_id');
+    }
+
+    public function recommendedBook(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\BookIntelligence\Models\Book::class, 'recommended_book_id');
+    }
+
+    public function recommendedPost(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Post::class, 'recommended_post_id');
     }
 }

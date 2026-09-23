@@ -3,7 +3,7 @@
 @section('content')
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-slate-900">{{ __('admin.audit_questions.edit_title') }}</h1>
-        <p class="text-sm text-slate-500">{{ $template->name }}</p>
+        <p class="text-sm text-slate-500">{{ $template?->name ?? __('Audit Question') }}</p>
     </div>
 
     <div class="max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

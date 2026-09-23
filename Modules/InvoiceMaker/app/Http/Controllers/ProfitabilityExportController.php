@@ -44,33 +44,96 @@ class ProfitabilityExportController
             </style></head><body>');
 
             // --- 1. OVERALL EVALUATION ---
-            $totalRevenue = Invoice::where('team_id', $business->team_id)
+            $invoicedRevenue = Invoice::where('team_id', $business->team_id)
                 ->whereBetween('invoice_date', [$startDate, $endDate])
-                ->where('status', 'paid')
+                ->whereNotIn('status', ['draft', 'cancelled'])
                 ->sum('grand_total');
 
-            $totalExpenses = Expense::where('team_id', $business->team_id)
+            $manualIncome = \Modules\InvoiceMaker\Models\CashBookEntry::where('team_id', $business->team_id)
+                ->where('type', 'income')
+                ->whereNull('invoice_id')
                 ->whereBetween('date', [$startDate, $endDate])
                 ->sum('amount');
+
+            $totalRevenue = (float) $invoicedRevenue + (float) $manualIncome;
+
+            $expenses = Expense::where('team_id', $business->team_id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->with('category')
+                ->get();
+
+            $totalFixedCosts = 0.0;
+            $totalVariableCosts = 0.0;
+            $topCosts = [];
+
+            foreach ($expenses as $expense) {
+                $amount = (float) $expense->amount;
+                $isFixed = $expense->isFixedCost();
+
+                if ($isFixed) {
+                    $totalFixedCosts += $amount;
+                } else {
+                    $totalVariableCosts += $amount;
+                }
+
+                $catName = $expense->category?->name ?? ($expense->category ?? __('Uncategorized'));
+                if (!isset($topCosts[$catName])) {
+                    $topCosts[$catName] = [
+                        'amount' => 0.0,
+                        'count' => 0,
+                        'type' => $isFixed ? __('Fixed Cost') : __('Variable Cost'),
+                    ];
+                }
+                $topCosts[$catName]['amount'] += $amount;
+                $topCosts[$catName]['count']++;
+            }
+
+            $totalExpenses = $totalFixedCosts + $totalVariableCosts;
+            $netProfit = $totalRevenue - $totalExpenses;
+
+            // Monthly Benchmarks & Break-Even
+            $startCarbon = \Carbon\Carbon::parse($startDate);
+            $endCarbon = \Carbon\Carbon::parse($endDate);
+            $periodDays = max(1, $startCarbon->diffInDays($endCarbon) + 1);
+            $periodMonths = max(0.5, round($periodDays / 30.4375, 2));
+
+            $monthlyAvgFixed = $totalFixedCosts / $periodMonths;
+            $monthlyAvgVariable = $totalVariableCosts / $periodMonths;
+            $absoluteMinMonthlyRevenue = $totalExpenses / $periodMonths;
+            $costCoveragePercent = $totalExpenses > 0 ? ($totalRevenue / $totalExpenses) * 100 : ($totalRevenue > 0 ? 100.0 : 0.0);
+            $revenueGap = $totalRevenue - $totalExpenses;
 
             fwrite($handle, '<div class="title">'.__('Overall Financial Evaluation').' ('.$startDate.' - '.$endDate.')</div>');
             fwrite($handle, '<table><thead><tr><th>'.__('Metric').'</th><th>'.__('Value').' ('.$business->currency.')</th></tr></thead><tbody>');
             fwrite($handle, '<tr><td>'.__('Total Revenue').'</td><td class="amount positive" x:num="'.$totalRevenue.'">'.number_format($totalRevenue, 2).'</td></tr>');
-            fwrite($handle, '<tr><td>'.__('Total Expenses').'</td><td class="amount negative" x:num="-'.$totalExpenses.'">-'.number_format($totalExpenses, 2).'</td></tr>');
-            fwrite($handle, '<tr><td><strong>'.__('Net Profit').'</strong></td><td class="amount '.($totalRevenue >= $totalExpenses ? 'positive' : 'negative').'" x:num="'.($totalRevenue - $totalExpenses).'"><strong>'.number_format($totalRevenue - $totalExpenses, 2).'</strong></td></tr>');
+            fwrite($handle, '<tr><td>'.__('Fixed Costs').'</td><td class="amount negative" x:num="-'.$totalFixedCosts.'">-'.number_format($totalFixedCosts, 2).'</td></tr>');
+            fwrite($handle, '<tr><td>'.__('Variable Costs').'</td><td class="amount negative" x:num="-'.$totalVariableCosts.'">-'.number_format($totalVariableCosts, 2).'</td></tr>');
+            fwrite($handle, '<tr><td><strong>'.__('Total Operational Costs').'</strong></td><td class="amount negative" x:num="-'.$totalExpenses.'"><strong>-'.number_format($totalExpenses, 2).'</strong></td></tr>');
+            fwrite($handle, '<tr><td><strong>'.__('Net Profit').'</strong></td><td class="amount '.($netProfit >= 0 ? 'positive' : 'negative').'" x:num="'.$netProfit.'"><strong>'.number_format($netProfit, 2).'</strong></td></tr>');
             fwrite($handle, '</tbody></table>');
 
-            // --- 2. TOP CUSTOMERS ---
+            // --- 2. BENCHMARKS & BREAK-EVEN ANALYSIS ---
+            fwrite($handle, '<div class="title">'.__('Cost Benchmarks & Break-Even KPIs').' ('.$periodMonths.' '.__('Months').')</div>');
+            fwrite($handle, '<table><thead><tr><th>'.__('Benchmark Metric').'</th><th>'.__('Value').'</th><th>'.__('Notes').'</th></tr></thead><tbody>');
+            fwrite($handle, '<tr><td>'.__('Monthly Fixed Costs Avg').'</td><td class="amount" x:num="'.$monthlyAvgFixed.'">'.number_format($monthlyAvgFixed, 2).' '.$business->currency.'</td><td>'.__('Essential recurring overhead').'</td></tr>');
+            fwrite($handle, '<tr><td>'.__('Monthly Variable Costs Avg').'</td><td class="amount" x:num="'.$monthlyAvgVariable.'">'.number_format($monthlyAvgVariable, 2).' '.$business->currency.'</td><td>'.__('Activity-driven spending').'</td></tr>');
+            fwrite($handle, '<tr><td><strong>'.__('Absolute Minimum Monthly Revenue').'</strong></td><td class="amount '.($totalRevenue >= $totalExpenses ? 'positive' : 'negative').'" x:num="'.$absoluteMinMonthlyRevenue.'"><strong>'.number_format($absoluteMinMonthlyRevenue, 2).' '.$business->currency.'</strong></td><td><strong>'.__('Monthly Break-Even baseline threshold').'</strong></td></tr>');
+            fwrite($handle, '<tr><td>'.__('Cost Coverage Ratio').'</td><td class="percent" x:num="'.($costCoveragePercent / 100).'">'.number_format($costCoveragePercent, 1).'%</td><td>'.($costCoveragePercent >= 100 ? __('Covering 100%+ of expenses') : __('Deficit - requires additional revenue')).'</td></tr>');
+            fwrite($handle, '<tr><td>'.__('Break-Even Gap').'</td><td class="amount '.($revenueGap >= 0 ? 'positive' : 'negative').'" x:num="'.$revenueGap.'">'.number_format($revenueGap, 2).' '.$business->currency.'</td><td>'.($revenueGap >= 0 ? __('Operating Surplus') : __('Operating Shortfall')).'</td></tr>');
+            fwrite($handle, '</tbody></table>');
+
+            // --- 3. TOP CUSTOMERS ---
             $clientData = Client::where('team_id', $business->team_id)
                 ->with([
                     'invoices' => function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('invoice_date', [$startDate, $endDate])->where('status', 'paid');
+                        $query->whereBetween('invoice_date', [$startDate, $endDate])
+                            ->whereNotIn('status', ['draft', 'cancelled']);
                     },
                 ])
                 ->get()
                 ->map(function ($client) use ($startDate, $endDate) {
-                    $sales = $client->invoices->sum('grand_total');
-                    $costs = Expense::where('client_id', $client->id)
+                    $sales = (float) $client->invoices->sum('grand_total');
+                    $costs = (float) Expense::where('client_id', $client->id)
                         ->whereBetween('date', [$startDate, $endDate])
                         ->sum('amount');
 
@@ -82,6 +145,7 @@ class ProfitabilityExportController
                         'margin' => $sales > 0 ? (($sales - $costs) / $sales) : ($costs > 0 ? -1.0 : 0),
                     ];
                 })
+                ->filter(fn ($c) => $c['revenue'] > 0 || $c['costs'] > 0)
                 ->sortByDesc('profit');
 
             fwrite($handle, '<div class="title">'.__('Customer Profitability Analysis').'</div>');
@@ -104,15 +168,14 @@ class ProfitabilityExportController
             }
             fwrite($handle, '</tbody></table>');
 
-            // --- 3. TOP PRODUCTS (Comprehensive) ---
+            // --- 4. PRODUCT MARGIN ANALYSIS ---
             $productData = Product::where('team_id', $business->team_id)
                 ->get()
                 ->map(function ($product) use ($startDate, $endDate) {
-                    // Replicate logic from Livewire component
                     $salesData = DB::table('invoicemaker_invoice_items')
                         ->join('invoicemaker_invoices', 'invoicemaker_invoice_items.invoice_id', '=', 'invoicemaker_invoices.id')
                         ->where('invoicemaker_invoice_items.product_id', $product->id)
-                        ->where('invoicemaker_invoices.status', 'paid')
+                        ->whereNotIn('invoicemaker_invoices.status', ['draft', 'cancelled'])
                         ->whereBetween('invoicemaker_invoices.invoice_date', [$startDate, $endDate])
                         ->select(
                             DB::raw('SUM(invoicemaker_invoice_items.quantity) as total_sold'),
@@ -120,7 +183,7 @@ class ProfitabilityExportController
                         )
                         ->first();
 
-                    $directExpenses = Expense::where('product_id', $product->id)
+                    $directExpenses = (float) Expense::where('product_id', $product->id)
                         ->whereBetween('date', [$startDate, $endDate])
                         ->sum('amount');
 
@@ -139,6 +202,7 @@ class ProfitabilityExportController
                         'margin' => $totalRevenue > 0 ? ($profit / $totalRevenue) : ($totalCost > 0 ? -1.0 : 0),
                     ];
                 })
+                ->filter(fn ($p) => $p['revenue'] > 0 || $p['costs'] > 0)
                 ->sortByDesc('profit');
 
             fwrite($handle, '<div class="title">'.__('Product Margin Analysis').'</div>');
@@ -164,27 +228,13 @@ class ProfitabilityExportController
             }
             fwrite($handle, '</tbody></table>');
 
-            // --- 4. TOP COSTS (EXPENSES GROUPED BY CATEGORY) ---
-            $topCosts = Expense::where('team_id', $business->team_id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->with(['accounting_category'])
-                ->get()
-                ->groupBy(function ($item) {
-                    return $item->accounting_category ? $item->accounting_category->name : __('Uncategorized');
-                })
-                ->map(function ($group) {
-                    $collection = collect($group);
+            // --- 5. EXPENSE BREAKDOWN BY CATEGORY ---
+            uasort($topCosts, fn ($a, $b) => $b['amount'] <=> $a['amount']);
 
-                    return [
-                        'amount' => $collection->sum('amount'),
-                        'count' => $collection->count(),
-                    ];
-                })
-                ->sortByDesc('amount');
-
-            fwrite($handle, '<div class="title">'.__('Expense Breakdown by Category').'</div>');
+            fwrite($handle, '<div class="title">'.__('Expense Breakdown by Category & Cost Classification').'</div>');
             fwrite($handle, '<table><thead><tr>
                 <th>'.__('Category').'</th>
+                <th>'.__('Classification').'</th>
                 <th>'.__('Transaction Count').'</th>
                 <th>'.__('Total Cost').'</th>
             </tr></thead><tbody>');
@@ -193,6 +243,7 @@ class ProfitabilityExportController
                 $data = (array) $data;
                 fwrite($handle, '<tr>');
                 fwrite($handle, '<td>'.$category.'</td>');
+                fwrite($handle, '<td>'.$data['type'].'</td>');
                 fwrite($handle, '<td>'.$data['count'].'</td>');
                 fwrite($handle, '<td class="amount negative" x:num="-'.$data['amount'].'">-'.number_format($data['amount'], 2).'</td>');
                 fwrite($handle, '</tr>');

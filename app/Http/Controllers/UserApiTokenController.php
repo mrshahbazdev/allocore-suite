@@ -35,6 +35,7 @@ class UserApiTokenController extends Controller
         return redirect()->route('profile.api-tokens.index')->with([
             'status' => __('API token created.'),
             'plain_token' => $plainToken,
+            'token_name' => $validated['name'],
         ]);
     }
 

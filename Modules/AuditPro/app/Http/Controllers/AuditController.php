@@ -82,34 +82,6 @@ class AuditController extends Controller
             $templateId = $validated['template_id'];
         }
 
-        $cooldownQuery = Audit::where('team_id', $team->id)
-            ->where('audit_type', $auditType)
-            ->where('status', 'completed');
-
-        if ($focusPillar) {
-            $cooldownQuery->where('focus_pillar', $focusPillar);
-        }
-
-        $lastCompletedAt = $cooldownQuery->latest('completed_at')->value('completed_at');
-
-        $cooldownDays = match ($auditType) {
-            'major' => 28,
-            'small' => 90,
-            'challenge' => 28,
-            'kpi_check' => 7,
-            default => 180,
-        };
-
-        if ($lastCompletedAt && $lastCompletedAt->diffInDays(now()) < $cooldownDays) {
-            $nextAt = $lastCompletedAt->clone()->addDays($cooldownDays)->format('Y-m-d');
-
-            return back()->with('error', __('A :type audit can be taken once every :days days. Next possible date: :date.', [
-                'type' => __($auditType),
-                'days' => $cooldownDays,
-                'date' => $nextAt,
-            ]));
-        }
-
         $audit = Audit::create([
             'team_id' => $team->id,
             'template_id' => $templateId,

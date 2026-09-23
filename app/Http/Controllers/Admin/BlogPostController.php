@@ -72,7 +72,7 @@ class BlogPostController extends Controller
             'slug' => ['required', 'string', 'max:255', Rule::unique('posts', 'slug')->ignore($post?->id)],
             'category_id' => 'nullable|exists:blog_categories,id',
             'excerpt' => 'nullable|string|max:2000',
-            'body' => 'required|string|max:50000',
+            'body' => 'required|string',
             'featured_image' => 'nullable|string|max:1000',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:1000',

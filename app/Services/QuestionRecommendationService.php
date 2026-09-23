@@ -46,7 +46,17 @@ class QuestionRecommendationService
                     continue;
                 }
 
-                $moduleKey = $question->recommended_module_key ?: QuestionToolGuesser::guess($question->question, $pillar->name);
+                $moduleKey = $question->recommended_module_key;
+                if (! $moduleKey) {
+                    $moduleKey = AuditQuestion::withoutGlobalScope('current_team')
+                        ->where('question', $question->question)
+                        ->whereNotNull('recommended_module_key')
+                        ->value('recommended_module_key');
+                }
+                if (! $moduleKey) {
+                    $moduleKey = QuestionToolGuesser::guess($question->question, $pillar->name);
+                }
+
                 $module = $modules->get($moduleKey);
 
                 $gaps[] = $this->buildItem(
@@ -62,6 +72,26 @@ class QuestionRecommendationService
                 );
             }
         }
+
+        // Sort gaps by severity (lowest score / largest gap first), then pyramid order
+        $order = array_flip($this->pyramidOrder);
+        usort($gaps, function ($a, $b) use ($order) {
+            if ($a['raw_score'] !== $b['raw_score']) {
+                return $a['raw_score'] <=> $b['raw_score'];
+            }
+            $pA = $order[$a['pillar']] ?? 999;
+            $pB = $order[$b['pillar']] ?? 999;
+            if ($pA !== $pB) {
+                return $pA <=> $pB;
+            }
+            return ($a['question_id'] ?? 0) <=> ($b['question_id'] ?? 0);
+        });
+
+        // Re-number priorities sequentially
+        foreach ($gaps as $idx => &$gap) {
+            $gap['priority'] = $idx + 1;
+        }
+        unset($gap);
 
         return $gaps;
     }
@@ -143,16 +173,25 @@ class QuestionRecommendationService
         $manual = $question->failure_recommendation;
 
         if (blank($manual)) {
+            $manual = AuditQuestion::withoutGlobalScope('current_team')
+                ->where('question', $question->question)
+                ->whereNotNull('failure_recommendation')
+                ->value('failure_recommendation');
+        }
+
+        if (blank($manual)) {
             $manual = __('Use the recommended tool to make measurable progress on :pillar.', ['pillar' => __($pillar->name)]);
         } else {
             $manual = __($manual);
         }
 
-        $manual = $this->glossaryService->linkTerms($manual);
+        $manual = $this->formatManualRecommendation($manual);
 
         $subscribed = $moduleKey && $user->hasModule($moduleKey);
 
         $knowledge = $this->knowledgeForQuestion($question, $moduleKey, $pillar->name);
+        $book = $this->bookForQuestion($question, $moduleKey, $pillar->name);
+        $post = $this->postForQuestion($question, $moduleKey, $pillar->name);
 
         return [
             'priority' => $priority,
@@ -171,6 +210,9 @@ class QuestionRecommendationService
             'module_route' => $module?->route_prefix ? url('app/'.$module->route_prefix) : null,
             'subscribed' => $subscribed,
             'knowledge' => $knowledge,
+            'book' => $book,
+            'post' => $post,
+            'article' => $post,
             'benchmark' => $this->questionBenchmark($score, $pillar->name),
         ];
     }
@@ -183,8 +225,32 @@ class QuestionRecommendationService
             $term = GlossaryTerm::published()->where('slug', $question->knowledge_slug)->first();
         }
 
+        if (! $term) {
+            $matchingSlug = AuditQuestion::withoutGlobalScope('current_team')
+                ->where('question', $question->question)
+                ->whereNotNull('knowledge_slug')
+                ->value('knowledge_slug');
+
+            if ($matchingSlug) {
+                $term = GlossaryTerm::published()->where('slug', $matchingSlug)->first();
+            }
+        }
+
+        if (! $term) {
+            $guessedSlug = QuestionToolGuesser::guessKnowledgeSlug($question->question, $pillar);
+            if ($guessedSlug) {
+                $term = GlossaryTerm::published()->where('slug', $guessedSlug)->first();
+            }
+        }
+
         if (! $term && $moduleKey) {
             $term = $this->glossaryService->relatedForModule($moduleKey, 1)->first();
+        }
+
+        if (! $term) {
+            if (preg_match('/(fixkosten|fixed cost|kosten)/iu', $question->question)) {
+                $term = GlossaryTerm::published()->where('slug', 'like', '%fixkosten%')->orWhere('term', 'like', '%Fixkosten%')->first();
+            }
         }
 
         if (! $term) {
@@ -206,6 +272,187 @@ class QuestionRecommendationService
             'link' => route('knowledge.show', $term->slug),
             'is_beginner_friendly' => $term->is_beginner_friendly,
         ];
+    }
+
+    protected function bookForQuestion(AuditQuestion $question, ?string $moduleKey, string $pillar): ?array
+    {
+        try {
+            // 1. Direct Assignment from Question
+            $bookId = $question->recommended_book_id;
+            if (! $bookId) {
+                $bookId = AuditQuestion::withoutGlobalScope('current_team')
+                    ->where('question', $question->question)
+                    ->whereNotNull('recommended_book_id')
+                    ->value('recommended_book_id');
+            }
+
+            if ($bookId && class_exists(\Modules\BookIntelligence\Models\Book::class)) {
+                $book = \Modules\BookIntelligence\Models\Book::query()
+                    ->with('author')
+                    ->find($bookId);
+
+                if ($book) {
+                    return [
+                        'id' => $book->id,
+                        'title' => $book->title,
+                        'author' => $book->author?->name ?? 'Autor',
+                        'cover_url' => $book->cover_url,
+                        'why_recommended' => Str::limit($book->description, 150) ?: __('Empfohlenes Standardwerk für diese Audit-Aufgabe.'),
+                        'link' => route('bookintelligence.books.show', $book->id),
+                        'affiliate_link' => $book->affiliate_link,
+                    ];
+                }
+            }
+
+            // 2. QuestionMapping direct match
+            if (class_exists(\Modules\BookIntelligence\Models\QuestionMapping::class)) {
+                $mapping = \Modules\BookIntelligence\Models\QuestionMapping::query()
+                    ->active()
+                    ->where('audit_question_id', $question->id)
+                    ->with('book.author')
+                    ->first();
+
+                if (! $mapping && $moduleKey) {
+                    $mapping = \Modules\BookIntelligence\Models\QuestionMapping::query()
+                        ->active()
+                        ->where('module_key', $moduleKey)
+                        ->with('book.author')
+                        ->first();
+                }
+
+                if ($mapping && $mapping->book) {
+                    $b = $mapping->book;
+
+                    return [
+                        'id' => $b->id,
+                        'title' => $b->title,
+                        'author' => $b->author?->name ?? 'Autor',
+                        'cover_url' => $b->cover_url,
+                        'why_recommended' => $mapping->when_to_read_trigger ?: $mapping->problem_statement,
+                        'link' => route('bookintelligence.books.show', $b->id),
+                        'affiliate_link' => $b->affiliate_link,
+                    ];
+                }
+            }
+
+            // 3. Keyword / Category search in Books
+            if (class_exists(\Modules\BookIntelligence\Models\Book::class)) {
+                $book = null;
+                if (preg_match('/(revenue|umsatz|monatlich|turnover|plan|businessplan)/iu', $question->question)) {
+                    $book = \Modules\BookIntelligence\Models\Book::query()
+                        ->with('author')
+                        ->where(function ($q) {
+                            $q->where('title', 'like', '%Business%')
+                              ->orWhere('title', 'like', '%Plan%')
+                              ->orWhere('title', 'like', '%Profit%')
+                              ->orWhere('title', 'like', '%Umsatz%')
+                              ->orWhere('description', 'like', '%Businessplan%');
+                        })
+                        ->first();
+                }
+
+                if (! $book) {
+                    $book = \Modules\BookIntelligence\Models\Book::query()
+                        ->where('status', 'active')
+                        ->with('author')
+                        ->first();
+                }
+
+                if ($book) {
+                    return [
+                        'id' => $book->id,
+                        'title' => $book->title,
+                        'author' => $book->author?->name ?? 'Autor',
+                        'cover_url' => $book->cover_url,
+                        'why_recommended' => Str::limit($book->description, 150) ?: __('Empfohlenes Fachbuch zur Unternehmensentwicklung.'),
+                        'link' => route('bookintelligence.books.show', $book->id),
+                        'affiliate_link' => $book->affiliate_link,
+                    ];
+                }
+            }
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return null;
+    }
+
+    protected function postForQuestion(AuditQuestion $question, ?string $moduleKey, string $pillar): ?array
+    {
+        try {
+            // 1. Direct Assignment from Question
+            $postId = $question->recommended_post_id;
+            if (! $postId) {
+                $postId = AuditQuestion::withoutGlobalScope('current_team')
+                    ->where('question', $question->question)
+                    ->whereNotNull('recommended_post_id')
+                    ->value('recommended_post_id');
+            }
+
+            if ($postId) {
+                $post = \App\Models\Post::query()
+                    ->where('is_published', true)
+                    ->find($postId);
+
+                if ($post) {
+                    return [
+                        'id' => $post->id,
+                        'title' => $post->title,
+                        'slug' => $post->slug,
+                        'excerpt' => Str::limit(strip_tags($post->excerpt ?: $post->body), 160),
+                        'featured_image' => $post->featured_image,
+                        'link' => url('blog/'.$post->slug),
+                    ];
+                }
+            }
+
+            // 2. Keyword matching on blog posts
+            if (preg_match('/(revenue|umsatz|monatlich|plan|kosten)/iu', $question->question)) {
+                $post = \App\Models\Post::query()
+                    ->where('is_published', true)
+                    ->where(function ($q) {
+                        $q->where('title', 'like', '%Umsatz%')
+                          ->orWhere('title', 'like', '%Plan%')
+                          ->orWhere('title', 'like', '%Finanz%')
+                          ->orWhere('title', 'like', '%Kosten%')
+                          ->orWhere('body', 'like', '%Umsatz%');
+                    })
+                    ->latest('published_at')
+                    ->first();
+
+                if ($post) {
+                    return [
+                        'id' => $post->id,
+                        'title' => $post->title,
+                        'slug' => $post->slug,
+                        'excerpt' => Str::limit(strip_tags($post->excerpt ?: $post->body), 160),
+                        'featured_image' => $post->featured_image,
+                        'link' => url('blog/'.$post->slug),
+                    ];
+                }
+            }
+
+            // 3. Automatic fallback: latest published relevant article
+            $post = \App\Models\Post::query()
+                ->where('is_published', true)
+                ->latest('published_at')
+                ->first();
+
+            if ($post) {
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'excerpt' => Str::limit(strip_tags($post->excerpt ?: $post->body), 160),
+                    'featured_image' => $post->featured_image,
+                    'link' => url('blog/'.$post->slug),
+                ];
+            }
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return null;
     }
 
     protected function questionBenchmark(AllocoreScore $score, string $pillar): ?array
@@ -231,5 +478,44 @@ class QuestionRecommendationService
             'better' => $diff > 0.01,
             'worse' => $diff < -0.01,
         ];
+    }
+
+    public function formatManualRecommendation(?string $manual): string
+    {
+        if (blank($manual)) {
+            return '';
+        }
+
+        // Standardize newlines and strip any existing raw <br> or &lt;br&gt; tags
+        $clean = str_replace(['<br>', '<br/>', '<br />', '&lt;br&gt;', '&lt;br/&gt;', '&lt;br /&gt;'], "\n", $manual);
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $clean)), fn ($l) => $l !== ''));
+
+        if (count($lines) === 0) {
+            return '';
+        }
+
+        // Check if it is a multi-step numbered list (e.g. "1. Step", "2. Step")
+        $isNumberedList = count($lines) > 1 && collect($lines)->every(fn ($l) => preg_match('/^\d+[\.\)]\s*/', $l));
+
+        if ($isNumberedList) {
+            $html = '<ol class="mt-2 space-y-1.5 list-none pl-0">';
+            foreach ($lines as $line) {
+                if (preg_match('/^(\d+)[\.\)]\s*(.*)$/u', $line, $matches)) {
+                    $num = $matches[1];
+                    $text = $matches[2];
+                    $linked = $this->glossaryService->linkTerms($text);
+                    $html .= '<li class="flex items-start gap-2 text-xs text-rose-800"><span class="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-rose-200 text-[10px] font-bold text-rose-900 mt-0.5">'.$num.'</span><span class="leading-relaxed">'.$linked.'</span></li>';
+                } else {
+                    $html .= '<li class="text-xs text-rose-800 leading-relaxed">'.$this->glossaryService->linkTerms($line).'</li>';
+                }
+            }
+            $html .= '</ol>';
+
+            return $html;
+        }
+
+        $formattedLines = array_map(fn ($l) => $this->glossaryService->linkTerms($l), $lines);
+
+        return implode('<br>', $formattedLines);
     }
 }

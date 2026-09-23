@@ -71,6 +71,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardExportController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\HelpController;
@@ -131,6 +132,8 @@ Route::get('case-studies', [CaseStudyController::class, 'index'])->name('case-st
 Route::get('case-studies/{caseStudy}', [CaseStudyController::class, 'show'])->name('case-studies.show');
 Route::get('glossary', [GlossaryController::class, 'index'])->name('glossary.index');
 Route::get('glossary/{glossary}', [GlossaryController::class, 'show'])->name('glossary.show');
+Route::get('faq', [FaqController::class, 'index'])->name('faq.index');
+Route::post('faq/ask', [FaqController::class, 'ask'])->name('faq.ask');
 Route::get('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.index');
 Route::post('roi-calculator', [RoiCalculatorController::class, 'index'])->name('roi-calculator.calculate');
 Route::get('scorecard/{slug}', [AllocoreScoreController::class, 'public'])->name('scorecard.public');
@@ -153,6 +156,7 @@ Route::get('language/{locale}', LanguageController::class)->name('language')->wh
 Route::post('cookie-consent', [CookieConsentController::class, 'store'])->name('cookie-consent.store');
 
 Route::get('search', GlobalSearchController::class)->name('search');
+Route::get('search/index', fn () => redirect()->route('search'))->name('search.index');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('help', [HelpController::class, 'index'])->name('help.index');
 Route::get('status', [StatusPageController::class, 'index'])->name('status.index');
@@ -189,7 +193,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('app/auditpro', '/app/audit', 301);
     Route::redirect('app/clusterforge', '/app/clusters', 301);
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
-    Route::get('search', SearchController::class)->name('search.index');
     Route::get('imports', [ImportController::class, 'index'])->name('imports.index');
     Route::post('imports/upload', [ImportController::class, 'upload'])->name('imports.upload');
     Route::post('imports', [ImportController::class, 'store'])->name('imports.store');
@@ -294,6 +297,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('modules', [AdminModuleController::class, 'index'])->name('modules.index');
     Route::post('modules/{name}/install', [AdminModuleController::class, 'install'])->name('modules.install');
     Route::patch('modules/{module}/toggle', [AdminModuleController::class, 'toggle'])->name('modules.toggle');
+    Route::patch('modules/{module}/toggle-pool', [AdminModuleController::class, 'togglePool'])->name('modules.toggle-pool');
+    Route::patch('modules/{module}/toggle-deprecate', [AdminModuleController::class, 'toggleDeprecate'])->name('modules.toggle-deprecate');
     Route::put('modules/{module}', [AdminModuleController::class, 'update'])->name('modules.update');
 
     Route::get('setup', [AdminSetupController::class, 'index'])->name('setup.index');
@@ -333,6 +338,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::put('audits/pillars/{pillar}', [AdminAuditPillarController::class, 'update'])->name('audits.pillars.update');
     Route::delete('audits/pillars/{pillar}', [AdminAuditPillarController::class, 'destroy'])->name('audits.pillars.destroy');
 
+    Route::get('audits/questions', [AdminAuditQuestionController::class, 'index'])->name('audits.questions.index');
     Route::get('audits/questions/create', [AdminAuditQuestionController::class, 'create'])->name('audits.questions.create');
     Route::post('audits/questions', [AdminAuditQuestionController::class, 'store'])->name('audits.questions.store');
     Route::get('audits/questions/{question}/edit', [AdminAuditQuestionController::class, 'edit'])->name('audits.questions.edit');
@@ -506,9 +512,40 @@ require __DIR__.'/auth.php';
 
 Route::get('pages/{slug}', [PageController::class, 'show'])->name('page.show');
 
+// 301 Permanent Redirects for legacy blog slugs
+Route::permanentRedirect(
+    '/blog/seo-und-sea-im-doppelpack-wie-sie-mit-google-ads-ihre-organischen-rankings-pushen-oqzd6',
+    '/blog/seo-sea-doppelpack-google-ads-rankings'
+);
+Route::permanentRedirect(
+    '/blog/synergie-von-seo-und-sea-wie-sie-daten-silos-aufbrechen-und-maximale-sichtbarkeit-erreichen-85L4V',
+    '/blog/sea-daten-attribution-budgetsteuerung'
+);
+
+// Public Book Affiliate Redirect & Alias (100% public, no auth required)
+Route::get('books/affiliate/redirect/{book}', [\Modules\BookIntelligence\Http\Controllers\AffiliateController::class, 'redirect'])
+    ->name('bookintelligence.affiliate.public_redirect');
+Route::permanentRedirect('/app/books/affiliate/redirect/{book}', '/books/affiliate/redirect/{book}');
+
 Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('blog/feed', [BlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
 Route::get('blog/tag/{tag}', [BlogController::class, 'tag'])->name('blog.tag');
 Route::get('blog/{post}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('blog/{post}/comments', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+
+// Model Context Protocol (MCP) Web Endpoints Fallback (Strip web middlewares)
+Route::withoutMiddleware([
+    \App\Http\Middleware\EnsureInstalled::class,
+    \App\Http\Middleware\EnsureTwoFactor::class,
+    \App\Http\Middleware\EnsureSetup::class,
+    \App\Http\Middleware\EnsureOnboardingComplete::class,
+    \App\Http\Middleware\CheckMaintenanceMode::class,
+    \App\Http\Middleware\CookieConsentMiddleware::class,
+    \App\Http\Middleware\ResolveTeamBranding::class,
+])->group(function () {
+    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.mcp');
+    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.mcp.rpc');
+});
+
+

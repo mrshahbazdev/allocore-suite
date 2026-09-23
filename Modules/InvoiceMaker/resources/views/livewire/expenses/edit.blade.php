@@ -47,6 +47,26 @@
  @error('category_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
  </div>
  <div>
+ <label class="block text-sm font-medium text-txmain mb-1">{{ __('Cost Classification') }}</label>
+ <div class="flex items-center gap-3 pt-2">
+ <label class="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+ <input type="radio" wire:model.live="cost_type" value="fixed" class="text-brand-600 focus:ring-brand-500">
+ <span class="px-2.5 py-1 rounded-lg text-xs font-bold {{ $cost_type === 'fixed' ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-800' }}">
+ 🔒 {{ __('Fixed Cost (Fixkosten)') }}
+ </span>
+ </label>
+ <label class="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+ <input type="radio" wire:model.live="cost_type" value="variable" class="text-brand-600 focus:ring-brand-500">
+ <span class="px-2.5 py-1 rounded-lg text-xs font-bold {{ $cost_type === 'variable' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800' }}">
+ 📊 {{ __('Variable Cost (Variable Kosten)') }}
+ </span>
+ </label>
+ </div>
+ @error('cost_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+ </div>
+ </div>
+
+ <div class="mb-6">
  <label
  class="block text-sm font-medium text-txmain mb-1">{{ __('Link to Job/Invoice (Optional)') }}</label>
  <select wire:model="invoice_id"
@@ -54,12 +74,11 @@
  <option value="">{{ __('General / No Link') }}</option>
  @foreach($invoices as $inv)
  <option value="{{ $inv->id }}">[{{ $inv->invoice_number }}] {{ $inv->client->name }}
- ({{ $profile->currency_symbol }}{{ number_format($inv->grand_total, 2) }})
+ ({{ $profile->currency_symbol ?? '€' }}{{ number_format($inv->grand_total, 2) }})
  </option>
  @endforeach
  </select>
  @error('invoice_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
- </div>
  </div>
 
  @if($posting_rule)

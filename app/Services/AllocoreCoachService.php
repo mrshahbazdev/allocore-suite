@@ -35,6 +35,8 @@ class AllocoreCoachService
             'problem' => $focus ? $this->problemForQuestion($focus) : null,
             'tool' => $focus ? $this->toolForQuestion($focus) : null,
             'knowledge' => $focus ? $focus['knowledge'] : null,
+            'book' => $focus ? $focus['book'] : null,
+            'post' => $focus ? $focus['post'] : null,
             'history' => null,
             'all' => array_map(fn (array $q) => $this->buildImprovement($q), $questions),
         ];
@@ -101,18 +103,18 @@ class AllocoreCoachService
 
     protected function toolForQuestion(array $question): ?array
     {
-        if (! $question['module_key']) {
+        if (! ($question['module_key'] ?? null)) {
             return null;
         }
 
         $module = Module::byKey($question['module_key']);
 
         return [
-            'name' => __($question['module_name'] ?? $module?->name),
+            'name' => __($question['module_name'] ?? $module?->name ?? $question['module_key']),
             'key' => $question['module_key'],
-            'route' => $question['module_route'],
-            'subscribed' => $question['subscribed'],
-            'guide' => $this->toolGuide($question['module_key'], $question['pillar'], $question['module_description'] ?? $module?->description),
+            'route' => $question['module_route'] ?? ($module?->route_prefix ? url('app/'.$module->route_prefix) : url('app/'.$question['module_key'])),
+            'subscribed' => $question['subscribed'] ?? false,
+            'guide' => $this->toolGuide($question['module_key'], $question['pillar'] ?? '', $question['module_description'] ?? $module?->description),
         ];
     }
 
@@ -135,6 +137,8 @@ class AllocoreCoachService
             'problem' => $this->problemForQuestion($question),
             'tool' => $this->toolForQuestion($question),
             'knowledge' => $question['knowledge'],
+            'book' => $question['book'] ?? null,
+            'post' => $question['post'] ?? null,
             'benchmark' => $question['benchmark'],
         ];
     }

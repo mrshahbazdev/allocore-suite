@@ -41,6 +41,8 @@ class Edit extends Component
 
     public $reference_number = '';
 
+    public $cost_type = 'variable';
+
     protected $rules = [
         'source' => 'required|in:cash,bank',
         'category_id' => 'required|exists:invoicemaker_accounting_categories,id',
@@ -48,6 +50,7 @@ class Edit extends Component
         'amount' => 'required|numeric|min:0',
         'date' => 'required|date',
         'description' => 'required|string|max:255',
+        'cost_type' => 'required|in:fixed,variable',
         'partner_name' => 'nullable|string|max:255',
         'reference_number' => 'nullable|string|max:255',
         'receipt' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:2048',
@@ -59,6 +62,7 @@ class Edit extends Component
         $this->expense = $expense;
         $this->category_id = $expense->category_id;
         $this->category = $expense->category;
+        $this->cost_type = $expense->cost_type ?: $expense->effective_cost_type;
         $this->amount = $expense->amount;
         $this->date = $expense->date->format('Y-m-d');
         $this->description = $expense->description;
@@ -80,6 +84,9 @@ class Edit extends Component
         $category = AccountingCategory::find($value);
         $this->posting_rule = $category ? $category->posting_rule : '';
         $this->category = $category ? $category->name : '';
+        if ($category && empty($this->cost_type)) {
+            $this->cost_type = $category->cost_type ?: $category->effective_cost_type;
+        }
     }
 
     public function save()
@@ -89,6 +96,7 @@ class Edit extends Component
         $data = [
             'category_id' => $this->category_id,
             'category' => $this->category,
+            'cost_type' => $this->cost_type ?: 'variable',
             'amount' => $this->amount,
             'date' => $this->date,
             'description' => $this->description,
@@ -116,6 +124,7 @@ class Edit extends Component
                     'date' => $this->date,
                     'amount' => $this->amount,
                     'type' => 'expense',
+                    'cost_type' => $this->cost_type ?: 'variable',
                     'source' => $this->source,
                     'description' => $this->description,
                     'partner_name' => $this->partner_name,

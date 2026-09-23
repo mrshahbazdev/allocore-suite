@@ -23,7 +23,9 @@
         @endif
 
         <div class="prose prose-slate max-w-none">
-            <p class="text-lg leading-relaxed text-slate-700">{{ $glossary->definition }}</p>
+            <div class="text-lg leading-relaxed text-slate-700 whitespace-pre-line space-y-4">
+                {!! nl2br(e($glossary->definition)) !!}
+            </div>
         </div>
 
         @if (! empty($glossary->related_modules))

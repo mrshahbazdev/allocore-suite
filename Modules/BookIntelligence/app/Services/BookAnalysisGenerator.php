@@ -32,8 +32,8 @@ class BookAnalysisGenerator
     private function prompt(Book $book, ?string $sourceMaterial): string
     {
         $language = match ($book->language) {
-            'de' => 'German',
-            default => 'English',
+            'en' => 'English',
+            default => 'German',
         };
 
         $context = [

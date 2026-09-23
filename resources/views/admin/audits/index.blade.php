@@ -1,12 +1,16 @@
 @extends('layouts.shell')
 
 @section('content')
-    <div class="mb-6 flex items-center justify-between gap-4">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-slate-900">{{ __('AuditPro') }}</h1>
             <p class="text-sm text-slate-500">{{ __('View audits and templates across all teams.') }}</p>
         </div>
-        <a href="{{ route('admin.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Back to admin') }}</a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.audits.questions.index') }}" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700">🎯 {{ __('Fragen & Lösungen') }}</a>
+            <a href="{{ route('admin.audits.templates.index') }}" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ __('Templates') }}</a>
+            <a href="{{ route('admin.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-800 ml-2">{{ __('Back to admin') }}</a>
+        </div>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">

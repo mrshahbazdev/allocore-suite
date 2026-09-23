@@ -20,95 +20,35 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="h-full font-sans text-slate-600 antialiased">
-        @php($modules = \App\Models\Module::where('is_active', true)->get())
-        @php($siteName = \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite')))
-        @php($landingStats = [
-            'modules' => \App\Models\Module::where('is_active', true)->count(),
-            'teams' => \App\Models\Team::count(),
-            'users' => \App\Models\User::count(),
-            'subscriptions' => \App\Models\ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(),
-        ])
-        @php($moduleBenefits = [
-            'north-star' => ['benefit' => 'Vision entwickeln', 'desc' => 'Klare Unternehmensvision und langfristige Ausrichtung definieren.'],
-            'org-matrix' => ['benefit' => 'Verantwortlichkeiten klären', 'desc' => 'Rolle, Entscheidungen und Verantwortlichkeiten transparent machen.'],
-            'sweet-spot' => ['benefit' => 'Profitabelste Kunden finden', 'desc' => 'Kundensegmente mit höchstem Deckungsbeitrag identifizieren.'],
-            'financial-platform' => ['benefit' => 'Finanzen im Griff', 'desc' => 'Umsatz, Kosten und Kennzahlen zentral analysieren.'],
-            'cash-core' => ['benefit' => 'Cashflow sicherstellen', 'desc' => 'Liquidität und Profitabilität frühzeitig erkennen.'],
-            'invoice-maker' => ['benefit' => 'Rechnungen ohne Reibung', 'desc' => 'Angebote und Rechnungen schnell und professionell erstellen.'],
-            'plan-hive' => ['benefit' => 'Projekte im Fokus', 'desc' => 'Projekte, Aufgaben und Termine zentral steuern.'],
-            'time-butler' => ['benefit' => 'Zeit sinnvoll nutzen', 'desc' => 'Urlaub, Fehlzeiten und Zeiterfassung organisieren.'],
-            'loop-engine' => ['benefit' => 'Abläufe automatisieren', 'desc' => 'Wiederkehrende Prozesse als Checklisten abbilden.'],
-            'focus-matrix' => ['benefit' => 'Prioritäten setzen', 'desc' => 'Wichtige Aufgaben von Ablenkungen unterscheiden.'],
-            'keyword-cluster' => ['benefit' => 'SEO-Struktur aufbauen', 'desc' => 'Keywords gruppieren und Content planen.'],
-            'lead-quality' => ['benefit' => 'Bessere Leads gewinnen', 'desc' => 'Anfragen bewerten und gezielt nachverfolgen.'],
-            'vision-flow' => ['benefit' => 'Mission leben', 'desc' => 'Werte und Vision im Alltag verankern.'],
-            'nur-du' => ['benefit' => 'Führung stärken', 'desc' => 'Persönliche Entwicklung und Führungskultur fördern.'],
-        ])
+        @php
+            $modules = \App\Models\Module::where('is_active', true)->get();
+            $siteName = \App\Models\SiteSetting::value('site_name', config('app.name', 'Allocore Suite'));
+            $landingStats = [
+                'modules' => \App\Models\Module::where('is_active', true)->count(),
+                'teams' => \App\Models\Team::count(),
+                'users' => \App\Models\User::count(),
+                'subscriptions' => \App\Models\ToolSubscription::where('status', 'active')->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()))->count(),
+            ];
+            $moduleBenefits = [
+                'north-star' => ['benefit' => 'Vision entwickeln', 'desc' => 'Klare Unternehmensvision und langfristige Ausrichtung definieren.'],
+                'org-matrix' => ['benefit' => 'Verantwortlichkeiten klären', 'desc' => 'Rolle, Entscheidungen und Verantwortlichkeiten transparent machen.'],
+                'sweet-spot' => ['benefit' => 'Profitabelste Kunden finden', 'desc' => 'Kundensegmente mit höchstem Deckungsbeitrag identifizieren.'],
+                'financial-platform' => ['benefit' => 'Finanzen im Griff', 'desc' => 'Umsatz, Kosten und Kennzahlen zentral analysieren.'],
+                'cash-core' => ['benefit' => 'Cashflow sicherstellen', 'desc' => 'Liquidität und Profitabilität frühzeitig erkennen.'],
+                'invoice-maker' => ['benefit' => 'Rechnungen ohne Reibung', 'desc' => 'Angebote und Rechnungen schnell und professionell erstellen.'],
+                'plan-hive' => ['benefit' => 'Projekte im Fokus', 'desc' => 'Projekte, Aufgaben und Termine zentral steuern.'],
+                'time-butler' => ['benefit' => 'Zeit sinnvoll nutzen', 'desc' => 'Urlaub, Fehlzeiten und Zeiterfassung organisieren.'],
+                'loop-engine' => ['benefit' => 'Abläufe automatisieren', 'desc' => 'Wiederkehrende Prozesse als Checklisten abbilden.'],
+                'focus-matrix' => ['benefit' => 'Prioritäten setzen', 'desc' => 'Wichtige Aufgaben von Ablenkungen unterscheiden.'],
+                'keyword-cluster' => ['benefit' => 'SEO-Struktur aufbauen', 'desc' => 'Keywords gruppieren und Content planen.'],
+                'lead-quality' => ['benefit' => 'Bessere Leads gewinnen', 'desc' => 'Anfragen bewerten und gezielt nachverfolgen.'],
+                'vision-flow' => ['benefit' => 'Mission leben', 'desc' => 'Werte und Vision im Alltag verankern.'],
+                'nur-du' => ['benefit' => 'Führung stärken', 'desc' => 'Persönliche Entwicklung und Führungskultur fördern.'],
+            ];
+        @endphp
 
         <div class="flex min-h-full flex-col bg-slate-50">
-            {{-- Header --}}
-            <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-                <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Global') }}">
-                    <a href="/" class="flex items-center gap-3">
-                        <img src="{{ \App\Models\SiteSetting::value('site_logo') ?: asset('logo-mark.png') }}" alt="" class="h-10 w-10 object-contain rounded-xl bg-white">
-                        <span class="text-lg font-bold text-slate-900">{{ $siteName }}</span>
-                    </a>
-
-                    <div class="hidden items-center gap-8 lg:flex">
-                        <a href="#framework" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Framework') }}</a>
-                        <a href="{{ route('case-studies.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Case Studies') }}</a>
-                        <a href="{{ route('audit-example.index') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Audit Example') }}</a>
-                        <a href="#modules" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('Solutions') }}</a>
-                        <a href="{{ route('billing.plans') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
-                    </div>
-
-                    <div class="hidden items-center gap-4 lg:flex">
-                        @include('partials.locale-switcher')
-
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{{ __('landing.nav.dashboard') }}</a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">{{ __('landing.nav.login') }}</a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('landing.nav.get_started') }}</a>
-                            @endif
-                        @endauth
-                    </div>
-
-                    <button type="button" id="mobile-menu-button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-slate-600 lg:hidden" aria-expanded="false" aria-controls="mobile-menu">
-                        <span class="sr-only">{{ __('Open main menu') }}</span>
-                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
-                    </button>
-                </nav>
-
-                {{-- Mobile menu --}}
-                <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white lg:hidden">
-                    <div class="mx-auto max-w-7xl px-6 py-4">
-                        <div class="flex flex-col gap-2">
-                            <a href="#framework" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Framework') }}</a>
-                            <a href="{{ route('case-studies.index') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Case Studies') }}</a>
-                            <a href="{{ route('audit-example.index') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Audit Example') }}</a>
-                            <a href="#modules" class="mobile-menu-link rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('Solutions') }}</a>
-                            <a href="{{ route('billing.plans') }}" class="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">{{ __('landing.nav.pricing') }}</a>
-                            <div class="mt-2 border-t border-slate-200 pt-4">
-                                @include('partials.locale-switcher')
-                            </div>
-                            <div class="mt-2 flex flex-col gap-2 border-t border-slate-200 pt-4">
-                                @auth
-                                    <a href="{{ route('dashboard') }}" class="rounded-lg bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700">{{ __('landing.nav.dashboard') }}</a>
-                                @else
-                                    <a href="{{ route('login') }}" class="rounded-lg px-4 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">{{ __('landing.nav.login') }}</a>
-                                    @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="rounded-lg bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700">{{ __('landing.nav.get_started') }}</a>
-                                    @endif
-                                @endauth
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            @include('partials.public-header')
 
             {{-- Hero --}}
             <main class="flex-1">
@@ -130,8 +70,10 @@
                                     <a href="{{ route('dashboard') }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ __('landing.hero.open_dashboard') }}</a>
                                     <a href="{{ route('tool-analyzer.index') }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ __('Analyze my tools') }}</a>
                                 @else
-                                    @php($primary = \App\Models\SiteSetting::value('hero_cta_primary_link') ?: route('register'))
-                                    @php($secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link') ?: route('login'))
+                                    @php
+                                        $primary = \App\Models\SiteSetting::value('hero_cta_primary_link') ?: route('register');
+                                        $secondary = \App\Models\SiteSetting::value('hero_cta_secondary_link') ?: route('login');
+                                    @endphp
                                     <a href="{{ $primary }}" class="rounded-lg bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-indigo-700">{{ \App\Models\SiteSetting::value('hero_cta_primary_label') ?: __('landing.hero.cta_primary') }}</a>
                                     <a href="{{ $secondary }}" class="rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50">{{ \App\Models\SiteSetting::value('hero_cta_secondary_label') ?: __('landing.hero.cta_secondary') }}</a>
                                 @endauth
@@ -166,14 +108,16 @@
                         </div>
 
                         <div class="mx-auto mt-16 grid max-w-5xl gap-4">
-                            @php($frameworkSteps = \App\Models\SiteSetting::value('framework_steps') ?: [
-                                ['title' => 'Strategie', 'desc' => 'Vision, Positionierung und langfristige Ziele klar definieren.'],
-                                ['title' => 'Umsatz', 'desc' => 'Umsatzquellen systematisieren und nachhaltig ausbauen.'],
-                                ['title' => 'Gewinn', 'desc' => 'Rentabilität und Cashflow steuern statt nur Umsatz zu jagen.'],
-                                ['title' => 'Ordnung', 'desc' => 'Prozesse, Projekte und Verantwortlichkeiten effizient aufstellen.'],
-                                ['title' => 'Einfluss', 'desc' => 'Sichtbarkeit, Leads und Marktpositionierung stärken.'],
-                                ['title' => 'Vermächtnis', 'desc' => 'Kultur, Werte und Nachfolge für langfristigen Erfolg sichern.'],
-                            ])
+                            @php
+                                $frameworkSteps = \App\Models\SiteSetting::value('framework_steps') ?: [
+                                    ['title' => 'Strategie', 'desc' => 'Vision, Positionierung und langfristige Ziele klar definieren.'],
+                                    ['title' => 'Umsatz', 'desc' => 'Umsatzquellen systematisieren und nachhaltig ausbauen.'],
+                                    ['title' => 'Gewinn', 'desc' => 'Rentabilität und Cashflow steuern statt nur Umsatz zu jagen.'],
+                                    ['title' => 'Ordnung', 'desc' => 'Prozesse, Projekte und Verantwortlichkeiten effizient aufstellen.'],
+                                    ['title' => 'Einfluss', 'desc' => 'Sichtbarkeit, Leads und Marktpositionierung stärken.'],
+                                    ['title' => 'Vermächtnis', 'desc' => 'Kultur, Werte und Nachfolge für langfristigen Erfolg sichern.'],
+                                ];
+                            @endphp
                             <div class="relative grid gap-4 md:grid-cols-3">
                                 @foreach ($frameworkSteps as $index => $step)
                                     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-indigo-200 hover:shadow-md">
@@ -260,9 +204,11 @@
                         </div>
 
                         @auth
-                            @php($accessible = auth()->user()->accessibleModules()->pluck('key')->all())
-                            @php($activeModules = $modules->filter(fn ($m) => in_array($m->key, $accessible))->values())
-                            @php($lockedModules = $modules->filter(fn ($m) => ! in_array($m->key, $accessible))->values())
+                            @php
+                                $accessible = auth()->user()->accessibleModules()->pluck('key')->all();
+                                $activeModules = $modules->filter(fn ($m) => in_array($m->key, $accessible))->values();
+                                $lockedModules = $modules->filter(fn ($m) => ! in_array($m->key, $accessible))->values();
+                            @endphp
 
                             @if ($activeModules->isNotEmpty())
                                 <div class="mx-auto mt-10 max-w-2xl text-left">
@@ -311,7 +257,9 @@
                         @else
                             <div class="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 @forelse ($modules as $module)
-                                    @php($benefit = $moduleBenefits[$module->key] ?? null)
+                                    @php
+                                        $benefit = $moduleBenefits[$module->key] ?? null;
+                                    @endphp
                                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200">
                                         <div class="flex items-start justify-between gap-4">
                                             <div>
@@ -377,8 +325,10 @@
                             @auth
                                 <a href="{{ route('dashboard') }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ __('landing.nav.dashboard') }}</a>
                             @else
-                                @php($primary = \App\Models\SiteSetting::value('cta_primary_link') ?: route('register'))
-                                @php($secondary = \App\Models\SiteSetting::value('cta_secondary_link') ?: route('billing.plans'))
+                                @php
+                                    $primary = \App\Models\SiteSetting::value('cta_primary_link') ?: route('register');
+                                    $secondary = \App\Models\SiteSetting::value('cta_secondary_link') ?: route('billing.plans');
+                                @endphp
                                 <a href="{{ $primary }}" class="rounded-lg bg-white px-7 py-3.5 text-base font-semibold text-slate-900 hover:bg-slate-100">{{ \App\Models\SiteSetting::value('cta_primary_label') ?: __('landing.cta.primary') }}</a>
                                 <a href="{{ $secondary }}" class="rounded-lg border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white hover:bg-slate-800">{{ \App\Models\SiteSetting::value('cta_secondary_label') ?: __('landing.cta.secondary') }}</a>
                             @endauth
@@ -388,7 +338,7 @@
             </main>
 
             {{-- Footer --}}
-            <footer class="border-t border-slate-200 bg-white py-12">
+            <footer class="border-t border-slate-200 bg-white py-12 no-glossary">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
                         <div class="flex items-center gap-3">

@@ -20,6 +20,13 @@ class AppearanceController extends Controller
         'public_nav_menu',
         'social_links',
         'dashboard_template',
+        'menu_gap',
+        'menu_padding_x',
+        'menu_padding_y',
+        'menu_font_size',
+        'menu_font_weight',
+        'menu_link_color',
+        'menu_hover_color',
     ];
 
     public function index()
@@ -79,6 +86,13 @@ class AppearanceController extends Controller
             'public_nav_menu' => [],
             'social_links' => [],
             'dashboard_template' => 'default',
+            'menu_gap' => '28',
+            'menu_padding_x' => '14',
+            'menu_padding_y' => '8',
+            'menu_font_size' => '15',
+            'menu_font_weight' => '600',
+            'menu_link_color' => '#334155',
+            'menu_hover_color' => '#4f46e5',
             default => '',
         };
     }
@@ -86,7 +100,23 @@ class AppearanceController extends Controller
     private function normalizeLinks(array $value): array
     {
         return collect($value)
-            ->filter(fn ($item) => filled($item['label'] ?? null) && filled($item['url'] ?? null))
+            ->filter(fn ($item) => is_array($item) && filled($item['label'] ?? null))
+            ->map(function ($item) {
+                $children = collect($item['children'] ?? [])
+                    ->filter(fn ($c) => is_array($c) && filled($c['label'] ?? null))
+                    ->map(fn ($c) => [
+                        'label' => trim($c['label']),
+                        'url' => trim($c['url'] ?? '#'),
+                    ])
+                    ->values()
+                    ->all();
+
+                return [
+                    'label' => trim($item['label']),
+                    'url' => trim($item['url'] ?? '#'),
+                    'children' => $children,
+                ];
+            })
             ->values()
             ->all();
     }

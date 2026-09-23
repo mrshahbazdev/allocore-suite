@@ -49,24 +49,50 @@
                             <input id="title" name="title" type="text" required value="{{ old('title', $book?->title) }}" placeholder="{{ __('e.g. Scaling Up') }}" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
                             @error('title')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
-                        <div>
-                            <label for="author_id" class="block text-sm font-semibold text-slate-700">{{ __('Author') }}</label>
-                            <select id="author_id" name="author_id" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
-                                <option value="">{{ __('Select an author') }}</option>
-                                @foreach ($authors as $author)
-                                    <option value="{{ $author->id }}" @selected((string) old('author_id', $book?->author_id) === (string) $author->id)>{{ $author->name }}</option>
-                                @endforeach
-                            </select>
+                        <div x-data="{ addingNewAuthor: {{ old('new_author_name') ? 'true' : 'false' }} }">
+                            <div class="flex items-center justify-between">
+                                <label for="author_id" class="block text-sm font-semibold text-slate-700">{{ __('Author') }}</label>
+                                <button type="button" @click="addingNewAuthor = !addingNewAuthor" class="text-xs font-semibold text-[#0094af] hover:underline">
+                                    <span x-show="!addingNewAuthor">+ {{ __('Neuen Autor anlegen') }}</span>
+                                    <span x-show="addingNewAuthor" x-cloak>&larr; {{ __('Aus Liste wählen') }}</span>
+                                </button>
+                            </div>
+                            <div x-show="!addingNewAuthor">
+                                <select id="author_id" name="author_id" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                    <option value="">{{ __('Select an author') }}</option>
+                                    @foreach ($authors as $author)
+                                        <option value="{{ $author->id }}" @selected((string) old('author_id', $book?->author_id) === (string) $author->id)>{{ $author->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div x-show="addingNewAuthor" x-cloak class="mt-2 space-y-1">
+                                <input type="text" name="new_author_name" value="{{ old('new_author_name') }}" placeholder="{{ __('Name des neuen Autors...') }}" class="w-full rounded-xl border-orange-300 bg-orange-50/40 text-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                <p class="text-[11px] text-slate-500">{{ __('Wird beim Speichern automatisch erstellt.') }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <label for="publisher_id" class="block text-sm font-semibold text-slate-700">{{ __('Publisher') }}</label>
-                            <select id="publisher_id" name="publisher_id" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
-                                <option value="">{{ __('Select a publisher') }}</option>
-                                @foreach ($publishers as $publisher)
-                                    <option value="{{ $publisher->id }}" @selected((string) old('publisher_id', $book?->publisher_id) === (string) $publisher->id)>{{ $publisher->name }}</option>
-                                @endforeach
-                            </select>
+
+                        <div x-data="{ addingNewPublisher: {{ old('new_publisher_name') ? 'true' : 'false' }} }">
+                            <div class="flex items-center justify-between">
+                                <label for="publisher_id" class="block text-sm font-semibold text-slate-700">{{ __('Publisher') }}</label>
+                                <button type="button" @click="addingNewPublisher = !addingNewPublisher" class="text-xs font-semibold text-[#0094af] hover:underline">
+                                    <span x-show="!addingNewPublisher">+ {{ __('Neuen Verlag anlegen') }}</span>
+                                    <span x-show="addingNewPublisher" x-cloak>&larr; {{ __('Aus Liste wählen') }}</span>
+                                </button>
+                            </div>
+                            <div x-show="!addingNewPublisher">
+                                <select id="publisher_id" name="publisher_id" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                    <option value="">{{ __('Select a publisher') }}</option>
+                                    @foreach ($publishers as $publisher)
+                                        <option value="{{ $publisher->id }}" @selected((string) old('publisher_id', $book?->publisher_id) === (string) $publisher->id)>{{ $publisher->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div x-show="addingNewPublisher" x-cloak class="mt-2 space-y-1">
+                                <input type="text" name="new_publisher_name" value="{{ old('new_publisher_name') }}" placeholder="{{ __('Name des neuen Verlags...') }}" class="w-full rounded-xl border-orange-300 bg-orange-50/40 text-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                <p class="text-[11px] text-slate-500">{{ __('Wird beim Speichern automatisch erstellt.') }}</p>
+                            </div>
                         </div>
+
                         <div>
                             <label for="isbn" class="block text-sm font-semibold text-slate-700">{{ __('ISBN') }}</label>
                             <input id="isbn" name="isbn" type="text" value="{{ old('isbn', $book?->isbn) }}" placeholder="978-..." class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
@@ -94,14 +120,26 @@
                     <span class="text-xs font-semibold uppercase tracking-wider text-[#0094af]">{{ __('Step 2 · Discoverability') }}</span>
                     <h2 class="mt-1 text-xl font-bold text-slate-900">{{ __('Who is it for and what does it teach?') }}</h2>
                     <div class="mt-6 grid gap-5 sm:grid-cols-2">
-                        <div>
-                            <label for="main_topic_id" class="block text-sm font-semibold text-slate-700">{{ __('Main topic') }}</label>
-                            <select id="main_topic_id" name="main_topic_id" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
-                                <option value="">{{ __('Select the main topic') }}</option>
-                                @foreach ($topics as $topic)
-                                    <option value="{{ $topic->id }}" @selected((string) old('main_topic_id', $book?->main_topic_id) === (string) $topic->id)>{{ $topic->name }}</option>
-                                @endforeach
-                            </select>
+                        <div x-data="{ addingNewTopic: {{ old('new_topic_name') ? 'true' : 'false' }} }">
+                            <div class="flex items-center justify-between">
+                                <label for="main_topic_id" class="block text-sm font-semibold text-slate-700">{{ __('Main topic') }}</label>
+                                <button type="button" @click="addingNewTopic = !addingNewTopic" class="text-xs font-semibold text-[#0094af] hover:underline">
+                                    <span x-show="!addingNewTopic">+ {{ __('Neues Thema anlegen') }}</span>
+                                    <span x-show="addingNewTopic" x-cloak>&larr; {{ __('Aus Liste wählen') }}</span>
+                                </button>
+                            </div>
+                            <div x-show="!addingNewTopic">
+                                <select id="main_topic_id" name="main_topic_id" class="mt-2 w-full rounded-xl border-slate-300 focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                    <option value="">{{ __('Select the main topic') }}</option>
+                                    @foreach ($topics as $topic)
+                                        <option value="{{ $topic->id }}" @selected((string) old('main_topic_id', $book?->main_topic_id) === (string) $topic->id)>{{ $topic->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div x-show="addingNewTopic" x-cloak class="mt-2 space-y-1">
+                                <input type="text" name="new_topic_name" value="{{ old('new_topic_name') }}" placeholder="{{ __('Name des neuen Themas...') }}" class="w-full rounded-xl border-orange-300 bg-orange-50/40 text-sm focus:border-[#ff9200] focus:ring-[#ff9200]">
+                                <p class="text-[11px] text-slate-500">{{ __('Wird beim Speichern automatisch erstellt.') }}</p>
+                            </div>
                         </div>
                         <div>
                             <label for="difficulty" class="block text-sm font-semibold text-slate-700">{{ __('Difficulty level') }} <span class="text-red-500">*</span></label>

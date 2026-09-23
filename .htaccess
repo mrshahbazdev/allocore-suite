@@ -1,10 +1,18 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Redirect all requests into the public directory.
+    # Pass Authorization Header to PHP FastCGI / FPM
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect all requests into the public directory preserving query strings.
     RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ public/$1 [L]
+    RewriteRule ^(.*)$ public/$1 [QSA,L]
 </IfModule>
 
 # Disable directory browsing.
 Options -Indexes
+
+
+

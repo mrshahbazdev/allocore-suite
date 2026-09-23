@@ -16,7 +16,7 @@ class AllocoreRecommendationService
 
     protected array $pillarMap = [
         'Revenue' => [
-            'modules' => ['financial-platform', 'invoice-maker', 'sweet-spot'],
+            'modules' => ['lead-quality', 'revenue-planner', 'keyword-cluster', 'financial-platform', 'invoice-maker', 'sweet-spot', 'plan-hive'],
             'action' => 'recommendations.revenue_action',
             'kpis' => [
                 ['label' => 'Umsatzreife', 'unit' => 'score', 'target' => 80],
@@ -24,7 +24,7 @@ class AllocoreRecommendationService
             ],
         ],
         'Profit' => [
-            'modules' => ['cash-core', 'financial-platform', 'sweet-spot'],
+            'modules' => ['cash-core', 'financial-platform', 'sweet-spot', 'smart-kpi'],
             'action' => 'recommendations.profit_action',
             'kpis' => [
                 ['label' => 'Profitabilität', 'unit' => 'score', 'target' => 80],
@@ -32,7 +32,7 @@ class AllocoreRecommendationService
             ],
         ],
         'Order' => [
-            'modules' => ['plan-hive', 'time-butler', 'loop-engine', 'focus-matrix'],
+            'modules' => ['plan-hive', 'sop-builder', 'time-butler', 'loop-engine', 'focus-matrix', 'org-matrix', 'dental-track'],
             'action' => 'recommendations.order_action',
             'kpis' => [
                 ['label' => 'Betriebliche Ordnung', 'unit' => 'score', 'target' => 80],
@@ -40,7 +40,7 @@ class AllocoreRecommendationService
             ],
         ],
         'Influence' => [
-            'modules' => ['keyword-cluster', 'lead-quality'],
+            'modules' => ['keyword-cluster', 'lead-quality', 'sweet-spot', 'customer-success', 'smart-kpi'],
             'action' => 'recommendations.influence_action',
             'kpis' => [
                 ['label' => 'Markteinfluss', 'unit' => 'score', 'target' => 80],
@@ -48,7 +48,7 @@ class AllocoreRecommendationService
             ],
         ],
         'Legacy' => [
-            'modules' => ['vision-flow', 'nur-du', 'org-matrix'],
+            'modules' => ['vision-flow', 'nur-du', 'org-matrix', 'knowledge-manager', 'book-intelligence'],
             'action' => 'recommendations.legacy_action',
             'kpis' => [
                 ['label' => 'Unternehmensvermächtnis', 'unit' => 'score', 'target' => 80],
@@ -57,7 +57,12 @@ class AllocoreRecommendationService
         ],
     ];
 
-    public function __construct(private GlossaryService $glossaryService) {}
+    public function __construct(
+        private GlossaryService $glossaryService,
+        private ?QuestionRecommendationService $questionRecommendationService = null,
+    ) {
+        $this->questionRecommendationService = $questionRecommendationService ?? app(QuestionRecommendationService::class);
+    }
 
     public function forScore(?AllocoreScore $score, User $user): array
     {
@@ -70,6 +75,9 @@ class AllocoreRecommendationService
 
         $modules = Module::where('is_active', true)->get()->keyBy('key');
         $subscribedKeys = $modules->keys()->filter(fn ($key) => $user->hasModule($key))->all();
+
+        $auditGaps = $this->questionRecommendationService->gapsForScore($score, $user);
+        $gapsByPillar = collect($auditGaps)->groupBy('pillar');
 
         $pillarsByName = collect($score->pillars ?? [])->keyBy('name');
 
@@ -88,9 +96,19 @@ class AllocoreRecommendationService
         $items = $weak
             ->take(3)
             ->values()
-            ->map(function (array $pillar, int $index) use ($modules, $subscribedKeys) {
+            ->map(function (array $pillar, int $index) use ($modules, $subscribedKeys, $gapsByPillar) {
                 $map = $this->pillarMap[$pillar['name']] ?? ['modules' => [], 'action' => '', 'kpis' => []];
-                $target = collect($map['modules'])->first(fn ($key) => $modules->has($key));
+                
+                // Prioritize the specific tool from the failed question within this pillar
+                $pillarGaps = $gapsByPillar->get($pillar['name']) ?? collect();
+                $target = null;
+                if ($pillarGaps->isNotEmpty()) {
+                    $target = $pillarGaps->first()['module_key'] ?? null;
+                }
+                if (! $target || ! $modules->has($target)) {
+                    $target = collect($map['modules'])->first(fn ($key) => $modules->has($key));
+                }
+
                 $module = $target ? $modules->get($target) : null;
                 $subscribed = $target && in_array($target, $subscribedKeys, true);
 

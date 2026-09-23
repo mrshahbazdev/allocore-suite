@@ -45,8 +45,14 @@
                     @endif
                     <div class="truncate text-sm font-medium text-slate-900" title="{{ $item->file_name }}">{{ $item->file_name }}</div>
                     <div class="text-xs text-slate-500">{{ $item->collection }} · {{ number_format($item->size / 1024, 1) }} KB</div>
-                    <div class="mt-2 flex items-center gap-2">
-                        <a href="{{ $item->url() }}" target="_blank" class="text-xs font-medium text-indigo-600 hover:underline">{{ __('View') }}</a>
+                    <div class="mt-2 flex items-center justify-between border-t border-slate-100 pt-2" x-data="{ copied: false }">
+                        <div class="flex items-center gap-2">
+                            <a href="{{ $item->url() }}" target="_blank" class="text-xs font-semibold text-indigo-600 hover:underline">{{ __('View') }}</a>
+                            <button type="button" @click="navigator.clipboard.writeText('{{ $item->url() }}'); copied = true; setTimeout(() => copied = false, 2000)" class="text-xs font-semibold text-slate-600 hover:text-indigo-600">
+                                <span x-show="!copied">{{ __('Copy URL') }}</span>
+                                <span x-show="copied" x-cloak class="text-emerald-600 font-bold">{{ __('Copied! ✓') }}</span>
+                            </button>
+                        </div>
                         <form method="POST" action="{{ route('admin.media.destroy', $item) }}" onsubmit="return confirm('{{ __('admin.media.confirm_delete') }}')">
                             @csrf
                             @method('DELETE')

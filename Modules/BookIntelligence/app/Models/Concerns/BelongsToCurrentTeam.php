@@ -22,7 +22,9 @@ trait BelongsToCurrentTeam
 
         static::creating(function ($model): void {
             $model->team_id ??= auth()->user()?->current_team_id;
-            $model->user_id ??= auth()->id();
+            if (in_array('user_id', $model->getFillable(), true)) {
+                $model->user_id ??= auth()->id();
+            }
         });
     }
 }

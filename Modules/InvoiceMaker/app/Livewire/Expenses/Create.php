@@ -43,6 +43,8 @@ class Create extends Component
 
     public $reference_number = '';
 
+    public $cost_type = 'variable';
+
     protected $rules = [
         'source' => 'required|in:cash,bank',
         'category_id' => 'required|exists:invoicemaker_accounting_categories,id',
@@ -52,6 +54,7 @@ class Create extends Component
         'amount' => 'required|numeric|min:0',
         'date' => 'required|date',
         'description' => 'required|string|max:255',
+        'cost_type' => 'required|in:fixed,variable',
         'partner_name' => 'nullable|string|max:255',
         'reference_number' => 'nullable|string|max:255',
         'receipt' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:2048', // 2MB Max
@@ -69,10 +72,10 @@ class Create extends Component
     {
         $business = app(InvoiceMakerContext::class)->profile();
         $defaults = [
-            ['name' => 'Travel', 'type' => 'expense', 'posting_rule' => 'Requires receipt. Deductible if business related.'],
-            ['name' => 'Office Supplies', 'type' => 'expense', 'posting_rule' => 'Small items under $250.'],
-            ['name' => 'Software', 'type' => 'expense', 'posting_rule' => 'SaaS subscriptions and licenses.'],
-            ['name' => 'Rent', 'type' => 'expense', 'posting_rule' => 'Monthly office rent.'],
+            ['name' => 'Travel', 'type' => 'expense', 'cost_type' => 'variable', 'posting_rule' => 'Requires receipt. Deductible if business related.'],
+            ['name' => 'Office Supplies', 'type' => 'expense', 'cost_type' => 'variable', 'posting_rule' => 'Small items under $250.'],
+            ['name' => 'Software', 'type' => 'expense', 'cost_type' => 'fixed', 'posting_rule' => 'SaaS subscriptions and licenses.'],
+            ['name' => 'Rent', 'type' => 'expense', 'cost_type' => 'fixed', 'posting_rule' => 'Monthly office rent.'],
         ];
 
         foreach ($defaults as $tmpl) {
@@ -88,6 +91,9 @@ class Create extends Component
         $category = AccountingCategory::find($value);
         $this->posting_rule = $category ? $category->posting_rule : '';
         $this->category = $category ? $category->name : '';
+        if ($category) {
+            $this->cost_type = $category->cost_type ?: $category->effective_cost_type;
+        }
     }
 
     public function save()
@@ -111,6 +117,7 @@ class Create extends Component
                 'product_id' => $product_id,
                 'category_id' => $this->category_id,
                 'category' => $this->category,
+                'cost_type' => $this->cost_type ?: 'variable',
                 'amount' => $this->amount,
                 'date' => $this->date,
                 'description' => $this->description,
@@ -127,6 +134,7 @@ class Create extends Component
                 'document_date' => $this->date,
                 'amount' => $this->amount,
                 'type' => 'expense',
+                'cost_type' => $this->cost_type ?: 'variable',
                 'source' => $this->source,
                 'description' => $this->description,
                 'partner_name' => $this->partner_name,

@@ -146,9 +146,12 @@ class BookController extends Controller
         $teamId = $request->user()->current_team_id;
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'author_id' => ['nullable', Rule::exists('bookintelligence_authors', 'id')->where('team_id', $teamId)],
-            'publisher_id' => ['nullable', Rule::exists('bookintelligence_publishers', 'id')->where('team_id', $teamId)],
-            'main_topic_id' => ['nullable', Rule::exists('bookintelligence_topics', 'id')->where('team_id', $teamId)],
+            'author_id' => ['nullable'],
+            'new_author_name' => ['nullable', 'string', 'max:255'],
+            'publisher_id' => ['nullable'],
+            'new_publisher_name' => ['nullable', 'string', 'max:255'],
+            'main_topic_id' => ['nullable'],
+            'new_topic_name' => ['nullable', 'string', 'max:255'],
             'subtopic_ids' => ['nullable', 'array'],
             'subtopic_ids.*' => [Rule::exists('bookintelligence_topics', 'id')->where('team_id', $teamId)],
             'isbn' => ['nullable', 'string', 'max:32'],
@@ -166,6 +169,49 @@ class BookController extends Controller
             'reading_notes' => ['nullable', 'string'],
         ]);
 
+        // Handle on-the-fly Publisher creation
+        $publisherId = !empty($validated['publisher_id']) && is_numeric($validated['publisher_id']) ? (int) $validated['publisher_id'] : null;
+        if (!empty($validated['new_publisher_name'])) {
+            $pubName = trim($validated['new_publisher_name']);
+            if ($pubName !== '') {
+                $pub = Publisher::firstOrCreate(
+                    ['name' => $pubName, 'team_id' => $teamId],
+                    ['user_id' => $request->user()->id]
+                );
+                $publisherId = $pub->id;
+            }
+        }
+
+        // Handle on-the-fly Author creation
+        $authorId = !empty($validated['author_id']) && is_numeric($validated['author_id']) ? (int) $validated['author_id'] : null;
+        if (!empty($validated['new_author_name'])) {
+            $authName = trim($validated['new_author_name']);
+            if ($authName !== '') {
+                $auth = Author::firstOrCreate(
+                    ['name' => $authName, 'team_id' => $teamId],
+                    ['user_id' => $request->user()->id]
+                );
+                $authorId = $auth->id;
+            }
+        }
+
+        // Handle on-the-fly Main Topic creation
+        $mainTopicId = !empty($validated['main_topic_id']) && is_numeric($validated['main_topic_id']) ? (int) $validated['main_topic_id'] : null;
+        if (!empty($validated['new_topic_name'])) {
+            $topicName = trim($validated['new_topic_name']);
+            if ($topicName !== '') {
+                $baseSlug = Str::slug($topicName) ?: 'topic';
+                $top = Topic::firstOrCreate(
+                    ['name' => $topicName, 'team_id' => $teamId],
+                    [
+                        'user_id' => $request->user()->id,
+                        'slug' => $baseSlug . '-' . Str::lower(Str::random(4)),
+                    ]
+                );
+                $mainTopicId = $top->id;
+            }
+        }
+
         $roles = collect(preg_split('/[\r\n,]+/', (string) ($validated['relevant_roles_text'] ?? '')))
             ->map(fn (string $role) => trim($role))
             ->filter()
@@ -176,9 +222,9 @@ class BookController extends Controller
         return [
             'book' => [
                 'title' => $validated['title'],
-                'author_id' => $validated['author_id'] ?? null,
-                'publisher_id' => $validated['publisher_id'] ?? null,
-                'main_topic_id' => $validated['main_topic_id'] ?? null,
+                'author_id' => $authorId,
+                'publisher_id' => $publisherId,
+                'main_topic_id' => $mainTopicId,
                 'isbn' => $validated['isbn'] ?? null,
                 'publication_year' => $validated['publication_year'] ?? null,
                 'page_count' => $validated['page_count'] ?? null,

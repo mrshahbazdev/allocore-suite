@@ -50,7 +50,7 @@
                     </div>
                     <p class="mt-2 text-sm font-medium text-rose-800">{{ __($allocoreCoach['problem']['pillar']) }} — {{ $allocoreCoach['problem']['score'] }}/100</p>
                     <p class="mt-1 text-sm font-semibold text-rose-900">{{ __($allocoreCoach['problem']['headline']) }}</p>
-                    <p class="mt-1 text-sm text-rose-700">{!! $allocoreCoach['problem']['solution'] !!}</p>
+                    <div class="mt-2 text-sm text-rose-700">{!! $allocoreCoach['problem']['solution'] !!}</div>
                 </div>
             @endif
 
@@ -76,6 +76,53 @@
                             </a>
                         @endif
                     </div>
+                </div>
+            @endif
+
+            {{-- Book Recommendation --}}
+            @if ($allocoreCoach['book'] ?? null)
+                <div class="rounded-xl border border-indigo-200 bg-indigo-50/70 p-5">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.995 8.995 0 016 18c3.47 0 6.61-1.44 8.883-3.75l.617-.675V3.758A9.026 9.026 0 0018 3.75c1.052 0 2.062.18 3 .512v14.25A8.994 8.994 0 0118 21c-3.47 0-6.61-1.44-8.883-3.75l-.617-.675V3.758A9.026 9.026 0 0012 6.042z"/></svg>
+                        <h3 class="font-semibold text-indigo-900">📚 {{ __('Empfohlenes Fachbuch') }}</h3>
+                    </div>
+                    <div class="mt-3 flex items-start gap-3">
+                        @if ($allocoreCoach['book']['cover_url'])
+                            <img src="{{ $allocoreCoach['book']['cover_url'] }}" alt="" class="h-16 w-12 rounded object-cover shadow-sm shrink-0">
+                        @endif
+                        <div>
+                            <p class="text-sm font-bold text-indigo-950">{{ $allocoreCoach['book']['title'] }}</p>
+                            <p class="text-xs text-indigo-700 font-medium">{{ __('von') }} {{ $allocoreCoach['book']['author'] }}</p>
+                            <p class="mt-1 text-xs text-indigo-800 line-clamp-2">{{ $allocoreCoach['book']['why_recommended'] }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center gap-3">
+                        <a href="{{ $allocoreCoach['book']['link'] }}" class="inline-flex items-center text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline">
+                            {{ __('Buch in Bibliothek ansehen') }} →
+                        </a>
+                        @if (! empty($allocoreCoach['book']['affiliate_link']))
+                            <a href="{{ $allocoreCoach['book']['affiliate_link'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-bold text-amber-600 hover:text-amber-800">
+                                🛒 {{ __('Buch erwerben') }}
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            {{-- Blog / Knowledge Article Recommendation --}}
+            @if ($allocoreCoach['post'] ?? null)
+                <div class="rounded-xl border border-teal-200 bg-teal-50/70 p-5">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                        <h3 class="font-semibold text-teal-900">📰 {{ __('Empfohlener Fachartikel') }}</h3>
+                    </div>
+                    <p class="mt-2 text-sm font-bold text-teal-950">{{ $allocoreCoach['post']['title'] }}</p>
+                    @if (! empty($allocoreCoach['post']['excerpt']))
+                        <p class="mt-1 text-xs text-teal-800 line-clamp-2">{{ $allocoreCoach['post']['excerpt'] }}</p>
+                    @endif
+                    <a href="{{ $allocoreCoach['post']['link'] }}" target="_blank" class="mt-3 inline-flex items-center text-xs font-bold text-teal-700 hover:text-teal-900 hover:underline">
+                        {{ __('Artikel lesen') }} →
+                    </a>
                 </div>
             @endif
 
@@ -118,7 +165,7 @@
                                         <div class="flex flex-wrap items-center gap-2">
                                             <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{{ __($item['problem']['pillar'] ?? '') }}</span>
                                             <h4 class="font-semibold text-slate-900">
-                                                {{ __($item['problem']['headline'] ?? '') }}
+                                                 {{ __($item['problem']['headline'] ?? '') }}
                                                 <span class="font-normal text-slate-500">({{ $item['problem']['score'] ?? 0 }}/100)</span>
                                             </h4>
                                             @if ($item['benchmark'] ?? null)
@@ -131,7 +178,7 @@
                                                 @endif
                                             @endif
                                         </div>
-                                        <p class="mt-1 text-sm text-slate-600">{!! $item['problem']['solution'] ?? '' !!}</p>
+                                        <div class="mt-1 text-sm text-slate-600">{!! $item['problem']['solution'] ?? '' !!}</div>
                                     </div>
 
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -146,9 +193,19 @@
                                                 </a>
                                             @endif
                                         @endif
+                                        @if ($item['book'] ?? null)
+                                            <a href="{{ $item['book']['link'] }}" class="btn btn-secondary btn-sm" title="{{ $item['book']['title'] }}">
+                                                📚 {{ Str::limit($item['book']['title'], 20) }}
+                                            </a>
+                                        @endif
+                                        @if ($item['post'] ?? null)
+                                            <a href="{{ $item['post']['link'] }}" target="_blank" class="btn btn-secondary btn-sm" title="{{ $item['post']['title'] }}">
+                                                📰 {{ Str::limit($item['post']['title'], 20) }}
+                                            </a>
+                                        @endif
                                         @if ($item['knowledge'] ?? null)
                                             <a href="{{ $item['knowledge']['link'] }}" class="btn btn-secondary btn-sm">
-                                                {{ $item['knowledge']['term'] }}
+                                                💡 {{ $item['knowledge']['term'] }}
                                             </a>
                                         @endif
                                     </div>

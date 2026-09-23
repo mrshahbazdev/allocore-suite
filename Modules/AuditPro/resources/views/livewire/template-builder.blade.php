@@ -139,18 +139,38 @@
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
-                        <label class="text-sm font-medium text-slate-700">{{ __('Recommended tool') }}</label>
-                        <select wire:model="questionRecommendedModuleKey" class="mt-1 w-full rounded-lg border-slate-300">
-                            <option value="">{{ __('Automatically derive from question') }}</option>
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-700">🛠️ {{ __('Empfohlenes Plattform-Tool') }}</label>
+                        <select wire:model="questionRecommendedModuleKey" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                            <option value="">{{ __('— Automatisch ableiten / Kein Tool —') }}</option>
                             @foreach ($modules as $module)
                                 <option value="{{ $module->key }}">{{ $module->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-slate-700">{{ __('Knowledge article') }}</label>
-                        <select wire:model="questionKnowledgeSlug" class="mt-1 w-full rounded-lg border-slate-300">
-                            <option value="">{{ __('Automatically derive from pillar') }}</option>
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-700">📚 {{ __('Empfohlenes Fachbuch') }}</label>
+                        <select wire:model="questionRecommendedBookId" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                            <option value="">{{ __('— Kein Fachbuch / Automatisch ableiten —') }}</option>
+                            @foreach ($books as $b)
+                                <option value="{{ $b->id }}">{{ $b->title }} ({{ $b->author?->name ?? 'Buch' }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-700">📰 {{ __('Empfohlener Blog- / Fachartikel') }}</label>
+                        <select wire:model="questionRecommendedPostId" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                            <option value="">{{ __('— Kein Blogartikel zuweisen —') }}</option>
+                            @foreach ($posts as $post)
+                                <option value="{{ $post->id }}">{{ $post->title }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-700">💡 {{ __('Glossar-Begriff') }}</label>
+                        <select wire:model="questionKnowledgeSlug" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                            <option value="">{{ __('— Aus Säule ableiten —') }}</option>
                             @foreach ($glossaryTerms as $slug => $term)
                                 <option value="{{ $slug }}">{{ $term }}</option>
                             @endforeach

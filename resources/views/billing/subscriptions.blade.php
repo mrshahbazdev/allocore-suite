@@ -25,7 +25,9 @@
                         <td class="px-4 py-3 text-slate-600">{{ $subscription->plan->modules->pluck('name')->join(', ') }}</td>
                         <td class="px-4 py-3 capitalize text-slate-600">{{ $subscription->payment_method }}</td>
                         <td class="px-4 py-3">
-                            @php($colors = ['active' => 'bg-emerald-100 text-emerald-700', 'pending' => 'bg-amber-100 text-amber-700', 'cancelled' => 'bg-slate-100 text-slate-500', 'expired' => 'bg-slate-100 text-slate-500', 'rejected' => 'bg-rose-100 text-rose-700'])
+                            @php
+                                $colors = ['active' => 'bg-emerald-100 text-emerald-700', 'pending' => 'bg-amber-100 text-amber-700', 'cancelled' => 'bg-slate-100 text-slate-500', 'expired' => 'bg-slate-100 text-slate-500', 'rejected' => 'bg-rose-100 text-rose-700'];
+                            @endphp
                             <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $colors[$subscription->status] ?? '' }}">{{ ucfirst($subscription->status) }}</span>
                         </td>
                         <td class="px-4 py-3 text-slate-600">{{ $subscription->ends_at?->format('d.m.Y') ?? '—' }}</td>

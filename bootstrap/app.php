@@ -45,9 +45,16 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureSetup::class,
             EnsureOnboardingComplete::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'mcp/*',
+            'api/mcp*',
+            'webhook/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request) => $request->is('api/*') || $request->is('mcp/*'),
         );
     })->create();

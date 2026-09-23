@@ -63,7 +63,7 @@ class CoreSeeder extends Seeder
         }
 
         $plans = [
-            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du', 'financial-platform', 'sweet-spot', 'sop-builder', 'knowledge-manager', 'book-intelligence', 'dev-manager', 'audit-intelligence', 'customer-success']],
+            ['name' => 'All Tools Bundle', 'slug' => 'all-tools', 'price_monthly' => 99.99, 'price_yearly' => 999, 'modules' => ['invoice-maker', 'audit', 'keyword-cluster', 'lead-quality', 'time-butler', 'plan-hive', 'kpi-tool', 'loop-engine', 'smart-kpi', 'cash-core', 'dental-track', 'focus-matrix', 'org-matrix', 'vision-flow', 'nur-du', 'financial-platform', 'sweet-spot', 'sop-builder', 'knowledge-manager', 'book-intelligence', 'dev-manager', 'audit-intelligence', 'customer-success', 'revenue-planner']],
             ['name' => 'Time Check Solo', 'slug' => 'time-butler-solo', 'price_monthly' => 9.99, 'price_yearly' => 99, 'modules' => ['time-butler']],
             ['name' => 'PlanHive Solo', 'slug' => 'plan-hive-solo', 'price_monthly' => 12.99, 'price_yearly' => 129, 'modules' => ['plan-hive']],
             ['name' => 'KpiTool Solo', 'slug' => 'kpi-tool-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['kpi-tool']],
@@ -78,6 +78,7 @@ class CoreSeeder extends Seeder
             ['name' => 'FinancialPlatform Solo', 'slug' => 'financial-platform-solo', 'price_monthly' => 19.99, 'price_yearly' => 199, 'modules' => ['financial-platform']],
             ['name' => 'SweetSpot Solo', 'slug' => 'sweet-spot-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['sweet-spot']],
             ['name' => 'Knowledge Library Solo', 'slug' => 'book-intelligence-solo', 'price_monthly' => 14.99, 'price_yearly' => 149, 'modules' => ['book-intelligence']],
+            ['name' => 'Umsatzplaner Solo', 'slug' => 'revenue-planner-solo', 'price_monthly' => 19.99, 'price_yearly' => 199, 'modules' => ['revenue-planner']],
         ];
 
         foreach ($plans as $data) {

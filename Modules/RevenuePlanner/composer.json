@@ -1,0 +1,28 @@
+{
+    "name": "nwidart/revenueplanner",
+    "description": "ALLOCORE Revenue Planner module",
+    "authors": [
+        {
+            "name": "ALLOCORE Team",
+            "email": "dev@allocore.de"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\RevenuePlanner\\": "app/",
+            "Modules\\RevenuePlanner\\Database\\Factories\\": "database/factories/",
+            "Modules\\RevenuePlanner\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\RevenuePlanner\\Tests\\": "tests/"
+        }
+    }
+}

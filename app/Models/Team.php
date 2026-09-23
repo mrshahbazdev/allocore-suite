@@ -60,13 +60,24 @@ class Team extends Model
 
     public function hasModule(string $moduleKey): bool
     {
-        $teamSubscription = $this->activeSubscriptions()
-            ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
-            ->exists();
+        $module = Module::byKey($moduleKey);
+        if (! $module || ! $module->is_active || $module->is_deprecated) {
+            return false;
+        }
 
-        $ownerSubscription = $this->owner?->activeSubscriptions()
-            ->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
-            ->exists() ?? false;
+        $checkSub = function ($subQuery) use ($moduleKey, $module) {
+            return $subQuery->where(function ($query) use ($moduleKey, $module) {
+                $query->whereHas('plan.modules', fn ($q) => $q->where('key', $moduleKey))
+                    ->orWhere(function ($q) use ($module) {
+                        if ($module->in_subscription_pool && $module->is_active && ! $module->is_deprecated) {
+                            $q->whereHas('plan', fn ($p) => $p->where('slug', 'all-tools')->orWhere('name', 'like', '%Bundle%')->orWhere('name', 'like', '%All%'));
+                        }
+                    });
+            })->exists();
+        };
+
+        $teamSubscription = $checkSub($this->activeSubscriptions());
+        $ownerSubscription = $this->owner ? $checkSub($this->owner->activeSubscriptions()) : false;
 
         return $teamSubscription || $ownerSubscription;
     }

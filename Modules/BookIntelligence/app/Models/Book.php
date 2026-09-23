@@ -86,6 +86,11 @@ class Book extends Model
         return $this->hasOne(BookAnalysis::class);
     }
 
+    public function questionMappings(): HasMany
+    {
+        return $this->hasMany(QuestionMapping::class);
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

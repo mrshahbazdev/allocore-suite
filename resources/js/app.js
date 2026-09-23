@@ -1,6 +1,12 @@
 import Chart from 'chart.js/auto';
+import Alpine from 'alpinejs';
 
 window.Chart = Chart;
+
+if (!window.Alpine) {
+    window.Alpine = Alpine;
+    Alpine.start();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const observer = new IntersectionObserver((entries) => {

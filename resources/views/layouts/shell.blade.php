@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-100 {{ $theme === 'dark' ? 'dark' : '' }}">
-@php($brand = config('app.team_branding') ?? ['name' => config('app.name'), 'logo' => null, 'favicon' => null, 'primary_color' => null, 'accent_color' => null, 'id' => null])
+@php
+    $brand = config('app.team_branding') ?? ['name' => config('app.name'), 'logo' => null, 'favicon' => null, 'primary_color' => null, 'accent_color' => null, 'id' => null];
+@endphp
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,11 +25,314 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @stack('styles')
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+        .glossary-link {
+            display: inline !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            text-decoration: underline dashed 1.5px !important;
+            text-decoration-color: #64748b !important;
+            text-underline-offset: 4px !important;
+            cursor: pointer !important;
+            padding: 1px 3px !important;
+            border-radius: 4px !important;
+            background-color: rgba(100, 116, 139, 0.08) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .glossary-link:hover {
+            color: #0f172a !important;
+            background-color: rgba(100, 116, 139, 0.2) !important;
+            text-decoration-style: solid !important;
+            text-decoration-color: #0f172a !important;
+        }
+
+        /* Inside ANY white card or container on any section */
+        .bg-white .glossary-link,
+        .card .glossary-link,
+        [class*="bg-white"] .glossary-link {
+            color: #334155 !important;
+            text-decoration-color: #64748b !important;
+            background-color: rgba(100, 116, 139, 0.08) !important;
+        }
+        .bg-white .glossary-link:hover,
+        .card .glossary-link:hover,
+        [class*="bg-white"] .glossary-link:hover {
+            color: #0f172a !important;
+            background-color: rgba(100, 116, 139, 0.2) !important;
+            text-decoration-color: #0f172a !important;
+        }
+
+        /* On colored / teal / dark sections (Banner Text Blocks) */
+        .is-dark-section .glossary-link,
+        section[style*="background-color"] .prose .glossary-link,
+        section[style*="background-color"] > div > p .glossary-link,
+        .prose[style*="color: rgb(255"] .glossary-link,
+        .prose[style*="color: #fff"] .glossary-link,
+        .prose[style*="color:#fff"] .glossary-link,
+        .dark:not(.bg-white) .glossary-link {
+            color: #e2e8f0 !important; /* light silver-grey */
+            text-decoration: underline dashed 1.5px !important;
+            text-decoration-color: #cbd5e1 !important; /* soft light grey dashed underline */
+            background-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        .is-dark-section .glossary-link:hover,
+        section[style*="background-color"] .prose .glossary-link:hover,
+        section[style*="background-color"] > div > p .glossary-link:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.25) !important;
+            text-decoration-style: solid !important;
+            text-decoration-color: #ffffff !important;
+        }
+
+        /* Typography & Rich Text Formatting for Pages, Blog & Custom HTML */
+        .prose, .page-content-body, .blog-content-body, .rich-text-content {
+            color: #334155;
+            line-height: 1.75;
+            font-size: 1.0625rem;
+        }
+
+        .prose h1, .page-content-body h1, .blog-content-body h1, .rich-text-content h1 {
+            font-size: 2.25rem !important;
+            line-height: 1.25 !important;
+            font-weight: 800 !important;
+            color: #0f172a !important;
+            margin-top: 2rem !important;
+            margin-bottom: 1rem !important;
+            letter-spacing: -0.025em !important;
+        }
+
+        .prose h2, .page-content-body h2, .blog-content-body h2, .rich-text-content h2 {
+            font-size: 1.75rem !important;
+            line-height: 1.3 !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            margin-top: 1.75rem !important;
+            margin-bottom: 0.75rem !important;
+            letter-spacing: -0.02em !important;
+        }
+
+        .prose h3, .page-content-body h3, .blog-content-body h3, .rich-text-content h3 {
+            font-size: 1.375rem !important;
+            line-height: 1.4 !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            margin-top: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .prose h4, .page-content-body h4, .blog-content-body h4, .rich-text-content h4 {
+            font-size: 1.15rem !important;
+            line-height: 1.4 !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            margin-top: 1.25rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .prose h5, .page-content-body h5, .blog-content-body h5, .rich-text-content h5 {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            margin-top: 1rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .prose h6, .page-content-body h6, .blog-content-body h6, .rich-text-content h6 {
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+            text-transform: uppercase !important;
+            margin-top: 1rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .prose p, .page-content-body p, .blog-content-body p, .rich-text-content p {
+            margin-top: 1rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .prose strong, .prose b, .page-content-body strong, .page-content-body b, .blog-content-body strong, .blog-content-body b, .rich-text-content strong, .rich-text-content b {
+            font-weight: 700 !important;
+            color: #0f172a !important;
+        }
+
+        .prose em, .prose i, .page-content-body em, .page-content-body i, .blog-content-body em, .blog-content-body i, .rich-text-content em, .rich-text-content i {
+            font-style: italic !important;
+        }
+
+        .prose u, .page-content-body u, .blog-content-body u, .rich-text-content u {
+            text-decoration: underline !important;
+            text-underline-offset: 2px !important;
+        }
+
+        .prose s, .prose strike, .prose del, .page-content-body s, .blog-content-body s, .rich-text-content s {
+            text-decoration: line-through !important;
+            color: #64748b !important;
+        }
+
+        .prose a:not(.glossary-link), .page-content-body a:not(.glossary-link), .blog-content-body a:not(.glossary-link), .rich-text-content a:not(.glossary-link) {
+            color: #ff9200 !important;
+            font-weight: 600 !important;
+            text-decoration: underline !important;
+            text-decoration-color: rgba(255, 146, 0, 0.4) !important;
+            text-underline-offset: 3px !important;
+            transition: all 0.15s ease-in-out !important;
+        }
+
+        .prose a:not(.glossary-link):hover, .page-content-body a:not(.glossary-link):hover, .blog-content-body a:not(.glossary-link):hover, .rich-text-content a:not(.glossary-link):hover {
+            color: #e68300 !important;
+            text-decoration-color: #e68300 !important;
+        }
+
+        .prose ul, .page-content-body ul, .blog-content-body ul, .rich-text-content ul {
+            list-style-type: disc !important;
+            padding-left: 1.75rem !important;
+            margin-top: 1rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .prose ol, .page-content-body ol, .blog-content-body ol, .rich-text-content ol {
+            list-style-type: decimal !important;
+            padding-left: 1.75rem !important;
+            margin-top: 1rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .prose li, .page-content-body li, .blog-content-body li, .rich-text-content li {
+            margin-top: 0.35rem !important;
+            margin-bottom: 0.35rem !important;
+            line-height: 1.65 !important;
+        }
+
+        .prose blockquote, .page-content-body blockquote, .blog-content-body blockquote, .rich-text-content blockquote {
+            border-left: 4px solid #ff9200 !important;
+            background: #fffaf0 !important;
+            padding: 0.875rem 1.25rem !important;
+            margin: 1.5rem 0 !important;
+            border-radius: 0 0.5rem 0.5rem 0 !important;
+            color: #475569 !important;
+            font-style: italic !important;
+        }
+
+        .prose table, .page-content-body table, .blog-content-body table, .rich-text-content table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin: 1.5rem 0 !important;
+            font-size: 0.9375rem !important;
+        }
+
+        .prose th, .page-content-body th, .blog-content-body th, .rich-text-content th {
+            border: 1px solid #cbd5e1 !important;
+            background-color: #f8fafc !important;
+            padding: 0.625rem 0.875rem !important;
+            font-weight: 600 !important;
+            text-align: left !important;
+            color: #0f172a !important;
+        }
+
+        .prose td, .page-content-body td, .blog-content-body td, .rich-text-content td {
+            border: 1px solid #e2e8f0 !important;
+            padding: 0.625rem 0.875rem !important;
+        }
+
+        .prose code, .page-content-body code, .blog-content-body code, .rich-text-content code {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            padding: 0.2rem 0.45rem !important;
+            border-radius: 0.25rem !important;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+            font-size: 0.875em !important;
+        }
+
+        .prose pre, .page-content-body pre, .blog-content-body pre, .rich-text-content pre {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            padding: 1rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            overflow-x: auto !important;
+            margin: 1.5rem 0 !important;
+        }
+
+        .prose pre code, .page-content-body pre code, .blog-content-body pre code, .rich-text-content pre code {
+            background-color: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+        }
+
+        .prose img, .page-content-body img, .blog-content-body img, .rich-text-content img {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: 0.75rem !important;
+            margin: 1.5rem 0 !important;
+        }
+
+        .prose hr, .page-content-body hr, .blog-content-body hr, .rich-text-content hr {
+            border: none !important;
+            border-top: 1px solid #e2e8f0 !important;
+            margin: 2rem 0 !important;
+        }
+
+        /* Site Navigation Menu Styles */
+        :root {
+            --menu-gap: {{ (int) \App\Models\SiteSetting::value('menu_gap', 28) }}px;
+            --menu-pad-x: {{ (int) \App\Models\SiteSetting::value('menu_padding_x', 14) }}px;
+            --menu-pad-y: {{ (int) \App\Models\SiteSetting::value('menu_padding_y', 8) }}px;
+            --menu-font-size: {{ (int) \App\Models\SiteSetting::value('menu_font_size', 15) }}px;
+            --menu-font-weight: {{ \App\Models\SiteSetting::value('menu_font_weight', '600') }};
+            --menu-link-color: {{ \App\Models\SiteSetting::value('menu_link_color', '#334155') }};
+            --menu-hover-color: {{ \App\Models\SiteSetting::value('menu_hover_color', '#4f46e5') }};
+        }
+        @media (min-width: 1024px) {
+            .site-nav-container {
+                display: flex !important;
+                align-items: center !important;
+                gap: var(--menu-gap, 28px) !important;
+            }
+        }
+        @media (max-width: 1023.98px) {
+            .site-nav-container {
+                display: none !important;
+            }
+        }
+        .site-nav-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: var(--menu-pad-y, 8px) var(--menu-pad-x, 14px) !important;
+            border-radius: 0.5rem !important;
+            font-size: var(--menu-font-size, 15px) !important;
+            font-weight: var(--menu-font-weight, 600) !important;
+            color: var(--menu-link-color, #334155) !important;
+            transition: all 0.15s ease-in-out !important;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+        }
+        .site-nav-item:hover {
+            color: var(--menu-hover-color, #4f46e5) !important;
+            background-color: #f1f5f9 !important;
+        }
+        .site-nav-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.5rem 0.75rem !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            color: var(--menu-link-color, #334155) !important;
+            transition: all 0.15s ease-in-out !important;
+            text-decoration: none !important;
+        }
+        .site-nav-dropdown-item:hover {
+            color: var(--menu-hover-color, #4f46e5) !important;
+            background-color: #eef2ff !important;
+        }
+    </style>
 </head>
-@php($isModulePage = request()->is('app/*'))
-@php($currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null)
-@php($pageTitle = $pageTitle ?? ($currentModule?->name ?? ($isModulePage ? __('Tools') : __('Dashboard'))))
+@php
+    $isModulePage = request()->is('app/*');
+    $currentModule = $isModulePage ? \App\Models\Module::where('route_prefix', request()->segment(2))->where('is_active', true)->first() : null;
+    $pageTitle = $pageTitle ?? ($currentModule?->name ?? ($isModulePage ? __('Tools') : __('Dashboard')));
+@endphp
 <body class="h-full font-sans antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 <div id="nav-progress" class="fixed left-0 top-0 z-[60] h-1 w-0 bg-[#ff9200] shadow-[0_0_8px_rgba(255,146,0,0.7)] transition-[width] duration-300 ease-out" aria-hidden="true"></div>
 <div class="min-h-full flex">
@@ -64,8 +369,47 @@
                     <span class="truncate text-base font-semibold text-slate-700">{{ $pageTitle }}</span>
                 </div>
 
+                {{-- Center: Global Custom Navigation Menu with Submenus (Always Visible) --}}
+                @php
+                    $shellMenu = \App\Models\SiteSetting::value('public_nav_menu', []);
+                @endphp
+                @if (!empty($shellMenu))
+                    <nav class="site-nav-container hidden lg:flex items-center shrink-0 mx-4">
+                        @foreach ($shellMenu as $item)
+                            @if (empty($item['children']))
+                                <a href="{{ $item['url'] ?? '#' }}" class="site-nav-item">
+                                    {{ $item['label'] ?? '' }}
+                                </a>
+                            @else
+                                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
+                                    <button @click="open = !open" type="button" class="site-nav-item inline-flex items-center gap-1">
+                                        <span>{{ $item['label'] ?? '' }}</span>
+                                        <svg class="h-4 w-4 transition-transform duration-200 text-slate-400" :class="open ? 'rotate-180 text-indigo-600' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="open" x-cloak
+                                         x-transition:enter="transition ease-out duration-150"
+                                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                         x-transition:leave="transition ease-in duration-100"
+                                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                         class="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5">
+                                        @foreach ($item['children'] as $child)
+                                            <a href="{{ $child['url'] ?? '#' }}" class="site-nav-dropdown-item">
+                                                {{ $child['label'] ?? '' }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </nav>
+                @endif
+
                 {{-- Right: page actions, notifications, user --}}
-                <div class="flex items-center gap-2 sm:gap-4">
+                <div class="flex items-center gap-2 sm:gap-4 shrink-0">
                     @yield('topbar-actions')
 
                     @if (session('impersonated_by'))
@@ -74,7 +418,9 @@
                     @auth
                         <a href="{{ route('notifications.index') }}" class="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700" aria-label="{{ __('Notifications') }}">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 002.688 6.062M9 15.25c.966 0 1.875-.1 2.75-.3m0 0a24.15 24.15 0 015.5.3m0 0a23.961 23.961 0 01-5.5-.3m0 0c.966.293 1.875.7 2.75 1.194M9 15.25c1.034 0 2.052-.115 3-3m5.25 0a23.95 23.95 0 01-3 3m0 0a23.95 23.95 0 01-5.25 0m0 0v-3m0 3v-6m0 0c-1.034 0-2.052.115-3 .3m7.5 0a23.96 23.96 0 003-.3"></path></svg>
-                            @php($unreadCount = auth()->user()->unreadNotifications()->count())
+                            @php
+                                $unreadCount = auth()->user()->unreadNotifications()->count();
+                            @endphp
                             @if ($unreadCount > 0)
                                 <span class="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
                             @endif
@@ -229,5 +575,7 @@
         }
     });
 </script>
+@livewireScripts
+@stack('scripts')
 </body>
 </html>
