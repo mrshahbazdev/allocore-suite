@@ -165,7 +165,15 @@ class McpController extends Controller
 
         $this->authenticateRequest($request);
 
-        $payload = $request->json()->all();
+        $raw = $request->getContent();
+        $payload = json_decode($raw, true);
+        if (! is_array($payload) || empty($payload)) {
+            $payload = $request->json()->all();
+        }
+        if (! is_array($payload) || empty($payload)) {
+            $payload = $request->all();
+        }
+
         $method = $payload['method'] ?? $request->input('method');
         $params = $payload['params'] ?? $request->input('params', []);
         $id = $payload['id'] ?? $request->input('id', 1);
