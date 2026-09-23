@@ -6657,7 +6657,7 @@ class McpController extends Controller
 
         $answers = $args['answers'] ?? [];
         if (empty($answers) || ! is_array($answers)) {
-            throw new \InvalidArgumentException('answers array is required.');
+            throw new \InvalidArgumentException('answers array is required and must not be empty.');
         }
 
         $questions = $subtopic->questions()->orderBy('sort_order')->get();
@@ -6665,10 +6665,26 @@ class McpController extends Controller
             throw new \InvalidArgumentException("Subtopic #{$subtopicId} has no questions. Save questions first.");
         }
 
-        DB::transaction(function () use ($questions, $answers) {
+        $expectedCount = $questions->count();
+        $receivedCount = count($answers);
+        $isAssocMap = ! array_is_list($answers);
+
+        // Strict count validation for sequential answer list to prevent misalignment
+        if (! $isAssocMap && $receivedCount !== $expectedCount) {
+            throw new \InvalidArgumentException("Expected exactly {$expectedCount} answers for subtopic #{$subtopicId} ('{$subtopic->title}'), but received {$receivedCount}. Please provide an answer for every question to avoid misaligning answers.");
+        }
+
+        DB::transaction(function () use ($questions, $answers, $isAssocMap) {
             foreach ($questions as $i => $question) {
-                $answer = $answers[$i] ?? null;
-                $question->update(['answer' => ($answer !== null && trim((string) $answer) !== '') ? trim((string) $answer) : null]);
+                $answer = $isAssocMap
+                    ? ($answers[$question->id] ?? $answers[(string) $question->id] ?? null)
+                    : ($answers[$i] ?? null);
+
+                if ($answer === null || trim((string) $answer) === '') {
+                    throw new \InvalidArgumentException("Answer for question #{$question->id} ('{$question->question}') cannot be empty.");
+                }
+
+                $question->update(['answer' => trim((string) $answer)]);
             }
         });
 
