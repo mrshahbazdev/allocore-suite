@@ -331,7 +331,14 @@ class McpController extends Controller
 
         if ($tokenStr) {
             $apiToken = ApiToken::with('user')->get()->first(function ($t) use ($tokenStr) {
-                return Hash::check($tokenStr, $t->token);
+                if (hash_equals((string) $t->token, (string) $tokenStr)) {
+                    return true;
+                }
+                try {
+                    return Hash::check($tokenStr, $t->token);
+                } catch (\Throwable) {
+                    return false;
+                }
             });
 
             if ($apiToken && ! $apiToken->isExpired() && $apiToken->user) {
