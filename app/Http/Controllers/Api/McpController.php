@@ -6003,7 +6003,7 @@ class McpController extends Controller
 
         if (! empty($args['team_id'])) {
             $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->is_admin)) {
+        } elseif (! ($user && $user->isAdmin())) {
             $query->where('team_id', $this->resolveTeamId($args));
         }
 
@@ -6027,7 +6027,7 @@ class McpController extends Controller
         $statsQuery = ClusterForgeProject::withoutGlobalScope('current_team');
         if (! empty($args['team_id'])) {
             $statsQuery->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->is_admin)) {
+        } elseif (! ($user && $user->isAdmin())) {
             $statsQuery->where('team_id', $this->resolveTeamId($args));
         }
 
@@ -6069,7 +6069,7 @@ class McpController extends Controller
 
         if (! empty($args['team_id'])) {
             $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->is_admin)) {
+        } elseif (! ($user && $user->isAdmin())) {
             $query->where('team_id', $this->resolveTeamId($args));
         }
 
@@ -6118,7 +6118,7 @@ class McpController extends Controller
             $q->withoutGlobalScope('current_team');
             if (! empty($args['team_id'])) {
                 $q->where('team_id', (int) $args['team_id']);
-            } elseif (! ($user && $user->is_admin)) {
+            } elseif (! ($user && $user->isAdmin())) {
                 $q->where('team_id', $this->resolveTeamId($args));
             }
         })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team')]);
@@ -6177,7 +6177,7 @@ class McpController extends Controller
             $q->withoutGlobalScope('current_team');
             if (! empty($args['team_id'])) {
                 $q->where('team_id', (int) $args['team_id']);
-            } elseif (! ($user && $user->is_admin)) {
+            } elseif (! ($user && $user->isAdmin())) {
                 $q->where('team_id', $this->resolveTeamId($args));
             }
         })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team'), 'questions']);
@@ -6220,7 +6220,7 @@ class McpController extends Controller
             $q->withoutGlobalScope('current_team');
             if (! empty($args['team_id'])) {
                 $q->where('team_id', (int) $args['team_id']);
-            } elseif (! ($user && $user->is_admin)) {
+            } elseif (! ($user && $user->isAdmin())) {
                 $q->where('team_id', $this->resolveTeamId($args));
             }
         })->with(['subtopic.project' => fn ($q) => $q->withoutGlobalScope('current_team')]);
@@ -6308,7 +6308,7 @@ class McpController extends Controller
         $query = ClusterForgeProject::withoutGlobalScope('current_team');
         if (! empty($args['team_id'])) {
             $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->is_admin)) {
+        } elseif (! ($user && $user->isAdmin())) {
             $query->where('team_id', $this->resolveTeamId($args));
         }
 
@@ -6349,7 +6349,7 @@ class McpController extends Controller
         $query = ClusterForgeProject::withoutGlobalScope('current_team');
         if (! empty($args['team_id'])) {
             $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->is_admin)) {
+        } elseif (! ($user && $user->isAdmin())) {
             $query->where('team_id', $this->resolveTeamId($args));
         }
 
@@ -6409,7 +6409,7 @@ class McpController extends Controller
         $query = ClusterForgeProject::withoutGlobalScope('current_team');
         if (! empty($args['team_id'])) {
             $query->where('team_id', (int) $args['team_id']);
-        } elseif (! ($user && $user->is_admin)) {
+        } elseif (! ($user && $user->isAdmin())) {
             $query->where('team_id', $this->resolveTeamId($args));
         }
 
