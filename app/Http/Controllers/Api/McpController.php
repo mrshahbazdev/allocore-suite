@@ -722,6 +722,119 @@ class McpController extends Controller
                         'required' => ['user_id'],
                     ],
                 ],
+                [
+                    'name' => 'admin_create_user',
+                    'description' => '(Admin Only) Create a new user account with role, active status, and optional password.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string', 'description' => 'User full name'],
+                            'email' => ['type' => 'string', 'description' => 'User email address'],
+                            'password' => ['type' => 'string', 'description' => 'Optional account password (auto-generated if omitted)'],
+                            'role' => ['type' => 'string', 'description' => 'Optional role (e.g. admin, user, owner)'],
+                            'is_active' => ['type' => 'boolean', 'default' => true],
+                            'email_verified' => ['type' => 'boolean', 'default' => true],
+                            'current_team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'locale' => ['type' => 'string', 'enum' => ['en', 'de'], 'default' => 'de'],
+                        ],
+                        'required' => ['name', 'email'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_update_user',
+                    'description' => '(Admin Only) Update an existing user profile, role, status, email verification, or password.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'ID of user to update'],
+                            'name' => ['type' => 'string'],
+                            'email' => ['type' => 'string'],
+                            'password' => ['type' => 'string'],
+                            'role' => ['type' => 'string'],
+                            'is_active' => ['type' => 'boolean'],
+                            'email_verified' => ['type' => 'boolean'],
+                            'current_team_id' => ['type' => 'integer'],
+                            'locale' => ['type' => 'string', 'enum' => ['en', 'de']],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_user',
+                    'description' => '(Admin Only) Permanently delete a user account from the platform. Self-deletion is guarded.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'ID of user to delete'],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_get_user_details',
+                    'description' => '(Admin Only) Retrieve detailed profile, roles, assigned teams, and active tool subscriptions for a specific user.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'ID of user to inspect'],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_assign_subscription',
+                    'description' => '(Admin Only) Assign or create a subscription plan for a user (e.g. All Tools Bundle, specific plan, custom duration).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'User ID'],
+                            'plan_id' => ['type' => 'integer', 'description' => 'Optional specific Plan ID'],
+                            'plan_slug' => ['type' => 'string', 'description' => 'Optional Plan slug (e.g. all-tools)'],
+                            'billing_interval' => ['type' => 'string', 'enum' => ['monthly', 'yearly'], 'default' => 'monthly'],
+                            'payment_method' => ['type' => 'string', 'enum' => ['manual', 'stripe', 'bank', 'free'], 'default' => 'manual'],
+                            'status' => ['type' => 'string', 'enum' => ['active', 'pending', 'cancelled'], 'default' => 'active'],
+                            'duration_days' => ['type' => 'integer', 'description' => 'Optional validity length in days from now'],
+                            'admin_note' => ['type' => 'string', 'description' => 'Internal note or reference'],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_update_subscription',
+                    'description' => '(Admin Only) Update status, change plan, or extend validity of an existing subscription.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subscription_id' => ['type' => 'integer', 'description' => 'Tool subscription ID'],
+                            'status' => ['type' => 'string', 'enum' => ['active', 'pending', 'cancelled']],
+                            'plan_id' => ['type' => 'integer'],
+                            'billing_interval' => ['type' => 'string', 'enum' => ['monthly', 'yearly']],
+                            'extend_days' => ['type' => 'integer', 'description' => 'Extend subscription expiration by N days'],
+                            'admin_note' => ['type' => 'string'],
+                        ],
+                        'required' => ['subscription_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_cancel_subscription',
+                    'description' => '(Admin Only) Immediately cancel an active user subscription.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subscription_id' => ['type' => 'integer', 'description' => 'Tool subscription ID to cancel'],
+                            'admin_note' => ['type' => 'string', 'description' => 'Optional cancellation reason'],
+                        ],
+                        'required' => ['subscription_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_list_plans',
+                    'description' => '(Admin Only) List all subscription plans available in the system with pricing and module counts.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                    ],
+                ],
 
                 // 8. Analytics & DevOps
                 [
@@ -1438,6 +1551,14 @@ class McpController extends Controller
             'upload_post_image' => $this->toolUploadPostImage($arguments),
             'search_users_and_teams' => $this->toolSearchUsersAndTeams($arguments),
             'get_user_subscription_status' => $this->toolGetUserSubscriptionStatus($arguments),
+            'admin_create_user', 'create_user' => $this->toolAdminCreateUser($arguments),
+            'admin_update_user', 'update_user' => $this->toolAdminUpdateUser($arguments),
+            'admin_delete_user', 'delete_user' => $this->toolAdminDeleteUser($arguments),
+            'admin_get_user_details', 'get_user_details' => $this->toolAdminGetUserDetails($arguments),
+            'admin_assign_subscription', 'assign_user_subscription' => $this->toolAdminAssignSubscription($arguments),
+            'admin_update_subscription', 'update_user_subscription' => $this->toolAdminUpdateSubscription($arguments),
+            'admin_cancel_subscription', 'cancel_user_subscription' => $this->toolAdminCancelSubscription($arguments),
+            'admin_list_plans', 'list_plans' => $this->toolAdminListPlans(),
             'get_platform_metrics' => $this->toolGetPlatformMetrics(),
             'run_allocore_artisan' => $this->toolRunAllocoreArtisan($arguments),
             'get_system_health' => $this->toolGetSystemHealth(),
@@ -2194,6 +2315,408 @@ class McpController extends Controller
             'active_subscription' => $user->subscribed(),
             'accessible_pool_tools_count' => $poolTools->count(),
             'pool_tools' => $poolTools,
+        ];
+    }
+
+    /**
+     * Ensure the authenticated caller has admin privileges.
+     */
+    protected function ensureAdmin(): User
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            throw new \RuntimeException('Unauthorized: An authenticated admin API token is required to perform this operation.');
+        }
+
+        if (! $user->isAdmin()) {
+            throw new \RuntimeException('Forbidden: Only administrator accounts have permission to perform this operation on Allocore Suite.');
+        }
+
+        return $user;
+    }
+
+    /**
+     * (Admin Only) Create a new user account.
+     */
+    protected function toolAdminCreateUser(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $name = trim($args['name'] ?? '');
+        $email = strtolower(trim($args['email'] ?? ''));
+
+        if (empty($name) || empty($email)) {
+            throw new \InvalidArgumentException('name and email are required to create a user.');
+        }
+
+        if (User::where('email', $email)->exists()) {
+            throw new \RuntimeException("A user with email '{$email}' already exists.");
+        }
+
+        $plainPassword = ! empty($args['password']) ? $args['password'] : Str::random(14);
+        $isActive = isset($args['is_active']) ? (bool) $args['is_active'] : true;
+        $locale = in_array($args['locale'] ?? '', ['en', 'de']) ? $args['locale'] : 'de';
+
+        $userData = [
+            'name' => $name,
+            'email' => $email,
+            'password' => $plainPassword,
+            'is_active' => $isActive,
+            'locale' => $locale,
+        ];
+
+        if (! empty($args['current_team_id'])) {
+            $userData['current_team_id'] = (int) $args['current_team_id'];
+        }
+
+        $user = User::create($userData);
+
+        if (! empty($args['role'])) {
+            try {
+                $user->syncRoles([$args['role']]);
+            } catch (\Throwable $e) {
+                Log::warning('Role sync warning on MCP create user: '.$e->getMessage());
+            }
+        }
+
+        if (! isset($args['email_verified']) || $args['email_verified']) {
+            $user->markEmailAsVerified();
+        }
+
+        return [
+            'status' => 'created',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+                'is_active' => (bool) $user->is_active,
+                'email_verified' => $user->hasVerifiedEmail(),
+                'locale' => $user->locale,
+                'created_at' => $user->created_at?->toIso8601String(),
+            ],
+            'generated_password' => empty($args['password']) ? $plainPassword : '(as specified)',
+            'message' => "User '{$user->name}' was successfully created.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Update an existing user.
+     */
+    protected function toolAdminUpdateUser(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $userId = (int) ($args['user_id'] ?? 0);
+        $user = User::findOrFail($userId);
+
+        $updates = [];
+
+        if (! empty($args['name'])) {
+            $updates['name'] = trim($args['name']);
+        }
+
+        if (! empty($args['email'])) {
+            $newEmail = strtolower(trim($args['email']));
+            if ($newEmail !== strtolower($user->email)) {
+                if (User::where('email', $newEmail)->where('id', '!=', $user->id)->exists()) {
+                    throw new \RuntimeException("Email '{$newEmail}' is already taken by another user.");
+                }
+                $updates['email'] = $newEmail;
+            }
+        }
+
+        if (! empty($args['password'])) {
+            $updates['password'] = $args['password'];
+        }
+
+        if (isset($args['is_active'])) {
+            $updates['is_active'] = (bool) $args['is_active'];
+        }
+
+        if (isset($args['locale']) && in_array($args['locale'], ['en', 'de'])) {
+            $updates['locale'] = $args['locale'];
+        }
+
+        if (isset($args['current_team_id'])) {
+            $updates['current_team_id'] = $args['current_team_id'] ? (int) $args['current_team_id'] : null;
+        }
+
+        if (! empty($updates)) {
+            $user->update($updates);
+        }
+
+        if (! empty($args['role'])) {
+            try {
+                $user->syncRoles([$args['role']]);
+            } catch (\Throwable $e) {
+                Log::warning('Role sync warning on MCP update user: '.$e->getMessage());
+            }
+        }
+
+        if (isset($args['email_verified'])) {
+            if ($args['email_verified'] && ! $user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+            } elseif (! $args['email_verified'] && $user->hasVerifiedEmail()) {
+                $user->email_verified_at = null;
+                $user->save();
+            }
+        }
+
+        return [
+            'status' => 'updated',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+                'is_active' => (bool) $user->is_active,
+                'email_verified' => $user->hasVerifiedEmail(),
+                'locale' => $user->locale,
+                'updated_at' => $user->updated_at?->toIso8601String(),
+            ],
+            'updated_fields' => array_keys($updates),
+            'message' => "User '{$user->name}' was successfully updated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete a user account.
+     */
+    protected function toolAdminDeleteUser(array $args): array
+    {
+        $admin = $this->ensureAdmin();
+        $userId = (int) ($args['user_id'] ?? 0);
+
+        if ($userId <= 0) {
+            throw new \InvalidArgumentException('user_id is required.');
+        }
+
+        if ($userId === $admin->id) {
+            throw new \RuntimeException('Security Protection: You cannot delete your own admin account via MCP.');
+        }
+
+        $user = User::findOrFail($userId);
+        $userName = $user->name;
+        $userEmail = $user->email;
+
+        $user->delete();
+
+        return [
+            'status' => 'deleted',
+            'user_id' => $userId,
+            'name' => $userName,
+            'email' => $userEmail,
+            'message' => "User '{$userName}' ({$userEmail}) was successfully deleted.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Get full profile and subscription details for a user.
+     */
+    protected function toolAdminGetUserDetails(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $userId = (int) ($args['user_id'] ?? 0);
+        $user = User::with(['roles', 'teams', 'currentTeam', 'toolSubscriptions.plan'])->findOrFail($userId);
+
+        return [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+                'is_admin' => $user->isAdmin(),
+                'is_active' => (bool) $user->is_active,
+                'email_verified' => $user->hasVerifiedEmail(),
+                'locale' => $user->locale,
+                'created_at' => $user->created_at?->toIso8601String(),
+                'current_team' => $user->currentTeam ? ['id' => $user->currentTeam->id, 'name' => $user->currentTeam->name] : null,
+                'teams_count' => $user->teams->count(),
+            ],
+            'subscriptions' => $user->toolSubscriptions->map(fn ($s) => [
+                'id' => $s->id,
+                'plan_id' => $s->plan_id,
+                'plan_name' => $s->plan?->name,
+                'plan_slug' => $s->plan?->slug,
+                'status' => $s->status,
+                'billing_interval' => $s->billing_interval,
+                'payment_method' => $s->payment_method,
+                'starts_at' => $s->starts_at?->toIso8601String(),
+                'ends_at' => $s->ends_at?->toIso8601String(),
+                'is_active' => $s->isActive(),
+                'admin_note' => $s->admin_note,
+            ])->toArray(),
+        ];
+    }
+
+    /**
+     * (Admin Only) Assign or create a subscription plan for a user.
+     */
+    protected function toolAdminAssignSubscription(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $userId = (int) ($args['user_id'] ?? 0);
+        $user = User::findOrFail($userId);
+
+        $plan = null;
+        if (! empty($args['plan_id'])) {
+            $plan = Plan::find($args['plan_id']);
+        } elseif (! empty($args['plan_slug'])) {
+            $plan = Plan::where('slug', $args['plan_slug'])->first();
+        }
+
+        if (! $plan) {
+            $plan = Plan::where('slug', 'all-tools')->first() ?? Plan::where('is_active', true)->first();
+        }
+
+        if (! $plan) {
+            throw new \RuntimeException('No active plan found to assign.');
+        }
+
+        $interval = in_array($args['billing_interval'] ?? '', ['monthly', 'yearly']) ? $args['billing_interval'] : 'monthly';
+        $paymentMethod = in_array($args['payment_method'] ?? '', ['manual', 'stripe', 'bank', 'free']) ? $args['payment_method'] : 'manual';
+        $status = in_array($args['status'] ?? '', ['active', 'pending', 'cancelled']) ? $args['status'] : 'active';
+        $adminNote = $args['admin_note'] ?? 'Assigned via MCP Admin';
+
+        $startsAt = now();
+        if (! empty($args['duration_days'])) {
+            $endsAt = now()->addDays((int) $args['duration_days']);
+        } else {
+            $endsAt = $interval === 'yearly' ? now()->addYear() : now()->addMonth();
+        }
+
+        $price = $plan->priceFor($interval);
+
+        $subscription = ToolSubscription::create([
+            'billable_type' => User::class,
+            'billable_id' => $user->id,
+            'plan_id' => $plan->id,
+            'billing_interval' => $interval,
+            'payment_method' => $paymentMethod,
+            'status' => $status,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+            'admin_note' => $adminNote,
+            'subtotal' => $price,
+            'total' => $price,
+        ]);
+
+        return [
+            'status' => 'assigned',
+            'subscription_id' => $subscription->id,
+            'user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email],
+            'plan' => ['id' => $plan->id, 'name' => $plan->name, 'slug' => $plan->slug],
+            'billing_interval' => $interval,
+            'subscription_status' => $status,
+            'starts_at' => $startsAt->toIso8601String(),
+            'ends_at' => $endsAt->toIso8601String(),
+            'message' => "Plan '{$plan->name}' ({$interval}) successfully assigned to {$user->name}.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Update an existing subscription.
+     */
+    protected function toolAdminUpdateSubscription(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $subId = (int) ($args['subscription_id'] ?? 0);
+        $sub = ToolSubscription::with(['plan', 'billable'])->findOrFail($subId);
+
+        if (! empty($args['status']) && in_array($args['status'], ['active', 'pending', 'cancelled'])) {
+            $sub->status = $args['status'];
+            if ($args['status'] === 'cancelled') {
+                $sub->ends_at = now();
+            }
+        }
+
+        if (! empty($args['plan_id'])) {
+            $newPlan = Plan::findOrFail($args['plan_id']);
+            $sub->plan_id = $newPlan->id;
+        }
+
+        if (! empty($args['billing_interval']) && in_array($args['billing_interval'], ['monthly', 'yearly'])) {
+            $sub->billing_interval = $args['billing_interval'];
+        }
+
+        if (! empty($args['extend_days'])) {
+            $base = ($sub->ends_at && $sub->ends_at->isFuture()) ? $sub->ends_at : now();
+            $sub->ends_at = $base->addDays((int) $args['extend_days']);
+            $sub->status = 'active';
+        }
+
+        if (isset($args['admin_note'])) {
+            $sub->admin_note = $args['admin_note'];
+        }
+
+        $sub->save();
+
+        return [
+            'status' => 'updated',
+            'subscription_id' => $sub->id,
+            'subscription_status' => $sub->status,
+            'plan_name' => $sub->plan?->name,
+            'billing_interval' => $sub->billing_interval,
+            'ends_at' => $sub->ends_at?->toIso8601String(),
+            'admin_note' => $sub->admin_note,
+            'message' => "Subscription #{$sub->id} was successfully updated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Cancel an active subscription.
+     */
+    protected function toolAdminCancelSubscription(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $subId = (int) ($args['subscription_id'] ?? 0);
+        $sub = ToolSubscription::findOrFail($subId);
+
+        $sub->status = 'cancelled';
+        $sub->ends_at = now();
+
+        if (! empty($args['admin_note'])) {
+            $sub->admin_note = ($sub->admin_note ? $sub->admin_note."\n" : '').'Cancelled via MCP: '.$args['admin_note'];
+        }
+
+        $sub->save();
+
+        return [
+            'status' => 'cancelled',
+            'subscription_id' => $sub->id,
+            'ends_at' => $sub->ends_at?->toIso8601String(),
+            'message' => "Subscription #{$sub->id} has been cancelled.",
+        ];
+    }
+
+    /**
+     * (Admin Only) List all subscription plans.
+     */
+    protected function toolAdminListPlans(): array
+    {
+        $this->ensureAdmin();
+
+        $plans = Plan::withCount('modules')->orderBy('id')->get();
+
+        return [
+            'total' => $plans->count(),
+            'plans' => $plans->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'slug' => $p->slug,
+                'description' => $p->description,
+                'price_monthly' => $p->price_monthly,
+                'price_yearly' => $p->price_yearly,
+                'currency' => $p->currency,
+                'modules_count' => $p->modules_count,
+                'is_active' => (bool) $p->is_active,
+            ])->toArray(),
         ];
     }
 
