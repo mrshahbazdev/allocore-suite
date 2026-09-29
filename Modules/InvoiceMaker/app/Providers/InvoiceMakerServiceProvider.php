@@ -13,6 +13,7 @@ use Modules\InvoiceMaker\Console\Commands\ProcessRecurringInvoices;
 use Modules\InvoiceMaker\Console\Commands\SendInvoiceReminders;
 use Modules\InvoiceMaker\Console\Commands\SendScheduledInvoices;
 use Modules\InvoiceMaker\Console\Commands\UpdateOverdueInvoices;
+use Modules\InvoiceMaker\Jobs\PushAllocoreMetric;
 use Modules\InvoiceMaker\Livewire\Accounting\CashBook\Index as CashBookIndex;
 use Modules\InvoiceMaker\Livewire\Accounting\Categories\Index as CategoriesIndex;
 use Modules\InvoiceMaker\Livewire\Accounting\Reconciliation;
@@ -41,6 +42,10 @@ use Modules\InvoiceMaker\Livewire\Settings\Profile as SettingsProfile;
 use Modules\InvoiceMaker\Livewire\Settings\Team;
 use Modules\InvoiceMaker\Livewire\Templates\Builder as TemplatesBuilder;
 use Modules\InvoiceMaker\Livewire\Templates\Index as TemplatesIndex;
+use Modules\InvoiceMaker\Models\Client;
+use Modules\InvoiceMaker\Models\Expense;
+use Modules\InvoiceMaker\Models\Invoice;
+use Modules\InvoiceMaker\Models\Payment;
 use Modules\InvoiceMaker\Services\DashboardSnapshot;
 use Modules\InvoiceMaker\Services\InvoiceMakerContext;
 use Nwidart\Modules\Support\ModuleServiceProvider;
@@ -127,6 +132,8 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
+        $this->registerAllocoreMetricPush();
+
         Gate::before(function ($user, string $ability, array $arguments): ?bool {
             $model = $arguments[0] ?? null;
 
@@ -164,6 +171,60 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
             }
 
             $view->with('profile', app(InvoiceMakerContext::class)->profile());
+        });
+    }
+
+    private function registerAllocoreMetricPush(): void
+    {
+        Invoice::created(static function (Invoice $invoice): void {
+            if ($invoice->type !== Invoice::TYPE_INVOICE) {
+                return;
+            }
+
+            PushAllocoreMetric::dispatch('invoice_created', [
+                'amount' => (float) $invoice->grand_total,
+                'currency' => $invoice->currency,
+                'invoice_id' => $invoice->id,
+            ]);
+        });
+
+        Invoice::updated(static function (Invoice $invoice): void {
+            if ($invoice->type !== Invoice::TYPE_INVOICE) {
+                return;
+            }
+
+            if (! $invoice->wasChanged('status') || $invoice->status !== Invoice::STATUS_PAID) {
+                return;
+            }
+
+            PushAllocoreMetric::dispatch('invoice_paid', [
+                'amount' => (float) $invoice->grand_total,
+                'currency' => $invoice->currency,
+                'invoice_id' => $invoice->id,
+            ]);
+        });
+
+        Payment::created(static function (Payment $payment): void {
+            PushAllocoreMetric::dispatch('payment_received', [
+                'amount' => (float) $payment->amount,
+                'payment_id' => $payment->id,
+            ]);
+        });
+
+        Expense::created(static function (Expense $expense): void {
+            PushAllocoreMetric::dispatch('expense_created', [
+                'amount' => (float) $expense->amount,
+                'category' => strtolower(
+                    (string) ($expense->accounting_category?->name ?? $expense->category ?? '')
+                ),
+                'expense_id' => $expense->id,
+            ]);
+        });
+
+        Client::created(static function (Client $client): void {
+            PushAllocoreMetric::dispatch('customer_created', [
+                'client_id' => $client->id,
+            ]);
         });
     }
 
