@@ -3,6 +3,8 @@
 namespace Modules\TimeButler\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Modules\InvoiceMaker\Jobs\PushAllocoreMetric;
+use Modules\TimeButler\Models\TimeEntry;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class TimeButlerServiceProvider extends ModuleServiceProvider
@@ -33,6 +35,30 @@ class TimeButlerServiceProvider extends ModuleServiceProvider
         EventServiceProvider::class,
         RouteServiceProvider::class,
     ];
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        $push = static function (TimeEntry $entry): void {
+            $minutes = $entry->durationMinutes();
+            if ($minutes === null || $minutes <= 0) {
+                return;
+            }
+
+            PushAllocoreMetric::dispatch('timeentry_billable', [
+                'entry_id' => (string) $entry->id,
+                'hours' => round($minutes / 60, 2),
+            ]);
+        };
+
+        TimeEntry::created(static fn (TimeEntry $entry) => $push($entry));
+        TimeEntry::updated(static function (TimeEntry $entry) use ($push): void {
+            if ($entry->wasChanged(['end_time', 'break_minutes', 'start_time'])) {
+                $push($entry);
+            }
+        });
+    }
 
     /**
      * Define module schedules.
