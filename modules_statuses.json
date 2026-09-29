@@ -23,5 +23,5 @@
     "CustomerSuccess": true,
     "BookIntelligence": true,
     "RevenuePlanner": true,
-    "DebtSnowballTracker": true
+    "DebtSnowballTracker": false
 }

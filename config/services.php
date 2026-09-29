@@ -100,4 +100,8 @@ return [
         'renewal_days' => env('SERVICES_SSL_RENEWAL_DAYS', 14),
     ],
 
+    'allocore' => [
+        'webhook_url' => env('ALLOCORE_WEBHOOK_URL'),
+    ],
+
 ];
