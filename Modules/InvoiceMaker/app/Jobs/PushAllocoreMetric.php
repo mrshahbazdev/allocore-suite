@@ -13,7 +13,12 @@ class PushAllocoreMetric implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public string $type, public array $body = []) {}
+    public function __construct(public string $type, public array $body = [])
+    {
+        if ($connection = config('services.allocore.queue')) {
+            $this->onConnection($connection);
+        }
+    }
 
     public function handle(AllocoreReporter $reporter): void
     {

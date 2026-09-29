@@ -102,6 +102,7 @@ return [
 
     'allocore' => [
         'webhook_url' => env('ALLOCORE_WEBHOOK_URL'),
+        'queue' => env('ALLOCORE_WEBHOOK_SYNC') ? 'sync' : null,
     ],
 
 ];
