@@ -184,6 +184,8 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
             }
 
             PushAllocoreMetric::dispatch('invoice_created', [
+                'number' => $invoice->invoice_number,
+                'customer' => $invoice->client?->company_name ?: $invoice->client?->name,
                 'amount' => (float) $invoice->grand_total,
                 'currency' => $invoice->currency,
                 'invoice_id' => $invoice->id,
@@ -201,6 +203,8 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
             }
 
             PushAllocoreMetric::dispatch('invoice_paid', [
+                'number' => $invoice->invoice_number,
+                'customer' => $invoice->client?->company_name ?: $invoice->client?->name,
                 'amount' => (float) $invoice->grand_total,
                 'currency' => $invoice->currency,
                 'invoice_id' => $invoice->id,
@@ -229,6 +233,7 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
 
         Client::created(static function (Client $client): void {
             PushAllocoreMetric::dispatch('customer_created', [
+                'name' => $client->company_name ?: $client->name,
                 'client_id' => $client->id,
                 'occurred_at' => (string) ($client->created_at?->toDateString() ?? ''),
             ]);
