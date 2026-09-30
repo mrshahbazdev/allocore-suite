@@ -480,6 +480,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::put('gemini', [GeminiSettingController::class, 'update'])->name('gemini.update');
 
     Route::get('allocore', [AllocoreConnectController::class, 'index'])->name('allocore.index');
+    Route::post('allocore/start', [AllocoreConnectController::class, 'start'])->name('allocore.start');
+    Route::get('allocore/callback', [AllocoreConnectController::class, 'callback'])->name('allocore.callback');
     Route::post('allocore/tenants', [AllocoreConnectController::class, 'tenants'])->name('allocore.tenants');
     Route::post('allocore/link', [AllocoreConnectController::class, 'link'])->name('allocore.link');
     Route::post('allocore/disconnect', [AllocoreConnectController::class, 'disconnect'])->name('allocore.disconnect');
