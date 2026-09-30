@@ -17,7 +17,7 @@ class AccountingCategory extends Model
 
     public function getEffectiveCostTypeAttribute(): string
     {
-        if (!empty($this->cost_type)) {
+        if (! empty($this->cost_type)) {
             return $this->cost_type;
         }
 
@@ -26,7 +26,7 @@ class AccountingCategory extends Model
             'rent', 'miete', 'software', 'saas', 'license', 'lizenz', 'subscription', 'abo',
             'insurance', 'versich', 'salary', 'salaries', 'gehalt', 'lohn', 'hosting', 'server',
             'internet', 'phone', 'telefon', 'strom', 'electricity', 'tax advisor', 'steuerberater',
-            'fixed', 'fix'
+            'fixed', 'fix',
         ];
 
         foreach ($fixedKeywords as $keyword) {

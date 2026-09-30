@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Livewire\Livewire;
+use Modules\InvoiceMaker\Console\Commands\BackfillAllocoreMetrics;
 use Modules\InvoiceMaker\Console\Commands\ProcessRecurringInvoices;
 use Modules\InvoiceMaker\Console\Commands\SendInvoiceReminders;
 use Modules\InvoiceMaker\Console\Commands\SendScheduledInvoices;
@@ -68,6 +69,7 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
      * @var string[]
      */
     protected array $commands = [
+        BackfillAllocoreMetrics::class,
         ProcessRecurringInvoices::class,
         SendInvoiceReminders::class,
         SendScheduledInvoices::class,
@@ -185,6 +187,7 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
                 'amount' => (float) $invoice->grand_total,
                 'currency' => $invoice->currency,
                 'invoice_id' => $invoice->id,
+                'occurred_at' => (string) ($invoice->invoice_date ?? $invoice->created_at?->toDateString()),
             ]);
         });
 
@@ -201,6 +204,7 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
                 'amount' => (float) $invoice->grand_total,
                 'currency' => $invoice->currency,
                 'invoice_id' => $invoice->id,
+                'occurred_at' => (string) ($invoice->payments()->latest('date')->value('date') ?? $invoice->invoice_date),
             ]);
         });
 
@@ -208,6 +212,7 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
             PushAllocoreMetric::dispatch('payment_received', [
                 'amount' => (float) $payment->amount,
                 'payment_id' => $payment->id,
+                'occurred_at' => (string) ($payment->date ?? $payment->created_at?->toDateString()),
             ]);
         });
 
@@ -218,12 +223,14 @@ class InvoiceMakerServiceProvider extends ModuleServiceProvider
                     (string) ($expense->accounting_category?->name ?? $expense->category ?? '')
                 ),
                 'expense_id' => $expense->id,
+                'occurred_at' => (string) ($expense->date ?? $expense->created_at?->toDateString()),
             ]);
         });
 
         Client::created(static function (Client $client): void {
             PushAllocoreMetric::dispatch('customer_created', [
                 'client_id' => $client->id,
+                'occurred_at' => (string) ($client->created_at?->toDateString() ?? ''),
             ]);
         });
     }
