@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminNotificationController;
+use App\Http\Controllers\Admin\AllocoreConnectController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\ApiTokenController as AdminApiTokenController;
@@ -61,6 +62,7 @@ use App\Http\Controllers\AdvisorController;
 use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AllocoreScoreController;
+use App\Http\Controllers\Api\McpController;
 use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\AuditExampleController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -90,7 +92,6 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\RoiCalculatorController;
 use App\Http\Controllers\ScheduledReportController;
-use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusPageController;
 use App\Http\Controllers\TeamBrandingController;
@@ -109,11 +110,19 @@ use App\Http\Controllers\UserApiTokenController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Middleware\CheckMaintenanceMode;
+use App\Http\Middleware\CookieConsentMiddleware;
+use App\Http\Middleware\EnsureInstalled;
+use App\Http\Middleware\EnsureOnboardingComplete;
+use App\Http\Middleware\EnsureSetup;
+use App\Http\Middleware\EnsureTwoFactor;
+use App\Http\Middleware\ResolveTeamBranding;
 use App\Livewire\Admin\BrandColorSettings;
 use Illuminate\Support\Facades\Route;
 use Modules\AuditPro\Models\AuditPillar;
 use Modules\AuditPro\Models\AuditQuestion;
 use Modules\AuditPro\Models\AuditTemplate;
+use Modules\BookIntelligence\Http\Controllers\AffiliateController;
 
 Route::bind('template', fn ($value) => AuditTemplate::withoutGlobalScope('current_team')->findOrFail($value));
 Route::bind('pillar', fn ($value) => AuditPillar::withoutGlobalScope('current_team')->findOrFail($value));
@@ -470,6 +479,11 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('gemini', [GeminiSettingController::class, 'index'])->name('gemini.index');
     Route::put('gemini', [GeminiSettingController::class, 'update'])->name('gemini.update');
 
+    Route::get('allocore', [AllocoreConnectController::class, 'index'])->name('allocore.index');
+    Route::post('allocore/tenants', [AllocoreConnectController::class, 'tenants'])->name('allocore.tenants');
+    Route::post('allocore/link', [AllocoreConnectController::class, 'link'])->name('allocore.link');
+    Route::post('allocore/disconnect', [AllocoreConnectController::class, 'disconnect'])->name('allocore.disconnect');
+
     Route::get('env', [AdminEnvController::class, 'index'])->name('env.index');
     Route::put('env', [AdminEnvController::class, 'update'])->name('env.update');
 
@@ -523,7 +537,7 @@ Route::permanentRedirect(
 );
 
 // Public Book Affiliate Redirect & Alias (100% public, no auth required)
-Route::get('books/affiliate/redirect/{book}', [\Modules\BookIntelligence\Http\Controllers\AffiliateController::class, 'redirect'])
+Route::get('books/affiliate/redirect/{book}', [AffiliateController::class, 'redirect'])
     ->name('bookintelligence.affiliate.public_redirect');
 Route::permanentRedirect('/app/books/affiliate/redirect/{book}', '/books/affiliate/redirect/{book}');
 
@@ -536,16 +550,14 @@ Route::post('blog/{post}/comments', [BlogController::class, 'storeComment'])->na
 
 // Model Context Protocol (MCP) Web Endpoints Fallback (Strip web middlewares)
 Route::withoutMiddleware([
-    \App\Http\Middleware\EnsureInstalled::class,
-    \App\Http\Middleware\EnsureTwoFactor::class,
-    \App\Http\Middleware\EnsureSetup::class,
-    \App\Http\Middleware\EnsureOnboardingComplete::class,
-    \App\Http\Middleware\CheckMaintenanceMode::class,
-    \App\Http\Middleware\CookieConsentMiddleware::class,
-    \App\Http\Middleware\ResolveTeamBranding::class,
+    EnsureInstalled::class,
+    EnsureTwoFactor::class,
+    EnsureSetup::class,
+    EnsureOnboardingComplete::class,
+    CheckMaintenanceMode::class,
+    CookieConsentMiddleware::class,
+    ResolveTeamBranding::class,
 ])->group(function () {
-    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [\App\Http\Controllers\Api\McpController::class, 'handle'])->name('web.mcp');
-    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [\App\Http\Controllers\Api\McpController::class, 'handleRpc'])->name('web.mcp.rpc');
+    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp', [McpController::class, 'handle'])->name('web.mcp');
+    Route::match(['GET', 'POST', 'OPTIONS'], '/mcp/rpc', [McpController::class, 'handleRpc'])->name('web.mcp.rpc');
 });
-
-
