@@ -17,6 +17,68 @@ class AllocoreConnectController extends Controller
 
     private const SESSION_PENDING = 'allocore_connect.pending';
 
+    private const SESSION_OAUTH = 'allocore_connect.oauth';
+
+    /**
+     * OAuth-ähnlicher Flow: Admin wird zum Manager weitergeleitet, meldet sich
+     * dort an, wählt den Mandanten und kommt mit einem Code zurück.
+     */
+    public function start(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'manager_url' => 'required|url',
+            'source_name' => 'nullable|string|max:255',
+        ]);
+
+        $manager = rtrim($data['manager_url'], '/');
+        $state = bin2hex(random_bytes(16));
+
+        $request->session()->put(self::SESSION_OAUTH, [
+            'manager_url' => $manager,
+            'state' => $state,
+        ]);
+
+        $url = $manager.'/connect/authorize?'.http_build_query([
+            'redirect_uri' => route('admin.allocore.callback'),
+            'state' => $state,
+            'source_name' => $data['source_name'] ?? 'Allocore Suite',
+        ]);
+
+        return redirect()->away($url);
+    }
+
+    public function callback(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'code' => 'required|string',
+            'state' => 'nullable|string',
+        ]);
+
+        $oauth = $request->session()->get(self::SESSION_OAUTH);
+        if (! $oauth || ! hash_equals($oauth['state'] ?? '', (string) ($data['state'] ?? ''))) {
+            return redirect()->route('admin.allocore.index')->with('error', __('allocore.connect_failed', ['status' => 'state']));
+        }
+
+        $manager = rtrim($oauth['manager_url'], '/');
+        $resp = Http::timeout(15)->acceptJson()->post($manager.'/api/v1/connect/exchange', [
+            'code' => $data['code'],
+        ]);
+
+        if ($resp->failed() || ! $resp->json('webhook_url')) {
+            return redirect()->route('admin.allocore.index')->with('error', __('allocore.connect_failed', ['status' => $resp->status()]));
+        }
+
+        SiteSetting::setGlobal('allocore.webhook_url', $resp->json('webhook_url'));
+        SiteSetting::setGlobal('allocore.manager_url', $manager);
+        SiteSetting::setGlobal('allocore.tenant_id', (string) $resp->json('tenant_id'));
+        SiteSetting::setGlobal('allocore.tenant_name', (string) $resp->json('tenant_name'));
+        SiteSetting::setGlobal('allocore.connected_at', now()->toDateTimeString());
+
+        $request->session()->forget(self::SESSION_OAUTH);
+
+        return redirect()->route('admin.allocore.index')->with('success', __('allocore.connected'));
+    }
+
     public function index(): View
     {
         return view('admin.allocore.index', [

@@ -52,23 +52,18 @@
             @else
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <h3 class="text-base font-semibold text-slate-900">{{ __('Connect to Allocore Manager') }}</h3>
-                    <p class="mt-1 text-sm text-slate-500">{{ __('Enter your Allocore Manager credentials. The webhook is configured automatically — no server access needed.') }}</p>
+                    <p class="mt-1 text-sm text-slate-500">{{ __('You will be redirected to Allocore Manager to sign in and pick your tenant — then you land back here connected. No credentials stored in this suite.') }}</p>
 
-                    <form method="POST" action="{{ route('admin.allocore.tenants') }}" class="mt-4 space-y-4">
+                    <form method="POST" action="{{ route('admin.allocore.start') }}" class="mt-4 space-y-4">
                         @csrf
                         <div>
                             <label class="block text-sm font-medium text-slate-700">{{ __('Manager URL') }}</label>
                             <input name="manager_url" type="url" value="{{ old('manager_url', $managerUrl) }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">{{ __('E-Mail') }}</label>
-                            <input name="email" type="email" value="{{ old('email') }}" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">{{ __('Password') }}</label>
-                            <input name="password" type="password" class="mt-2 block w-full rounded-lg border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                        </div>
-                        <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Continue') }}</button>
+                        <button class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-6h6m0 0v6m0-6L10.5 13.5" /></svg>
+                            {{ __('Sign in with Allocore Manager') }}
+                        </button>
                     </form>
                 </div>
             @endif
