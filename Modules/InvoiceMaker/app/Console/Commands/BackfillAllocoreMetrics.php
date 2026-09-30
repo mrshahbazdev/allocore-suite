@@ -32,6 +32,8 @@ class BackfillAllocoreMetrics extends Command
                 foreach ($invoices as $invoice) {
                     $occurred = (string) ($invoice->invoice_date ?? $invoice->created_at?->toDateString());
                     $push('invoice_created', [
+                        'number' => $invoice->invoice_number,
+                        'customer' => $invoice->client?->company_name ?: $invoice->client?->name,
                         'amount' => (float) $invoice->grand_total,
                         'currency' => $invoice->currency,
                         'invoice_id' => $invoice->id,
@@ -41,6 +43,8 @@ class BackfillAllocoreMetrics extends Command
 
                     if ($invoice->status === Invoice::STATUS_PAID) {
                         $push('invoice_paid', [
+                            'number' => $invoice->invoice_number,
+                            'customer' => $invoice->client?->company_name ?: $invoice->client?->name,
                             'amount' => (float) $invoice->grand_total,
                             'currency' => $invoice->currency,
                             'invoice_id' => $invoice->id,
@@ -77,6 +81,7 @@ class BackfillAllocoreMetrics extends Command
         Client::withoutGlobalScopes()->chunkById(200, function ($clients) use (&$counts, $push): void {
             foreach ($clients as $client) {
                 $push('customer_created', [
+                    'name' => $client->company_name ?: $client->name,
                     'client_id' => $client->id,
                     'occurred_at' => (string) ($client->created_at?->toDateString() ?? ''),
                 ]);
