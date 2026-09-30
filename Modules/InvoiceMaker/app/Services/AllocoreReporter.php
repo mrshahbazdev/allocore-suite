@@ -2,6 +2,7 @@
 
 namespace Modules\InvoiceMaker\Services;
 
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -10,7 +11,7 @@ class AllocoreReporter
 {
     public function push(string $type, array $body): void
     {
-        $url = config('services.allocore.webhook_url');
+        $url = SiteSetting::value('allocore.webhook_url') ?: config('services.allocore.webhook_url');
 
         if (! is_string($url) || $url === '') {
             return;
