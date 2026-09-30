@@ -108,7 +108,7 @@ class Profitability extends Component
             }
 
             $catName = $expense->category?->name ?? ($expense->category ?? __('Other / General'));
-            if (!isset($costCategories[$catName])) {
+            if (! isset($costCategories[$catName])) {
                 $costCategories[$catName] = [
                     'name' => $catName,
                     'total' => 0.0,

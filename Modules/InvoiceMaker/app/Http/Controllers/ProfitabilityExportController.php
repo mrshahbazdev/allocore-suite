@@ -2,8 +2,10 @@
 
 namespace Modules\InvoiceMaker\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\InvoiceMaker\Models\CashBookEntry;
 use Modules\InvoiceMaker\Models\Client;
 use Modules\InvoiceMaker\Models\Expense;
 use Modules\InvoiceMaker\Models\Invoice;
@@ -49,7 +51,7 @@ class ProfitabilityExportController
                 ->whereNotIn('status', ['draft', 'cancelled'])
                 ->sum('grand_total');
 
-            $manualIncome = \Modules\InvoiceMaker\Models\CashBookEntry::where('team_id', $business->team_id)
+            $manualIncome = CashBookEntry::where('team_id', $business->team_id)
                 ->where('type', 'income')
                 ->whereNull('invoice_id')
                 ->whereBetween('date', [$startDate, $endDate])
@@ -77,7 +79,7 @@ class ProfitabilityExportController
                 }
 
                 $catName = $expense->category?->name ?? ($expense->category ?? __('Uncategorized'));
-                if (!isset($topCosts[$catName])) {
+                if (! isset($topCosts[$catName])) {
                     $topCosts[$catName] = [
                         'amount' => 0.0,
                         'count' => 0,
@@ -92,8 +94,8 @@ class ProfitabilityExportController
             $netProfit = $totalRevenue - $totalExpenses;
 
             // Monthly Benchmarks & Break-Even
-            $startCarbon = \Carbon\Carbon::parse($startDate);
-            $endCarbon = \Carbon\Carbon::parse($endDate);
+            $startCarbon = Carbon::parse($startDate);
+            $endCarbon = Carbon::parse($endDate);
             $periodDays = max(1, $startCarbon->diffInDays($endCarbon) + 1);
             $periodMonths = max(0.5, round($periodDays / 30.4375, 2));
 
