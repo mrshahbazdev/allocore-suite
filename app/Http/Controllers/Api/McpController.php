@@ -27,7 +27,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\Announcement;
+use App\Models\Backup;
+use App\Models\Coupon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Facades\Module as ModuleFacade;
 use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditAnswer;
 use Modules\AuditPro\Models\AuditPillar;
@@ -58,6 +63,15 @@ use Modules\DebtSnowballTracker\Models\Payment as SnowballPayment;
 use Modules\DebtSnowballTracker\Models\Cashflow as SnowballCashflow;
 use Modules\DebtSnowballTracker\Models\DebtSetting as SnowballDebtSetting;
 use Modules\DebtSnowballTracker\Services\SnowballCalculatorService;
+use Modules\ClusterForge\Models\Project as ClusterForgeProject;
+use Modules\ClusterForge\Models\Subtopic as ClusterForgeSubtopic;
+use Modules\ClusterForge\Models\Question as ClusterForgeQuestion;
+use Modules\ClusterForge\Jobs\GenerateProjectJob as ClusterForgeGenerateProjectJob;
+use Modules\DevManager\Models\UserStory as DevUserStory;
+use Modules\DevManager\Models\Milestone as DevMilestone;
+use Modules\LoopEngine\Models\Process as LoopProcess;
+use Modules\LoopEngine\Models\ProcessRun as LoopProcessRun;
+use Modules\CustomerSuccess\Models\Inquiry as CustomerSuccessInquiry;
 
 class McpController extends Controller
 {
@@ -151,7 +165,15 @@ class McpController extends Controller
 
         $this->authenticateRequest($request);
 
-        $payload = $request->json()->all();
+        $raw = $request->getContent();
+        $payload = json_decode($raw, true);
+        if (! is_array($payload) || empty($payload)) {
+            $payload = $request->json()->all();
+        }
+        if (! is_array($payload) || empty($payload)) {
+            $payload = $request->all();
+        }
+
         $method = $payload['method'] ?? $request->input('method');
         $params = $payload['params'] ?? $request->input('params', []);
         $id = $payload['id'] ?? $request->input('id', 1);
@@ -317,7 +339,14 @@ class McpController extends Controller
 
         if ($tokenStr) {
             $apiToken = ApiToken::with('user')->get()->first(function ($t) use ($tokenStr) {
-                return Hash::check($tokenStr, $t->token);
+                if (hash_equals((string) $t->token, (string) $tokenStr)) {
+                    return true;
+                }
+                try {
+                    return Hash::check($tokenStr, $t->token);
+                } catch (\Throwable) {
+                    return false;
+                }
             });
 
             if ($apiToken && ! $apiToken->isExpired() && $apiToken->user) {
@@ -463,7 +492,7 @@ class McpController extends Controller
                     ],
                 ],
 
-                // 2. Module & Tool Pool Governance
+                // 2. Module & Tool Pool Governance (Admin Only Operations)
                 [
                     'name' => 'list_all_modules',
                     'description' => 'List all platform modules with tool pool status, categories, icons, and route prefixes.',
@@ -477,8 +506,126 @@ class McpController extends Controller
                     ],
                 ],
                 [
+                    'name' => 'admin_list_modules',
+                    'description' => '(Admin Only) List all system tools/modules, including database records, subscription pool status, allowed roles, and available disk modules.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'category' => ['type' => 'string', 'description' => 'Filter by category'],
+                            'only_pool' => ['type' => 'boolean', 'description' => 'Filter only subscription pool tools'],
+                            'only_active' => ['type' => 'boolean', 'description' => 'Filter only active tools'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_get_module_details',
+                    'description' => '(Admin Only) Get comprehensive configuration, subscription pool status, allowed roles, linked plans, and disk module info for a tool.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key, ID, or disk name (e.g. "invoice-maker", "AuditPro")'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_install_module',
+                    'description' => '(Admin Only) Install and activate a disk module, run database migrations and optional seeders, and sync it to the All Tools Bundle plan.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string', 'description' => 'Disk module name (e.g. "InvoiceMaker", "AuditPro") or kebab key'],
+                            'category' => ['type' => 'string', 'description' => 'Category e.g. "Produktivität & Prozesse", "Finanzen"'],
+                            'icon' => ['type' => 'string', 'description' => 'Icon identifier or SVG name'],
+                            'in_subscription_pool' => ['type' => 'boolean', 'default' => true, 'description' => 'Whether to add module to customer subscription pool'],
+                            'run_migrations' => ['type' => 'boolean', 'default' => true, 'description' => 'Run module:migrate --force'],
+                            'run_seeders' => ['type' => 'boolean', 'default' => false, 'description' => 'Run module:seed --force'],
+                        ],
+                        'required' => ['name'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_update_module',
+                    'description' => '(Admin Only) Update full tool metadata: display name, description, category, icon, badge, sort order, route prefix, allowed roles, active status, pool inclusion, or deprecated flag.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key or ID to update'],
+                            'name' => ['type' => 'string', 'description' => 'Display name for the module'],
+                            'description' => ['type' => 'string', 'description' => 'Detailed description of the tool'],
+                            'category' => ['type' => 'string', 'description' => 'Tool category (e.g. Finanzen, Produktivität & Prozesse)'],
+                            'icon' => ['type' => 'string', 'description' => 'Icon name or SVG identifier'],
+                            'route_prefix' => ['type' => 'string', 'description' => 'Web route prefix for the tool'],
+                            'badge_text' => ['type' => 'string', 'description' => 'Badge text e.g. "NEW", "PRO", "BETA"'],
+                            'sort_order' => ['type' => 'integer', 'description' => 'Sorting priority order'],
+                            'allowed_roles' => [
+                                'type' => 'array',
+                                'items' => ['type' => 'string'],
+                                'description' => 'Array of role names permitted to access this module (e.g. ["admin", "manager"])',
+                            ],
+                            'is_active' => ['type' => 'boolean', 'description' => 'Enable or disable the module'],
+                            'in_subscription_pool' => ['type' => 'boolean', 'description' => 'Include in subscription pool bundle'],
+                            'is_deprecated' => ['type' => 'boolean', 'description' => 'Mark as deprecated or archived'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_toggle_module',
+                    'description' => '(Admin Only) Toggle or explicitly set active/inactive status for a tool/module.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key to toggle'],
+                            'is_active' => ['type' => 'boolean', 'description' => 'Explicit active state (optional, toggles if omitted)'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_toggle_module_pool',
+                    'description' => '(Admin Only) Toggle or set whether a tool/module is included in the customer subscription pool.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key'],
+                            'in_pool' => ['type' => 'boolean', 'description' => 'True to include in pool, false to exclude (optional, toggles if omitted)'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_deprecate_module',
+                    'description' => '(Admin Only) Mark a module as deprecated/archived or restore it to active status.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key'],
+                            'is_deprecated' => ['type' => 'boolean', 'default' => true, 'description' => 'True to archive/deprecate, false to restore'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_module',
+                    'description' => '(Admin Only) Detach plans and remove a tool/module registration record from the system database.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'module_key' => ['type' => 'string', 'description' => 'Module key or ID to delete'],
+                            'force' => ['type' => 'boolean', 'default' => false, 'description' => 'Confirm deletion'],
+                        ],
+                        'required' => ['module_key'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_sync_module_plans',
+                    'description' => '(Admin Only) Synchronize all active pool tools to the All Tools Bundle plan.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
                     'name' => 'manage_tool_pool',
-                    'description' => 'Add or remove a module from the customer subscription tool pool.',
+                    'description' => '(Admin Only) Add or remove a module from the customer subscription tool pool.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -490,7 +637,7 @@ class McpController extends Controller
                 ],
                 [
                     'name' => 'deprecate_module',
-                    'description' => 'Mark a module as deprecated/archived or restore it to active status.',
+                    'description' => '(Admin Only) Mark a module as deprecated/archived or restore it to active status.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -502,7 +649,7 @@ class McpController extends Controller
                 ],
                 [
                     'name' => 'update_module_metadata',
-                    'description' => 'Update display name, description, category, modern icon, badge, or sort order of a tool.',
+                    'description' => '(Admin Only) Update display name, description, category, modern icon, badge, or sort order of a tool.',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -519,7 +666,7 @@ class McpController extends Controller
                 ],
                 [
                     'name' => 'sync_subscription_plans',
-                    'description' => 'Synchronize all active pool tools to the All Tools Bundle plan.',
+                    'description' => '(Admin Only) Synchronize all active pool tools to the All Tools Bundle plan.',
                     'inputSchema' => ['type' => 'object', 'properties' => (object) []],
                 ],
 
@@ -720,6 +867,119 @@ class McpController extends Controller
                             'user_id' => ['type' => 'integer'],
                         ],
                         'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_create_user',
+                    'description' => '(Admin Only) Create a new user account with role, active status, and optional password.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string', 'description' => 'User full name'],
+                            'email' => ['type' => 'string', 'description' => 'User email address'],
+                            'password' => ['type' => 'string', 'description' => 'Optional account password (auto-generated if omitted)'],
+                            'role' => ['type' => 'string', 'description' => 'Optional role (e.g. admin, user, owner)'],
+                            'is_active' => ['type' => 'boolean', 'default' => true],
+                            'email_verified' => ['type' => 'boolean', 'default' => true],
+                            'current_team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'locale' => ['type' => 'string', 'enum' => ['en', 'de'], 'default' => 'de'],
+                        ],
+                        'required' => ['name', 'email'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_update_user',
+                    'description' => '(Admin Only) Update an existing user profile, role, status, email verification, or password.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'ID of user to update'],
+                            'name' => ['type' => 'string'],
+                            'email' => ['type' => 'string'],
+                            'password' => ['type' => 'string'],
+                            'role' => ['type' => 'string'],
+                            'is_active' => ['type' => 'boolean'],
+                            'email_verified' => ['type' => 'boolean'],
+                            'current_team_id' => ['type' => 'integer'],
+                            'locale' => ['type' => 'string', 'enum' => ['en', 'de']],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_user',
+                    'description' => '(Admin Only) Permanently delete a user account from the platform. Self-deletion is guarded.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'ID of user to delete'],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_get_user_details',
+                    'description' => '(Admin Only) Retrieve detailed profile, roles, assigned teams, and active tool subscriptions for a specific user.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'ID of user to inspect'],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_assign_subscription',
+                    'description' => '(Admin Only) Assign or create a subscription plan for a user (e.g. All Tools Bundle, specific plan, custom duration).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'user_id' => ['type' => 'integer', 'description' => 'User ID'],
+                            'plan_id' => ['type' => 'integer', 'description' => 'Optional specific Plan ID'],
+                            'plan_slug' => ['type' => 'string', 'description' => 'Optional Plan slug (e.g. all-tools)'],
+                            'billing_interval' => ['type' => 'string', 'enum' => ['monthly', 'yearly'], 'default' => 'monthly'],
+                            'payment_method' => ['type' => 'string', 'enum' => ['manual', 'stripe', 'bank', 'free'], 'default' => 'manual'],
+                            'status' => ['type' => 'string', 'enum' => ['active', 'pending', 'cancelled'], 'default' => 'active'],
+                            'duration_days' => ['type' => 'integer', 'description' => 'Optional validity length in days from now'],
+                            'admin_note' => ['type' => 'string', 'description' => 'Internal note or reference'],
+                        ],
+                        'required' => ['user_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_update_subscription',
+                    'description' => '(Admin Only) Update status, change plan, or extend validity of an existing subscription.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subscription_id' => ['type' => 'integer', 'description' => 'Tool subscription ID'],
+                            'status' => ['type' => 'string', 'enum' => ['active', 'pending', 'cancelled']],
+                            'plan_id' => ['type' => 'integer'],
+                            'billing_interval' => ['type' => 'string', 'enum' => ['monthly', 'yearly']],
+                            'extend_days' => ['type' => 'integer', 'description' => 'Extend subscription expiration by N days'],
+                            'admin_note' => ['type' => 'string'],
+                        ],
+                        'required' => ['subscription_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_cancel_subscription',
+                    'description' => '(Admin Only) Immediately cancel an active user subscription.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subscription_id' => ['type' => 'integer', 'description' => 'Tool subscription ID to cancel'],
+                            'admin_note' => ['type' => 'string', 'description' => 'Optional cancellation reason'],
+                        ],
+                        'required' => ['subscription_id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_list_plans',
+                    'description' => '(Admin Only) List all subscription plans available in the system with pricing and module counts.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
                     ],
                 ],
 
@@ -1402,6 +1662,449 @@ class McpController extends Controller
                         ],
                     ],
                 ],
+
+                // 11. Admin Coupons & Discounts
+                [
+                    'name' => 'admin_list_coupons',
+                    'description' => '(Admin Only) List promotional and discount coupons with redemption counts and expiry dates.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'only_active' => ['type' => 'boolean', 'description' => 'Filter only active coupons'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_create_coupon',
+                    'description' => '(Admin Only) Create a promotional discount coupon (percentage or fixed discount).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'code' => ['type' => 'string', 'description' => 'Coupon code (e.g. SUMMER2026, WELCOME10)'],
+                            'type' => ['type' => 'string', 'enum' => ['percent', 'fixed'], 'default' => 'percent'],
+                            'value' => ['type' => 'number', 'description' => 'Discount percentage or fixed amount in EUR'],
+                            'max_uses' => ['type' => 'integer', 'description' => 'Maximum allowed redemptions (null for unlimited)'],
+                            'description' => ['type' => 'string', 'description' => 'Internal or promo description'],
+                            'is_active' => ['type' => 'boolean', 'default' => true],
+                            'expires_at' => ['type' => 'string', 'description' => 'Expiry datetime (YYYY-MM-DD or ISO 8601)'],
+                        ],
+                        'required' => ['code', 'value'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_coupon',
+                    'description' => '(Admin Only) Delete or remove a discount coupon.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'code' => ['type' => 'string', 'description' => 'Coupon code or ID to delete'],
+                        ],
+                        'required' => ['code'],
+                    ],
+                ],
+
+                // 12. Admin Maintenance, Backups & System Logs
+                [
+                    'name' => 'admin_create_backup',
+                    'description' => '(Admin Only) Trigger and create a database SQL dump backup.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'disk' => ['type' => 'string', 'enum' => ['local', 's3'], 'default' => 'local'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_list_backups',
+                    'description' => '(Admin Only) List all database and system backup snapshots.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'admin_read_error_logs',
+                    'description' => '(Admin Only) Read recent application error logs from storage/logs/laravel.log.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'lines' => ['type' => 'integer', 'default' => 50, 'description' => 'Number of tail lines to retrieve (10-150)'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_list_failed_jobs',
+                    'description' => '(Admin Only) List failed background queue worker jobs.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'limit' => ['type' => 'integer', 'default' => 20],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_retry_failed_job',
+                    'description' => '(Admin Only) Retry one or all failed queue jobs.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'string', 'default' => 'all', 'description' => 'Job ID or "all" to retry all failed jobs'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'admin_toggle_maintenance',
+                    'description' => '(Admin Only) Put the application into or out of maintenance mode (artisan down/up).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'enable' => ['type' => 'boolean', 'description' => 'True to enable maintenance mode (offline), false to make live'],
+                            'secret' => ['type' => 'string', 'description' => 'Optional bypass secret token for maintenance mode'],
+                        ],
+                        'required' => ['enable'],
+                    ],
+                ],
+
+                // 13. Admin Announcements & Settings
+                [
+                    'name' => 'admin_list_announcements',
+                    'description' => '(Admin Only) List site-wide dashboard notifications and banner announcements.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+                [
+                    'name' => 'admin_create_announcement',
+                    'description' => '(Admin Only) Create a dashboard announcement banner for platform users.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string', 'description' => 'Announcement headline'],
+                            'body' => ['type' => 'string', 'description' => 'Announcement text or message'],
+                            'type' => ['type' => 'string', 'enum' => ['info', 'warning', 'success', 'danger'], 'default' => 'info'],
+                            'is_active' => ['type' => 'boolean', 'default' => true],
+                            'starts_at' => ['type' => 'string', 'description' => 'Optional start datetime'],
+                            'ends_at' => ['type' => 'string', 'description' => 'Optional expiry datetime'],
+                        ],
+                        'required' => ['title', 'body'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_delete_announcement',
+                    'description' => '(Admin Only) Delete an announcement by ID.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'integer', 'description' => 'Announcement ID'],
+                        ],
+                        'required' => ['id'],
+                    ],
+                ],
+                [
+                    'name' => 'admin_get_settings',
+                    'description' => '(Admin Only) Retrieve general system environment, active modules count, and platform statistics.',
+                    'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                ],
+
+                // 14. ClusterForge (SEO & Keyword Topic Clusters)
+                [
+                    'name' => 'clusterforge_list_projects',
+                    'description' => 'List and search SEO keyword and topic cluster projects with progress and status filters.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'search' => ['type' => 'string', 'description' => 'Search projects by topic, website or pillar title'],
+                            'status' => ['type' => 'string', 'description' => 'Optional status filter (e.g. pending, completed, failed)'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'description' => 'Max number of results (default 25)'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_get_project',
+                    'description' => 'Retrieve detailed information, subtopics, keyword metrics, and questions for a ClusterForge project.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'The ID of the ClusterForge project'],
+                            'include_content' => ['type' => 'boolean', 'description' => 'Whether to include the full pillar page markdown content'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_search_keywords',
+                    'description' => 'Search subtopics, long-tail keywords, search volumes, and CPC across ClusterForge projects.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'query' => ['type' => 'string', 'description' => 'Keyword term, phrase, or title to search for'],
+                            'project_id' => ['type' => 'integer', 'description' => 'Filter by specific project ID'],
+                            'min_volume' => ['type' => 'integer', 'description' => 'Minimum monthly search volume'],
+                            'max_cpc' => ['type' => 'number', 'description' => 'Maximum CPC limit'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'description' => 'Max number of keywords to return (default 30)'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_get_subtopic',
+                    'description' => 'Retrieve full cluster details for a specific subtopic, including long-tail keyword, questions, and full cluster article content.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_search_questions',
+                    'description' => 'Search through all AI-generated SEO research questions and answers within ClusterForge topic clusters.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'query' => ['type' => 'string', 'description' => 'Search term matching question or answer text'],
+                            'project_id' => ['type' => 'integer', 'description' => 'Filter by specific project ID'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                            'limit' => ['type' => 'integer', 'description' => 'Max results to return (default 25)'],
+                        ],
+                        'required' => ['query'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_create_project',
+                    'description' => 'Create a new AI-driven SEO topic cluster project and optionally queue cluster generation immediately.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'topic' => ['type' => 'string', 'description' => 'Core topic or seed keyword'],
+                            'website' => ['type' => 'string', 'description' => 'Target website URL'],
+                            'language' => ['type' => 'string', 'enum' => ['de', 'en'], 'default' => 'de'],
+                            'pillar_title' => ['type' => 'string', 'description' => 'Optional title for the pillar page'],
+                            'start_generation' => ['type' => 'boolean', 'default' => true, 'description' => 'Automatically dispatch AI cluster generation job in background'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['topic'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_retry_project',
+                    'description' => 'Retry or restart generation for a pending or failed ClusterForge topic cluster project.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'Project ID to restart'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_export_content',
+                    'description' => 'Export full markdown content (with frontmatter metadata) for a pillar page or subtopic cluster page.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'Project ID'],
+                            'type' => ['type' => 'string', 'enum' => ['pillar', 'cluster'], 'default' => 'pillar', 'description' => 'Export type: pillar page or cluster subtopic page'],
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'Required if type is cluster'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_delete_project',
+                    'description' => 'Delete an SEO topic cluster project and its associated subtopics and questions.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'Project ID to delete'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_subtopics',
+                    'description' => 'Save externally generated subtopics for a ClusterForge project (bypasses Gemini). Use this after you have generated the subtopic list yourself. Sets project status to generating_questions.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'The ClusterForge project ID'],
+                            'subtopics' => [
+                                'type' => 'array',
+                                'description' => 'Array of subtopic objects to save',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'title' => ['type' => 'string', 'description' => 'Subtopic title'],
+                                        'long_tail_keyword' => ['type' => 'string', 'description' => 'Long-tail keyword'],
+                                        'description' => ['type' => 'string', 'description' => 'Short description of the subtopic'],
+                                    ],
+                                    'required' => ['title'],
+                                ],
+                            ],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id', 'subtopics'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_questions',
+                    'description' => 'Save externally generated questions for a specific ClusterForge subtopic (bypasses Gemini). Replaces any existing questions for that subtopic.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID to save questions for'],
+                            'questions' => [
+                                'type' => 'array',
+                                'description' => 'Array of question strings (up to 10)',
+                                'items' => ['type' => 'string'],
+                            ],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id', 'questions'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_answers',
+                    'description' => 'Save externally generated answers for all questions in a ClusterForge subtopic (bypasses Gemini). answers array must match question order.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID'],
+                            'answers' => [
+                                'type' => 'array',
+                                'description' => 'Array of answer strings in the same order as the subtopic questions',
+                                'items' => ['type' => 'string'],
+                            ],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id', 'answers'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_cluster_content',
+                    'description' => 'Save externally generated cluster page content (title, meta, intro markdown) for a subtopic (bypasses Gemini). Full cluster_content is auto-assembled from title + intro + Q&A.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'subtopic_id' => ['type' => 'integer', 'description' => 'The subtopic ID'],
+                            'title' => ['type' => 'string', 'description' => 'H1 page title for the cluster page'],
+                            'meta_description' => ['type' => 'string', 'description' => 'SEO meta description (150-160 chars)'],
+                            'introduction_markdown' => ['type' => 'string', 'description' => 'Introduction section markdown (200-350 words)'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['subtopic_id', 'title'],
+                    ],
+                ],
+                [
+                    'name' => 'clusterforge_save_pillar_content',
+                    'description' => 'Save externally generated pillar page content (title, meta, full markdown body) for a ClusterForge project and mark it completed (bypasses Gemini).',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'project_id' => ['type' => 'integer', 'description' => 'The ClusterForge project ID'],
+                            'title' => ['type' => 'string', 'description' => 'H1 pillar page title'],
+                            'meta_description' => ['type' => 'string', 'description' => 'SEO meta description for the pillar page'],
+                            'content_markdown' => ['type' => 'string', 'description' => 'Full pillar page body in Markdown (~700-1100 words)'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['project_id', 'title', 'content_markdown'],
+                    ],
+                ],
+
+                // 15. DevManager (Agile/Scrum Backlog & Roadmaps)
+                [
+                    'name' => 'devmanager_list_user_stories',
+                    'description' => 'List agile development user stories, story points, and backlog items from DevManager.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'devmanager_create_user_story',
+                    'description' => 'Create a user story or backlog item in DevManager.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string', 'description' => 'User story title'],
+                            'description' => ['type' => 'string', 'description' => 'Detailed acceptance criteria or user story text'],
+                            'status' => ['type' => 'string', 'enum' => ['backlog', 'todo', 'in_progress', 'done'], 'default' => 'backlog'],
+                            'priority' => ['type' => 'string', 'enum' => ['low', 'medium', 'high', 'urgent'], 'default' => 'medium'],
+                            'story_points' => ['type' => 'integer', 'default' => 3],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['title'],
+                    ],
+                ],
+                [
+                    'name' => 'devmanager_list_milestones',
+                    'description' => 'List development milestones, releases, and roadmap target dates.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+
+                // 16. LoopEngine (Automated Process Orchestration)
+                [
+                    'name' => 'loopengine_list_processes',
+                    'description' => 'List automated multi-step business processes and workflow templates from LoopEngine.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'loopengine_trigger_process_run',
+                    'description' => 'Trigger an automated workflow execution run for a business process.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'process_id' => ['type' => 'integer', 'description' => 'Process ID to execute'],
+                            'input_data' => ['type' => 'object', 'description' => 'Input payload parameters for the process run'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['process_id'],
+                    ],
+                ],
+
+                // 17. CustomerSuccess (Root Cause & Retention Intelligence)
+                [
+                    'name' => 'customersuccess_list_inquiries',
+                    'description' => 'List diagnosed customer success inquiries, problems, and prioritized retention cases.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'customersuccess_diagnose_inquiry',
+                    'description' => 'Log and structure a customer success issue with root cause analysis, consequences, and recommended action steps.',
+                    'inputSchema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'question' => ['type' => 'string', 'description' => 'Client inquiry or presenting question'],
+                            'problem' => ['type' => 'string', 'description' => 'Diagnosed core underlying problem'],
+                            'root_cause' => ['type' => 'string', 'description' => 'Identified root cause'],
+                            'consequences' => ['type' => 'string', 'description' => 'Business consequences if unresolved'],
+                            'recommended_actions' => ['type' => 'string', 'description' => 'Actionable step-by-step resolution plan'],
+                            'priority' => ['type' => 'string', 'enum' => ['low', 'medium', 'high', 'critical'], 'default' => 'medium'],
+                            'module_key' => ['type' => 'string', 'description' => 'Associated Allocore module key'],
+                            'team_id' => ['type' => 'integer', 'description' => 'Optional team ID'],
+                        ],
+                        'required' => ['question', 'problem'],
+                    ],
+                ],
             ],
         ];
     }
@@ -1419,10 +2122,15 @@ class McpController extends Controller
             'list_audit_templates' => $this->toolListAuditTemplates(),
             'create_or_update_question' => $this->toolCreateOrUpdateQuestion($arguments),
             'list_all_modules' => $this->toolListAllModules($arguments),
-            'manage_tool_pool' => $this->toolManageToolPool($arguments),
-            'deprecate_module' => $this->toolDeprecateModule($arguments),
-            'update_module_metadata' => $this->toolUpdateModuleMetadata($arguments),
-            'sync_subscription_plans' => $this->toolSyncSubscriptionPlans(),
+            'admin_list_modules' => $this->toolAdminListModules($arguments),
+            'admin_get_module_details', 'get_module_details' => $this->toolAdminGetModuleDetails($arguments),
+            'admin_install_module', 'install_module' => $this->toolAdminInstallModule($arguments),
+            'admin_update_module', 'update_module_metadata' => $this->toolAdminUpdateModule($arguments),
+            'admin_toggle_module', 'toggle_module' => $this->toolAdminToggleModule($arguments),
+            'admin_toggle_module_pool', 'manage_tool_pool' => $this->toolAdminToggleModulePool($arguments),
+            'admin_deprecate_module', 'deprecate_module' => $this->toolAdminDeprecateModule($arguments),
+            'admin_delete_module', 'delete_module' => $this->toolAdminDeleteModule($arguments),
+            'admin_sync_module_plans', 'sync_subscription_plans' => $this->toolAdminSyncModulePlans(),
             'diagnose_audit_gaps' => $this->toolDiagnoseAuditGaps($arguments),
             'calculate_pillar_scores' => $this->toolCalculatePillarScores($arguments),
             'generate_action_plan' => $this->toolGenerateActionPlan($arguments),
@@ -1438,6 +2146,14 @@ class McpController extends Controller
             'upload_post_image' => $this->toolUploadPostImage($arguments),
             'search_users_and_teams' => $this->toolSearchUsersAndTeams($arguments),
             'get_user_subscription_status' => $this->toolGetUserSubscriptionStatus($arguments),
+            'admin_create_user', 'create_user' => $this->toolAdminCreateUser($arguments),
+            'admin_update_user', 'update_user' => $this->toolAdminUpdateUser($arguments),
+            'admin_delete_user', 'delete_user' => $this->toolAdminDeleteUser($arguments),
+            'admin_get_user_details', 'get_user_details' => $this->toolAdminGetUserDetails($arguments),
+            'admin_assign_subscription', 'assign_user_subscription' => $this->toolAdminAssignSubscription($arguments),
+            'admin_update_subscription', 'update_user_subscription' => $this->toolAdminUpdateSubscription($arguments),
+            'admin_cancel_subscription', 'cancel_user_subscription' => $this->toolAdminCancelSubscription($arguments),
+            'admin_list_plans', 'list_plans' => $this->toolAdminListPlans(),
             'get_platform_metrics' => $this->toolGetPlatformMetrics(),
             'run_allocore_artisan' => $this->toolRunAllocoreArtisan($arguments),
             'get_system_health' => $this->toolGetSystemHealth(),
@@ -1491,6 +2207,54 @@ class McpController extends Controller
             'log_snowball_payment' => $this->toolLogSnowballPayment($arguments),
             'calculate_snowball_payoff_plan' => $this->toolCalculateSnowballPayoffPlan($arguments),
             'get_snowball_financial_summary' => $this->toolGetSnowballFinancialSummary($arguments),
+
+            // Admin Coupons
+            'admin_list_coupons', 'list_coupons' => $this->toolAdminListCoupons($arguments),
+            'admin_create_coupon', 'create_coupon' => $this->toolAdminCreateCoupon($arguments),
+            'admin_delete_coupon', 'delete_coupon' => $this->toolAdminDeleteCoupon($arguments),
+
+            // Admin System, Backups & Maintenance
+            'admin_create_backup', 'create_backup' => $this->toolAdminCreateBackup($arguments),
+            'admin_list_backups', 'list_backups' => $this->toolAdminListBackups(),
+            'admin_read_error_logs', 'read_error_logs' => $this->toolAdminReadErrorLogs($arguments),
+            'admin_list_failed_jobs', 'list_failed_jobs' => $this->toolAdminListFailedJobs($arguments),
+            'admin_retry_failed_job', 'retry_failed_job' => $this->toolAdminRetryFailedJob($arguments),
+            'admin_toggle_maintenance', 'toggle_maintenance' => $this->toolAdminToggleMaintenance($arguments),
+
+            // Admin Announcements & Settings
+            'admin_list_announcements', 'list_announcements' => $this->toolAdminListAnnouncements(),
+            'admin_create_announcement', 'create_announcement' => $this->toolAdminCreateAnnouncement($arguments),
+            'admin_delete_announcement', 'delete_announcement' => $this->toolAdminDeleteAnnouncement($arguments),
+            'admin_get_settings', 'get_settings' => $this->toolAdminGetSettings(),
+
+            // ClusterForge Tools
+            'clusterforge_list_projects' => $this->toolClusterforgeListProjects($arguments),
+            'clusterforge_get_project' => $this->toolClusterforgeGetProject($arguments),
+            'clusterforge_search_keywords' => $this->toolClusterforgeSearchKeywords($arguments),
+            'clusterforge_get_subtopic' => $this->toolClusterforgeGetSubtopic($arguments),
+            'clusterforge_search_questions' => $this->toolClusterforgeSearchQuestions($arguments),
+            'clusterforge_create_project' => $this->toolClusterforgeCreateProject($arguments),
+            'clusterforge_retry_project' => $this->toolClusterforgeRetryProject($arguments),
+            'clusterforge_export_content' => $this->toolClusterforgeExportContent($arguments),
+            'clusterforge_delete_project' => $this->toolClusterforgeDeleteProject($arguments),
+            'clusterforge_save_subtopics' => $this->toolClusterforgeSaveSubtopics($arguments),
+            'clusterforge_save_questions' => $this->toolClusterforgeSaveQuestions($arguments),
+            'clusterforge_save_answers' => $this->toolClusterforgeSaveAnswers($arguments),
+            'clusterforge_save_cluster_content' => $this->toolClusterforgeSaveClusterContent($arguments),
+            'clusterforge_save_pillar_content' => $this->toolClusterforgeSavePillarContent($arguments),
+
+            // DevManager Tools
+            'devmanager_list_user_stories' => $this->toolDevmanagerListUserStories($arguments),
+            'devmanager_create_user_story' => $this->toolDevmanagerCreateUserStory($arguments),
+            'devmanager_list_milestones' => $this->toolDevmanagerListMilestones($arguments),
+
+            // LoopEngine Tools
+            'loopengine_list_processes' => $this->toolLoopengineListProcesses($arguments),
+            'loopengine_trigger_process_run' => $this->toolLoopengineTriggerProcessRun($arguments),
+
+            // CustomerSuccess Tools
+            'customersuccess_list_inquiries' => $this->toolCustomersuccessListInquiries($arguments),
+            'customersuccess_diagnose_inquiry' => $this->toolCustomersuccessDiagnoseInquiry($arguments),
             default => throw new \InvalidArgumentException("Tool '{$name}' is not recognized."),
         };
     }
@@ -1675,11 +2439,12 @@ class McpController extends Controller
         if (! empty($args['only_pool'])) $query->inSubscriptionPool();
         if (! empty($args['only_active'])) $query->active();
 
-        $modules = $query->orderBy('sort_order')->get();
+        $modules = $query->orderBy('sort_order')->orderBy('name')->get();
 
         return [
             'total' => $modules->count(),
             'modules' => $modules->map(fn ($m) => [
+                'id' => $m->id,
                 'key' => $m->key,
                 'name' => $m->getRawOriginal('name'),
                 'description' => $m->getRawOriginal('description'),
@@ -1695,53 +2460,468 @@ class McpController extends Controller
         ];
     }
 
+    /**
+     * (Admin Only) List all modules with full admin metadata and disk detection.
+     */
+    protected function toolAdminListModules(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $query = Module::with(['plans:id,name,slug']);
+        if (! empty($args['category'])) $query->where('category', $args['category']);
+        if (! empty($args['only_pool'])) $query->inSubscriptionPool();
+        if (! empty($args['only_active'])) $query->active();
+
+        $modules = $query->orderBy('sort_order')->orderBy('name')->get();
+
+        // Scan disk modules
+        $diskModules = [];
+        $uninstalledDiskModules = [];
+        try {
+            $installedKeys = $modules->pluck('key')->all();
+            foreach (ModuleFacade::all() as $dm) {
+                $k = Str::kebab($dm->getName());
+                $isInstalled = in_array($k, $installedKeys, true);
+                $dData = [
+                    'name' => $dm->getName(),
+                    'key' => $k,
+                    'alias' => $dm->get('alias', $k),
+                    'description' => $dm->get('description', ''),
+                    'path' => $dm->getPath(),
+                    'is_enabled_on_disk' => $dm->isEnabled(),
+                    'is_installed_in_db' => $isInstalled,
+                ];
+                $diskModules[] = $dData;
+                if (! $isInstalled) {
+                    $uninstalledDiskModules[] = $dData;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore disk scan error
+        }
+
+        return [
+            'total_installed' => $modules->count(),
+            'total_disk_modules' => count($diskModules),
+            'active_count' => Module::where('is_active', true)->where('is_deprecated', false)->count(),
+            'pool_count' => Module::inSubscriptionPool()->count(),
+            'deprecated_count' => Module::where('is_deprecated', true)->count(),
+            'modules' => $modules->map(fn ($m) => [
+                'id' => $m->id,
+                'key' => $m->key,
+                'name' => $m->getRawOriginal('name'),
+                'description' => $m->getRawOriginal('description'),
+                'category' => $m->category,
+                'icon' => $m->icon,
+                'route_prefix' => $m->route_prefix,
+                'in_subscription_pool' => (bool) $m->in_subscription_pool,
+                'is_active' => (bool) $m->is_active,
+                'is_deprecated' => (bool) $m->is_deprecated,
+                'badge_text' => $m->badge_text,
+                'sort_order' => $m->sort_order,
+                'allowed_roles' => $m->allowed_roles ?? [],
+                'plans' => $m->plans->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'slug' => $p->slug]),
+            ]),
+            'uninstalled_disk_modules' => $uninstalledDiskModules,
+        ];
+    }
+
+    /**
+     * (Admin Only) Get complete details for a module/tool.
+     */
+    protected function toolAdminGetModuleDetails(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $keyOrId = $args['module_key'] ?? ($args['id'] ?? null);
+        if (! $keyOrId) {
+            throw new \InvalidArgumentException('module_key or id is required.');
+        }
+
+        $module = is_numeric($keyOrId)
+            ? Module::with('plans')->find($keyOrId)
+            : Module::with('plans')->where('key', $keyOrId)->first();
+
+        $diskInfo = null;
+        try {
+            $lookup = $module ? $module->name : $keyOrId;
+            $dm = ModuleFacade::find($lookup) ?? ModuleFacade::find(Str::studly($lookup)) ?? ModuleFacade::find(Str::kebab($lookup));
+            if (! $dm) {
+                foreach (ModuleFacade::all() as $m) {
+                    if (Str::kebab($m->getName()) === Str::kebab($keyOrId)) {
+                        $dm = $m;
+                        break;
+                    }
+                }
+            }
+            if ($dm) {
+                $diskInfo = [
+                    'name' => $dm->getName(),
+                    'alias' => $dm->get('alias', Str::kebab($dm->getName())),
+                    'description' => $dm->get('description', ''),
+                    'path' => $dm->getPath(),
+                    'is_enabled' => $dm->isEnabled(),
+                ];
+            }
+        } catch (\Throwable $e) {
+        }
+
+        if (! $module && ! $diskInfo) {
+            throw new \InvalidArgumentException("Module '{$keyOrId}' not found in database or disk.");
+        }
+
+        return [
+            'is_installed' => (bool) $module,
+            'module' => $module ? [
+                'id' => $module->id,
+                'key' => $module->key,
+                'name' => $module->getRawOriginal('name'),
+                'description' => $module->getRawOriginal('description'),
+                'category' => $module->category,
+                'icon' => $module->icon,
+                'route_prefix' => $module->route_prefix,
+                'in_subscription_pool' => (bool) $module->in_subscription_pool,
+                'is_active' => (bool) $module->is_active,
+                'is_deprecated' => (bool) $module->is_deprecated,
+                'badge_text' => $module->badge_text,
+                'sort_order' => $module->sort_order,
+                'allowed_roles' => $module->allowed_roles ?? [],
+                'plans' => $module->plans->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'slug' => $p->slug]),
+                'created_at' => $module->created_at?->toIso8601String(),
+                'updated_at' => $module->updated_at?->toIso8601String(),
+            ] : null,
+            'disk_module' => $diskInfo,
+        ];
+    }
+
+    /**
+     * (Admin Only) Install and activate a module from disk.
+     */
+    protected function toolAdminInstallModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $name = trim($args['name'] ?? ($args['module_key'] ?? ''));
+        if (empty($name)) {
+            throw new \InvalidArgumentException('name (disk module name or key) is required to install.');
+        }
+
+        // Try exact match, studly, or kebab
+        $diskModule = ModuleFacade::find($name)
+            ?? ModuleFacade::find(Str::studly($name))
+            ?? ModuleFacade::find(Str::kebab($name));
+
+        if (! $diskModule) {
+            // Find by matching kebab
+            foreach (ModuleFacade::all() as $m) {
+                if (Str::kebab($m->getName()) === Str::kebab($name)) {
+                    $diskModule = $m;
+                    break;
+                }
+            }
+        }
+
+        if (! $diskModule) {
+            $available = collect(ModuleFacade::all())->map(fn ($m) => $m->getName())->values()->all();
+            throw new \InvalidArgumentException("Module '{$name}' not found on disk. Available disk modules: " . implode(', ', $available));
+        }
+
+        $key = Str::kebab($diskModule->getName());
+        $record = Module::where('key', $key)->first();
+
+        if (! $record) {
+            $record = Module::create([
+                'key' => $key,
+                'name' => $args['name'] ?? $diskModule->getName(),
+                'description' => $args['description'] ?? $diskModule->get('description', ''),
+                'icon' => $args['icon'] ?? 'sparkles',
+                'category' => $args['category'] ?? 'Produktivität & Prozesse',
+                'route_prefix' => $args['route_prefix'] ?? $diskModule->get('alias', $key),
+                'in_subscription_pool' => isset($args['in_subscription_pool']) ? (bool) $args['in_subscription_pool'] : true,
+                'is_deprecated' => false,
+                'is_active' => true,
+            ]);
+        } else {
+            $record->update(['is_active' => true]);
+        }
+
+        $runMigrations = $args['run_migrations'] ?? true;
+        $migrationOutput = null;
+        if ($runMigrations) {
+            try {
+                Artisan::call('module:migrate', ['module' => $diskModule->getName(), '--force' => true]);
+                $migrationOutput = trim(Artisan::output());
+            } catch (\Throwable $e) {
+                Log::warning("Module migration failed for {$diskModule->getName()}: " . $e->getMessage());
+                $migrationOutput = 'Error: ' . $e->getMessage();
+            }
+        }
+
+        $runSeeders = $args['run_seeders'] ?? false;
+        if ($runSeeders) {
+            try {
+                Artisan::call('module:seed', ['module' => $diskModule->getName(), '--force' => true]);
+            } catch (\Throwable $e) {
+                // Optional
+            }
+        }
+
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'installed',
+            'module' => [
+                'id' => $record->id,
+                'key' => $record->key,
+                'name' => $record->getRawOriginal('name'),
+                'category' => $record->category,
+                'is_active' => (bool) $record->is_active,
+                'in_subscription_pool' => (bool) $record->in_subscription_pool,
+            ],
+            'migration_output' => $migrationOutput,
+            'message' => "Module '{$diskModule->getName()}' installed and activated successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Update full tool/module metadata, roles, pool, and status.
+     */
+    protected function toolAdminUpdateModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $keyOrId = $args['module_key'] ?? ($args['id'] ?? null);
+        if (! $keyOrId) {
+            throw new \InvalidArgumentException('module_key is required.');
+        }
+
+        $module = is_numeric($keyOrId) ? Module::find($keyOrId) : Module::byKey($keyOrId);
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$keyOrId}' not found.");
+        }
+
+        $fields = [
+            'name', 'description', 'category', 'icon', 'route_prefix',
+            'badge_text', 'sort_order', 'allowed_roles',
+            'is_active', 'in_subscription_pool', 'is_deprecated',
+        ];
+
+        $data = [];
+        foreach ($fields as $f) {
+            if (array_key_exists($f, $args)) {
+                $val = $args[$f];
+                if (in_array($f, ['is_active', 'in_subscription_pool', 'is_deprecated'], true)) {
+                    $val = (bool) $val;
+                } elseif ($f === 'sort_order') {
+                    $val = (int) $val;
+                } elseif ($f === 'allowed_roles') {
+                    if (is_string($val)) {
+                        $val = array_filter(array_map('trim', explode(',', $val)));
+                    }
+                }
+                $data[$f] = $val;
+            }
+        }
+
+        if (! empty($data)) {
+            $module->update($data);
+            $this->syncAllToolsPlan();
+        }
+
+        return [
+            'status' => 'success',
+            'module' => [
+                'id' => $module->id,
+                'key' => $module->key,
+                'name' => $module->getRawOriginal('name'),
+                'description' => $module->getRawOriginal('description'),
+                'category' => $module->category,
+                'icon' => $module->icon,
+                'route_prefix' => $module->route_prefix,
+                'in_subscription_pool' => (bool) $module->in_subscription_pool,
+                'is_active' => (bool) $module->is_active,
+                'is_deprecated' => (bool) $module->is_deprecated,
+                'badge_text' => $module->badge_text,
+                'sort_order' => $module->sort_order,
+                'allowed_roles' => $module->allowed_roles ?? [],
+            ],
+            'updated_fields' => array_keys($data),
+            'message' => "Module '{$module->key}' was successfully updated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Toggle active status of a module.
+     */
+    protected function toolAdminToggleModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $module = Module::byKey($args['module_key'] ?? '');
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        }
+
+        $newState = array_key_exists('is_active', $args) ? (bool) $args['is_active'] : ! $module->is_active;
+        $module->update(['is_active' => $newState]);
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'success',
+            'module_key' => $module->key,
+            'is_active' => $module->is_active,
+            'message' => $module->is_active ? "Module '{$module->key}' activated." : "Module '{$module->key}' deactivated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Toggle or set subscription pool status.
+     */
+    protected function toolAdminToggleModulePool(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $module = Module::byKey($args['module_key'] ?? '');
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        }
+
+        $newPool = array_key_exists('in_pool', $args)
+            ? (bool) $args['in_pool']
+            : (array_key_exists('in_subscription_pool', $args) ? (bool) $args['in_subscription_pool'] : ! $module->in_subscription_pool);
+
+        $module->update(['in_subscription_pool' => $newPool]);
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'success',
+            'module_key' => $module->key,
+            'in_subscription_pool' => (bool) $module->in_subscription_pool,
+            'message' => $module->in_subscription_pool
+                ? "Module '{$module->key}' added to the customer subscription pool."
+                : "Module '{$module->key}' removed from the customer subscription pool.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Deprecate or un-deprecate a module.
+     */
+    protected function toolAdminDeprecateModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $module = Module::byKey($args['module_key'] ?? '');
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        }
+
+        $isDeprecated = array_key_exists('is_deprecated', $args) ? (bool) $args['is_deprecated'] : true;
+        $module->update(['is_deprecated' => $isDeprecated]);
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'success',
+            'module_key' => $module->key,
+            'is_deprecated' => (bool) $module->is_deprecated,
+            'message' => $module->is_deprecated
+                ? "Module '{$module->key}' marked as deprecated/archived."
+                : "Module '{$module->key}' restored from archive.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete/uninstall a module registration record.
+     */
+    protected function toolAdminDeleteModule(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $keyOrId = $args['module_key'] ?? ($args['id'] ?? null);
+        if (! $keyOrId) {
+            throw new \InvalidArgumentException('module_key is required.');
+        }
+
+        $module = is_numeric($keyOrId) ? Module::find($keyOrId) : Module::byKey($keyOrId);
+        if (! $module) {
+            throw new \InvalidArgumentException("Module '{$keyOrId}' not found.");
+        }
+
+        $key = $module->key;
+        $name = $module->getRawOriginal('name');
+
+        // Detach from plans
+        $module->plans()->detach();
+        $module->delete();
+
+        $this->syncAllToolsPlan();
+
+        return [
+            'status' => 'deleted',
+            'module_key' => $key,
+            'name' => $name,
+            'message' => "Module '{$name}' ({$key}) registration was successfully deleted from database.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Synchronize active in-pool modules with the All Tools Bundle plan.
+     */
+    protected function toolAdminSyncModulePlans(): array
+    {
+        $this->ensureAdmin();
+
+        return $this->syncAllToolsPlan();
+    }
+
+    protected function syncAllToolsPlan(): array
+    {
+        $plan = Plan::where('slug', 'all-tools')->orWhere('slug', 'bundle')->first();
+        if (! $plan) {
+            return ['status' => 'skipped', 'message' => 'All Tools Bundle plan not found.'];
+        }
+
+        $poolModuleIds = Module::where('in_subscription_pool', true)
+            ->where('is_active', true)
+            ->where('is_deprecated', false)
+            ->pluck('id')
+            ->all();
+
+        $plan->modules()->sync($poolModuleIds);
+
+        return [
+            'status' => 'synced',
+            'plan_id' => $plan->id,
+            'plan_name' => $plan->name,
+            'synced_modules_count' => count($poolModuleIds),
+        ];
+    }
+
     protected function toolManageToolPool(array $args): array
     {
-        $module = Module::byKey($args['module_key']);
-        if (! $module) throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        $this->ensureAdmin();
 
-        $module->update(['in_subscription_pool' => (bool) $args['in_pool']]);
-        $this->toolSyncSubscriptionPlans();
-
-        return ['status' => 'success', 'module' => $module->key, 'in_subscription_pool' => $module->in_subscription_pool];
+        return $this->toolAdminToggleModulePool($args);
     }
 
     protected function toolDeprecateModule(array $args): array
     {
-        $module = Module::byKey($args['module_key']);
-        if (! $module) throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        $this->ensureAdmin();
 
-        $module->update(['is_deprecated' => (bool) ($args['is_deprecated'] ?? true)]);
-        $this->toolSyncSubscriptionPlans();
-
-        return ['status' => 'success', 'module' => $module->key, 'is_deprecated' => $module->is_deprecated];
+        return $this->toolAdminDeprecateModule($args);
     }
 
     protected function toolUpdateModuleMetadata(array $args): array
     {
-        $module = Module::byKey($args['module_key']);
-        if (! $module) throw new \InvalidArgumentException("Module '{$args['module_key']}' not found.");
+        $this->ensureAdmin();
 
-        $fields = ['name', 'description', 'category', 'icon', 'badge_text', 'sort_order'];
-        $data = [];
-        foreach ($fields as $f) {
-            if (array_key_exists($f, $args)) $data[$f] = $args[$f];
-        }
-
-        $module->update($data);
-
-        return ['status' => 'success', 'module' => $module->key, 'updated' => $data];
+        return $this->toolAdminUpdateModule($args);
     }
 
     protected function toolSyncSubscriptionPlans(): array
     {
-        $plan = Plan::where('slug', 'all-tools')->orWhere('slug', 'bundle')->first();
-        if (! $plan) return ['status' => 'skipped', 'message' => 'Bundle plan not found.'];
+        $this->ensureAdmin();
 
-        $poolModuleIds = Module::where('in_subscription_pool', true)->where('is_active', true)->where('is_deprecated', false)->pluck('id')->all();
-        $plan->modules()->sync($poolModuleIds);
-
-        return ['status' => 'synced', 'plan' => $plan->name, 'synced_modules_count' => count($poolModuleIds)];
+        return $this->toolAdminSyncModulePlans();
     }
 
     protected function toolDiagnoseAuditGaps(array $args): array
@@ -2194,6 +3374,408 @@ class McpController extends Controller
             'active_subscription' => $user->subscribed(),
             'accessible_pool_tools_count' => $poolTools->count(),
             'pool_tools' => $poolTools,
+        ];
+    }
+
+    /**
+     * Ensure the authenticated caller has admin privileges.
+     */
+    protected function ensureAdmin(): User
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            throw new \RuntimeException('Unauthorized: An authenticated admin API token is required to perform this operation.');
+        }
+
+        if (! $user->isAdmin()) {
+            throw new \RuntimeException('Forbidden: Only administrator accounts have permission to perform this operation on Allocore Suite.');
+        }
+
+        return $user;
+    }
+
+    /**
+     * (Admin Only) Create a new user account.
+     */
+    protected function toolAdminCreateUser(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $name = trim($args['name'] ?? '');
+        $email = strtolower(trim($args['email'] ?? ''));
+
+        if (empty($name) || empty($email)) {
+            throw new \InvalidArgumentException('name and email are required to create a user.');
+        }
+
+        if (User::where('email', $email)->exists()) {
+            throw new \RuntimeException("A user with email '{$email}' already exists.");
+        }
+
+        $plainPassword = ! empty($args['password']) ? $args['password'] : Str::random(14);
+        $isActive = isset($args['is_active']) ? (bool) $args['is_active'] : true;
+        $locale = in_array($args['locale'] ?? '', ['en', 'de']) ? $args['locale'] : 'de';
+
+        $userData = [
+            'name' => $name,
+            'email' => $email,
+            'password' => $plainPassword,
+            'is_active' => $isActive,
+            'locale' => $locale,
+        ];
+
+        if (! empty($args['current_team_id'])) {
+            $userData['current_team_id'] = (int) $args['current_team_id'];
+        }
+
+        $user = User::create($userData);
+
+        if (! empty($args['role'])) {
+            try {
+                $user->syncRoles([$args['role']]);
+            } catch (\Throwable $e) {
+                Log::warning('Role sync warning on MCP create user: '.$e->getMessage());
+            }
+        }
+
+        if (! isset($args['email_verified']) || $args['email_verified']) {
+            $user->markEmailAsVerified();
+        }
+
+        return [
+            'status' => 'created',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+                'is_active' => (bool) $user->is_active,
+                'email_verified' => $user->hasVerifiedEmail(),
+                'locale' => $user->locale,
+                'created_at' => $user->created_at?->toIso8601String(),
+            ],
+            'generated_password' => empty($args['password']) ? $plainPassword : '(as specified)',
+            'message' => "User '{$user->name}' was successfully created.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Update an existing user.
+     */
+    protected function toolAdminUpdateUser(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $userId = (int) ($args['user_id'] ?? 0);
+        $user = User::findOrFail($userId);
+
+        $updates = [];
+
+        if (! empty($args['name'])) {
+            $updates['name'] = trim($args['name']);
+        }
+
+        if (! empty($args['email'])) {
+            $newEmail = strtolower(trim($args['email']));
+            if ($newEmail !== strtolower($user->email)) {
+                if (User::where('email', $newEmail)->where('id', '!=', $user->id)->exists()) {
+                    throw new \RuntimeException("Email '{$newEmail}' is already taken by another user.");
+                }
+                $updates['email'] = $newEmail;
+            }
+        }
+
+        if (! empty($args['password'])) {
+            $updates['password'] = $args['password'];
+        }
+
+        if (isset($args['is_active'])) {
+            $updates['is_active'] = (bool) $args['is_active'];
+        }
+
+        if (isset($args['locale']) && in_array($args['locale'], ['en', 'de'])) {
+            $updates['locale'] = $args['locale'];
+        }
+
+        if (isset($args['current_team_id'])) {
+            $updates['current_team_id'] = $args['current_team_id'] ? (int) $args['current_team_id'] : null;
+        }
+
+        if (! empty($updates)) {
+            $user->update($updates);
+        }
+
+        if (! empty($args['role'])) {
+            try {
+                $user->syncRoles([$args['role']]);
+            } catch (\Throwable $e) {
+                Log::warning('Role sync warning on MCP update user: '.$e->getMessage());
+            }
+        }
+
+        if (isset($args['email_verified'])) {
+            if ($args['email_verified'] && ! $user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+            } elseif (! $args['email_verified'] && $user->hasVerifiedEmail()) {
+                $user->email_verified_at = null;
+                $user->save();
+            }
+        }
+
+        return [
+            'status' => 'updated',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+                'is_active' => (bool) $user->is_active,
+                'email_verified' => $user->hasVerifiedEmail(),
+                'locale' => $user->locale,
+                'updated_at' => $user->updated_at?->toIso8601String(),
+            ],
+            'updated_fields' => array_keys($updates),
+            'message' => "User '{$user->name}' was successfully updated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete a user account.
+     */
+    protected function toolAdminDeleteUser(array $args): array
+    {
+        $admin = $this->ensureAdmin();
+        $userId = (int) ($args['user_id'] ?? 0);
+
+        if ($userId <= 0) {
+            throw new \InvalidArgumentException('user_id is required.');
+        }
+
+        if ($userId === $admin->id) {
+            throw new \RuntimeException('Security Protection: You cannot delete your own admin account via MCP.');
+        }
+
+        $user = User::findOrFail($userId);
+        $userName = $user->name;
+        $userEmail = $user->email;
+
+        $user->delete();
+
+        return [
+            'status' => 'deleted',
+            'user_id' => $userId,
+            'name' => $userName,
+            'email' => $userEmail,
+            'message' => "User '{$userName}' ({$userEmail}) was successfully deleted.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Get full profile and subscription details for a user.
+     */
+    protected function toolAdminGetUserDetails(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $userId = (int) ($args['user_id'] ?? 0);
+        $user = User::with(['roles', 'teams', 'currentTeam', 'toolSubscriptions.plan'])->findOrFail($userId);
+
+        return [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+                'is_admin' => $user->isAdmin(),
+                'is_active' => (bool) $user->is_active,
+                'email_verified' => $user->hasVerifiedEmail(),
+                'locale' => $user->locale,
+                'created_at' => $user->created_at?->toIso8601String(),
+                'current_team' => $user->currentTeam ? ['id' => $user->currentTeam->id, 'name' => $user->currentTeam->name] : null,
+                'teams_count' => $user->teams->count(),
+            ],
+            'subscriptions' => $user->toolSubscriptions->map(fn ($s) => [
+                'id' => $s->id,
+                'plan_id' => $s->plan_id,
+                'plan_name' => $s->plan?->name,
+                'plan_slug' => $s->plan?->slug,
+                'status' => $s->status,
+                'billing_interval' => $s->billing_interval,
+                'payment_method' => $s->payment_method,
+                'starts_at' => $s->starts_at?->toIso8601String(),
+                'ends_at' => $s->ends_at?->toIso8601String(),
+                'is_active' => $s->isActive(),
+                'admin_note' => $s->admin_note,
+            ])->toArray(),
+        ];
+    }
+
+    /**
+     * (Admin Only) Assign or create a subscription plan for a user.
+     */
+    protected function toolAdminAssignSubscription(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $userId = (int) ($args['user_id'] ?? 0);
+        $user = User::findOrFail($userId);
+
+        $plan = null;
+        if (! empty($args['plan_id'])) {
+            $plan = Plan::find($args['plan_id']);
+        } elseif (! empty($args['plan_slug'])) {
+            $plan = Plan::where('slug', $args['plan_slug'])->first();
+        }
+
+        if (! $plan) {
+            $plan = Plan::where('slug', 'all-tools')->first() ?? Plan::where('is_active', true)->first();
+        }
+
+        if (! $plan) {
+            throw new \RuntimeException('No active plan found to assign.');
+        }
+
+        $interval = in_array($args['billing_interval'] ?? '', ['monthly', 'yearly']) ? $args['billing_interval'] : 'monthly';
+        $paymentMethod = in_array($args['payment_method'] ?? '', ['manual', 'stripe', 'bank', 'free']) ? $args['payment_method'] : 'manual';
+        $status = in_array($args['status'] ?? '', ['active', 'pending', 'cancelled']) ? $args['status'] : 'active';
+        $adminNote = $args['admin_note'] ?? 'Assigned via MCP Admin';
+
+        $startsAt = now();
+        if (! empty($args['duration_days'])) {
+            $endsAt = now()->addDays((int) $args['duration_days']);
+        } else {
+            $endsAt = $interval === 'yearly' ? now()->addYear() : now()->addMonth();
+        }
+
+        $price = $plan->priceFor($interval);
+
+        $subscription = ToolSubscription::create([
+            'billable_type' => User::class,
+            'billable_id' => $user->id,
+            'plan_id' => $plan->id,
+            'billing_interval' => $interval,
+            'payment_method' => $paymentMethod,
+            'status' => $status,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+            'admin_note' => $adminNote,
+            'subtotal' => $price,
+            'total' => $price,
+        ]);
+
+        return [
+            'status' => 'assigned',
+            'subscription_id' => $subscription->id,
+            'user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email],
+            'plan' => ['id' => $plan->id, 'name' => $plan->name, 'slug' => $plan->slug],
+            'billing_interval' => $interval,
+            'subscription_status' => $status,
+            'starts_at' => $startsAt->toIso8601String(),
+            'ends_at' => $endsAt->toIso8601String(),
+            'message' => "Plan '{$plan->name}' ({$interval}) successfully assigned to {$user->name}.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Update an existing subscription.
+     */
+    protected function toolAdminUpdateSubscription(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $subId = (int) ($args['subscription_id'] ?? 0);
+        $sub = ToolSubscription::with(['plan', 'billable'])->findOrFail($subId);
+
+        if (! empty($args['status']) && in_array($args['status'], ['active', 'pending', 'cancelled'])) {
+            $sub->status = $args['status'];
+            if ($args['status'] === 'cancelled') {
+                $sub->ends_at = now();
+            }
+        }
+
+        if (! empty($args['plan_id'])) {
+            $newPlan = Plan::findOrFail($args['plan_id']);
+            $sub->plan_id = $newPlan->id;
+        }
+
+        if (! empty($args['billing_interval']) && in_array($args['billing_interval'], ['monthly', 'yearly'])) {
+            $sub->billing_interval = $args['billing_interval'];
+        }
+
+        if (! empty($args['extend_days'])) {
+            $base = ($sub->ends_at && $sub->ends_at->isFuture()) ? $sub->ends_at : now();
+            $sub->ends_at = $base->addDays((int) $args['extend_days']);
+            $sub->status = 'active';
+        }
+
+        if (isset($args['admin_note'])) {
+            $sub->admin_note = $args['admin_note'];
+        }
+
+        $sub->save();
+
+        return [
+            'status' => 'updated',
+            'subscription_id' => $sub->id,
+            'subscription_status' => $sub->status,
+            'plan_name' => $sub->plan?->name,
+            'billing_interval' => $sub->billing_interval,
+            'ends_at' => $sub->ends_at?->toIso8601String(),
+            'admin_note' => $sub->admin_note,
+            'message' => "Subscription #{$sub->id} was successfully updated.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Cancel an active subscription.
+     */
+    protected function toolAdminCancelSubscription(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $subId = (int) ($args['subscription_id'] ?? 0);
+        $sub = ToolSubscription::findOrFail($subId);
+
+        $sub->status = 'cancelled';
+        $sub->ends_at = now();
+
+        if (! empty($args['admin_note'])) {
+            $sub->admin_note = ($sub->admin_note ? $sub->admin_note."\n" : '').'Cancelled via MCP: '.$args['admin_note'];
+        }
+
+        $sub->save();
+
+        return [
+            'status' => 'cancelled',
+            'subscription_id' => $sub->id,
+            'ends_at' => $sub->ends_at?->toIso8601String(),
+            'message' => "Subscription #{$sub->id} has been cancelled.",
+        ];
+    }
+
+    /**
+     * (Admin Only) List all subscription plans.
+     */
+    protected function toolAdminListPlans(): array
+    {
+        $this->ensureAdmin();
+
+        $plans = Plan::withCount('modules')->orderBy('id')->get();
+
+        return [
+            'total' => $plans->count(),
+            'plans' => $plans->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'slug' => $p->slug,
+                'description' => $p->description,
+                'price_monthly' => $p->price_monthly,
+                'price_yearly' => $p->price_yearly,
+                'currency' => $p->currency,
+                'modules_count' => $p->modules_count,
+                'is_active' => (bool) $p->is_active,
+            ])->toArray(),
         ];
     }
 
@@ -4080,6 +5662,1323 @@ class McpController extends Controller
     }
 
     /**
+     * Resolve team ID from arguments or authenticated user context.
+     */
+    protected function resolveTeamId(array $args): int
+    {
+        if (! empty($args['team_id'])) {
+            return (int) $args['team_id'];
+        }
+
+        $user = Auth::user();
+        if ($user && $user->current_team_id) {
+            return (int) $user->current_team_id;
+        }
+
+        return (int) (Team::first()?->id ?? 1);
+    }
+
+    /**
+     * Check if the authenticated user has access to a specific team ID.
+     */
+    protected function userCanAccessTeam(?int $teamId): bool
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if (! $teamId) {
+            return false;
+        }
+
+        if ((int) $user->current_team_id === (int) $teamId) {
+            return true;
+        }
+
+        if ($user->teams()->where('teams.id', $teamId)->exists()) {
+            return true;
+        }
+
+        if (method_exists($user, 'ownedTeams') && $user->ownedTeams()->where('id', $teamId)->exists()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // --- Admin Coupons & Discounts ---
+
+    /**
+     * (Admin Only) List all promotional and discount coupons.
+     */
+    protected function toolAdminListCoupons(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $query = Coupon::query();
+        if (isset($args['only_active']) && $args['only_active']) {
+            $query->where('is_active', true);
+        }
+
+        $coupons = $query->orderBy('created_at', 'desc')->get();
+
+        return [
+            'total' => $coupons->count(),
+            'coupons' => $coupons->map(fn ($c) => [
+                'id' => $c->id,
+                'code' => $c->code,
+                'type' => $c->type,
+                'value' => (float) $c->value,
+                'max_uses' => $c->max_uses,
+                'used_count' => $c->used_count,
+                'is_active' => (bool) $c->is_active,
+                'is_valid_now' => $c->isValid(),
+                'starts_at' => $c->starts_at?->toIso8601String(),
+                'expires_at' => $c->expires_at?->toIso8601String(),
+                'description' => $c->description,
+                'created_at' => $c->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (Admin Only) Create a promotional discount coupon.
+     */
+    protected function toolAdminCreateCoupon(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $code = strtoupper(trim($args['code'] ?? ''));
+        if (empty($code)) {
+            throw new \InvalidArgumentException('code is required.');
+        }
+
+        if (Coupon::where('code', $code)->exists()) {
+            throw new \InvalidArgumentException("Coupon with code '{$code}' already exists.");
+        }
+
+        $type = in_array($args['type'] ?? '', ['percent', 'fixed'], true) ? $args['type'] : 'percent';
+        $value = (float) ($args['value'] ?? 10);
+        $maxUses = isset($args['max_uses']) ? (int) $args['max_uses'] : null;
+        $description = trim($args['description'] ?? '');
+        $isActive = isset($args['is_active']) ? (bool) $args['is_active'] : true;
+
+        $startsAt = ! empty($args['starts_at']) ? \Carbon\Carbon::parse($args['starts_at']) : now();
+        $expiresAt = ! empty($args['expires_at']) ? \Carbon\Carbon::parse($args['expires_at']) : null;
+
+        $coupon = Coupon::create([
+            'code' => $code,
+            'type' => $type,
+            'value' => $value,
+            'max_uses' => $maxUses,
+            'used_count' => 0,
+            'starts_at' => $startsAt,
+            'expires_at' => $expiresAt,
+            'is_active' => $isActive,
+            'description' => $description,
+        ]);
+
+        return [
+            'status' => 'created',
+            'coupon' => [
+                'id' => $coupon->id,
+                'code' => $coupon->code,
+                'type' => $coupon->type,
+                'value' => (float) $coupon->value,
+                'is_active' => (bool) $coupon->is_active,
+                'expires_at' => $coupon->expires_at?->toIso8601String(),
+            ],
+            'message' => "Coupon '{$code}' created successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete or remove a discount coupon.
+     */
+    protected function toolAdminDeleteCoupon(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $codeOrId = $args['code'] ?? ($args['id'] ?? null);
+        if (! $codeOrId) {
+            throw new \InvalidArgumentException('code or id is required.');
+        }
+
+        $coupon = is_numeric($codeOrId) ? Coupon::find($codeOrId) : Coupon::where('code', strtoupper($codeOrId))->first();
+        if (! $coupon) {
+            throw new \InvalidArgumentException("Coupon '{$codeOrId}' not found.");
+        }
+
+        $code = $coupon->code;
+        $coupon->delete();
+
+        return [
+            'status' => 'deleted',
+            'code' => $code,
+            'message' => "Coupon '{$code}' was successfully deleted.",
+        ];
+    }
+
+    // --- Admin Maintenance, Backups & System Logs ---
+
+    /**
+     * (Admin Only) Create a database SQL dump backup.
+     */
+    protected function toolAdminCreateBackup(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $disk = $args['disk'] ?? 'local';
+        if (! in_array($disk, ['local', 's3'], true)) {
+            $disk = 'local';
+        }
+
+        $fileName = 'backup_' . now()->format('Ymd_His') . '.sql';
+        $path = 'backups/' . $fileName;
+        $tempPath = storage_path('app/private/' . $path);
+
+        if (! is_dir(dirname($tempPath))) {
+            mkdir(dirname($tempPath), 0755, true);
+        }
+
+        $command = sprintf(
+            'mysqldump --host=%s --port=%s --user=%s --password=%s %s > %s 2>/dev/null || sqlite3 %s .dump > %s',
+            escapeshellarg(config('database.connections.mysql.host', 'localhost')),
+            escapeshellarg(config('database.connections.mysql.port', '3306')),
+            escapeshellarg(config('database.connections.mysql.username', 'root')),
+            escapeshellarg(config('database.connections.mysql.password', '')),
+            escapeshellarg(config('database.connections.mysql.database', '')),
+            escapeshellarg($tempPath),
+            escapeshellarg(config('database.connections.sqlite.database', '')),
+            escapeshellarg($tempPath)
+        );
+
+        exec($command);
+
+        $contents = file_exists($tempPath) ? file_get_contents($tempPath) : '';
+        $size = strlen($contents);
+
+        if ($size > 0) {
+            Storage::disk($disk)->put($path, $contents);
+        }
+
+        if (file_exists($tempPath)) {
+            unlink($tempPath);
+        }
+
+        $backup = Backup::create([
+            'name' => $fileName,
+            'path' => $path,
+            'disk' => $disk,
+            'type' => 'database',
+            'size' => $size,
+            'completed_at' => now(),
+        ]);
+
+        return [
+            'status' => 'success',
+            'backup' => [
+                'id' => $backup->id,
+                'name' => $backup->name,
+                'disk' => $backup->disk,
+                'size_bytes' => $backup->size,
+                'size_human' => round($backup->size / 1024 / 1024, 2) . ' MB',
+                'completed_at' => $backup->completed_at?->toIso8601String(),
+            ],
+            'message' => "Database backup '{$fileName}' created successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) List available database and system backups.
+     */
+    protected function toolAdminListBackups(): array
+    {
+        $this->ensureAdmin();
+
+        $backups = Backup::latest()->limit(25)->get();
+
+        return [
+            'total' => $backups->count(),
+            'backups' => $backups->map(fn ($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'disk' => $b->disk,
+                'type' => $b->type,
+                'size' => $b->size,
+                'size_formatted' => round($b->size / 1024 / 1024, 2) . ' MB',
+                'completed_at' => $b->completed_at?->toIso8601String(),
+                'created_at' => $b->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (Admin Only) Read recent application error logs from storage/logs/laravel.log.
+     */
+    protected function toolAdminReadErrorLogs(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $linesCount = min(150, max(10, (int) ($args['lines'] ?? 50)));
+        $logPath = storage_path('logs/laravel.log');
+
+        if (! file_exists($logPath)) {
+            return [
+                'exists' => false,
+                'message' => 'No laravel.log file found in storage/logs.',
+                'lines' => [],
+            ];
+        }
+
+        $file = file($logPath);
+        $totalLines = count($file);
+        $tail = array_slice($file, -$linesCount);
+
+        return [
+            'exists' => true,
+            'total_file_lines' => $totalLines,
+            'retrieved_lines' => count($tail),
+            'log_content' => implode('', $tail),
+        ];
+    }
+
+    /**
+     * (Admin Only) List failed background queue worker jobs.
+     */
+    protected function toolAdminListFailedJobs(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $limit = min(50, max(1, (int) ($args['limit'] ?? 20)));
+
+        try {
+            $failed = DB::table('failed_jobs')->latest()->limit($limit)->get();
+            return [
+                'total_failed' => $failed->count(),
+                'jobs' => $failed->map(fn ($j) => [
+                    'id' => $j->id,
+                    'uuid' => $j->uuid ?? null,
+                    'connection' => $j->connection,
+                    'queue' => $j->queue,
+                    'failed_at' => $j->failed_at,
+                    'exception_summary' => Str::limit($j->exception, 300),
+                ]),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'total_failed' => 0,
+                'jobs' => [],
+                'message' => 'failed_jobs table not accessible or empty: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * (Admin Only) Retry a failed queue job.
+     */
+    protected function toolAdminRetryFailedJob(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $id = $args['id'] ?? 'all';
+        Artisan::call('queue:retry', ['id' => [(string) $id]]);
+        $output = trim(Artisan::output());
+
+        return [
+            'status' => 'executed',
+            'job_id' => $id,
+            'output' => $output,
+        ];
+    }
+
+    /**
+     * (Admin Only) Put the application into or out of maintenance mode.
+     */
+    protected function toolAdminToggleMaintenance(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $enable = (bool) ($args['enable'] ?? false);
+        $secret = $args['secret'] ?? null;
+
+        if ($enable) {
+            $params = [];
+            if ($secret) $params['--secret'] = $secret;
+            Artisan::call('down', $params);
+            $msg = 'Application is now in maintenance mode (offline).';
+        } else {
+            Artisan::call('up');
+            $msg = 'Application is now live (maintenance mode disabled).';
+        }
+
+        return [
+            'status' => 'success',
+            'maintenance_mode' => $enable,
+            'output' => trim(Artisan::output()),
+            'message' => $msg,
+        ];
+    }
+
+    // --- Admin Announcements & Platform Settings ---
+
+    /**
+     * (Admin Only) List site-wide dashboard announcements.
+     */
+    protected function toolAdminListAnnouncements(): array
+    {
+        $this->ensureAdmin();
+
+        $announcements = Announcement::orderBy('created_at', 'desc')->get();
+
+        return [
+            'total' => $announcements->count(),
+            'announcements' => $announcements->map(fn ($a) => [
+                'id' => $a->id,
+                'title' => $a->title,
+                'body' => $a->body,
+                'type' => $a->type,
+                'is_active' => (bool) $a->is_active,
+                'starts_at' => $a->starts_at?->toIso8601String(),
+                'ends_at' => $a->ends_at?->toIso8601String(),
+                'created_at' => $a->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (Admin Only) Create a dashboard banner announcement.
+     */
+    protected function toolAdminCreateAnnouncement(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $title = trim($args['title'] ?? '');
+        $body = trim($args['body'] ?? '');
+
+        if (empty($title) || empty($body)) {
+            throw new \InvalidArgumentException('title and body are required.');
+        }
+
+        $type = in_array($args['type'] ?? '', ['info', 'warning', 'success', 'danger'], true) ? $args['type'] : 'info';
+        $isActive = isset($args['is_active']) ? (bool) $args['is_active'] : true;
+        $startsAt = ! empty($args['starts_at']) ? \Carbon\Carbon::parse($args['starts_at']) : now();
+        $endsAt = ! empty($args['ends_at']) ? \Carbon\Carbon::parse($args['ends_at']) : null;
+
+        $announcement = Announcement::create([
+            'title' => $title,
+            'body' => $body,
+            'type' => $type,
+            'is_active' => $isActive,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+        ]);
+
+        return [
+            'status' => 'created',
+            'announcement' => [
+                'id' => $announcement->id,
+                'title' => $announcement->title,
+                'type' => $announcement->type,
+                'is_active' => (bool) $announcement->is_active,
+            ],
+            'message' => "Announcement '{$title}' created successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Delete an announcement.
+     */
+    protected function toolAdminDeleteAnnouncement(array $args): array
+    {
+        $this->ensureAdmin();
+
+        $id = (int) ($args['id'] ?? 0);
+        $announcement = Announcement::findOrFail($id);
+        $title = $announcement->title;
+        $announcement->delete();
+
+        return [
+            'status' => 'deleted',
+            'id' => $id,
+            'message' => "Announcement '{$title}' deleted successfully.",
+        ];
+    }
+
+    /**
+     * (Admin Only) Get general platform and environment settings.
+     */
+    protected function toolAdminGetSettings(): array
+    {
+        $this->ensureAdmin();
+
+        return [
+            'app_name' => config('app.name'),
+            'app_env' => config('app.env'),
+            'app_url' => config('app.url'),
+            'app_locale' => config('app.locale'),
+            'app_timezone' => config('app.timezone'),
+            'mail_mailer' => config('mail.default'),
+            'queue_connection' => config('queue.default'),
+            'session_driver' => config('session.driver'),
+            'database_default' => config('database.default'),
+            'active_modules_count' => Module::active()->count(),
+            'total_users' => User::count(),
+            'total_teams' => Team::count(),
+        ];
+    }
+
+    // --- Module Tools: ClusterForge ---
+
+    /**
+     * (ClusterForge) List and search SEO keyword and topic cluster projects.
+     */
+    protected function toolClusterforgeListProjects(array $args): array
+    {
+        $user = Auth::user();
+        $query = ClusterForgeProject::withoutGlobalScope('current_team');
+
+        if (! empty($args['team_id'])) {
+            $query->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->isAdmin())) {
+            $query->where('team_id', $this->resolveTeamId($args));
+        }
+
+        if (! empty($args['search'])) {
+            $s = trim($args['search']);
+            $query->where(function ($q) use ($s) {
+                $q->where('topic', 'like', "%{$s}%")
+                  ->orWhere('website', 'like', "%{$s}%")
+                  ->orWhere('pillar_title', 'like', "%{$s}%");
+            });
+        }
+
+        if (! empty($args['status'])) {
+            $query->where('status', $args['status']);
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 25)));
+        $total = (clone $query)->count();
+        $projects = $query->withCount(['subtopics', 'questions'])->latest()->limit($limit)->get();
+
+        $statsQuery = ClusterForgeProject::withoutGlobalScope('current_team');
+        if (! empty($args['team_id'])) {
+            $statsQuery->where('team_id', (int) $args['team_id']);
+        } elseif (! ($user && $user->isAdmin())) {
+            $statsQuery->where('team_id', $this->resolveTeamId($args));
+        }
+
+        $stats = [
+            'total' => (clone $statsQuery)->count(),
+            'completed' => (clone $statsQuery)->where('status', ClusterForgeProject::STATUS_COMPLETED)->count(),
+            'processing' => (clone $statsQuery)->processing()->count(),
+            'failed' => (clone $statsQuery)->where('status', ClusterForgeProject::STATUS_FAILED)->count(),
+        ];
+
+        return [
+            'total' => $total,
+            'stats' => $stats,
+            'projects' => $projects->map(fn ($p) => [
+                'id' => $p->id,
+                'team_id' => $p->team_id,
+                'topic' => $p->topic,
+                'website' => $p->website,
+                'language' => $p->language,
+                'status' => $p->status,
+                'status_label' => $p->statusLabel(),
+                'progress_percent' => $p->progressPercent(),
+                'subtopics_count' => $p->subtopics_count,
+                'questions_count' => $p->questions_count,
+                'pillar_title' => $p->pillar_title,
+                'created_at' => $p->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Get complete details of a specific project with subtopics and keywords.
+     */
+    protected function toolClusterforgeGetProject(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->with(['subtopics.questions'])->findOrFail($projectId);
+
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $includeContent = (bool) ($args['include_content'] ?? false);
+
+        return [
+            'project' => [
+                'id' => $project->id,
+                'team_id' => $project->team_id,
+                'topic' => $project->topic,
+                'website' => $project->website,
+                'language' => $project->language,
+                'status' => $project->status,
+                'status_label' => $project->statusLabel(),
+                'progress_percent' => $project->progressPercent(),
+                'error' => $project->error,
+                'pillar_title' => $project->pillar_title,
+                'pillar_meta_description' => $project->pillar_meta_description,
+                'pillar_content' => $includeContent ? $project->pillar_content : ($project->pillar_content ? Str::limit($project->pillar_content, 400) : null),
+                'subtopics_count' => $project->subtopics->count(),
+                'questions_count' => $project->subtopics->sum(fn ($s) => $s->questions->count()),
+                'created_at' => $project->created_at?->toIso8601String(),
+                'subtopics' => $project->subtopics->map(fn ($s) => [
+                    'id' => $s->id,
+                    'title' => $s->title,
+                    'long_tail_keyword' => $s->long_tail_keyword,
+                    'search_volume' => $s->search_volume,
+                    'cpc' => $s->cpc,
+                    'competition' => $s->competition,
+                    'competition_index' => $s->competition_index,
+                    'cluster_title' => $s->cluster_title,
+                    'questions_count' => $s->questions->count(),
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * (ClusterForge) Search keywords and subtopics across ClusterForge projects.
+     */
+    protected function toolClusterforgeSearchKeywords(array $args): array
+    {
+        $user = Auth::user();
+        $query = ClusterForgeSubtopic::whereHas('project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! empty($args['team_id'])) {
+                $q->where('team_id', (int) $args['team_id']);
+            } elseif (! ($user && $user->isAdmin())) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with(['project' => fn ($q) => $q->withoutGlobalScope('current_team')]);
+
+        if (! empty($args['project_id'])) {
+            $query->where('project_id', (int) $args['project_id']);
+        }
+
+        if (! empty($args['query'])) {
+            $term = trim($args['query']);
+            $query->where(function ($q) use ($term) {
+                $q->where('long_tail_keyword', 'like', "%{$term}%")
+                  ->orWhere('title', 'like', "%{$term}%")
+                  ->orWhere('description', 'like', "%{$term}%")
+                  ->orWhere('cluster_title', 'like', "%{$term}%");
+            });
+        }
+
+        if (isset($args['min_volume']) && is_numeric($args['min_volume'])) {
+            $query->where('search_volume', '>=', (int) $args['min_volume']);
+        }
+
+        if (isset($args['max_cpc']) && is_numeric($args['max_cpc'])) {
+            $query->where('cpc', '<=', (float) $args['max_cpc']);
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 30)));
+        $subtopics = $query->orderByDesc('search_volume')->limit($limit)->get();
+
+        return [
+            'total' => $subtopics->count(),
+            'keywords' => $subtopics->map(fn ($s) => [
+                'subtopic_id' => $s->id,
+                'project_id' => $s->project_id,
+                'project_topic' => $s->project?->topic,
+                'keyword' => $s->long_tail_keyword ?: $s->title,
+                'title' => $s->title,
+                'description' => $s->description,
+                'search_volume' => $s->search_volume,
+                'cpc' => $s->cpc,
+                'competition' => $s->competition,
+                'competition_index' => $s->competition_index,
+                'cluster_title' => $s->cluster_title,
+            ]),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Retrieve full cluster details and Q&A content for a subtopic.
+     */
+    protected function toolClusterforgeGetSubtopic(array $args): array
+    {
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes(), 'questions'])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        return [
+            'subtopic' => [
+                'id' => $subtopic->id,
+                'project_id' => $subtopic->project_id,
+                'project_topic' => $subtopic->project?->topic,
+                'title' => $subtopic->title,
+                'description' => $subtopic->description,
+                'long_tail_keyword' => $subtopic->long_tail_keyword,
+                'search_volume' => $subtopic->search_volume,
+                'cpc' => $subtopic->cpc,
+                'competition' => $subtopic->competition,
+                'competition_index' => $subtopic->competition_index,
+                'low_bid' => $subtopic->low_bid,
+                'high_bid' => $subtopic->high_bid,
+                'cluster_title' => $subtopic->cluster_title,
+                'cluster_meta_description' => $subtopic->cluster_meta_description,
+                'cluster_content' => $subtopic->cluster_content,
+                'questions' => $subtopic->questions->map(fn ($q) => [
+                    'id' => $q->id,
+                    'question' => $q->question,
+                    'answer' => $q->answer,
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * (ClusterForge) Search SEO questions and answers across topic clusters.
+     */
+    protected function toolClusterforgeSearchQuestions(array $args): array
+    {
+        $user = Auth::user();
+        $query = ClusterForgeQuestion::whereHas('subtopic.project', function ($q) use ($args, $user) {
+            $q->withoutGlobalScope('current_team');
+            if (! empty($args['team_id'])) {
+                $q->where('team_id', (int) $args['team_id']);
+            } elseif (! ($user && $user->isAdmin())) {
+                $q->where('team_id', $this->resolveTeamId($args));
+            }
+        })->with(['subtopic.project' => fn ($q) => $q->withoutGlobalScope('current_team')]);
+
+        if (! empty($args['project_id'])) {
+            $query->whereHas('subtopic', fn ($q) => $q->where('project_id', (int) $args['project_id']));
+        }
+
+        if (! empty($args['query'])) {
+            $term = trim($args['query']);
+            $query->where(function ($q) use ($term) {
+                $q->where('question', 'like', "%{$term}%")
+                  ->orWhere('answer', 'like', "%{$term}%");
+            });
+        }
+
+        $limit = min(100, max(1, (int) ($args['limit'] ?? 25)));
+        $questions = $query->limit($limit)->get();
+
+        return [
+            'total' => $questions->count(),
+            'questions' => $questions->map(fn ($q) => [
+                'id' => $q->id,
+                'subtopic_id' => $q->subtopic_id,
+                'subtopic_title' => $q->subtopic?->title,
+                'keyword' => $q->subtopic?->long_tail_keyword,
+                'project_id' => $q->subtopic?->project_id,
+                'project_topic' => $q->subtopic?->project?->topic,
+                'question' => $q->question,
+                'answer' => $q->answer,
+            ]),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Create an AI SEO keyword clustering project.
+     */
+    protected function toolClusterforgeCreateProject(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $user = Auth::user();
+
+        $topic = trim($args['topic'] ?? '');
+        if (empty($topic)) {
+            throw new \InvalidArgumentException('topic is required for ClusterForge project.');
+        }
+
+        $project = ClusterForgeProject::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'user_id' => $user?->id ?? 1,
+            'topic' => $topic,
+            'website' => $args['website'] ?? null,
+            'language' => in_array($args['language'] ?? 'de', ['de', 'en'], true) ? $args['language'] : 'de',
+            'status' => ClusterForgeProject::STATUS_PENDING,
+            'pillar_title' => $args['pillar_title'] ?? $topic,
+        ]);
+
+        $startGeneration = $args['start_generation'] ?? true;
+        if ($startGeneration) {
+            ClusterForgeGenerateProjectJob::dispatch($project->id);
+        }
+
+        return [
+            'status' => 'created',
+            'generation_queued' => (bool) $startGeneration,
+            'project' => [
+                'id' => $project->id,
+                'topic' => $project->topic,
+                'status' => $project->status,
+                'language' => $project->language,
+                'pillar_title' => $project->pillar_title,
+            ],
+            'message' => "ClusterForge project for '{$topic}' created successfully." . ($startGeneration ? ' AI topic generation queued.' : ''),
+        ];
+    }
+
+    /**
+     * (ClusterForge) Retry cluster generation for a failed or pending project.
+     */
+    protected function toolClusterforgeRetryProject(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
+
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        if ($project->isInProgress()) {
+            return [
+                'status' => 'already_running',
+                'project_id' => $project->id,
+                'current_status' => $project->status,
+                'message' => 'This project is already being generated.',
+            ];
+        }
+
+        $project->update([
+            'status' => ClusterForgeProject::STATUS_PENDING,
+            'error' => null,
+        ]);
+
+        ClusterForgeGenerateProjectJob::dispatch($project->id);
+
+        return [
+            'status' => 'queued',
+            'project_id' => $project->id,
+            'message' => "ClusterForge project #{$project->id} ('{$project->topic}') generation restarted.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Export markdown content for a pillar page or cluster subtopic page.
+     */
+    protected function toolClusterforgeExportContent(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $type = $args['type'] ?? 'pillar';
+
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
+
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        if ($type === 'cluster') {
+            $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+            $sub = $project->subtopics()->findOrFail($subtopicId);
+
+            $filename = sprintf('cluster-%s.md', Str::slug($sub->long_tail_keyword ?: $sub->title ?: 'page'));
+            $body = sprintf(
+                "<!--\nTitle: %s\nMeta Description: %s\nLong-tail keyword: %s\n-->\n\n%s\n",
+                $sub->cluster_title ?? '',
+                $sub->cluster_meta_description ?? '',
+                $sub->long_tail_keyword ?? '',
+                $sub->cluster_content ?? ''
+            );
+
+            return [
+                'type' => 'cluster',
+                'project_id' => $project->id,
+                'subtopic_id' => $sub->id,
+                'filename' => $filename,
+                'title' => $sub->cluster_title,
+                'meta_description' => $sub->cluster_meta_description,
+                'long_tail_keyword' => $sub->long_tail_keyword,
+                'content' => $body,
+            ];
+        }
+
+        $filename = sprintf('pillar-%s.md', Str::slug($project->topic ?: 'page'));
+        $body = sprintf(
+            "<!--\nTitle: %s\nMeta Description: %s\n-->\n\n%s\n",
+            $project->pillar_title ?? '',
+            $project->pillar_meta_description ?? '',
+            $project->pillar_content ?? ''
+        );
+
+        return [
+            'type' => 'pillar',
+            'project_id' => $project->id,
+            'filename' => $filename,
+            'title' => $project->pillar_title,
+            'meta_description' => $project->pillar_meta_description,
+            'content' => $body,
+        ];
+    }
+
+    /**
+     * (ClusterForge) Delete an SEO topic cluster project.
+     */
+    protected function toolClusterforgeDeleteProject(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
+
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $topic = $project->topic;
+        $project->delete();
+
+        return [
+            'status' => 'deleted',
+            'project_id' => $projectId,
+            'message' => "ClusterForge project '{$topic}' deleted successfully.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated subtopics — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveSubtopics(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
+
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $subtopics = $args['subtopics'] ?? [];
+        if (empty($subtopics) || ! is_array($subtopics)) {
+            throw new \InvalidArgumentException('subtopics array is required and must not be empty.');
+        }
+
+        DB::transaction(function () use ($project, $subtopics) {
+            $project->subtopics()->delete();
+            foreach (array_slice($subtopics, 0, 5) as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $project->subtopics()->create([
+                    'title'             => (string) ($row['title'] ?? ('Subtopic ' . ($i + 1))),
+                    'long_tail_keyword' => isset($row['long_tail_keyword']) ? (string) $row['long_tail_keyword'] : null,
+                    'description'       => isset($row['description']) ? (string) $row['description'] : null,
+                    'sort_order'        => $i,
+                ]);
+            }
+        });
+
+        $project->update(['status' => ClusterForgeProject::STATUS_GENERATING_QUESTIONS, 'error' => null]);
+
+        return [
+            'status'           => 'saved',
+            'project_id'       => $project->id,
+            'subtopics_saved'  => $project->subtopics()->count(),
+            'project_status'   => $project->fresh()->status,
+            'subtopics'        => $project->subtopics()->get(['id', 'title', 'long_tail_keyword', 'sort_order']),
+            'message'          => "Subtopics saved for project #{$project->id} ('{$project->topic}'). Next: call clusterforge_save_questions for each subtopic_id.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated questions for a subtopic — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveQuestions(array $args): array
+    {
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes()])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $questions = array_values(array_filter($args['questions'] ?? [], fn ($q) => is_string($q) && trim($q) !== ''));
+        if (empty($questions)) {
+            throw new \InvalidArgumentException('questions array must contain at least one non-empty string.');
+        }
+
+        DB::transaction(function () use ($subtopic, $questions) {
+            $subtopic->questions()->delete();
+            foreach (array_slice($questions, 0, 10) as $i => $text) {
+                $subtopic->questions()->create([
+                    'question'   => trim($text),
+                    'sort_order' => $i,
+                ]);
+            }
+        });
+
+        return [
+            'status'          => 'saved',
+            'subtopic_id'     => $subtopic->id,
+            'subtopic_title'  => $subtopic->title,
+            'questions_saved' => count(array_slice($questions, 0, 10)),
+            'message'         => "Questions saved for subtopic #{$subtopic->id}. Next: call clusterforge_save_answers with subtopic_id={$subtopic->id}.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated answers for a subtopic's questions — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveAnswers(array $args): array
+    {
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes(), 'questions'])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $answers = $args['answers'] ?? [];
+        if (empty($answers) || ! is_array($answers)) {
+            throw new \InvalidArgumentException('answers array is required and must not be empty.');
+        }
+
+        $questions = $subtopic->questions()->orderBy('sort_order')->get();
+        if ($questions->isEmpty()) {
+            throw new \InvalidArgumentException("Subtopic #{$subtopicId} has no questions. Save questions first.");
+        }
+
+        $expectedCount = $questions->count();
+        $receivedCount = count($answers);
+        $isAssocMap = ! array_is_list($answers);
+
+        // Strict count validation for sequential answer list to prevent misalignment
+        if (! $isAssocMap && $receivedCount !== $expectedCount) {
+            throw new \InvalidArgumentException("Expected exactly {$expectedCount} answers for subtopic #{$subtopicId} ('{$subtopic->title}'), but received {$receivedCount}. Please provide an answer for every question to avoid misaligning answers.");
+        }
+
+        DB::transaction(function () use ($questions, $answers, $isAssocMap) {
+            foreach ($questions as $i => $question) {
+                $answer = $isAssocMap
+                    ? ($answers[$question->id] ?? $answers[(string) $question->id] ?? null)
+                    : ($answers[$i] ?? null);
+
+                if ($answer === null || trim((string) $answer) === '') {
+                    throw new \InvalidArgumentException("Answer for question #{$question->id} ('{$question->question}') cannot be empty.");
+                }
+
+                $question->update(['answer' => trim((string) $answer)]);
+            }
+        });
+
+        return [
+            'status'         => 'saved',
+            'subtopic_id'    => $subtopic->id,
+            'subtopic_title' => $subtopic->title,
+            'answers_saved'  => $questions->count(),
+            'message'        => "Answers saved for subtopic #{$subtopic->id}. Next: call clusterforge_save_cluster_content with subtopic_id={$subtopic->id}.",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated cluster page content for a subtopic — Gemini bypass.
+     */
+    protected function toolClusterforgeSaveClusterContent(array $args): array
+    {
+        $subtopicId = (int) ($args['subtopic_id'] ?? 0);
+
+        $subtopic = ClusterForgeSubtopic::withoutGlobalScopes()
+            ->with(['project' => fn ($q) => $q->withoutGlobalScopes(), 'questions'])
+            ->findOrFail($subtopicId);
+
+        $project = $subtopic->project;
+        if (! $project) {
+            throw new \RuntimeException("Project for subtopic #{$subtopicId} not found.");
+        }
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $title = trim($args['title'] ?? '');
+        if (empty($title)) {
+            throw new \InvalidArgumentException('title is required.');
+        }
+        $meta  = mb_substr(trim($args['meta_description'] ?? ''), 0, 320);
+        $intro = trim($args['introduction_markdown'] ?? '');
+
+        // Build the same cluster_content format as KeywordClusterGenerator::generateClusterPage
+        $faqHeading = ($project->language === 'de') ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions';
+        $body = "# {$title}\n\n{$intro}\n\n## {$faqHeading}\n\n";
+        foreach ($subtopic->questions()->orderBy('sort_order')->get() as $q) {
+            $body .= "### {$q->question}\n\n" . ($q->answer ?? '_Noch keine Antwort generiert._') . "\n\n";
+        }
+
+        $subtopic->update([
+            'cluster_title'            => $title,
+            'cluster_meta_description' => $meta,
+            'cluster_content'          => $body,
+        ]);
+
+        return [
+            'status'              => 'saved',
+            'subtopic_id'         => $subtopic->id,
+            'subtopic_title'      => $subtopic->title,
+            'cluster_title'       => $title,
+            'cluster_content_len' => mb_strlen($body),
+            'message'             => "Cluster page saved for subtopic #{$subtopic->id} ('{$subtopic->title}').",
+        ];
+    }
+
+    /**
+     * (ClusterForge) Save externally generated pillar page content and mark project completed — Gemini bypass.
+     */
+    protected function toolClusterforgeSavePillarContent(array $args): array
+    {
+        $projectId = (int) ($args['project_id'] ?? 0);
+        $project = ClusterForgeProject::withoutGlobalScopes()->findOrFail($projectId);
+
+        if (! $this->userCanAccessTeam($project->team_id)) {
+            throw new \RuntimeException("Unauthorized: You do not have access to team #{$project->team_id}.");
+        }
+
+        $title = trim($args['title'] ?? '');
+        if (empty($title)) {
+            throw new \InvalidArgumentException('title is required for pillar page.');
+        }
+        $meta    = mb_substr(trim($args['meta_description'] ?? ''), 0, 320);
+        $content = trim($args['content_markdown'] ?? '');
+        if (empty($content)) {
+            throw new \InvalidArgumentException('content_markdown is required.');
+        }
+
+        $project->update([
+            'pillar_title'            => $title,
+            'pillar_meta_description' => $meta,
+            'pillar_content'          => $content,
+            'status'                  => ClusterForgeProject::STATUS_COMPLETED,
+            'error'                   => null,
+        ]);
+
+        return [
+            'status'          => 'completed',
+            'project_id'      => $project->id,
+            'topic'           => $project->topic,
+            'pillar_title'    => $title,
+            'content_length'  => mb_strlen($content),
+            'message'         => "Pillar page saved and project #{$project->id} ('{$project->topic}') marked as completed.",
+        ];
+    }
+
+    // --- Module Tools: DevManager ---
+
+    /**
+     * (DevManager) List development user stories and backlog items.
+     */
+    protected function toolDevmanagerListUserStories(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $stories = DevUserStory::withoutGlobalScope('current_team')->where('team_id', $teamId)->latest()->limit(50)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $stories->count(),
+            'stories' => $stories->map(fn ($s) => [
+                'id' => $s->id,
+                'title' => $s->title,
+                'description' => $s->description,
+                'status' => $s->status,
+                'priority' => $s->priority,
+                'story_points' => $s->story_points,
+                'created_at' => $s->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (DevManager) Create or update a developer user story / backlog item.
+     */
+    protected function toolDevmanagerCreateUserStory(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $user = Auth::user();
+
+        $title = trim($args['title'] ?? '');
+        if (empty($title)) {
+            throw new \InvalidArgumentException('title is required.');
+        }
+
+        $story = DevUserStory::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'user_id' => $user?->id ?? 1,
+            'title' => $title,
+            'description' => $args['description'] ?? '',
+            'status' => $args['status'] ?? 'backlog',
+            'priority' => $args['priority'] ?? 'medium',
+            'story_points' => isset($args['story_points']) ? (int) $args['story_points'] : 3,
+        ]);
+
+        return [
+            'status' => 'created',
+            'story' => [
+                'id' => $story->id,
+                'title' => $story->title,
+                'status' => $story->status,
+                'story_points' => $story->story_points,
+            ],
+            'message' => "DevManager user story '{$title}' created.",
+        ];
+    }
+
+    /**
+     * (DevManager) List development milestones and releases.
+     */
+    protected function toolDevmanagerListMilestones(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $milestones = DevMilestone::withoutGlobalScope('current_team')->where('team_id', $teamId)->orderBy('due_date', 'asc')->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $milestones->count(),
+            'milestones' => $milestones->map(fn ($m) => [
+                'id' => $m->id,
+                'title' => $m->title,
+                'status' => $m->status,
+                'due_date' => $m->due_date?->toDateString(),
+            ]),
+        ];
+    }
+
+    // --- Module Tools: LoopEngine ---
+
+    /**
+     * (LoopEngine) List automated business processes and workflows.
+     */
+    protected function toolLoopengineListProcesses(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $processes = LoopProcess::withoutGlobalScope('current_team')->where('team_id', $teamId)->with('steps')->latest()->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $processes->count(),
+            'processes' => $processes->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name_de ?: $p->name_en,
+                'category' => $p->category,
+                'status' => $p->status,
+                'version' => $p->version,
+                'steps_count' => $p->steps->count(),
+                'created_at' => $p->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (LoopEngine) Trigger an execution run for an automated process.
+     */
+    protected function toolLoopengineTriggerProcessRun(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $user = Auth::user();
+
+        $processId = (int) ($args['process_id'] ?? 0);
+        $process = LoopProcess::withoutGlobalScope('current_team')->where('team_id', $teamId)->findOrFail($processId);
+
+        $run = LoopProcessRun::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'process_id' => $process->id,
+            'user_id' => $user?->id ?? 1,
+            'status' => 'running',
+            'started_at' => now(),
+            'input_data' => $args['input_data'] ?? [],
+        ]);
+
+        return [
+            'status' => 'started',
+            'run_id' => $run->id,
+            'process_name' => $process->name_de ?: $process->name_en,
+            'message' => "Process run #{$run->id} triggered successfully.",
+        ];
+    }
+
+    // --- Module Tools: CustomerSuccess ---
+
+    /**
+     * (CustomerSuccess) List customer success inquiries and problem diagnoses.
+     */
+    protected function toolCustomersuccessListInquiries(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+        $inquiries = CustomerSuccessInquiry::withoutGlobalScope('current_team')->where('team_id', $teamId)->latest()->limit(30)->get();
+
+        return [
+            'team_id' => $teamId,
+            'total' => $inquiries->count(),
+            'inquiries' => $inquiries->map(fn ($i) => [
+                'id' => $i->id,
+                'question' => $i->question,
+                'problem' => $i->problem,
+                'priority' => $i->priority,
+                'created_at' => $i->created_at?->toIso8601String(),
+            ]),
+        ];
+    }
+
+    /**
+     * (CustomerSuccess) Diagnose a customer success problem with root cause and recommended actions.
+     */
+    protected function toolCustomersuccessDiagnoseInquiry(array $args): array
+    {
+        $teamId = $this->resolveTeamId($args);
+
+        $question = trim($args['question'] ?? '');
+        $problem = trim($args['problem'] ?? '');
+
+        if (empty($question) || empty($problem)) {
+            throw new \InvalidArgumentException('question and problem are required.');
+        }
+
+        $inquiry = CustomerSuccessInquiry::withoutGlobalScope('current_team')->create([
+            'team_id' => $teamId,
+            'question' => $question,
+            'answer' => $args['answer'] ?? null,
+            'problem' => $problem,
+            'root_cause' => $args['root_cause'] ?? null,
+            'consequences' => $args['consequences'] ?? null,
+            'recommended_actions' => $args['recommended_actions'] ?? null,
+            'priority' => $args['priority'] ?? 'medium',
+            'estimated_cost' => $args['estimated_cost'] ?? null,
+            'expected_benefit' => $args['expected_benefit'] ?? null,
+            'module_key' => $args['module_key'] ?? null,
+        ]);
+
+        return [
+            'status' => 'created',
+            'inquiry_id' => $inquiry->id,
+            'priority' => $inquiry->priority,
+            'message' => "Customer success case #{$inquiry->id} diagnosed and stored.",
+        ];
+    }
+
+    /**
      * MCP Resources.
      */
     public function listResources(): array
@@ -4111,6 +7010,9 @@ class McpController extends Controller
                 ['uri' => 'allocore://debts/snowball', 'name' => 'Debt Snowball & Avalanche Payoff Overview', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://integrations/status', 'name' => 'Webhooks & Third-Party Integrations', 'mimeType' => 'application/json'],
                 ['uri' => 'allocore://financial/summary', 'name' => 'Financial Overview & Active Subscriptions', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://admin/announcements', 'name' => 'Active Platform Dashboard Announcements', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://admin/coupons', 'name' => 'Active Promo & Discount Coupons', 'mimeType' => 'application/json'],
+                ['uri' => 'allocore://clusterforge/projects', 'name' => 'ClusterForge SEO Topic Clusters', 'mimeType' => 'application/json'],
             ],
         ];
     }
@@ -4143,6 +7045,9 @@ class McpController extends Controller
             'allocore://debts/snowball' => json_encode($this->toolGetSnowballFinancialSummary([]), JSON_PRETTY_PRINT),
             'allocore://integrations/status' => json_encode($this->toolListWebhooksAndIntegrations([]), JSON_PRETTY_PRINT),
             'allocore://financial/summary' => json_encode($this->toolGetFinancialSummary(), JSON_PRETTY_PRINT),
+            'allocore://admin/announcements' => Announcement::active()->get(['id', 'title', 'body', 'type', 'starts_at', 'ends_at'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://admin/coupons' => Coupon::where('is_active', true)->get(['id', 'code', 'type', 'value', 'max_uses', 'used_count', 'expires_at'])->toJson(JSON_PRETTY_PRINT),
+            'allocore://clusterforge/projects' => json_encode($this->toolClusterforgeListProjects([]), JSON_PRETTY_PRINT),
             default => throw new \InvalidArgumentException("Resource '{$uri}' not found."),
         };
 
@@ -4269,6 +7174,14 @@ class McpController extends Controller
                     'description' => 'Inspect unassigned questions and deduce optimal tools & books.',
                     'arguments' => [],
                 ],
+                [
+                    'name' => 'clusterforge_seo_architect',
+                    'description' => 'Analyze SEO keyword clusters, search volumes, and outline a complete content silo architecture.',
+                    'arguments' => [
+                        ['name' => 'topic', 'required' => false],
+                        ['name' => 'project_id', 'required' => false],
+                    ],
+                ],
             ],
         ];
     }
@@ -4276,6 +7189,7 @@ class McpController extends Controller
     public function getPrompt(string $name, array $args): array
     {
         $promptText = match ($name) {
+            'clusterforge_seo_architect' => "Sie sind der Allocore Senior SEO & Content Strategy Director. Analysieren Sie das Keyword-Cluster und die Themenarchitektur für das Thema/Projekt '".($args['topic'] ?? 'SEO Strategie')."'. Strukturieren Sie eine hochkonvertierende Content-Silo-Architektur: 1) Pillar Page (Cornerstone Content), 2) Subtopic Cluster Pages mit Fokus auf High-Intent Long-Tail Keywords, 3) Interne Verlinkungsstruktur (Internal Linking Hub & Spoke), 4) Relevante W-Fragen für Featured Snippets.",
             'debt_payoff_strategist' => "Sie sind der Allocore Senior Corporate Finance & Debt Strategist. Analysieren Sie die Verbindlichkeiten und Schulden des Unternehmens. Vergleichen Sie die Schneeball-Methode (Snowball: kleinste Salden zuerst für schnelle psychologische und operative Siege) mit der Lawinen-Methode (Avalanche: höchste Zinssätze zuerst zur Zinsminimierung). Bei einem monatlichen Zusatztilgungsbudget von ".($args['extra_monthly_budget'] ?? '500')." EUR: Erstellen Sie einen monatlichen Tilgungsplan, berechnen Sie das exakte Entschuldungsdatum (Debt-Free Date) und heben Sie die Gesamtzinsersparnis hervor.",
             'audit_consultant' => "Sie sind der Allocore Senior Executive Coach. Analysieren Sie die Ergebnisse von Audit #".($args['audit_id'] ?? 1)." über die 5 Säulen (Revenue, Profit, Order, Influence, Legacy) und erstellen Sie eine priorisierte 90-Tage-Transformations-Roadmap mit konkreten Tool- und Buchempfehlungen.",
             'executive_audit_briefing' => "Erstellen Sie ein C-Level Vorstandsbriefing für Audit #".($args['audit_id'] ?? 1).". Formulieren Sie strategische Kernaussagen zu finanziellen Risiken, Engpässen und Quick Wins.",

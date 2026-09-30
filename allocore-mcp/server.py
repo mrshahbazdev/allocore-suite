@@ -17,7 +17,10 @@ from tools.audit_tools import (
 )
 from tools.module_tools import (
     list_all_modules, manage_tool_pool, deprecate_module,
-    update_module_metadata, sync_subscription_plans
+    update_module_metadata, sync_subscription_plans,
+    admin_list_modules, admin_get_module_details, admin_install_module,
+    admin_update_module, admin_toggle_module, admin_toggle_module_pool,
+    admin_deprecate_module, admin_delete_module, admin_sync_module_plans
 )
 from tools.coach_tools import (
     diagnose_audit_gaps, calculate_pillar_scores, simulate_audit_recommendations,
@@ -39,11 +42,19 @@ from tools.analytics_tools import (
     get_platform_metrics, get_audit_completion_stats
 )
 from tools.ops_tools import (
-    run_allocore_artisan, get_system_health
+    run_allocore_artisan, get_system_health,
+    admin_list_coupons, admin_create_coupon, admin_delete_coupon,
+    admin_list_backups, admin_read_error_logs,
+    admin_list_announcements, admin_create_announcement, admin_get_settings
 )
 from tools.snowball_tools import (
     list_snowball_debts, create_or_update_snowball_debt, log_snowball_payment,
     calculate_snowball_payoff_plan, get_snowball_financial_summary
+)
+from tools.clusterforge_tools import (
+    clusterforge_list_projects, clusterforge_get_project, clusterforge_search_keywords,
+    clusterforge_get_subtopic, clusterforge_search_questions, clusterforge_create_project,
+    clusterforge_export_content, clusterforge_delete_project
 )
 
 # Import Resources & Prompts
@@ -73,6 +84,15 @@ mcp.tool()(manage_tool_pool)
 mcp.tool()(deprecate_module)
 mcp.tool()(update_module_metadata)
 mcp.tool()(sync_subscription_plans)
+mcp.tool()(admin_list_modules)
+mcp.tool()(admin_get_module_details)
+mcp.tool()(admin_install_module)
+mcp.tool()(admin_update_module)
+mcp.tool()(admin_toggle_module)
+mcp.tool()(admin_toggle_module_pool)
+mcp.tool()(admin_deprecate_module)
+mcp.tool()(admin_delete_module)
+mcp.tool()(admin_sync_module_plans)
 
 # ----------------------------------------------------
 # 3. Register Coach & Gap Analysis Tools
@@ -127,6 +147,14 @@ mcp.tool()(get_audit_completion_stats)
 # ----------------------------------------------------
 mcp.tool()(run_allocore_artisan)
 mcp.tool()(get_system_health)
+mcp.tool()(admin_list_coupons)
+mcp.tool()(admin_create_coupon)
+mcp.tool()(admin_delete_coupon)
+mcp.tool()(admin_list_backups)
+mcp.tool()(admin_read_error_logs)
+mcp.tool()(admin_list_announcements)
+mcp.tool()(admin_create_announcement)
+mcp.tool()(admin_get_settings)
 
 # ----------------------------------------------------
 # 10. Register Debt Snowball & Avalanche Tools
@@ -136,6 +164,18 @@ mcp.tool()(create_or_update_snowball_debt)
 mcp.tool()(log_snowball_payment)
 mcp.tool()(calculate_snowball_payoff_plan)
 mcp.tool()(get_snowball_financial_summary)
+
+# ----------------------------------------------------
+# 11. Register ClusterForge (SEO & Topics) Tools
+# ----------------------------------------------------
+mcp.tool()(clusterforge_list_projects)
+mcp.tool()(clusterforge_get_project)
+mcp.tool()(clusterforge_search_keywords)
+mcp.tool()(clusterforge_get_subtopic)
+mcp.tool()(clusterforge_search_questions)
+mcp.tool()(clusterforge_create_project)
+mcp.tool()(clusterforge_export_content)
+mcp.tool()(clusterforge_delete_project)
 
 # ----------------------------------------------------
 # Register Dynamic Resources
