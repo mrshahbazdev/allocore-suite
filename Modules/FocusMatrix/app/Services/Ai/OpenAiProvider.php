@@ -28,6 +28,10 @@ class OpenAiProvider implements AiProvider
             'max_tokens' => 1024,
         ];
         if ($wantJson) {
+            if (stripos($system.$user, 'json') === false) {
+                $payload['messages'][0]['content'] .= ' Respond with valid JSON.';
+            }
+
             $payload['response_format'] = ['type' => 'json_object'];
         }
 
