@@ -3,6 +3,8 @@
 namespace Modules\AuditIntelligence\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Modules\AuditIntelligence\Models\Recommendation;
+use Modules\AuditIntelligence\Services\ManagerReporter;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class AuditIntelligenceServiceProvider extends ModuleServiceProvider
@@ -33,6 +35,13 @@ class AuditIntelligenceServiceProvider extends ModuleServiceProvider
         EventServiceProvider::class,
         RouteServiceProvider::class,
     ];
+
+    public function boot(): void
+    {
+        Recommendation::saved(
+            fn (Recommendation $recommendation) => app(ManagerReporter::class)->suggestion($recommendation)
+        );
+    }
 
     /**
      * Define module schedules.
