@@ -105,4 +105,10 @@ return [
         'queue' => env('ALLOCORE_WEBHOOK_SYNC') ? 'sync' : null,
     ],
 
+    'manager' => [
+        'url' => env('MANAGER_URL'),
+        'sso_secret' => env('MANAGER_SSO_SECRET'),
+        'ingest_url' => env('MANAGER_INGEST_URL'),
+    ],
+
 ];
