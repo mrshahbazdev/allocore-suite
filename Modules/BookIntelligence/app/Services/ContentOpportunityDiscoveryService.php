@@ -39,7 +39,7 @@ class ContentOpportunityDiscoveryService
             'unresolved_knowledge_gaps' => $gaps,
         ];
 
-        $prompt = <<<PROMPT
+        $prompt = <<<'PROMPT'
 You are Allocore's Chief Content & SEO Growth Strategist. Analyze our organizational knowledge, book intelligence, user searches, and unresolved knowledge gaps to identify 8 to 12 high-intent, high-traffic content marketing opportunities in German (auf Deutsch für den DACH-Markt).
 
 Content Types:
@@ -71,10 +71,19 @@ Schema:
 
 Context:
 PROMPT
-        . json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        .json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
         $result = $this->ai->generateJson($prompt, 0.3);
         $items = isset($result[0]) ? $result : ($result['opportunities'] ?? $result['items'] ?? []);
+
+        if (! is_array($items) || count($items) === 0) {
+            foreach ($result as $value) {
+                if (is_array($value) && isset($value[0]) && is_array($value[0])) {
+                    $items = $value;
+                    break;
+                }
+            }
+        }
 
         if (! is_array($items) || count($items) === 0) {
             throw new RuntimeException('AI did not return valid content opportunities.');

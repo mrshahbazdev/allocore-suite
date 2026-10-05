@@ -77,11 +77,17 @@ class OpenAiService implements AiProvider
 
         $url = $this->baseUrl.'/chat/completions';
 
+        $messages = [];
+
+        if ($jsonMode) {
+            $messages[] = ['role' => 'system', 'content' => 'Respond with a single valid JSON object only.'];
+        }
+
+        $messages[] = ['role' => 'user', 'content' => $prompt];
+
         $payload = [
             'model' => $this->model,
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt],
-            ],
+            'messages' => $messages,
             'temperature' => $temperature,
             'max_tokens' => $this->maxOutputTokens,
         ];
