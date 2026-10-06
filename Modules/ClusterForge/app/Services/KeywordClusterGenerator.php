@@ -49,13 +49,13 @@ Respond with ONLY a JSON array of 5 objects in this exact shape (no prose, no ma
 ]
 PROMPT;
 
-        $data = $this->ai->generateJson($prompt, temperature: 0.7);
+        $data = $this->asList($this->ai->generateJson($prompt, temperature: 0.7));
 
-        if (! is_array($data) || count($data) < 1) {
+        if (count($data) < 1) {
             throw new RuntimeException('AI provider returned no subtopics.');
         }
 
-        $subtopics = array_slice(array_values($data), 0, 5);
+        $subtopics = array_slice($data, 0, 5);
 
         $keywords = array_values(array_filter(array_map(
             fn ($row) => is_array($row) && ! empty($row['long_tail_keyword'])
@@ -126,13 +126,13 @@ Respond with ONLY a JSON array of 10 strings (no prose, no markdown fences):
 ["question 1", "question 2", "...", "question 10"]
 PROMPT;
 
-        $data = $this->ai->generateJson($prompt, temperature: 0.7);
+        $data = $this->asList($this->ai->generateJson($prompt, temperature: 0.7));
 
-        if (! is_array($data) || count($data) < 1) {
+        if (count($data) < 1) {
             throw new RuntimeException('AI provider returned no questions for subtopic '.$subtopic->id);
         }
 
-        $questions = array_slice(array_values($data), 0, 10);
+        $questions = array_slice($data, 0, 10);
 
         DB::transaction(function () use ($subtopic, $questions) {
             $fresh = Subtopic::where('id', $subtopic->id)->lockForUpdate()->first();
@@ -221,6 +221,27 @@ PROMPT;
                 $question->update(['answer' => $answer !== null && $answer !== '' ? $answer : null]);
             }
         });
+    }
+
+    /**
+     * Unwrap a provider response that is either a bare list or a wrapper
+     * object like {"subtopics": [...]} / {"questions": [...]} / {"items": [...]}.
+     *
+     * @return array<int, mixed>
+     */
+    protected function asList(array $data): array
+    {
+        if (array_is_list($data)) {
+            return $data;
+        }
+
+        foreach ($data as $value) {
+            if (is_array($value) && (array_is_list($value) || $value === [])) {
+                return array_values($value);
+            }
+        }
+
+        return array_values($data);
     }
 
     /**
