@@ -54,6 +54,9 @@
             <x-sidebar-link route="billing.subscriptions" icon="M9 12.75L11.25 15 15 9.75M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z">{{ __('My Subscriptions') }}</x-sidebar-link>
             <x-sidebar-link route="teams.index" icon="M18 18.72v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48c0-.66.34-1.26.88-1.61l.28-.17a.75.75 0 00.25-1.03l-.11-.18a3.75 3.75 0 00-6.5 0l-.11.18a.75.75 0 00.25 1.03l.28.17c.54.35.88.95.88 1.61v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48a2.25 2.25 0 00-3-2.12 2.25 2.25 0 00-1.5 2.12v.48a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-.48a6.75 6.75 0 0111.25-5.07 6.75 6.75 0 019.75 5.07zM12 12a3 3 0 100-6 3 3 0 000 6z">{{ __('Companies') }}</x-sidebar-link>
             <x-sidebar-link route="profile" icon="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z">{{ __('Profile') }}</x-sidebar-link>
+            @if (class_exists(\Modules\AuditIntelligence\Services\ManagerSsoLink::class))
+                <x-sidebar-link href="{{ \Modules\AuditIntelligence\Services\ManagerSsoLink::url(auth()->user()) }}" icon="M13.5 6H12a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 0012 21h1.5m0-15h3.75M21 12v-3.75M21 3h-6.75M21 3l-9.75 9.75" data-no-navigate>{{ __('Allocore Manager') }}</x-sidebar-link>
+            @endif
         </div>
     </div>
 
