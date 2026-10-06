@@ -2,6 +2,7 @@
 
 namespace Modules\InvoiceMaker\Jobs;
 
+use App\Models\Team;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,6 +16,9 @@ class PushAllocoreMetric implements ShouldQueue
 
     public function __construct(public string $type, public array $body = [])
     {
+        $team = auth()->user()?->currentTeam ?? Team::find(auth()->user()?->current_team_id);
+        $this->body['company_key'] ??= $team?->name;
+
         if ($connection = config('services.allocore.queue')) {
             $this->onConnection($connection);
         }
