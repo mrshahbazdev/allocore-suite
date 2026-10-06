@@ -199,6 +199,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
     Route::get('knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('knowledge.show');
 
+    Route::get('sso/allocore-manager', function () {
+        abort_unless(class_exists(\Modules\AuditIntelligence\Services\ManagerSsoLink::class), 404);
+        $url = \Modules\AuditIntelligence\Services\ManagerSsoLink::url(auth()->user());
+        abort_unless($url, 404);
+
+        return redirect()->away($url);
+    })->name('sso.manager');
+
     Route::redirect('app/auditpro', '/app/audit', 301);
     Route::redirect('app/clusterforge', '/app/clusters', 301);
     Route::get('timeline', [TimelineController::class, 'index'])->name('timeline.index');
