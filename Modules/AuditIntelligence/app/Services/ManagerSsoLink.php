@@ -22,7 +22,7 @@ class ManagerSsoLink
         $params = [
             'email' => $user->email,
             'name' => $user->name,
-            'company' => $company ?? '',
+            'company' => $company ?? $user->currentTeam?->name ?? '',
             'role' => 'member',
             'ts' => time(),
         ];
