@@ -2,7 +2,9 @@
 
 namespace Modules\InvoiceMaker\Console\Commands;
 
+use App\Models\Team;
 use Illuminate\Console\Command;
+use Modules\InvoiceMaker\Jobs\PushAllocoreMetric;
 use Modules\InvoiceMaker\Models\Invoice;
 
 class UpdateOverdueInvoices extends Command
@@ -35,6 +37,14 @@ class UpdateOverdueInvoices extends Command
                         'late_fee_amount' => $lateFee,
                         'grand_total' => (float) $invoice->grand_total + $lateFee,
                         'amount_due' => (float) $invoice->amount_due + $lateFee,
+                    ]);
+
+                    PushAllocoreMetric::dispatch('invoice.overdue', [
+                        'company_key' => Team::find($invoice->team_id)?->name,
+                        'invoice_id' => $invoice->id,
+                        'number' => $invoice->invoice_number,
+                        'amount_due' => (float) $invoice->amount_due,
+                        'due_date' => $invoice->due_date?->toDateString(),
                     ]);
                 }
             });
