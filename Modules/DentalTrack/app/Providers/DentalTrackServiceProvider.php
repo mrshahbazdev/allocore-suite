@@ -2,7 +2,9 @@
 
 namespace Modules\DentalTrack\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Modules\DentalTrack\Console\Commands\GeneratePredictions;
+use Modules\DentalTrack\Console\Commands\PushOverdueOrders;
 use Modules\DentalTrack\Enums\OrderStatus;
 use Modules\DentalTrack\Models\Order;
 use Modules\DentalTrack\Models\ReworkEvent;
@@ -25,7 +27,7 @@ class DentalTrackServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        $this->commands([GeneratePredictions::class]);
+        $this->commands([GeneratePredictions::class, PushOverdueOrders::class]);
 
         Order::observe(OrderObserver::class);
 
@@ -33,6 +35,11 @@ class DentalTrackServiceProvider extends ModuleServiceProvider
         $this->loadViewsFrom(module_path('DentalTrack', 'resources/views'), 'dentaltrack');
 
         $this->registerAllocoreMetricPush();
+    }
+
+    protected function configureSchedules(Schedule $schedule): void
+    {
+        $schedule->command('dentaltrack:push-overdue')->dailyAt('00:30');
     }
 
     private function registerAllocoreMetricPush(): void
