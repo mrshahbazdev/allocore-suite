@@ -10,6 +10,7 @@ use Modules\AuditPro\Models\Audit;
 use Modules\AuditPro\Models\AuditAnswer;
 use Modules\AuditPro\Models\AuditResult;
 use Modules\AuditPro\Support\Maturity;
+use Modules\InvoiceMaker\Jobs\PushAllocoreMetric;
 
 #[Layout('layouts.shell')]
 class Assessment extends Component
@@ -208,7 +209,48 @@ class Assessment extends Component
             AllocoreScoreService::fromAudit($this->audit);
         }
 
+        $this->pushManagerSuggestions($answers);
+
         return redirect()->route('audit.results', $this->audit);
+    }
+
+    private function pushManagerSuggestions($answers): void
+    {
+        $results = AuditResult::where('audit_id', $this->audit->id)->get()->keyBy('level');
+        $team = $this->audit->team;
+
+        foreach ($this->pillars() as $pillar) {
+            $result = $results->get($pillar->name);
+
+            if (! $result || $result->average_score >= 2.5) {
+                continue;
+            }
+
+            $weakest = $pillar->questions
+                ->map(function ($question) use ($answers) {
+                    $answer = $answers->get($question->id);
+                    $score = $answer ? $this->score($question->question_type, $answer->value['answer'] ?? null, $question->options) : null;
+
+                    return ['title' => $question->question, 'score' => $score];
+                })
+                ->filter(fn ($row) => $row['score'] !== null)
+                ->sortBy('score')
+                ->take(2)
+                ->pluck('title')
+                ->implode('", "');
+
+            PushAllocoreMetric::dispatch('audit.suggestion', [
+                'company_key' => $team?->name,
+                'occurred_at' => now()->toIso8601String(),
+                'ref_id' => 'auditpro-'.$this->audit->id.'-'.$pillar->id,
+                'issue' => 'Audit-Lücke im Bereich "'.$pillar->name.'": Reifegrad '.$result->maturity_level.' ('.number_format($result->average_score, 1).'/4)',
+                'solution' => 'Verantwortlichen benennen und Maßnahmenplan erstellen. Schwächste Punkte im Audit: "'.$weakest.'".',
+                'responsible' => 'Management',
+                'effort' => 'medium',
+                'status' => 'open',
+                'finding_title' => 'Audit '.$this->audit->id.' – '.$pillar->name,
+            ]);
+        }
     }
 
     private function score(string $type, mixed $value, ?array $options): ?float
